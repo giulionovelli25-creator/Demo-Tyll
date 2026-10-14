@@ -1,10 +1,10 @@
 "use client";
 // The owner's control center: five figures, one chart, one comparison list, one list of issues.
 import Link from "next/link";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Spark } from "@/components/charts";
-import { Badge, Crumbs, Delta, EmptyState, PageHeader, Panel, cn } from "@/components/ui";
+import { Badge, Crumbs, Delta, EmptyState, PageHeader, Panel, Segmented, cn } from "@/components/ui";
 import { GROUP_NAME, PROPERTIES, itemById, outletById, propertyById } from "@/lib/data/catalog";
 import { canOpen } from "@/lib/domain/access";
 import { buildIssues, dailyBriefing } from "@/lib/domain/issues";
@@ -14,6 +14,8 @@ import { useDemo } from "@/lib/store";
 import { addDays, fmtPct, fmtRange, fxRate, pctChange, sum } from "@/lib/util";
 import { KpiDrawer, type KpiKey } from "./kpi-drawer";
 import { KpiCard, NeedsAttention, PerformanceChart, expensesOf, profitOf } from "./parts";
+
+type SortKey = "name" | "revenue" | "expenses" | "margin" | "issues";
 
 const marginOf = (t: Totals) => t.opMargin ?? t.gpMargin;
 /** Outlets are compared on gross margin: it does not depend on how labor and overheads are allocated. */
@@ -110,6 +112,15 @@ function CompRow({ label, sub, now, before, spark, issues, onClick, strong, tag,
   );
 }
 
+function SortHead({ k, label, right, sort, onPick }: { k: SortKey; label: string; right?: boolean; sort: { key: SortKey; dir: "asc" | "desc" }; onPick: (k: SortKey) => void }) {
+  return (
+    <button type="button" onClick={() => onPick(k)} aria-label={`Sort by ${label}${sort.key === k ? (sort.dir === "asc" ? ", ascending" : ", descending") : ""}`} className={cn("flex items-center gap-1 hover:text-ink", right && "justify-end", sort.key === k && "text-ink")}>
+      {label}
+      {sort.key === k && (sort.dir === "asc" ? <ChevronUp size={12} aria-hidden /> : <ChevronDown size={12} aria-hidden />)}
+    </button>
+  );
+}
+
 function Comparison({ rows, trend, open, money }: { rows: OutletRow[]; trend: Record<string, number[]>; open: { outletId?: string; propertyId: string }[]; money: (n: number, o?: { compact?: boolean }) => string }) {
   const setScope = useDemo((s) => s.setScope);
   const props = PROPERTIES.filter((p) => rows.some((r) => outletById[r.outletId].propertyId === p.id));
@@ -120,6 +131,13 @@ function Comparison({ rows, trend, open, money }: { rows: OutletRow[]; trend: Re
     setScope(scope);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+  const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "revenue", dir: "desc" });
+  const [filter, setFilter] = useState<"all" | "issues" | "falling">("all");
+  const pick = (key: SortKey) => setSort((x) => (x.key === key ? { key, dir: x.dir === "asc" ? "desc" : "asc" } : { key, dir: key === "name" ? "asc" : "desc" }));
+  const issuesOf = (id: string) => open.filter((i) => i.outletId === id).length;
+  const value = (r: OutletRow): number | string =>
+    ({ name: outletById[r.outletId].name, revenue: r.now.net, expenses: expensesOf(r.now), margin: gross(r.now), issues: issuesOf(r.outletId) })[sort.key];
+  const keep = (r: OutletRow) => (filter === "issues" ? issuesOf(r.outletId) > 0 : filter === "falling" ? gross(r.now) < gross(r.before) - 0.0005 : true);
   const add = (a: Totals[], key: (t: Totals) => number) => a.reduce((s, x) => s + key(x), 0);
   const sumRows = (list: OutletRow[], which: "now" | "before"): Totals => {
     const ts = list.map((r) => r[which]);
@@ -131,18 +149,30 @@ function Comparison({ rows, trend, open, money }: { rows: OutletRow[]; trend: Re
     return { ...ts[0], net, grossProfit: gp, fnbCost: add(ts, (x) => x.fnbCost), gpMargin: net ? gp / net : 0, operatingProfit: op, operatingExpenses: exp, opMargin: op === null || !net ? null : op / net };
   };
 
+  const head = (k: SortKey, label: string, right?: boolean) => <SortHead key={k} k={k} label={label} right={right} sort={sort} onPick={pick} />;
+
   return (
-    <Panel title={<span id="outlets" className="scroll-mt-24">{props.length > 1 ? "Properties and outlets" : "Outlets"}</span>} flush>
+    <Panel
+      title={<span id="outlets" className="scroll-mt-24">{props.length > 1 ? "Properties and outlets" : "Outlets"}</span>}
+      action={<Segmented label="Show outlets" size="sm" value={filter} onChange={setFilter} options={[{ value: "all", label: "All" }, { value: "issues", label: "With open issues" }, { value: "falling", label: "Margin falling" }]} />}
+      flush
+    >
       <div className="scroll-thin overflow-x-auto"><div className="min-w-[720px]">
       <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))_88px_64px_16px] gap-3 px-5 pb-2 text-xs text-steel sm:px-6">
-        <span>Name</span><span className="text-right">Revenue</span><span className="text-right">Expenses</span><span className="text-right">Gross margin</span><span className="text-center">Trend</span><span className="text-right">Issues</span><span />
+        {head("name", "Name")}{head("revenue", "Revenue", true)}{head("expenses", "Expenses", true)}{head("margin", "Gross margin", true)}<span className="text-center">Trend</span>{head("issues", "Issues", true)}<span />
       </div>
       <ul className="pb-1">
         {props.map((p) => {
-          const list = rows.filter((r) => outletById[r.outletId].propertyId === p.id).sort((a, b) => b.now.net - a.now.net);
+          const all = rows.filter((r) => outletById[r.outletId].propertyId === p.id);
+          const list = all.filter(keep).sort((a, b) => {
+            const [x, y] = [value(a), value(b)];
+            const d = typeof x === "string" ? x.localeCompare(y as string) : (x as number) - (y as number);
+            return sort.dir === "asc" ? d : -d;
+          });
+          if (list.length === 0) return null;
           return [
             props.length > 1 && (
-              <CompRow money={money} key={p.id} strong label={p.name} sub={`${list.length} outlets`} now={sumRows(list, "now")} before={sumRows(list, "before")} issues={open.filter((i) => i.propertyId === p.id).length} onClick={() => go({ propertyId: p.id })} />
+              <CompRow money={money} key={p.id} strong label={p.name} sub={`${list.length} of ${all.length} outlets`} now={sumRows(all, "now")} before={sumRows(all, "before")} issues={open.filter((i) => i.propertyId === p.id).length} onClick={() => go({ propertyId: p.id })} />
             ),
             ...list.map((r) => (
               <CompRow
@@ -161,6 +191,7 @@ function Comparison({ rows, trend, open, money }: { rows: OutletRow[]; trend: Re
           ];
         })}
       </ul>
+      {filter !== "all" && !props.some((p) => rows.some((r) => outletById[r.outletId].propertyId === p.id && keep(r))) && <p className="px-6 pb-5 text-sm text-steel">No outlets match this filter.</p>}
       </div></div>
     </Panel>
   );

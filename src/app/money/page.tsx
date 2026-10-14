@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AlertTriangle, ArrowRight, BedDouble, Coins, Receipt, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { BarList } from "@/components/charts";
-import { Badge, Button, EmptyState, Field, Note, PageHeader, Panel, Select, Stat, TableWrap, Tabs, Td, Th, cn, rowClass } from "@/components/ui";
+import { ModuleHub, useSection } from "@/components/module-hub";
+import { Badge, Button, Crumbs, EmptyState, Field, Note, PageHeader, Panel, Select, Stat, TableWrap, Tabs, Td, Th, cn, rowClass } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
 import { canSeeOutlet } from "@/lib/domain/access";
@@ -19,15 +20,30 @@ import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtTi
 type Tab = "mistakes" | "orders" | "rooms" | "tips";
 
 export default function MoneyPage() {
-  const params = useSearchParams();
-  const [tab, setTab] = useState<Tab>((params.get("tab") as Tab) ?? "mistakes");
+  const [tab, setTab] = useSection<Tab>("/money", ["mistakes", "orders", "rooms", "tips"]);
+  const label = { mistakes: "Restaurant mistakes", orders: "Order history", rooms: "Room charges", tips: "Tips (preview)" };
   const { sel } = useView();
   return (
     <div className="space-y-5">
-      <PageHeader title="Tyll Money" lead="Follows every restaurant order from the first item entered to the final bill, and flags what changed in between. Payment matching against the bank is a separate Tyll product and is not shown here.">
+      <PageHeader
+        title={tab ? label[tab] : "Tyll Money"}
+        lead={tab ? undefined : "What do you want to look at?"}
+        crumbs={tab ? <Crumbs items={[{ label: "Tyll Money", onClick: () => setTab(null) }, { label: label[tab] }]} /> : undefined}
+      >
         <Badge>{fmtRange(sel.range)}</Badge>
       </PageHeader>
-      <Tabs value={tab} onChange={setTab} tabs={[{ value: "mistakes", label: "Restaurant mistakes" }, { value: "orders", label: "Order history" }, { value: "rooms", label: "Room charges" }, { value: "tips", label: "Tips (preview)" }]} />
+      {tab === null && (
+        <ModuleHub
+          onPick={setTab}
+          choices={[
+            { value: "mistakes", title: "Restaurant mistakes", detail: "Deleted items, discounts, refunds and free items that need a look.", icon: AlertTriangle },
+            { value: "orders", title: "Order history", detail: "Every order from first item to final bill.", icon: Receipt },
+            { value: "rooms", title: "Room charges", detail: "Charges that did not reach the guest bill.", icon: BedDouble },
+            { value: "tips", title: "Tips", detail: "Share tips by hours worked. Preview.", icon: Coins, badge: "Preview" },
+          ]}
+        />
+      )}
+      {tab && <Tabs value={tab} onChange={setTab} tabs={[{ value: "mistakes", label: "Restaurant mistakes" }, { value: "orders", label: "Order history" }, { value: "rooms", label: "Room charges" }, { value: "tips", label: "Tips (preview)" }]} />}
       {tab === "mistakes" && <Mistakes />}
       {tab === "orders" && <Orders />}
       {tab === "rooms" && <RoomCharges />}

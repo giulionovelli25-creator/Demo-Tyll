@@ -23,6 +23,7 @@ interface Task {
   detail: string;
   href: string;
   urgent?: boolean;
+  approval?: boolean;
 }
 
 export function ManagerOverview() {
@@ -68,9 +69,9 @@ export function ManagerOverview() {
     if (can(user, "forecast.approve")) {
       const f = buildForecast(ctx.data, stock, pid, savedInputs[pid] ?? defaultInputs(ctx.data, pid), ctx.overrides);
       const pending = f.plans.filter((p) => p.suggested > 0 && used.has(p.ingredientId) && !approvals.some((a) => a.propertyId === pid && a.ingredientId === p.ingredientId));
-      if (pending.length) out.push({ id: "purchases", title: `Approve ${pending.length} purchase suggestion${pending.length === 1 ? "" : "s"}`, detail: "For ingredients this outlet uses", href: "/forecast", urgent: pending.some((p) => p.shortageDay || p.lowDay) });
+      if (pending.length) out.push({ id: "purchases", title: `Approve ${pending.length} purchase suggestion${pending.length === 1 ? "" : "s"}`, detail: "For ingredients this outlet uses", href: "/forecast", urgent: pending.some((p) => p.shortageDay || p.lowDay), approval: true });
     }
-    return out.sort((a, b) => Number(!!b.urgent) - Number(!!a.urgent));
+    return out.sort((a, b) => Number(!!b.urgent) - Number(!!a.urgent) || Number(!!b.approval) - Number(!!a.approval));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [investigations, ctx, stock, pid, user, approvals, savedInputs, used]);
 
@@ -114,7 +115,7 @@ export function ManagerOverview() {
       </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <Panel title={<span id="tasks" className="scroll-mt-24">My tasks</span>} flush>
+        <Panel title={<span id="tasks" className="scroll-mt-24">My tasks and approvals</span>} flush>
           {tasks.length === 0 ? (
             <div className="flex items-center gap-3 px-6 pb-6 text-sm text-graphite"><CheckCircle2 size={18} className="text-pos" /> Nothing waiting for you.</div>
           ) : (
@@ -126,7 +127,7 @@ export function ManagerOverview() {
                       <span className="block truncate text-sm text-ink">{x.title}</span>
                       <span className="block text-xs text-steel">{x.detail}</span>
                     </span>
-                    <span className="flex shrink-0 items-center gap-2">{x.urgent && <Badge tone="warn" className="!py-0">Urgent</Badge>}<ChevronRight size={15} className="text-fog" /></span>
+                    <span className="flex shrink-0 items-center gap-2">{x.approval && <Badge className="!py-0">Approval</Badge>}{x.urgent && <Badge tone="warn" className="!py-0">Urgent</Badge>}<ChevronRight size={15} className="text-fog" /></span>
                   </Link>
                 </li>
               ))}
