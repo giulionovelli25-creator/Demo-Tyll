@@ -2,19 +2,19 @@
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge, EmptyState, Note, Panel, Stat, TableWrap, Td, Th, cn, rowClass, useSort } from "@/components/ui";
-import { ingredientById, propertyById, supplierById } from "@/lib/data/catalog";
-import { countVarianceValue, stockPosition, type StockRow } from "@/lib/domain/inventory";
-import { useCtx, useStockInputs } from "@/lib/hooks";
+import { ingredientById, outletById, propertyById, supplierById } from "@/lib/data/catalog";
+import { countVarianceValue, type StockRow } from "@/lib/domain/inventory";
+import { useCtx, useServerStock } from "@/lib/hooks";
 import { fmtDate, fmtMoney, fmtNum, fmtQty, sum } from "@/lib/util";
 
 type Key = "name" | "estimated" | "usage" | "value" | "cover" | "waste";
 
 export function Inventory({ propertyId }: { propertyId: string }) {
   const ctx = useCtx();
-  const inputs = useStockInputs();
   const property = propertyById[propertyId];
   const money = (n: number, decimals = false) => fmtMoney(n, property.currency, { decimals });
-  const rows = useMemo(() => stockPosition(propertyId, inputs, ctx.overrides), [propertyId, inputs, ctx.overrides]);
+  const { data } = useServerStock(propertyId);
+  const rows = useMemo(() => data?.rows ?? [], [data]);
   const [q, setQ] = useState("");
   const [priority, setPriority] = useState(false);
   const { sort, toggle } = useSort<Key>({ key: "value", dir: "desc" });
@@ -61,7 +61,7 @@ export function Inventory({ propertyId }: { propertyId: string }) {
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find an item" aria-label="Find an item" className="h-10 w-full rounded-full border border-line bg-paper pl-9 pr-3 text-sm placeholder:text-fog hover:border-fog" />
           </div>
         </div>
-        {visible.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No items match" /></div> : (
+        {!data ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Loading stock" /></div> : visible.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No items match" /></div> : (
           <TableWrap>
             <table className="w-full min-w-[1080px] text-sm">
               <thead>
@@ -84,7 +84,7 @@ export function Inventory({ propertyId }: { propertyId: string }) {
                   const low = r.daysCover !== null && r.daysCover < 1;
                   return (
                     <tr key={r.ingredientId} className={rowClass}>
-                      <Td><span className="text-ink">{g.name}</span>{g.priority && <Badge className="ml-2 !py-0">priority</Badge>}<span className="block text-xs text-steel">{supplierById[g.supplierId].name}</span></Td>
+                      <Td><span className="text-ink">{g.name}</span>{g.priority && <Badge className="ml-2 !py-0">priority</Badge>}{r.store && <Badge className="ml-2 !py-0">{outletById[r.store].name} store</Badge>}<span className="block text-xs text-steel">{supplierById[g.supplierId].name}</span></Td>
                       <Td align="right">{fmtQty(r.baselineQty, g.unit)}<span className="block text-xs text-steel">{fmtDate(r.baselineDate)}</span></Td>
                       <Td align="right">{r.received ? `+${fmtQty(r.received, g.unit)}` : "–"}</Td>
                       <Td align="right">{r.usage ? `−${fmtQty(r.usage, g.unit)}` : "–"}</Td>

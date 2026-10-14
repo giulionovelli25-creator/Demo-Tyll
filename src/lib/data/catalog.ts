@@ -298,6 +298,21 @@ export const ROLE_LABEL: Record<User["role"], string> = {
   employee: "Operational employee",
 };
 
+/**
+ * Stock held by one outlet alone, such as a fine-dining kitchen's own cold room. Everything else
+ * sits in the hotel's shared store and is drawn on by every outlet that uses it.
+ */
+export const OUTLET_STORES: { outletId: string; ingredientIds: string[] }[] = [
+  { outletId: "dxb-lune", ingredientIds: ["lobster", "truffle", "tenderloin"] },
+  { outletId: "doh-dana", ingredientIds: ["lobster", "truffle"] },
+];
+
+/** The outlet that owns an ingredient's stock at a property, or null for the shared store. */
+export function storeOwner(propertyId: string, ingredientId: string): string | null {
+  for (const s of OUTLET_STORES) if (s.ingredientIds.includes(ingredientId) && s.outletId.startsWith(`${propertyId}-`)) return s.outletId;
+  return null;
+}
+
 // ---- Lookups ----------------------------------------------------------------
 const index = <T extends { id: string }>(arr: T[]) => Object.fromEntries(arr.map((x) => [x.id, x])) as Record<string, T>;
 export const propertyById = index(PROPERTIES);

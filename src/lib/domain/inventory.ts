@@ -1,5 +1,5 @@
 // Stock arithmetic: expected usage from recipes, estimated stock, waste cost and count variance.
-import { INGREDIENTS, ingredientById, itemById, outletById, outletsOfProperty, propertyById } from "../data/catalog";
+import { INGREDIENTS, ingredientById, itemById, outletById, outletsOfProperty, propertyById, storeOwner } from "../data/catalog";
 import type { CountRecord, DayItem, Delivery, DeliveryLine, Transfer, WasteLog } from "../types";
 import { DEMO_TODAY, addDays, round2 } from "../util";
 import { ingredientCostAt, itemCostAtProperty, type PriceOverrides } from "./pricing";
@@ -75,6 +75,8 @@ const isAfter = (r: { date: string; seq?: number }, b: { date: string; seq: numb
 
 export interface StockRow {
   ingredientId: string;
+  /** Outlet that owns this stock, or null when it sits in the shared hotel store. */
+  store: string | null;
   baselineDate: string;
   baselineQty: number;
   received: number;
@@ -93,7 +95,7 @@ export interface StockRow {
 
 /** Estimated stock now = last physical count + everything recorded since. */
 export function stockPosition(propertyId: string, inp: StockInputs, overrides?: PriceOverrides): StockRow[] {
-  const outletIds = new Set(outletsOfProperty(propertyId).map((o) => o.id));
+  const allOutlets = new Set(outletsOfProperty(propertyId).map((o) => o.id));
   const factor = propertyById[propertyId].costFactor;
   const avg = avgDailyUsage(inp.dayItems, propertyId);
 
@@ -105,13 +107,18 @@ export function stockPosition(propertyId: string, inp: StockInputs, overrides?: 
   }
 
   const usageByDate = new Map<string, Map<string, number>>();
+  // An outlet-only store is drawn on by its own outlet; the shared store by every outlet in the hotel.
+  const draws = (ingredientId: string, outletId: string) => {
+    const owner = storeOwner(propertyId, ingredientId);
+    return owner ? owner === outletId : allOutlets.has(outletId);
+  };
   for (const r of inp.dayItems) {
-    if (!outletIds.has(r.outletId)) continue;
+    if (!allOutlets.has(r.outletId)) continue;
     const recipe = itemById[r.itemId].recipe;
     if (!recipe) continue;
     let m = usageByDate.get(r.date);
     if (!m) usageByDate.set(r.date, (m = new Map()));
-    for (const l of recipe) m.set(l.ingredientId, (m.get(l.ingredientId) ?? 0) + l.qty * r.units);
+    for (const l of recipe) if (draws(l.ingredientId, r.outletId)) m.set(l.ingredientId, (m.get(l.ingredientId) ?? 0) + l.qty * r.units);
   }
 
   return INGREDIENTS.flatMap((ing) => {
@@ -129,9 +136,9 @@ export function stockPosition(propertyId: string, inp: StockInputs, overrides?: 
     }
     for (const [date, m] of usageByDate) if (date > b.date) usage += m.get(ing.id) ?? 0;
     for (const w of inp.waste) {
-      if (!w.synced || !outletIds.has(w.outletId) || !isAfter(w, b)) continue;
+      if (!w.synced || !allOutlets.has(w.outletId) || !isAfter(w, b)) continue;
       for (const q of wasteQuantities(w)) {
-        if (q.ingredientId !== ing.id) continue;
+        if (q.ingredientId !== ing.id || !draws(ing.id, w.outletId)) continue;
         if (w.reason === "breakage") breakage += q.qty;
         else waste += q.qty;
       }
@@ -146,6 +153,7 @@ export function stockPosition(propertyId: string, inp: StockInputs, overrides?: 
     const avgDaily = avg.get(ing.id) ?? 0;
     return [{
       ingredientId: ing.id,
+      store: storeOwner(propertyId, ing.id),
       baselineDate: b.date,
       baselineQty: b.counted,
       received,

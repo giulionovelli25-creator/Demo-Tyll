@@ -4,8 +4,8 @@ import { ColumnChart } from "@/components/charts";
 import { Badge, Button, EmptyState, Field, Note, Panel, Select, Stat, TableWrap, Td, Th, cn, report, rowClass } from "@/components/ui";
 import { INGREDIENTS, ingredientById, propertyById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
-import { countVariance, countVarianceValue, stockPosition } from "@/lib/domain/inventory";
-import { personName, useCtx, useStockInputs, useUser } from "@/lib/hooks";
+import { countVariance, countVarianceValue } from "@/lib/domain/inventory";
+import { personName, useCtx, useServerStock, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { DEMO_TODAY, fmtDate, fmtMoney, fmtQty, fmtShort, hashString, sum } from "@/lib/util";
 
@@ -15,12 +15,12 @@ const PER_RACK: Record<string, number> = { wineglass: 25, highball: 36, plate: 1
 export function Counts({ propertyId }: { propertyId: string }) {
   const user = useUser()!;
   const ctx = useCtx();
-  const inputs = useStockInputs();
   const recordCount = useDemo((s) => s.recordCount);
   const property = propertyById[propertyId];
   const money = (n: number) => fmtMoney(n, property.currency, { decimals: Math.abs(n) < 100 });
   const mayCount = can(user, "stock.count");
-  const position = useMemo(() => stockPosition(propertyId, inputs, ctx.overrides), [propertyId, inputs, ctx.overrides]);
+  const { data } = useServerStock(propertyId);
+  const position = useMemo(() => data?.rows ?? [], [data]);
   const [entered, setEntered] = useState<Record<string, string>>({});
   const [extra, setExtra] = useState("");
   const [rackItem, setRackItem] = useState("highball");
@@ -43,10 +43,12 @@ export function Counts({ propertyId }: { propertyId: string }) {
   const submit = (ingredientId: string, raw: string) => {
     const counted = Number(raw);
     if (raw.trim() === "" || !Number.isFinite(counted)) return report({ ok: false, error: "Enter the quantity you counted." }, "");
-    const expected = position.find((p) => p.ingredientId === ingredientId)?.estimated ?? 0;
+    const row = position.find((p) => p.ingredientId === ingredientId);
+    if (!row) return report({ ok: false, error: "Stock figures are still loading. Try again in a moment." }, "");
+    const expected = row.estimated;
     const g = ingredientById[ingredientId];
     const diff = counted - expected;
-    if (report(recordCount({ propertyId, ingredientId, counted }), `${g.name}: counted ${fmtQty(counted, g.unit)}, expected ${fmtQty(expected, g.unit)}. ${Math.abs(diff) < 0.005 ? "No difference." : `${fmtQty(Math.abs(diff), g.unit)} ${diff < 0 ? "missing" : "more than expected"}.`}`)) {
+    if (report(recordCount({ propertyId, ingredientId, counted, expected, allocation: row.allocation }), `${g.name}: counted ${fmtQty(counted, g.unit)}, expected ${fmtQty(expected, g.unit)}. ${Math.abs(diff) < 0.005 ? "No difference." : `${fmtQty(Math.abs(diff), g.unit)} ${diff < 0 ? "missing" : "more than expected"}.`}`)) {
       setEntered((e) => ({ ...e, [ingredientId]: "" }));
     }
   };
@@ -98,7 +100,9 @@ export function Counts({ propertyId }: { propertyId: string }) {
               const total = (Number(racks) || 0) * PER_RACK[rackItem] + (Number(loose) || 0);
               if (racks.trim() === "" && loose.trim() === "") return report({ ok: false, error: "Enter the number of racks or loose pieces." }, "");
               const g = ingredientById[rackItem];
-              if (report(recordCount({ propertyId, ingredientId: rackItem, counted: total }), `${g.name}: ${total} counted.`)) {
+              const row = position.find((p) => p.ingredientId === rackItem);
+              if (!row) return report({ ok: false, error: "Stock figures are still loading. Try again in a moment." }, "");
+              if (report(recordCount({ propertyId, ingredientId: rackItem, counted: total, expected: row.estimated, allocation: {} }), `${g.name}: ${total} counted.`)) {
                 setRacks("");
                 setLoose("");
               }

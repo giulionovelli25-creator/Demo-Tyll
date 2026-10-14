@@ -1,12 +1,12 @@
 "use client";
 import { ChevronDown, RotateCcw } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { useId, useState } from "react";
 import { ColumnChart } from "@/components/charts";
 import { Badge, Button, Delta, EmptyState, Note, PageHeader, Panel, Segmented, Stat, TableWrap, Td, Th, cn, report, rowClass } from "@/components/ui";
 import { ingredientById, itemById, propertyById, supplierById } from "@/lib/data/catalog";
 import { allowedProperties, can } from "@/lib/domain/access";
-import { EVENT_SPILLOVER, HORIZON_DAYS, OCCUPANCY_ELASTICITY, RESERVATION_WEIGHT, buildForecast, defaultInputs, type ForecastInputs, type IngredientPlan } from "@/lib/domain/forecast";
-import { personName, useCtx, useStockInputs, useView } from "@/lib/hooks";
+import { EVENT_SPILLOVER, HORIZON_DAYS, OCCUPANCY_ELASTICITY, RESERVATION_WEIGHT, type ForecastInputs, type IngredientPlan } from "@/lib/domain/forecast";
+import { personName, useServerForecast, useView } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { fmtDate, fmtMoney, fmtNum, fmtPct, fmtQty, pctChange, sum } from "@/lib/util";
 
@@ -29,8 +29,6 @@ const statusOf = (p: IngredientPlan): { label: string; tone: "neg" | "warn" | "p
 
 export default function ForecastPage() {
   const { user, propertyId } = useView();
-  const ctx = useCtx();
-  const stock = useStockInputs();
   const props = allowedProperties(user);
   const [picked, setPicked] = useState(props[0]);
   const pid = propertyId ?? picked;
@@ -41,14 +39,16 @@ export default function ForecastPage() {
   const approvals = useDemo((s) => s.approvals).filter((a) => a.propertyId === pid);
   const approve = useDemo((s) => s.approvePurchases);
   const withdraw = useDemo((s) => s.withdrawApproval);
-  const base = useMemo(() => defaultInputs(ctx.data, pid), [ctx.data, pid]);
-  const inputs = saved ?? base;
-  const update = (patch: Partial<ForecastInputs>) => setInputs(pid, { ...inputs, ...patch });
-  const forecast = useMemo(() => buildForecast(ctx.data, stock, pid, inputs, ctx.overrides), [ctx.data, ctx.overrides, stock, pid, inputs]);
-  const baseline = useMemo(() => buildForecast(ctx.data, stock, pid, { ...base, stockOverride: inputs.stockOverride }, ctx.overrides), [ctx.data, ctx.overrides, stock, pid, base, inputs.stockOverride]);
+  // Worked out on the server: the shared store is drawn on by every outlet, not only those this user sees.
+  const { data: server } = useServerForecast(pid, saved);
   const [open, setOpen] = useState<string | null>(null);
   const [show, setShow] = useState<"order" | "all">("order");
   const mayApprove = can(user, "forecast.approve");
+  if (!server) return <EmptyState title="Working out the forecast" />;
+  const base = server.defaults;
+  const inputs = saved ?? base;
+  const update = (patch: Partial<ForecastInputs>) => setInputs(pid, { ...inputs, ...patch });
+  const { forecast, baseline } = server;
 
   const unitsByDay = forecast.days.map((d, i) => ({ label: fmtDate(d, true), value: sum(forecast.items, (it) => it.byDay[i]) }));
   const totalUnits = sum(unitsByDay, (d) => d.value);

@@ -93,9 +93,9 @@ describe("stock and forecast actions", () => {
 
   it("records a count against the current estimate", () => {
     signIn("u-emp");
-    expect(s().recordCount({ propertyId: "doh", ingredientId: "coke", counted: 10 }).ok).toBe(false);
-    expect(s().recordCount({ propertyId: "dxb", ingredientId: "coke", counted: -1 }).ok).toBe(false);
-    expect(s().recordCount({ propertyId: "dxb", ingredientId: "coke", counted: 100 }).ok).toBe(true);
+    expect(s().recordCount({ propertyId: "doh", ingredientId: "coke", counted: 10, expected: 12, allocation: {} }).ok).toBe(false);
+    expect(s().recordCount({ propertyId: "dxb", ingredientId: "coke", counted: -1, expected: 12, allocation: {} }).ok).toBe(false);
+    expect(s().recordCount({ propertyId: "dxb", ingredientId: "coke", counted: 100, expected: 90, allocation: { "dxb-terrace": 1 } }).ok).toBe(true);
     expect(s().counts[0]).toMatchObject({ ingredientId: "coke", counted: 100, kind: "spot" });
     expect(s().counts[0].expected).toBeGreaterThan(0);
   });

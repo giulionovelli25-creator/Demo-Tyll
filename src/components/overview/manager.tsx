@@ -6,12 +6,11 @@ import { useMemo, useState } from "react";
 import { Badge, Delta, EmptyState, PageHeader, Panel, cn } from "@/components/ui";
 import { ingredientById, itemById, outletById, propertyById } from "@/lib/data/catalog";
 import { can, canOpen } from "@/lib/domain/access";
-import { buildForecast, defaultInputs } from "@/lib/domain/forecast";
-import { countVarianceValue, stockPosition } from "@/lib/domain/inventory";
+import { countVarianceValue } from "@/lib/domain/inventory";
 import { buildIssues, dailyBriefing } from "@/lib/domain/issues";
 import { compare, totalsByDay, totalsByOutlet, type Sel } from "@/lib/domain/metrics";
 import { predictTicket } from "@/lib/domain/operations";
-import { personName, useCtx, useInvestigations, usePatterns, useStockInputs, useView } from "@/lib/hooks";
+import { personName, useCtx, useInvestigations, usePatterns, useServerForecast, useServerStock, useView } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtPct, fmtQty, fmtTime, fxRate, pctChange } from "@/lib/util";
 import { KpiDrawer, type KpiKey } from "./kpi-drawer";
@@ -29,7 +28,6 @@ interface Task {
 export function ManagerOverview() {
   const { sel, money, user, propertyId } = useView();
   const ctx = useCtx();
-  const stock = useStockInputs();
   const investigations = useInvestigations();
   const patterns = usePatterns();
   const flowStatus = useDemo((s) => s.flowStatus);
@@ -53,6 +51,10 @@ export function ManagerOverview() {
   const outletIds = new Set(sel.outletIds);
   const used = useMemo(() => new Set(outlet.menu.flatMap((m) => itemById[m.itemId].recipe?.map((l) => l.ingredientId) ?? [])), [outlet]);
 
+  // Stock and purchase figures come from the server, which counts every outlet drawing on the shared store.
+  const { data: serverStock } = useServerStock(pid);
+  const { data: serverForecast } = useServerForecast(can(user, "forecast.approve") ? pid : null, savedInputs[pid]);
+
   const tasks = useMemo<Task[]>(() => {
     const out: Task[] = [];
     for (const i of investigations) {
@@ -66,17 +68,16 @@ export function ManagerOverview() {
       const done = ctx.counts.filter((x) => x.propertyId === pid && x.date === DEMO_TODAY && x.seq > 0).length;
       if (done < 5) out.push({ id: "counts", title: `Count ${5 - done} priority item${5 - done === 1 ? "" : "s"}`, detail: "Today's spot checks", href: "/stock?tab=counts" });
     }
-    if (can(user, "forecast.approve")) {
-      const f = buildForecast(ctx.data, stock, pid, savedInputs[pid] ?? defaultInputs(ctx.data, pid), ctx.overrides);
-      const pending = f.plans.filter((p) => p.suggested > 0 && used.has(p.ingredientId) && !approvals.some((a) => a.propertyId === pid && a.ingredientId === p.ingredientId));
+    if (can(user, "forecast.approve") && serverForecast) {
+      const pending = serverForecast.forecast.plans.filter((p) => p.suggested > 0 && used.has(p.ingredientId) && !approvals.some((a) => a.propertyId === pid && a.ingredientId === p.ingredientId));
       if (pending.length) out.push({ id: "purchases", title: `Approve ${pending.length} purchase suggestion${pending.length === 1 ? "" : "s"}`, detail: "For ingredients this outlet uses", href: "/forecast", urgent: pending.some((p) => p.shortageDay || p.lowDay), approval: true });
     }
     return out.sort((a, b) => Number(!!b.urgent) - Number(!!a.urgent) || Number(!!b.approval) - Number(!!a.approval));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [investigations, ctx, stock, pid, user, approvals, savedInputs, used]);
+  }, [investigations, ctx, pid, user, approvals, serverForecast, used]);
 
   const stockWarnings = useMemo(() => {
-    const pos = stockPosition(pid, stock, ctx.overrides).filter((r) => used.has(r.ingredientId));
+    const pos = (serverStock?.rows ?? []).filter((r) => used.has(r.ingredientId));
     const low = pos.filter((r) => r.daysCover !== null && r.daysCover < 1.5).sort((a, b) => (a.daysCover ?? 0) - (b.daysCover ?? 0)).map((r) => ({ id: r.ingredientId, title: ingredientById[r.ingredientId].name, detail: `${fmtQty(r.estimated, ingredientById[r.ingredientId].unit)} left, about ${Math.max(0, r.daysCover ?? 0).toFixed(1)} days`, tag: "Low" }));
     const lastDate = ctx.counts.filter((x) => x.propertyId === pid && x.kind === "weekly").map((x) => x.date).sort().pop();
     const short = ctx.counts
@@ -87,7 +88,7 @@ export function ManagerOverview() {
       .slice(0, 3)
       .map(({ x, v }) => ({ id: `short-${x.ingredientId}`, title: ingredientById[x.ingredientId].name, detail: `${money(-v)} short at the ${fmtDate(x.date)} count`, tag: "Missing" }));
     return [...low, ...short].slice(0, 4);
-  }, [pid, stock, ctx, used, sel.currency, money]);
+  }, [pid, serverStock, ctx, used, sel.currency, money]);
 
   const service = useMemo(() => {
     const live = ctx.data.liveOrders.filter((o) => o.outletId === outletId).map((o) => ({ ...o, status: flowStatus[o.id] ?? o.status }));

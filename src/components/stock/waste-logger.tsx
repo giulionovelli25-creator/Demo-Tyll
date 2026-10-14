@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, Note, Panel, Select, cn, toast } from "@/components/ui";
 import { INGREDIENTS, ingredientById, itemById, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
-import { stockPosition, wasteCost } from "@/lib/domain/inventory";
-import { personName, useCtx, useStockInputs, useUser, useView } from "@/lib/hooks";
+import { wasteCost } from "@/lib/domain/inventory";
+import { personName, useCtx, useServerStock, useUser, useView } from "@/lib/hooks";
 import { REASON_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
 import type { WasteReason } from "@/lib/types";
@@ -40,7 +40,6 @@ type Group = "ingredients" | "dishes" | "glass";
 export function WasteLogger({ propertyId }: { propertyId: string }) {
   const user = useUser()!;
   const ctx = useCtx();
-  const inputs = useStockInputs();
   const lang = useDemo((s) => s.lang);
   const setLang = useDemo((s) => s.setLang);
   const offline = useDemo((s) => s.offline);
@@ -124,7 +123,8 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
 
   const mine = userLogs.filter((w) => outletById[w.outletId].propertyId === propertyId).slice().reverse();
   const pending = userLogs.filter((w) => !w.synced).length;
-  const position = useMemo(() => stockPosition(propertyId, inputs, ctx.overrides), [propertyId, inputs, ctx.overrides]);
+  const { data: stockData } = useServerStock(propertyId);
+  const position = useMemo(() => stockData?.rows ?? [], [stockData]);
   const lastEntry = mine[0];
   const lastIngredient = lastEntry?.ingredientId ?? (lastEntry?.itemId ? itemById[lastEntry.itemId].recipe?.[0]?.ingredientId : undefined);
   const lastRow = position.find((r) => r.ingredientId === lastIngredient);

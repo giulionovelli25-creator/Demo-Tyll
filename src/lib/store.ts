@@ -7,7 +7,6 @@ import { ingredientById, outletById, propertyById, userById } from "./data/catal
 import { getDataset } from "./data/dataset";
 import { AccessError, assertCan, clampScope, hasWholeProperty, type Permission } from "./domain/access";
 import type { ForecastInputs } from "./domain/forecast";
-import { stockPosition, varianceAllocation } from "./domain/inventory";
 import type { FlowSim } from "./domain/operations";
 import type {
   Arrival, AuditEntry, CountRecord, DateRange, FlowStatus, InvestigationState, Outcome, PriceChange, Room, Scope, User, WasteLog, WasteReason,
@@ -66,7 +65,8 @@ interface Actions {
   logWaste(input: { outletId: string; ingredientId?: string; itemId?: string; qty: number; reason: WasteReason }): Result;
   syncWaste(): void;
   setOffline(offline: boolean): void;
-  recordCount(input: { propertyId: string; ingredientId: string; counted: number }): Result;
+  /** The expected quantity and how a difference is shared between outlets both come from the server's stock figures. */
+  recordCount(input: { propertyId: string; ingredientId: string; counted: number; expected: number; allocation: Record<string, number> }): Result;
   setIngredientPrice(ingredientId: string, cost: number): Result;
   approvePurchases(propertyId: string, lines: { ingredientId: string; qty: number; cost: number }[]): Result;
   withdrawApproval(id: string): Result;
@@ -270,16 +270,13 @@ export const useDemo = create<DemoState>()(
             if (!user.propertyIds.includes(input.propertyId) && user.propertyIds !== "all") return fail("This property is outside your access.");
             if (!ingredientById[input.ingredientId]) return fail("Choose an item to count.");
             if (!Number.isFinite(input.counted) || input.counted < 0) return fail("Enter the quantity you counted.");
-            const data = getDataset();
+            if (!Number.isFinite(input.expected)) return fail("Stock figures are not loaded yet.");
             const s = get();
-            const inputs = { dayItems: data.dayItems, counts: [...data.counts, ...s.counts], deliveries: data.deliveries, transfers: data.transfers, waste: [...data.wasteLogs, ...s.wasteLogs] };
-            const row = stockPosition(input.propertyId, inputs, s.priceOverrides).find((r) => r.ingredientId === input.ingredientId);
-            if (!row) return fail("No stock record exists for this item at this property.");
             const seq = s.seq + 1;
             const record: CountRecord = {
               id: `C-USER-${seq}`, propertyId: input.propertyId, ingredientId: input.ingredientId, date: DEMO_TODAY, kind: "spot",
-              expected: Math.round(row.estimated * 100) / 100, counted: input.counted, by: user.staffId ?? user.id, seq,
-              allocation: ingredientById[input.ingredientId].dept === "glassware" ? {} : varianceAllocation(data.dayItems, input.propertyId, input.ingredientId, DEMO_TODAY),
+              expected: Math.round(input.expected * 100) / 100, counted: input.counted, by: user.staffId ?? user.id, seq,
+              allocation: ingredientById[input.ingredientId].dept === "glassware" ? {} : input.allocation,
             };
             set((st) => ({ seq, counts: [...st.counts, record] }));
             log("Stock counted", `${ingredientById[input.ingredientId].name} at ${propertyById[input.propertyId].name}: counted ${input.counted}, expected ${record.expected}`);

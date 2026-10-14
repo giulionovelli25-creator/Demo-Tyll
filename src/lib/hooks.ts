@@ -8,6 +8,8 @@ import { detectPatterns } from "./domain/detect";
 import type { StockInputs } from "./domain/inventory";
 import { exceptionInSel, listInvestigations, type Ctx, type Sel } from "./domain/metrics";
 import { currentRange, useDemo } from "./store";
+import type { ForecastInputs } from "./domain/forecast";
+import type { ForecastOut, StockRowOut } from "./server/stock";
 import type { Currency, Investigation, Order, User } from "./types";
 import { DEMO_TODAY, fmtMoney } from "./util";
 
@@ -117,4 +119,44 @@ export function useOrder(id: string | undefined): { order: Order | undefined; st
   if (!data) return { order: undefined, status: "missing" };
   rememberOrders([data.order]);
   return { order: data.order, status: "ready" };
+}
+
+/** Posts to a protected endpoint whenever the body changes. Keeps the last answer on screen while a new one loads. */
+function usePost<T>(url: string, body: unknown | null, delayMs = 0): { data: T | undefined; loading: boolean; error?: string } {
+  const key = body === null ? null : JSON.stringify(body);
+  const [state, setState] = useState<{ key: string; data?: T; error?: string } | null>(null);
+  useEffect(() => {
+    if (key === null) return;
+    let live = true;
+    const t = setTimeout(() => {
+      api<T>(url, { method: "POST", body: JSON.parse(key) })
+        .then((data) => live && setState({ key, data }))
+        .catch((e: unknown) => live && setState((s) => ({ key, data: s?.data, error: e instanceof Error ? e.message : "Could not load." })));
+    }, delayMs);
+    return () => {
+      live = false;
+      clearTimeout(t);
+    };
+  }, [url, key, delayMs]);
+  return { data: state?.data, loading: key !== null && state?.key !== key, error: state?.key === key ? state.error : undefined };
+}
+
+/** This session's own entries, sent along so the server's figures include them. */
+function useSessionEntries() {
+  const waste = useDemo((s) => s.wasteLogs);
+  const counts = useDemo((s) => s.counts);
+  const overrides = useDemo((s) => s.priceOverrides);
+  return useMemo(() => ({ waste: waste.filter((w) => w.synced), counts, overrides }), [waste, counts, overrides]);
+}
+
+/** Stock worked out on the server from every outlet's use of the shared store. */
+export function useServerStock(propertyId: string | null) {
+  const entries = useSessionEntries();
+  return usePost<{ rows: StockRowOut[] }>("/api/stock", propertyId ? { propertyId, ...entries } : null);
+}
+
+/** Forecast and purchase suggestions worked out on the server. Slider changes are sent after a short pause. */
+export function useServerForecast(propertyId: string | null, inputs?: ForecastInputs) {
+  const entries = useSessionEntries();
+  return usePost<ForecastOut>("/api/forecast", propertyId ? { propertyId, inputs, ...entries } : null, inputs ? 250 : 0);
 }
