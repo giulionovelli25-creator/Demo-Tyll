@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
 import { opsAlerts } from "@/lib/server/ops";
+import { financeAlerts } from "@/lib/server/finance";
 import { guestAlerts } from "@/lib/server/guest-service";
 import { cleanEntries } from "@/lib/server/stock";
 
@@ -10,5 +11,5 @@ export async function POST(req: NextRequest) {
   const g = guard(req, {});
   if (!g.ok) return g.response;
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
-  return json({ alerts: [...guestAlerts(g.user), ...opsAlerts(g.user, cleanEntries(g.user, body))] });
+  return json({ alerts: [...guestAlerts(g.user), ...financeAlerts(g.user), ...opsAlerts(g.user, cleanEntries(g.user, body))] });
 }

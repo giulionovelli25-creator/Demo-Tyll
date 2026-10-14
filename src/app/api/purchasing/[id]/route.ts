@@ -19,7 +19,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     total,
     steps: approvalSteps(r.propertyId, total),
     policy: APPROVAL_POLICY[r.propertyId],
-    budget: budgetFor(r.propertyId, r.id),
+    budget: budgetFor(r),
     quotes: Object.fromEntries(r.lines.map((l) => [l.ingredientId, quotesFor(l.ingredientId, r.propertyId, DEMO_TODAY)])),
   });
 }

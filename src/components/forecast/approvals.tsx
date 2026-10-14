@@ -36,13 +36,14 @@ const total = (r: PurchaseRequest) => r.lines.reduce((s, l) => s + l.qty * l.uni
 const unitOf = (g: string) => (ingredientById[g].unit === "each" ? "units" : ingredientById[g].unit);
 const where = (r: PurchaseRequest) => (r.deptId ? deptById[r.deptId]?.name ?? r.deptId : r.eventId ? "Event" : r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : `${r.outletIds.length} outlets`);
 
-export function Approvals() {
+/** Purchase requests and their approvals. Finance opens the same list and records from its own page. */
+export function Approvals({ base = "/forecast?tab=approvals" }: { base?: string }) {
   const params = useSearchParams();
   const id = params.get("request");
-  return id ? <RequestView id={id} /> : <RequestList />;
+  return id ? <RequestView id={id} base={base} /> : <RequestList base={base} />;
 }
 
-function RequestList() {
+function RequestList({ base }: { base: string }) {
   const { user } = useView();
   const router = useRouter();
   const params = useSearchParams();
@@ -73,8 +74,8 @@ function RequestList() {
                   <thead><tr><Th>Request</Th><Th>For</Th><Th>Raised by</Th><Th align="right">Expected total</Th><Th>Status</Th><Th>Updated</Th></tr></thead>
                   <tbody>
                     {shown.map((r) => (
-                      <tr key={r.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/forecast?tab=approvals&request=${r.id}`)}>
-                        <Td><button type="button" className="num text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/forecast?tab=approvals&request=${r.id}`); }}>{r.id}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
+                      <tr key={r.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`${base}&request=${r.id}`)}>
+                        <Td><button type="button" className="num text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`${base}&request=${r.id}`); }}>{r.id}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
                         <Td>{where(r)}<span className="block text-xs text-steel">{fmtDate(r.period.from)}{r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to)}` : ""}</span></Td>
                         <Td>{personName(r.createdBy)}</Td>
                         <Td align="right">{fmtMoney(total(r), propertyById[r.propertyId].currency, { decimals: true })}</Td>
@@ -119,7 +120,7 @@ function Progress({ d }: { d: RequestDetail }) {
   );
 }
 
-function RequestView({ id }: { id: string }) {
+function RequestView({ id, base }: { id: string; base: string }) {
   const { user } = useView();
   const router = useRouter();
   const { data, error } = useRequest(id);
@@ -129,7 +130,7 @@ function RequestView({ id }: { id: string }) {
   const [received, setReceived] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState(false);
   if (data === undefined && !error) return <Panel><EmptyState title="Loading the request" /></Panel>;
-  if (!data) return <Panel><EmptyState title="This request is not available" action={<Button onClick={() => router.push("/forecast?tab=approvals")}>Back to approvals</Button>}>It does not exist, or it is outside your access.</EmptyState></Panel>;
+  if (!data) return <Panel><EmptyState title="This request is not available" action={<Button onClick={() => router.push(base)}>Back to approvals</Button>}>It does not exist, or it is outside your access.</EmptyState></Panel>;
   const r = data.request;
   const money = (n: number) => fmtMoney(n, propertyById[r.propertyId].currency, { decimals: true });
   const author = r.createdBy === user.id && (r.status === "draft" || r.status === "changes");
@@ -164,7 +165,7 @@ function RequestView({ id }: { id: string }) {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={() => router.push("/forecast?tab=approvals")}><ArrowLeft size={15} /> All requests</Button>
+        <Button variant="ghost" size="sm" onClick={() => router.push(base)}><ArrowLeft size={15} /> All requests</Button>
       </div>
       <Panel
         title={<span className="flex flex-wrap items-center gap-3"><span className="num">{r.id}</span><Badge tone={STATUS[r.status].tone}>{STATUS[r.status].label}</Badge>{r.poNumber && <Badge>{r.poNumber}</Badge>}</span>}
@@ -253,12 +254,12 @@ function RequestView({ id }: { id: string }) {
         {showMoney && (can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveManager")) && (
           <Panel title="Budget and approval rules" action={<Badge>Demo estimate</Badge>}>
             <dl className="space-y-1.5 text-sm">
-              <div className="flex justify-between"><dt className="text-steel">F&amp;B purchasing budget, {data.budget.month}</dt><dd className="num">{money(data.budget.budget)}</dd></div>
-              <div className="flex justify-between"><dt className="text-steel">Spent before this month&rsquo;s requests</dt><dd className="num">{money(data.budget.spentBefore)}</dd></div>
-              <div className="flex justify-between"><dt className="text-steel">Approved in Tyll this month</dt><dd className="num">{money(data.budget.committed)}</dd></div>
+              <div className="flex justify-between"><dt className="text-steel">{data.budget.label} budget, {data.budget.month}</dt><dd className="num">{money(data.budget.budget)}</dd></div>
+              <div className="flex justify-between"><dt className="text-steel">Recorded or invoiced this month</dt><dd className="num">{money(data.budget.spentBefore)}</dd></div>
+              <div className="flex justify-between"><dt className="text-steel">Other approved Tyll orders</dt><dd className="num">{money(data.budget.committed)}</dd></div>
               <div className="flex justify-between border-t border-hair pt-2"><dt className="text-ink">Left after this request</dt><dd className={cn("num", afterBudget < 0 ? "text-neg" : "text-ink")}>{money(afterBudget)}</dd></div>
             </dl>
-            <Note className="mt-3">Budget figures are demo estimates, not balances from an accounting system. Approving a request does not change recorded expenses.</Note>
+            <Note className="mt-3">The same figures as Tyll Finance. Budgets are demo planning figures, not balances from an accounting system. Approving a request creates a commitment, not a recorded expense.</Note>
             <p className="mt-3 text-[13px] text-graphite">At {propertyById[r.propertyId].name}: purchasing reviews every request; accounting approves requests {data.policy.accountingAbove > 0 ? `over ${money(data.policy.accountingAbove)}` : "of any size"}; the {data.policy.managerLabel.toLowerCase()} also approves requests over {money(data.policy.managerAbove)}.</p>
           </Panel>
         )}

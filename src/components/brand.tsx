@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-/** The Tyll logo, taken from the supplied banner artwork. Never redrawn. */
+/** The Tyll logo, taken from the supplied artwork and cropped before ".ai". Never redrawn. */
 export function TyllLogo({ height = 26, priority = false }: { height?: number; priority?: boolean }) {
-  return <Image src="/brand/tyll-lockup-ink.png" alt="Tyll.ai" width={Math.round((height * 660) / 195)} height={height} priority={priority} />;
+  return <Image src="/brand/tyll-lockup-ink-tyll.png" alt="Tyll" width={Math.round((height * 556) / 195)} height={height} priority={priority} />;
 }
 
 export function TyllMark({ size = 22 }: { size?: number }) {

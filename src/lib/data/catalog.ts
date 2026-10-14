@@ -303,6 +303,12 @@ export const USERS: User[] = [
   { id: "u-buy", name: "Nadia Rahman", role: "purchasing", title: "Purchasing Manager, Grand Resort Dubai", propertyIds: ["dxb"], outletIds: "all" },
   { id: "u-chef", name: "Rafael Costa", role: "chef", title: "Head Chef, The Terrace", propertyIds: ["dxb"], outletIds: ["dxb-terrace"] },
   { id: "u-emp", name: "Omar Farouk", role: "employee", title: "Steward, The Terrace", propertyIds: ["dxb"], outletIds: ["dxb-terrace"], staffId: "TRC-S9" },
+  { id: "u-cook", name: "Ravi Menon", role: "employee", title: "Commis Chef, The Terrace", propertyIds: ["dxb"], outletIds: ["dxb-terrace"] },
+  { id: "u-store", name: "Ahmed Karimi", role: "storekeeper", title: "Storekeeper and Receiving, Grand Resort Dubai", propertyIds: ["dxb"], outletIds: [] },
+  { id: "u-sales", name: "Noor Al Hashimi", role: "sales", title: "Sales Manager, Grand Resort Dubai", propertyIds: ["dxb"], outletIds: [] },
+  { id: "u-dos", name: "Daniel Mercer", role: "sales_director", title: "Director of Sales, Grand Resort Dubai", propertyIds: ["dxb"], outletIds: [] },
+  { id: "u-sales-doh", name: "Mariam Al Kuwari", role: "sales", title: "Sales Manager, Grand Resort Doha", propertyIds: ["doh"], outletIds: [] },
+  { id: "u-acc-doh", name: "Elena Petrova", role: "controller", title: "Accountant, Grand Resort Doha", propertyIds: ["doh"], outletIds: "all" },
 ];
 
 export const ROLE_LABEL: Record<User["role"], string> = {
@@ -319,6 +325,9 @@ export const ROLE_LABEL: Record<User["role"], string> = {
   purchasing: "Purchasing",
   chef: "Head chef",
   employee: "Operational employee",
+  sales: "Sales manager",
+  sales_director: "Director of sales",
+  storekeeper: "Storekeeper",
 };
 
 /**

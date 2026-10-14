@@ -176,12 +176,16 @@ describe("page guard", () => {
 
   it("keeps each role to the pages it may open", () => {
     const staff = signIn("u-emp");
-    expect(where(proxy(req("/money", staff)))).toBe("/tasks");
-    expect(where(proxy(req("/", staff)))).toBe("/tasks");
+    expect(where(proxy(req("/money", staff)))).toBe("/staff");
+    expect(where(proxy(req("/", staff)))).toBe("/staff");
+    expect(where(proxy(req("/finance", staff)))).toBe("/staff");
+    expect(where(proxy(req("/staff", staff)))).toBeNull();
     expect(where(proxy(req("/stock", staff)))).toBeNull();
     const manager = signIn("u-rm");
     expect(where(proxy(req("/rooms", manager)))).toBeNull();
-    expect(where(proxy(req("/money", signIn("u-maid"))))).toBe("/tasks");
+    expect(where(proxy(req("/money", signIn("u-maid"))))).toBe("/staff");
+    expect(where(proxy(req("/finance", manager)))).toBe("/");
+    expect(where(proxy(req("/finance", signIn("u-buy"))))).toBe("/forecast");
     expect(where(proxy(req("/investigations", manager)))).toBeNull();
   });
 });

@@ -8,7 +8,7 @@ import { create } from "zustand";
 export const cn = clsx;
 
 // ---- Buttons ----------------------------------------------------------------
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "ghost" | "danger"; size?: "sm" | "md" | "lg" };
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { ref?: React.Ref<HTMLButtonElement>; variant?: "primary" | "secondary" | "ghost" | "danger"; size?: "sm" | "md" | "lg" };
 
 export function Button({ variant = "secondary", size = "md", className, type = "button", ...props }: ButtonProps) {
   return (

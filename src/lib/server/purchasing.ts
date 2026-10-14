@@ -2,7 +2,8 @@
 // outlet's use; each user receives only their own outlets' dish detail and the requests they are entitled to see.
 import { INGREDIENTS, STAFF, USERS, ingredientById, itemById, outletById, outletsOfProperty, storeOwner, userById } from "../data/catalog";
 import { getDataset } from "../data/generate";
-import { APPROVAL_POLICY, DEMO_BUDGET, approvalSteps, quotesFor } from "../data/purchasing-rules";
+import { APPROVAL_POLICY, approvalSteps, quotesFor } from "../data/purchasing-rules";
+import { budgetForRequest, deptOfRequest } from "./finance";
 import { allowedOutlets, allowedProperties, can, hasWholeProperty } from "../domain/access";
 import {
   baselineFor, buyLines, demandFor, ingredientsFor, mealShares, needByDay, periodOf,
@@ -406,6 +407,8 @@ export function canSee(user: User, r: PurchaseRequest): boolean {
   if (r.status === "draft") return r.createdBy === user.id;
   if (r.createdBy === user.id) return true;
   if (can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveManager")) return true;
+  // Receiving staff see orders once approved, to record what arrives.
+  if (can(user, "purchase.receive") && ["approved", "received"].includes(r.status)) return true;
   if (hasWholeProperty(user, r.propertyId) && can(user, "purchase.create")) return true;
   if (r.eventId && can(user, "events.plan")) return true;
   if (r.deptId && user.deptId === r.deptId) return true;
@@ -418,10 +421,9 @@ export function requestsFor(user: User): PurchaseRequest[] {
   return loadStore().requests.filter((r) => canSee(user, r)).sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 }
 
-export function budgetFor(propertyId: string, exceptId?: string) {
-  const b = DEMO_BUDGET[propertyId];
-  const committed = sum(loadStore().requests.filter((r) => r.propertyId === propertyId && r.id !== exceptId && (r.status === "approved" || r.status === "received")), (r) => requestTotal(r));
-  return { ...b, committed, available: b.budget - b.spentBefore - committed };
+/** The request's department budget, from the same records Finance uses. */
+export function budgetFor(r: Pick<PurchaseRequest, "id" | "propertyId" | "deptId" | "eventId">) {
+  return budgetForRequest(r.propertyId, deptOfRequest(r), r.id);
 }
 
 function readLines(user: User, propertyId: string, raw: unknown, forEvent = false): Result<{ lines: RequestLine[] }> {
@@ -622,7 +624,7 @@ export function alertsFor(user: User, entries: SessionEntries): PlanAlert[] {
   }
   // A request over the remaining demo budget.
   for (const r of visible.filter((x) => ["accounting", "manager"].includes(x.status))) {
-    const b = budgetFor(r.propertyId, r.id);
+    const b = budgetFor(r);
     if (requestTotal(r) > b.available && (can(user, "purchase.approveFinance") || can(user, "purchase.approveManager"))) {
       out.push({ id: `budget-${r.id}`, text: `${r.id} would take ${outletLabelFor(r)} over this month's demo purchasing budget.`, href: `/forecast?tab=approvals&request=${r.id}`, action: "Review" });
       break;

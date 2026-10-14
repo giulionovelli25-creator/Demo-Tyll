@@ -3,7 +3,7 @@
 import { OUTLETS, PROPERTIES, outletById } from "../data/catalog";
 import type { Currency, Role, Scope, User } from "../types";
 
-export type ModuleId = "overview" | "money" | "stock" | "forecast" | "events" | "flow" | "rooms" | "investigations" | "reports" | "settings" | "tasks";
+export type ModuleId = "overview" | "money" | "stock" | "forecast" | "events" | "flow" | "rooms" | "investigations" | "reports" | "settings" | "tasks" | "finance" | "staff";
 
 export type Permission =
   | "investigation.assign"
@@ -54,12 +54,24 @@ export type Permission =
   /** Carry out bell tasks assigned to you. */
   | "bell.task"
   /** Answer Guest Connect requests for an outlet the user manages. */
-  | "gc.respond";
+  | "gc.respond"
+  /** See budgets, spending and financial reports. */
+  | "finance.view"
+  /** Record and review supplier invoices and record expenses. */
+  | "finance.review"
+  /** Accept or reject stock counts submitted by staff. */
+  | "stock.review"
+  /** Sales: opportunities, proposals and confirming business. */
+  | "sales.work"
+  /** Approve proposal discounts above the hotel's limit. */
+  | "sales.approve"
+  /** See the sales pipeline and confirmed business. */
+  | "sales.view";
 
 const MODULES: Record<Role, ModuleId[]> = {
-  owner: ["overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "reports", "settings"],
-  gm: ["overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "reports", "settings"],
-  controller: ["overview", "money", "stock", "forecast", "rooms", "investigations", "reports", "settings"],
+  owner: ["overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "reports", "finance", "settings"],
+  gm: ["overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "reports", "finance", "settings"],
+  controller: ["overview", "money", "stock", "forecast", "rooms", "investigations", "reports", "finance", "settings"],
   fnb_director: ["overview", "money", "stock", "forecast", "events", "flow", "investigations", "reports", "settings"],
   restaurant_manager: ["overview", "money", "stock", "forecast", "events", "rooms", "flow", "investigations", "reports", "settings"],
   // Purchasing sees requests, stock and suppliers, not sales. The head chef sees preparation and stock, not finances.
@@ -70,36 +82,42 @@ const MODULES: Record<Role, ModuleId[]> = {
   // Hotel departments: rooms and guests, staff support, and for housekeeping its supply requests.
   front_office: ["rooms", "events", "settings"],
   housekeeping_manager: ["rooms", "events", "forecast", "settings"],
-  concierge: ["rooms", "settings"],
-  bell_captain: ["rooms", "events", "settings"],
-  employee: ["tasks", "stock", "flow", "settings"],
+  concierge: ["rooms", "staff", "settings"],
+  bell_captain: ["rooms", "events", "staff", "settings"],
+  employee: ["staff", "tasks", "stock", "flow", "settings"],
+  sales: ["events", "settings"],
+  sales_director: ["events", "settings"],
+  storekeeper: ["staff", "stock", "settings"],
 };
 
 const PERMISSIONS: Record<Role, Permission[]> = {
-  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view"],
-  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "hk.manage", "fo.desk", "concierge", "bell.dispatch", "gc.respond"],
-  controller: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.editPrices", "reports.export", "settings.reset", "settings.audit", "purchase.approveFinance"],
-  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "events.plan", "staff.request", "staff.lend", "gc.respond"],
-  restaurant_manager: ["investigation.assign", "investigation.note", "investigation.close", "stock.logWaste", "stock.count", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "staff.lend", "gc.respond"],
+  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "finance.view", "sales.view"],
+  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "hk.manage", "fo.desk", "concierge", "bell.dispatch", "gc.respond", "finance.view", "sales.view", "sales.approve", "stock.review"],
+  controller: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.editPrices", "reports.export", "settings.reset", "settings.audit", "purchase.approveFinance", "finance.view", "finance.review"],
+  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "events.plan", "staff.request", "staff.lend", "gc.respond", "stock.review"],
+  restaurant_manager: ["investigation.assign", "investigation.note", "investigation.close", "stock.logWaste", "stock.count", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "staff.lend", "gc.respond", "stock.review"],
   front_office: ["settings.reset", "rooms.view", "fo.desk", "concierge", "staff.request", "staff.lend"],
   housekeeping_manager: ["settings.reset", "rooms.view", "hk.manage", "staff.request", "staff.lend", "purchase.create"],
   concierge: ["settings.reset", "rooms.view", "fo.desk", "concierge"],
   bell_captain: ["settings.reset", "rooms.view", "bell.dispatch", "bell.task", "staff.request", "staff.lend"],
-  event_manager: ["settings.reset", "purchase.create", "events.plan", "staff.request", "staff.lend"],
-  purchasing: ["stock.count", "settings.reset", "purchase.review", "purchase.receive"],
-  chef: ["stock.logWaste", "stock.count", "flow.updateOrder", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request"],
+  event_manager: ["settings.reset", "purchase.create", "events.plan", "staff.request", "staff.lend", "sales.view"],
+  purchasing: ["stock.count", "settings.reset", "purchase.review", "purchase.receive", "stock.review"],
+  chef: ["stock.logWaste", "stock.count", "flow.updateOrder", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "stock.review"],
   employee: ["stock.logWaste", "stock.count", "flow.updateOrder", "settings.reset", "prep.complete", "hk.clean", "bell.task"],
+  sales: ["settings.reset", "sales.work", "sales.view"],
+  sales_director: ["settings.reset", "sales.work", "sales.view", "sales.approve"],
+  storekeeper: ["settings.reset", "stock.count", "purchase.receive"],
 };
 
 export const MODULE_PATH: Record<ModuleId, string> = {
   overview: "/", money: "/money", stock: "/stock", forecast: "/forecast", events: "/events", flow: "/flow", rooms: "/rooms",
-  investigations: "/investigations", reports: "/reports", settings: "/settings", tasks: "/tasks",
+  investigations: "/investigations", reports: "/reports", settings: "/settings", tasks: "/tasks", finance: "/finance", staff: "/staff",
 };
 
 export const modulesFor = (user: User): ModuleId[] => MODULES[user.role];
 export const canOpen = (user: User, module: ModuleId) => MODULES[user.role].includes(module);
 export const can = (user: User, permission: Permission) => PERMISSIONS[user.role].includes(permission);
-export const homePath = (user: User) => (user.role === "employee" ? "/tasks" : user.role === "purchasing" ? "/forecast?tab=approvals" : user.role === "chef" ? "/forecast?tab=prep" : user.role === "event_manager" ? "/events" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : "/");
+export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/forecast?tab=approvals" : user.role === "chef" ? "/forecast?tab=prep" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : "/");
 
 /** Which module a URL path belongs to, for route guarding. */
 export function moduleOfPath(path: string): ModuleId {

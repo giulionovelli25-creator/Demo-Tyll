@@ -6,6 +6,7 @@ import { ingredientById } from "../data/catalog";
 import type { Assignment, Delivery, EventRecord, PrepPlan, PurchaseRequest, SupportRequest } from "../types";
 import { seedOps } from "./ops-seed";
 import { seedGuest, type GuestShape } from "./guest-seed";
+import { seedStage6, type FinanceShape, type SalesShape, type StockLogShape } from "./stage6-seed";
 import { DEMO_TODAY } from "../util";
 
 export interface Shape {
@@ -20,9 +21,15 @@ export interface Shape {
   counters: Record<string, number>;
   /** Rooms, arrivals, bell tasks, guest requests, Guest Connect and the service log (Stage 5). */
   guest: GuestShape;
+  /** Supplier invoices recorded in Tyll and reviews of the dataset's invoices (Stage 6). */
+  finance: FinanceShape;
+  /** Opportunities and proposals (Stage 6). */
+  sales: SalesShape;
+  /** Waste, corrections and stock counts saved on the server, shared by every device (Stage 6). */
+  stockLog: StockLogShape;
 }
 
-const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps(), guest: seedGuest() });
+const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6() });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? path.join(process.cwd(), ".data", "purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
@@ -41,6 +48,10 @@ export function loadStore(): Shape {
   }
   if (!cache.data.guest) {
     writeStore({ ...cache.data, guest: seedGuest() });
+  }
+  if (!cache.data.finance || !cache.data.sales || !cache.data.stockLog) {
+    const add = seedStage6();
+    writeStore({ ...cache.data, finance: cache.data.finance ?? add.finance, sales: cache.data.sales ?? add.sales, stockLog: cache.data.stockLog ?? add.stockLog });
   }
   return cache.data;
 }

@@ -16,11 +16,6 @@ export const APPROVAL_POLICY: Record<string, ApprovalPolicy> = {
   doh: { accountingAbove: 1500, managerAbove: 8000, managerLabel: "General manager" },
 };
 
-/** F&B purchasing budget for the month. Demo estimates, not balances from an accounting system. */
-export const DEMO_BUDGET: Record<string, { month: string; budget: number; spentBefore: number }> = {
-  dxb: { month: "October 2026", budget: 420000, spentBefore: 409500 },
-  doh: { month: "October 2026", budget: 260000, spentBefore: 171200 },
-};
 
 /** A second supplier quoting for each category, at a fixed difference from the usual price. */
 const ALTERNATIVES: Record<string, { id: string; name: string; factor: number; extraLead: number }> = {

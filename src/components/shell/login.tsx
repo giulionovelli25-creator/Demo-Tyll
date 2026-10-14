@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TyllIcon, TyllLogo } from "@/components/brand";
 import { Button, Field, cn } from "@/components/ui";
 import { ApiError, api, reloadTo } from "@/lib/api";
@@ -24,12 +24,19 @@ export function Login() {
   const [busy, setBusy] = useState(false);
   const [demo, setDemo] = useState<DemoAccount[]>([]);
   const [picked, setPicked] = useState<string | null>(null);
+  const top = useRef<HTMLHeadingElement>(null);
+  const signIn = useRef<HTMLButtonElement>(null);
 
-  const choose = (a: DemoAccount) => {
+  const choose = (a: DemoAccount, reveal = false) => {
     setPicked(a.userId);
     setEmail(a.email);
     setPassword(a.password);
     setError("");
+    if (!reveal) return;
+    // Bring the filled-in form back into view; keyboard users land on Sign in.
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    top.current?.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+    signIn.current?.focus({ preventScroll: true });
   };
 
   useEffect(() => {
@@ -70,12 +77,12 @@ export function Login() {
       <section className="flex flex-col justify-center px-6 py-10 sm:px-12">
         <div className="animate-rise mx-auto w-full max-w-md">
           <div className="flex items-center gap-4 lg:hidden"><TyllIcon size={48} /><TyllLogo height={26} priority /></div>
-          <h1 className="mt-8 text-[34px] leading-[1.1] tracking-[-0.03em] lg:mt-0">Sign in</h1>
+          <h1 ref={top} className="scroll-mt-6 mt-8 text-[34px] leading-[1.1] tracking-[-0.03em] lg:mt-0">Sign in</h1>
 
           <form className="mt-7 space-y-4" onSubmit={submit}>
             <Field label="Email" type="email" autoComplete="username" value={email} onChange={(e) => { setEmail(e.target.value); setPicked(null); }} required />
             <Field label="Password" type="password" autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setPicked(null); }} required error={error || undefined} />
-            <Button type="submit" variant="primary" size="lg" className="w-full" disabled={busy || !email || !password}>{busy ? "Signing in" : "Sign in"}</Button>
+            <Button ref={signIn} type="submit" variant="primary" size="lg" className="w-full" disabled={busy || !email || !password}>{busy ? "Signing in" : "Sign in"}</Button>
           </form>
 
           {demo.length > 0 && (
@@ -86,7 +93,7 @@ export function Login() {
                   const u = userById[a.userId];
                   return (
                     <li key={a.userId} className="border-t border-hair first:border-t-0">
-                      <button type="button" onClick={() => choose(a)} aria-pressed={picked === a.userId} className={cn("flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-300 ease-tyll hover:bg-mist", picked === a.userId && "bg-mist")}>
+                      <button type="button" onClick={() => choose(a, true)} aria-pressed={picked === a.userId} className={cn("flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-300 ease-tyll hover:bg-mist", picked === a.userId && "bg-mist")}>
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paper text-xs font-medium text-graphite ring-1 ring-line" aria-hidden>{u.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block text-sm text-ink">{u.name}</span>

@@ -101,7 +101,7 @@ export interface RequestDetail {
   total: number;
   steps: ("purchasing" | "accounting" | "manager")[];
   policy: { accountingAbove: number; managerAbove: number; managerLabel: string };
-  budget: { month: string; budget: number; spentBefore: number; committed: number; available: number };
+  budget: { month: string; label: string; budget: number; spentBefore: number; committed: number; available: number };
   quotes: Record<string, { supplierId: string; name: string; unitPrice: number; leadDays: number; usual: boolean }[]>;
 }
 

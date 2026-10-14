@@ -16,6 +16,12 @@
     { "userId": "u-bell", "email": "yusuf@grandresorts.example", "password": "Tyll-Demo-Bell-26", "pin": "2233" },
     { "userId": "u-buy", "email": "nadia@grandresorts.example", "password": "Tyll-Demo-Purchasing-26", "pin": "1357" },
     { "userId": "u-chef", "email": "rafael@grandresorts.example", "password": "Tyll-Demo-Chef-26", "pin": "8642" },
-    { "userId": "u-emp", "email": "omar@grandresorts.example", "password": "Tyll-Demo-Staff-26", "pin": "2580" }
+    { "userId": "u-emp", "email": "omar@grandresorts.example", "password": "Tyll-Demo-Staff-26", "pin": "2580" },
+    { "userId": "u-cook", "email": "ravi@grandresorts.example", "password": "Tyll-Demo-Cook-26", "pin": "3690" },
+    { "userId": "u-store", "email": "ahmed@grandresorts.example", "password": "Tyll-Demo-Stores-26", "pin": "4826" },
+    { "userId": "u-sales", "email": "noor@grandresorts.example", "password": "Tyll-Demo-Sales-26", "pin": "6157" },
+    { "userId": "u-dos", "email": "daniel@grandresorts.example", "password": "Tyll-Demo-SalesDirector-26", "pin": "7215" },
+    { "userId": "u-sales-doh", "email": "mariam@grandresorts.example", "password": "Tyll-Demo-SalesDoha-26", "pin": "8364" },
+    { "userId": "u-acc-doh", "email": "elena@grandresorts.example", "password": "Tyll-Demo-FinanceDoha-26", "pin": "952718" }
   ]
 }

@@ -513,7 +513,7 @@ export interface GuestRequest {
 
 // ---- Access -----------------------------------------------------------------
 
-export type Role = "owner" | "gm" | "controller" | "fnb_director" | "restaurant_manager" | "event_manager" | "purchasing" | "chef" | "front_office" | "housekeeping_manager" | "concierge" | "bell_captain" | "employee";
+export type Role = "owner" | "gm" | "controller" | "fnb_director" | "restaurant_manager" | "event_manager" | "purchasing" | "chef" | "front_office" | "housekeeping_manager" | "concierge" | "bell_captain" | "employee" | "sales" | "sales_director" | "storekeeper";
 
 export interface User {
   id: string;
@@ -847,4 +847,127 @@ export interface GcRequest {
   respondedBy?: string;
   sourceRequestId?: string;
   history: OpsEvent[];
+}
+
+// ---- Stage 6: finance, sales and shared stock entries -------------------------------------------------------------
+
+export type InvoiceStatus = "to_check" | "matched" | "flagged" | "correction_requested" | "approved" | "posted";
+
+export interface HistoryEntry { at: string; by: string; action: string; note?: string }
+
+/** A supplier invoice for a Tyll purchase order, entered by accounting from the supplier's document. */
+export interface TyllInvoice {
+  id: string;
+  propertyId: string;
+  requestId: string;
+  poNumber: string;
+  supplierId: string;
+  supplierRef: string;
+  date: string;
+  lines: { ingredientId: string; qty: number; unitPrice: number }[];
+  status: InvoiceStatus;
+  /** Lines as first entered, kept when a corrected invoice replaces them. */
+  original?: { ingredientId: string; qty: number; unitPrice: number }[];
+  recordedBy: string;
+  history: HistoryEntry[];
+}
+
+/** Accounting's review of an invoice already in the dataset (a delivered purchase order). */
+export interface InvoiceReview {
+  status: InvoiceStatus;
+  /** Corrected lines from the supplier, replacing the invoiced figures. */
+  corrected?: { ingredientId: string; qty: number; unitPrice: number }[];
+  history: HistoryEntry[];
+}
+
+export type OppType = "Conference" | "Group booking" | "Wedding" | "Private dining" | "Banquet" | "Corporate hospitality";
+export type OppStatus = "new" | "contacted" | "proposal_needed" | "proposal_sent" | "confirmed" | "lost";
+
+export interface Opportunity {
+  id: string;
+  propertyId: string;
+  type: OppType;
+  /** Organisation or display name only; no personal contact details are kept. */
+  customer: string;
+  expectedDate: string;
+  guests: number;
+  /** Expected value in the hotel's currency. A sales estimate, not revenue. */
+  value: number;
+  ownerId: string;
+  status: OppStatus;
+  nextAction: string;
+  nextActionDue?: string;
+  notes: string;
+  lostReason?: string;
+  eventId?: string;
+  createdAt: string;
+  updatedAt: string;
+  history: HistoryEntry[];
+}
+
+export type ProposalStatus = "draft" | "discount_pending" | "changes_requested" | "ready" | "sent" | "accepted" | "confirmed" | "declined" | "superseded";
+
+export interface Proposal {
+  id: string;
+  oppId: string;
+  propertyId: string;
+  version: number;
+  date: string;
+  start: number;
+  end: number;
+  guests: number;
+  venue: string;
+  format: ServiceFormat;
+  services: ServiceId[];
+  /** Selling price per guest before discount, in the hotel's currency. */
+  pricePerGuest: number;
+  extras: { label: string; amount: number }[];
+  discountPct: number;
+  validUntil: string;
+  notes: string;
+  status: ProposalStatus;
+  /** How the customer's acceptance was recorded. Tyll sends nothing to customers. */
+  acceptance?: { by: string; at: string; note: string };
+  approval?: { by: string; at: string; decision: "approved" | "rejected" | "changes"; note: string };
+  eventId?: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  history: HistoryEntry[];
+}
+
+/** A waste or breakage entry saved on the server. */
+export interface SharedWaste extends WasteLog {
+  propertyId: string;
+  /** The account that recorded it, and when. */
+  byUser: string;
+  at: string;
+  note?: string;
+  /** The browser entry this came from, so a retry is not saved twice. */
+  clientKey?: string;
+}
+
+export interface SharedWasteCorrection { id: string; wasteId: string; qty: number; reason: string; by: string; at: string; seq: number; clientKey?: string }
+
+export type CountStatus = "submitted" | "accepted" | "rejected";
+
+/** A stock count saved on the server. Staff counts wait for a manager; managers' counts apply at once. */
+export interface SharedCount {
+  id: string;
+  propertyId: string;
+  ingredientId: string;
+  date: string;
+  expected: number;
+  counted: number;
+  by: string;
+  byUser: string;
+  at: string;
+  seq: number;
+  status: CountStatus;
+  allocation: Record<string, number>;
+  note?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewNote?: string;
+  clientKey?: string;
 }

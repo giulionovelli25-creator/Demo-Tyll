@@ -3,6 +3,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Banknote, BedDouble, Bell, CalendarDays, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, TrendingUp, UtensilsCrossed, X,
+  Landmark,
+  Smartphone,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { BrandLoader, TyllLogo, TyllMark } from "@/components/brand";
@@ -23,6 +25,7 @@ import { PinScreen } from "./pin";
 import { Tour } from "./tour";
 
 const NAV: Record<ModuleId, { label: string; icon: typeof Banknote }> = {
+  staff: { label: "Tyll Staff", icon: Smartphone },
   tasks: { label: "My tasks", icon: ClipboardList },
   overview: { label: "Tyll Overview", icon: LayoutDashboard },
   money: { label: "Tyll Money", icon: Banknote },
@@ -32,10 +35,11 @@ const NAV: Record<ModuleId, { label: string; icon: typeof Banknote }> = {
   flow: { label: "Tyll Flow", icon: UtensilsCrossed },
   rooms: { label: "Rooms & Guests", icon: BedDouble },
   investigations: { label: "Investigations", icon: FileSearch },
+  finance: { label: "Tyll Finance", icon: Landmark },
   reports: { label: "Reports", icon: FileText },
   settings: { label: "Settings", icon: Settings },
 };
-const ORDER: ModuleId[] = ["tasks", "overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "reports", "settings"];
+const ORDER: ModuleId[] = ["staff", "tasks", "overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "finance", "reports", "settings"];
 
 const subscribe = () => () => {};
 const useHydrated = () => useSyncExternalStore(subscribe, () => true, () => false);
