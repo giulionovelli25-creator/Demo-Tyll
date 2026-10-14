@@ -513,7 +513,7 @@ export interface GuestRequest {
 
 // ---- Access -----------------------------------------------------------------
 
-export type Role = "owner" | "gm" | "controller" | "fnb_director" | "restaurant_manager" | "employee";
+export type Role = "owner" | "gm" | "controller" | "fnb_director" | "restaurant_manager" | "purchasing" | "chef" | "employee";
 
 export interface User {
   id: string;
@@ -541,4 +541,79 @@ export interface AuditEntry {
   userId: string;
   action: string;
   detail: string;
+}
+
+// ---- Purchasing and kitchen preparation ---------------------------------------
+// Stored on the server, so every department sees the same record.
+
+export type RequestStatus = "draft" | "purchasing" | "accounting" | "manager" | "approved" | "received" | "rejected" | "changes";
+
+export interface RequestLine {
+  ingredientId: string;
+  qty: number;
+  /** What Tyll suggested when the line was added, and the figures behind it. */
+  suggested: number;
+  requirement: number;
+  available: number;
+  incoming: number;
+  safety: number;
+  supplierId: string;
+  /** Quoted price, set on the server from the supplier's quote. */
+  unitPrice: number;
+  received?: number;
+}
+
+export interface RequestEvent {
+  at: string;
+  by: string;
+  action: string;
+  status: RequestStatus;
+  comment?: string;
+  /** Quantity changes made at this step, with the reason. */
+  changes?: { ingredientId: string; from: number; to: number; reason: string }[];
+}
+
+export interface PurchaseRequest {
+  id: string;
+  propertyId: string;
+  /** Outlets the request is for. Visibility follows these. */
+  outletIds: string[];
+  period: { from: string; to: string };
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  status: RequestStatus;
+  lines: RequestLine[];
+  comment?: string;
+  /** Prep plan the request was raised from, if any. */
+  prepPlanId?: string;
+  /** Set when approved. Demo only: nothing is sent to a supplier. */
+  poNumber?: string;
+  history: RequestEvent[];
+}
+
+export interface PrepTask {
+  id: string;
+  itemId: string;
+  portions: number;
+  assigneeId?: string;
+  done: boolean;
+  doneBy?: string;
+  doneAt?: string;
+}
+
+export interface PrepPlan {
+  id: string;
+  propertyId: string;
+  outletId: string;
+  period: { from: string; to: string };
+  meal: "all" | "breakfast" | "lunch" | "dinner";
+  /** Portions to prepare over the period, by dish. */
+  portions: Record<string, number>;
+  /** What Tyll suggested, kept for comparison. */
+  suggested: Record<string, number>;
+  tasks: PrepTask[];
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string;
 }

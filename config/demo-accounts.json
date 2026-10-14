@@ -6,6 +6,8 @@
     { "userId": "u-fc", "email": "priya@grandresorts.example", "password": "Tyll-Demo-Finance-26", "pin": "591846" },
     { "userId": "u-fnb", "email": "marco@grandresorts.example", "password": "Tyll-Demo-FnB-26", "pin": "2468" },
     { "userId": "u-rm", "email": "sara@grandresorts.example", "password": "Tyll-Demo-Terrace-26", "pin": "3197" },
+    { "userId": "u-buy", "email": "nadia@grandresorts.example", "password": "Tyll-Demo-Purchasing-26", "pin": "1357" },
+    { "userId": "u-chef", "email": "rafael@grandresorts.example", "password": "Tyll-Demo-Chef-26", "pin": "8642" },
     { "userId": "u-emp", "email": "omar@grandresorts.example", "password": "Tyll-Demo-Staff-26", "pin": "2580" }
   ]
 }

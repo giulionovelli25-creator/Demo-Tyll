@@ -2,6 +2,7 @@
 // by every outlet. Each user then receives only the rows and detail their access allows.
 import { ingredientById, itemById, storeOwner } from "../data/catalog";
 import { getDataset } from "../data/generate";
+import { receivedDeliveries } from "./purchasing-store";
 import { allowedOutlets, allowedProperties, can, hasWholeProperty } from "../domain/access";
 import { buildForecast, defaultInputs, type Forecast, type ForecastInputs } from "../domain/forecast";
 import { receivedAsCorrected, stockPosition, varianceAllocation, type StockInputs, type StockRow } from "../domain/inventory";
@@ -55,9 +56,9 @@ export function cleanEntries(user: User, body: unknown): SessionEntries {
   return { waste: waste.map((w) => ({ ...w, synced: true })), counts, overrides, recipes, receipts };
 }
 
-const fullInputs = (e: SessionEntries): StockInputs => {
+export const fullInputs = (e: SessionEntries): StockInputs => {
   const d = getDataset();
-  return { dayItems: d.dayItems, counts: [...d.counts, ...e.counts], deliveries: receivedAsCorrected(d.deliveries, e.receipts), transfers: d.transfers, waste: [...d.wasteLogs, ...e.waste], recipes: e.recipes };
+  return { dayItems: d.dayItems, counts: [...d.counts, ...e.counts], deliveries: [...receivedAsCorrected(d.deliveries, e.receipts), ...receivedDeliveries()], transfers: d.transfers, waste: [...d.wasteLogs, ...e.waste], recipes: e.recipes };
 };
 
 /** An outlet-only store is visible only to people with access to that outlet. */

@@ -113,6 +113,13 @@ function load(): StoreShape {
   }
   const mtime = fs.statSync(file).mtimeMs;
   if (!cache || cache.mtime !== mtime) cache = { mtime, data: JSON.parse(fs.readFileSync(file, "utf8")) as StoreShape };
+  // Demo accounts added after the store was created are added to it; existing accounts keep their state.
+  const missing = demoAccounts().filter((a) => !cache!.data.accounts[a.userId]);
+  if (missing.length) {
+    const fresh = seed();
+    for (const a of missing) cache.data.accounts[a.userId] = fresh.accounts[a.userId];
+    save(cache.data);
+  }
   return cache.data;
 }
 

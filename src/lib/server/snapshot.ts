@@ -21,15 +21,17 @@ export function snapshotFor(user: User): Snapshot {
   const outlets = new Set(allowedOutlets(user));
   const props = new Set(allowedProperties(user));
   const whole = new Set([...props].filter((p) => hasWholeProperty(user, p)));
-  const staff = user.role === "employee";
+  // Staff and the head chef get quantities without money. Purchasing gets no sales at all: it needs stock, suppliers and prices.
+  const staff = user.role === "employee" || user.role === "chef";
+  const procurement = user.role === "purchasing";
   const byOutlet = <T extends { outletId: string }>(rows: T[]) => rows.filter((r) => outlets.has(r.outletId));
-  const exceptions = staff ? [] : d.exceptions.filter((e) => (e.outletId ? outlets.has(e.outletId) : whole.has(e.propertyId)));
+  const exceptions = staff || user.role === "purchasing" ? [] : d.exceptions.filter((e) => (e.outletId ? outlets.has(e.outletId) : whole.has(e.propertyId)));
   const seedInvestigations = Object.fromEntries(exceptions.map((e) => [e.id, d.seedInvestigations[e.id]]));
 
   const snap: Snapshot = {
-    dayItems: byOutlet(d.dayItems).map((r) => (staff ? { ...r, gross: 0, comps: 0, discounts: 0, refunds: 0 } : r)),
-    dayOutlets: staff ? [] : byOutlet(d.dayOutlets),
-    roomCharges: staff ? [] : d.roomCharges.filter((c) => (c.outletId ? outlets.has(c.outletId) : whole.has(c.propertyId))),
+    dayItems: procurement ? [] : byOutlet(d.dayItems).map((r) => (staff ? { ...r, gross: 0, comps: 0, discounts: 0, refunds: 0 } : r)),
+    dayOutlets: staff || procurement ? [] : byOutlet(d.dayOutlets),
+    roomCharges: staff || procurement ? [] : d.roomCharges.filter((c) => (c.outletId ? outlets.has(c.outletId) : whole.has(c.propertyId))),
     exceptions,
     seedInvestigations,
     wasteLogs: byOutlet(d.wasteLogs),

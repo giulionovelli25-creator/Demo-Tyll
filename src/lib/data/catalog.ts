@@ -286,6 +286,8 @@ export const USERS: User[] = [
   { id: "u-fc", name: "Priya Raman", role: "controller", title: "Group Financial Controller", propertyIds: "all", outletIds: "all" },
   { id: "u-fnb", name: "Marco Bellini", role: "fnb_director", title: "F&B Director, Grand Resort Dubai", propertyIds: ["dxb"], outletIds: "all" },
   { id: "u-rm", name: "Sara Haddad", role: "restaurant_manager", title: "Restaurant Manager, The Terrace", propertyIds: ["dxb"], outletIds: ["dxb-terrace"], staffId: "TRC-S7" },
+  { id: "u-buy", name: "Nadia Rahman", role: "purchasing", title: "Purchasing Manager, Grand Resort Dubai", propertyIds: ["dxb"], outletIds: "all" },
+  { id: "u-chef", name: "Rafael Costa", role: "chef", title: "Head Chef, The Terrace", propertyIds: ["dxb"], outletIds: ["dxb-terrace"] },
   { id: "u-emp", name: "Omar Farouk", role: "employee", title: "Steward, The Terrace", propertyIds: ["dxb"], outletIds: ["dxb-terrace"], staffId: "TRC-S9" },
 ];
 
@@ -295,6 +297,8 @@ export const ROLE_LABEL: Record<User["role"], string> = {
   controller: "Financial controller",
   fnb_director: "F&B director",
   restaurant_manager: "Restaurant manager",
+  purchasing: "Purchasing",
+  chef: "Head chef",
   employee: "Operational employee",
 };
 
