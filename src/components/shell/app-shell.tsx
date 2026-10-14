@@ -30,7 +30,7 @@ const NAV: Record<ModuleId, { label: string; icon: typeof Banknote }> = {
   forecast: { label: "Tyll Forecast", icon: TrendingUp },
   events: { label: "Sales & Events", icon: CalendarDays },
   flow: { label: "Tyll Flow", icon: UtensilsCrossed },
-  rooms: { label: "Tyll Rooms", icon: BedDouble },
+  rooms: { label: "Rooms & Guests", icon: BedDouble },
   investigations: { label: "Investigations", icon: FileSearch },
   reports: { label: "Reports", icon: FileText },
   settings: { label: "Settings", icon: Settings },
@@ -238,7 +238,7 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
   const [panel, setPanel] = useState<null | "search" | "alerts" | "profile" | "dates">(null);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Staff and the events team have no outlets to choose between.
-  const showScope = user.role !== "employee" && user.role !== "event_manager";
+  const showScope = user.role !== "employee" && user.role !== "event_manager" && !user.deptId;
 
   return (
     <div className="no-print sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">

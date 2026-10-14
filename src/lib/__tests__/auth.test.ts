@@ -179,7 +179,8 @@ describe("page guard", () => {
     expect(where(proxy(req("/", staff)))).toBe("/tasks");
     expect(where(proxy(req("/stock", staff)))).toBeNull();
     const manager = signIn("u-rm");
-    expect(where(proxy(req("/rooms", manager)))).toBe("/");
+    expect(where(proxy(req("/rooms", manager)))).toBeNull();
+    expect(where(proxy(req("/money", signIn("u-maid"))))).toBe("/tasks");
     expect(where(proxy(req("/investigations", manager)))).toBeNull();
   });
 });

@@ -11,7 +11,7 @@ import { useDemo } from "@/lib/store";
 import type { Role } from "@/lib/types";
 import { DEMO_TODAY, downloadCsv } from "@/lib/util";
 
-const ROLES: Role[] = ["owner", "gm", "controller", "fnb_director", "restaurant_manager", "event_manager", "purchasing", "chef", "employee"];
+const ROLES: Role[] = ["owner", "gm", "controller", "fnb_director", "restaurant_manager", "event_manager", "purchasing", "chef", "front_office", "housekeeping_manager", "concierge", "bell_captain", "employee"];
 const MODULE_ROWS: [ModuleId, string][] = [["overview", "Overview"], ["money", "Money"], ["stock", "Stock"], ["forecast", "Forecast"], ["flow", "Flow"], ["rooms", "Rooms"], ["investigations", "Investigations"], ["reports", "Reports"]];
 const PERMISSION_ROWS: [Permission, string][] = [
   ["investigation.assign", "Assign investigations"], ["investigation.close", "Record an outcome and close"], ["investigation.reopen", "Reopen closed cases"],

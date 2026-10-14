@@ -22,14 +22,14 @@ const itemStatus: Record<SupportItem["status"], { label: string; tone: "warn" | 
 };
 
 /** People free for the whole time with the skill needed, each with why Tyll thinks so. Picks become a support request. */
-export function StaffFinder({ propertyId, skill, date, start, end, toDeptId, need, eventId, role, kind, onSent }: {
-  propertyId: string; skill: Skill; date: string; start: number; end: number; toDeptId: string; need: number; eventId?: string; role?: string; kind?: string; onSent?: (r: SupportRequest) => void;
+export function StaffFinder({ propertyId, skill, date, start, end, toDeptId, need, eventId, role, kind, onSent, initialReason = "" }: {
+  propertyId: string; skill: Skill; date: string; start: number; end: number; toDeptId: string; need: number; eventId?: string; role?: string; kind?: string; onSent?: (r: SupportRequest) => void; initialReason?: string;
 }) {
   const { data, loading, error } = useCandidates({ propertyId, skill, date, start, end, toDeptId });
   const mutate = useMutate();
   const [picked, setPicked] = useState<string[]>([]);
   const [open, setOpen] = useState<string | null>(null);
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState(initialReason);
   const [askDept, setAskDept] = useState("");
   const [busy, setBusy] = useState(false);
   const [all, setAll] = useState(false);
@@ -168,16 +168,20 @@ const HELP: { value: string; label: string; skill: Skill }[] = [
 /** What, when, who, send: four short screens. */
 function RequestHelp() {
   const router = useRouter();
+  const p = useSearchParams();
   const { data } = useSupport();
   const depts = (data?.canRequestFor ?? []).filter((d) => deptById[d]);
-  const [step, setStep] = useState(1);
-  const [kind, setKind] = useState(HELP[0].value);
-  const [skill, setSkill] = useState<Skill>(HELP[0].skill);
-  const [dept, setDept] = useState("");
-  const [date, setDate] = useState(DEMO_TODAY);
-  const [start, setStart] = useState("18:00");
-  const [end, setEnd] = useState("23:00");
-  const [count, setCount] = useState(2);
+  // Another screen can open this with the request already filled in, such as housekeeping short of people.
+  const preset = HELP.find((h) => h.value === p.get("kind"));
+  const [step, setStep] = useState(preset ? 3 : 1);
+  const [kind, setKind] = useState(preset?.value ?? HELP[0].value);
+  const [skill, setSkill] = useState<Skill>(preset?.skill ?? HELP[0].skill);
+  const [dept, setDept] = useState(p.get("dept") ?? "");
+  const [date, setDate] = useState(p.get("date") ?? DEMO_TODAY);
+  const [start, setStart] = useState(p.get("start") ?? "18:00");
+  const [end, setEnd] = useState(p.get("end") ?? "23:00");
+  const [count, setCount] = useState(Math.max(1, Number(p.get("count") ?? 2)));
+  const reason = p.get("reason") ?? "";
   const toDept = dept || depts[0] || "";
   if (!data) return <Panel><EmptyState title="Loading" /></Panel>;
   if (!depts.length) return <Panel><EmptyState title="You cannot request help for a department" /></Panel>;
@@ -213,7 +217,7 @@ function RequestHelp() {
       )}
       {step === 3 && (
         <Panel title="Who can help" description={`${count} ${skillWord(skill, count)} for ${deptById[toDept].name}, ${fmtDate(date, true)}, ${start} to ${end}.`}>
-          <StaffFinder propertyId={propertyId} skill={skill} date={date} start={fromHm(start)} end={fromHm(end)} toDeptId={toDept} need={count} kind={HELP.find((h) => h.value === kind)!.label}
+          <StaffFinder propertyId={propertyId} skill={skill} date={date} start={fromHm(start)} end={fromHm(end)} toDeptId={toDept} need={count} kind={HELP.find((h) => h.value === kind)!.label} initialReason={reason}
             onSent={(r) => router.push(`/events?tab=support&request=${r.id}`)} />
           <Button className="mt-4" variant="ghost" onClick={() => setStep(2)}><ArrowLeft size={15} /> Back</Button>
         </Panel>

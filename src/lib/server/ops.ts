@@ -34,6 +34,12 @@ export function managesDept(user: User, deptId: string): boolean {
       return d.kind === "outlet" && allowedOutlets(user).includes(d.outletId!);
     case "event_manager":
       return d.kind === "banqueting";
+    // Department managers run their own team.
+    case "front_office":
+    case "housekeeping_manager":
+    case "bell_captain":
+    case "concierge":
+      return user.deptId === deptId;
     default:
       return false;
   }

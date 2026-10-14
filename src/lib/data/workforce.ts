@@ -3,14 +3,14 @@
 import { DEMO_TODAY, addDays, eachDay, hashString } from "../util";
 import { OUTLETS, STAFF } from "./catalog";
 
-export type Skill = "waiter" | "bartender" | "chef" | "kitchen_assistant" | "setup" | "supervisor" | "runner" | "cleaning" | "front_desk" | "housekeeping" | "bell";
+export type Skill = "waiter" | "bartender" | "chef" | "kitchen_assistant" | "setup" | "supervisor" | "runner" | "cleaning" | "front_desk" | "housekeeping" | "bell" | "concierge" | "inspection";
 
 export const SKILL_LABEL: Record<Skill, string> = {
   waiter: "Waiter", bartender: "Bartender", chef: "Chef", kitchen_assistant: "Kitchen assistant", setup: "Banquet setup",
-  supervisor: "Event supervisor", runner: "Runner", cleaning: "Cleaning and reset", front_desk: "Front desk", housekeeping: "Housekeeping", bell: "Bell and luggage",
+  supervisor: "Event supervisor", runner: "Runner", cleaning: "Cleaning and reset", front_desk: "Front desk", housekeeping: "Housekeeping", bell: "Bell and luggage", concierge: "Concierge", inspection: "Room inspection",
 };
 
-export type DeptKind = "outlet" | "banqueting" | "front_office" | "housekeeping" | "bell";
+export type DeptKind = "outlet" | "banqueting" | "front_office" | "housekeeping" | "bell" | "concierge";
 
 export interface Dept {
   id: string;
@@ -45,7 +45,7 @@ export interface Leave {
 
 /** Demo hourly labour rates in AED, converted for other currencies. Planning estimates, not payroll. */
 export const HOURLY_RATE_AED: Record<Skill, number> = {
-  waiter: 45, bartender: 50, chef: 70, kitchen_assistant: 35, setup: 35, supervisor: 80, runner: 32, cleaning: 30, front_desk: 45, housekeeping: 32, bell: 32,
+  waiter: 45, bartender: 50, chef: 70, kitchen_assistant: 35, setup: 35, supervisor: 80, runner: 32, cleaning: 30, front_desk: 45, housekeeping: 32, bell: 32, concierge: 50, inspection: 45,
 };
 
 const outletDepts: Dept[] = OUTLETS.map((o) => ({ id: o.id, propertyId: o.propertyId, name: o.name, kind: "outlet", outletId: o.id }));
@@ -54,6 +54,7 @@ const extraDepts: Dept[] = [
   { id: "dxb-fo", propertyId: "dxb", name: "Front Office", kind: "front_office" },
   { id: "dxb-hk", propertyId: "dxb", name: "Housekeeping", kind: "housekeeping" },
   { id: "dxb-bell", propertyId: "dxb", name: "Bell Team", kind: "bell" },
+  { id: "dxb-conc", propertyId: "dxb", name: "Concierge", kind: "concierge" },
   { id: "doh-banq", propertyId: "doh", name: "Banqueting", kind: "banqueting" },
   { id: "doh-fo", propertyId: "doh", name: "Front Office", kind: "front_office" },
 ];
@@ -101,8 +102,10 @@ export const EMPLOYEES: Employee[] = [
   ...team("dxb-hk", "dxb", "HK", [
     { n: 7, title: "Room attendant", skills: ["housekeeping", "cleaning"] },
     { n: 1, title: "Public area attendant", skills: ["cleaning", "setup"] },
+    { n: 1, title: "Housekeeping supervisor", skills: ["inspection", "housekeeping"] },
   ]),
   ...team("dxb-bell", "dxb", "BELL", [{ n: 4, title: "Bell attendant", skills: ["bell", "setup"] }]),
+  ...team("dxb-conc", "dxb", "CON", [{ n: 2, title: "Concierge", skills: ["concierge", "front_desk"] }]),
   ...team("doh-banq", "doh", "DBQ", [
     { n: 10, title: "Banquet waiter", skills: ["waiter", "runner", "setup"] },
     { n: 3, title: "Banquet bartender", skills: ["bartender", "waiter"] },
@@ -114,6 +117,10 @@ export const EMPLOYEES: Employee[] = [
   ]),
   ...team("doh-fo", "doh", "DFO", [{ n: 5, title: "Front desk agent", skills: ["front_desk"] }]),
 ];
+// People who appear in the guided demo by name.
+const NAMED: Record<string, string> = { "HK-01": "Maria Santos", "HK-09": "Agnes Mwangi", "BELL-01": "Yusuf Adeyemi", "CON-01": "Lina Haddad" };
+for (const e of EMPLOYEES) if (NAMED[e.id]) e.name = NAMED[e.id];
+
 export const employeeById: Record<string, Employee> = Object.fromEntries(EMPLOYEES.map((e) => [e.id, e]));
 
 const MORNING = { start: 7 * 60, end: 15 * 60 };
@@ -130,15 +137,17 @@ function buildShifts(): Shift[] {
     const h = hashString(e.id);
     days.forEach((date, i) => {
       // One rest day a week, spread across the team.
-      if ((i + h) % 7 === 0) return;
+      if ((i + h) % 7 === 0 && !(date === DEMO_TODAY && NAMED[e.id])) return;
       let s = DAY;
       if (dept.kind === "outlet") {
         // Waiters 1 and 2 open; 3 and 4 close; others alternate by week day.
         const slot = Number(e.id.split("-S")[1] ?? 0);
         s = slot === 1 || slot === 2 ? MORNING : slot === 3 || slot === 4 ? EVENING : (i + h) % 2 ? MORNING : EVENING;
       } else if (dept.kind === "front_office") s = (h + i) % 3 === 0 ? EVENING : MORNING;
-      else if (dept.kind === "housekeeping") s = MORNING;
-      else if (dept.kind === "bell") s = (h + i) % 2 ? MORNING : EVENING;
+      // Housekeeping works an evening turndown shift on the demo day so rooms can still be turned around.
+      else if (dept.kind === "housekeeping") s = date === DEMO_TODAY ? EVENING : MORNING;
+      else if (dept.kind === "concierge") s = EVENING;
+      else if (dept.kind === "bell") s = date === DEMO_TODAY && (NAMED[e.id] || e.id === "BELL-02") ? EVENING : (h + i) % 2 ? MORNING : EVENING;
       out.push({ employeeId: e.id, date, ...s });
     });
   }

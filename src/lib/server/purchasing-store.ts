@@ -5,6 +5,7 @@ import path from "node:path";
 import { ingredientById } from "../data/catalog";
 import type { Assignment, Delivery, EventRecord, PrepPlan, PurchaseRequest, SupportRequest } from "../types";
 import { seedOps } from "./ops-seed";
+import { seedGuest, type GuestShape } from "./guest-seed";
 import { DEMO_TODAY } from "../util";
 
 export interface Shape {
@@ -17,9 +18,11 @@ export interface Shape {
   support: SupportRequest[];
   assignments: Assignment[];
   counters: Record<string, number>;
+  /** Rooms, arrivals, bell tasks, guest requests, Guest Connect and the service log (Stage 5). */
+  guest: GuestShape;
 }
 
-const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps() });
+const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps(), guest: seedGuest() });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? path.join(process.cwd(), ".data", "purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
@@ -35,6 +38,9 @@ export function loadStore(): Shape {
   // A store from before Stage 4 gets its events and staffing records added once.
   if (!cache.data.events) {
     writeStore({ ...cache.data, ...seedOps() });
+  }
+  if (!cache.data.guest) {
+    writeStore({ ...cache.data, guest: seedGuest() });
   }
   return cache.data;
 }

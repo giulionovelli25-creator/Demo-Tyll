@@ -12,6 +12,9 @@ import { useDemo } from "@/lib/store";
 import { DEMO_TODAY, addDays, fmtDate, fmtQty } from "@/lib/util";
 import { Checklist } from "@/components/forecast/prep";
 import { useMutate, usePrepPlans } from "@/lib/plan-hooks";
+import { useSearchParams } from "next/navigation";
+import { MyRooms, RoomDetail } from "@/components/guest/rooms";
+import { BellTaskView, MyBellTasks } from "@/components/guest/bell";
 
 /** Help this person has been lent to give: where, when and doing what. They tick it off afterwards. */
 function MyAssignments() {
@@ -42,7 +45,31 @@ function PrepForShift({ outletId }: { outletId: string }) {
   return <Checklist plan={plan} assignees={data?.assignees[outletId] ?? []} />;
 }
 
+/** Housekeeping and bell staff: their own rooms and luggage tasks, and any help they are lent to give. */
+function DeptTasks() {
+  const user = useUser()!;
+  const params = useSearchParams();
+  const room = params.get("room");
+  const task = params.get("task");
+  if (room) return <RoomDetail roomId={room} back="/tasks" />;
+  if (task) return <BellTaskView id={task} />;
+  return (
+    <div className="space-y-5">
+      <PageHeader title={`Good evening, ${user.name.split(" ")[0]}`} lead={`${user.title.split(",")[1]?.trim() ?? ""}, Grand Resort Dubai. Here is your work for this shift.`} />
+      {user.deptId === "dxb-hk" && <MyRooms />}
+      {user.deptId === "dxb-bell" && <MyBellTasks />}
+      <MyAssignments />
+    </div>
+  );
+}
+
 export default function TasksPage() {
+  const user = useUser()!;
+  if (!allowedOutlets(user).length) return <DeptTasks />;
+  return <OutletTasks />;
+}
+
+function OutletTasks() {
   const user = useUser()!;
   const ctx = useCtx();
   const wasteLogs = useDemo((s) => s.wasteLogs);

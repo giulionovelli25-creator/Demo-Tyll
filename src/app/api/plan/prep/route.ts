@@ -5,8 +5,8 @@ import { cleanEntries } from "@/lib/server/stock";
 
 /** Saved preparation plans for the user's outlets. */
 export async function GET(req: NextRequest) {
-  const g = guard(req, { module: "forecast", pin: false });
-  const alt = g.ok ? g : guard(req, { module: "tasks", pin: false });
+  const g = guard(req, { module: "forecast" });
+  const alt = g.ok ? g : guard(req, { module: "tasks" });
   if (!alt.ok) return alt.response;
   const plans = plansFor(alt.user);
   return json({ plans, assignees: Object.fromEntries([...new Set(plans.map((p) => p.outletId))].map((o) => [o, prepAssignees(o)])) });
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return json({ error: "Request refused." }, 403);
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
   // Staff tick tasks from their task list; everything else is in Forecast.
-  const g = guard(req, body.action === "task" ? { pin: false } : { module: "forecast" });
+  const g = guard(req, body.action === "task" ? {} : { module: "forecast" });
   if (!g.ok) return g.response;
   if (body.action === "suggest") {
     const r = prepPlanFor(g.user, body, cleanEntries(g.user, body));

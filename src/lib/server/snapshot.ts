@@ -23,7 +23,8 @@ export function snapshotFor(user: User): Snapshot {
   const whole = new Set([...props].filter((p) => hasWholeProperty(user, p)));
   // Staff and the head chef get quantities without money. Purchasing gets no sales at all: it needs stock, suppliers and prices.
   const staff = user.role === "employee" || user.role === "chef";
-  const procurement = user.role === "purchasing";
+  // Purchasing and the hotel departments get no outlet sales.
+  const procurement = user.role === "purchasing" || !!user.deptId;
   const byOutlet = <T extends { outletId: string }>(rows: T[]) => rows.filter((r) => outlets.has(r.outletId));
   const exceptions = staff || user.role === "purchasing" ? [] : d.exceptions.filter((e) => (e.outletId ? outlets.has(e.outletId) : whole.has(e.propertyId)));
   const seedInvestigations = Object.fromEntries(exceptions.map((e) => [e.id, d.seedInvestigations[e.id]]));

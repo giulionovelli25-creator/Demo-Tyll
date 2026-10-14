@@ -513,7 +513,7 @@ export interface GuestRequest {
 
 // ---- Access -----------------------------------------------------------------
 
-export type Role = "owner" | "gm" | "controller" | "fnb_director" | "restaurant_manager" | "event_manager" | "purchasing" | "chef" | "employee";
+export type Role = "owner" | "gm" | "controller" | "fnb_director" | "restaurant_manager" | "event_manager" | "purchasing" | "chef" | "front_office" | "housekeeping_manager" | "concierge" | "bell_captain" | "employee";
 
 export interface User {
   id: string;
@@ -523,6 +523,8 @@ export interface User {
   propertyIds: "all" | string[];
   outletIds: "all" | string[];
   staffId?: string;
+  /** Hotel department a department manager runs, such as Housekeeping. */
+  deptId?: string;
 }
 
 export interface Scope {
@@ -589,6 +591,8 @@ export interface PurchaseRequest {
   prepPlanId?: string;
   /** Event the request buys for, if any. */
   eventId?: string;
+  /** Hotel department the request buys for, such as Housekeeping. */
+  deptId?: string;
   /** Set when approved. Demo only: nothing is sent to a supplier. */
   poNumber?: string;
   history: RequestEvent[];
@@ -728,4 +732,119 @@ export interface Assignment {
   createdAt: string;
   cancelledReason?: string;
   done?: boolean;
+}
+
+// ---- Rooms, guest service, Guest Connect and bell (Stage 5) ----------------------
+// Kept on the server with the other shared records. Times are minutes on the demo day.
+
+/** Housekeeping readiness, kept apart from whether a guest is in the room. */
+export type HkStatus = "occupied" | "vacant_dirty" | "cleaning" | "inspection" | "ready" | "out_of_service";
+
+export interface OpsEvent {
+  /** Minute of the demo day. */
+  min: number;
+  by: string;
+  action: string;
+  note?: string;
+}
+
+export interface RoomOps {
+  roomId: string;
+  propertyId: string;
+  number: string;
+  floor: number;
+  type: string;
+  status: HkStatus;
+  /** Front office view: a guest is in the room, leaving today, or the room is empty. */
+  occupancy: "occupied" | "due_out" | "vacant";
+  housekeeperId?: string;
+  /** Second person helping, from the team or borrowed through Staff Support. */
+  helperId?: string;
+  startedMin?: number;
+  cleanedMin?: number;
+  readyMin?: number;
+  priority: boolean;
+  /** Front office asked for this room first, and when. */
+  priorityRequestedMin?: number;
+  issues: { min: number; by: string; text: string; supply?: boolean; resolved?: boolean }[];
+  history: OpsEvent[];
+}
+
+export interface ArrivalOps {
+  id: string;
+  propertyId: string;
+  /** Surname only, for the front desk. */
+  guest: string;
+  roomId: string;
+  etaMin: number;
+  vip: boolean;
+  status: "expected" | "waiting" | "checked_in";
+}
+
+export type BellKind = "delivery" | "pickup" | "arrival" | "departure";
+export type BellStatus = "requested" | "assigned" | "on_the_way" | "collected" | "delivered" | "completed" | "cancelled";
+
+export interface BellTask {
+  id: string;
+  propertyId: string;
+  kind: BellKind;
+  room: string;
+  from: string;
+  to: string;
+  bags: number;
+  requestedBy: string;
+  requestedMin: number;
+  assigneeId?: string;
+  priority: "normal" | "urgent";
+  status: BellStatus;
+  /** How the bags were handed over, as recorded by the bell attendant. Not a guest signature. */
+  handover?: string;
+  sourceRequestId?: string;
+  history: OpsEvent[];
+}
+
+export type GuestRequestKind = "taxi" | "restaurant" | "spa" | "activity" | "assistance" | "bell" | "general";
+export type GuestRequestStatus = "new" | "assigned" | "in_progress" | "awaiting_confirmation" | "confirmed" | "completed" | "cancelled" | "unable";
+
+export interface ServiceRequest {
+  id: string;
+  propertyId: string;
+  kind: GuestRequestKind;
+  room: string;
+  details: string;
+  forMin: number;
+  priority: "normal" | "urgent";
+  /** Department responsible for the next step. */
+  deptId: string;
+  status: GuestRequestStatus;
+  createdBy: string;
+  createdMin: number;
+  assigneeId?: string;
+  /** An external confirmation typed in by staff, marked as simulated in the demo. */
+  confirmation?: string;
+  linkedId?: string;
+  history: OpsEvent[];
+}
+
+export type GcStatus = "pending" | "accepted" | "declined" | "alternative" | "confirmed" | "cancelled";
+
+export interface GcRequest {
+  id: string;
+  propertyId: string;
+  venueId: string;
+  room: string;
+  party: number;
+  date: string;
+  /** Minute of the day requested. */
+  timeMin: number;
+  notes: string;
+  status: GcStatus;
+  proposedMin?: number;
+  createdBy: string;
+  fromDeptId: string;
+  createdMin: number;
+  respondedMin?: number;
+  respondedBy?: string;
+  sourceRequestId?: string;
+  history: OpsEvent[];
 }

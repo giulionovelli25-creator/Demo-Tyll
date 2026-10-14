@@ -359,7 +359,9 @@ describe("access", () => {
     expect(canOpen(employee, "overview")).toBe(false);
     expect(canOpen(employee, "money")).toBe(false);
     expect(canOpen(employee, "stock")).toBe(true);
-    expect(canOpen(manager, "rooms")).toBe(false);
+    // Restaurant managers open Rooms & Guests only for Guest Connect table requests to their outlet.
+    expect(canOpen(manager, "rooms")).toBe(true);
+    expect(can(manager, "hk.manage")).toBe(false);
     expect(canOpen(controller, "flow")).toBe(false);
     expect(can(manager, "investigation.close")).toBe(true);
     expect(can(manager, "investigation.reopen")).toBe(false);
