@@ -69,7 +69,7 @@ export default function ReportsPage() {
     ["Gross profit margin %", (t.gpMargin * 100).toFixed(2), (b.gpMargin * 100).toFixed(2), ""],
   ]), "Statement");
   const exportOutlets = guard(() => downloadCsv(`tyll-outlets-${stamp}.csv`, [
-    ["Outlet", "Hotel", "Net sales", "F&B cost", "Gross profit", "Gross margin %", "Labor (est.)", "Other operating (est.)", "Operating profit (est.)", "Orders", "Guests", "Adjustments", "Adjustments per 1000 orders", "Open cases", "Waste", "Stock variance", `Currency ${currency}`],
+    ["Outlet", "Hotel", "Net sales", "F&B cost", "Gross profit", "Gross margin %", "Labor (est.)", "Other operating (est.)", "Operating contribution (est.)", "Orders", "Guests", "Adjustments", "Adjustments per 1000 orders", "Open cases", "Waste", "Stock variance", `Currency ${currency}`],
     ...rows.map((r) => [outletById[r.outletId].name, propertyById[outletById[r.outletId].propertyId].name, r.now.net.toFixed(2), r.now.fnbCost.toFixed(2), r.now.grossProfit.toFixed(2), (r.now.gpMargin * 100).toFixed(2), (r.now.labor ?? 0).toFixed(2), (r.now.opex ?? 0).toFixed(2), (r.now.operatingProfit ?? 0).toFixed(2), r.now.orders, r.now.covers, r.now.adjustments, adjustmentRate(r.now).toFixed(1), r.now.openCases, r.now.waste.toFixed(2), r.now.variance.toFixed(2), ""]),
   ]), "Outlet comparison");
   const exportMenu = guard(() => downloadCsv(`tyll-menu-${stamp}.csv`, [
@@ -135,7 +135,7 @@ export default function ReportsPage() {
         <Panel title="Outlets" flush>
           <TableWrap>
             <table className="w-full min-w-[820px] text-sm">
-              <thead><tr><Th>Outlet</Th><Th align="right">Net sales</Th><Th align="right">Gross margin</Th><Th align="right">Operating profit (est.)</Th><Th align="right">Adjustments</Th><Th align="right">Open cases</Th><Th align="right">Waste</Th></tr></thead>
+              <thead><tr><Th>Outlet</Th><Th align="right">Net sales</Th><Th align="right">Gross margin</Th><Th align="right">Operating contribution (est.)</Th><Th align="right">Adjustments</Th><Th align="right">Open cases</Th><Th align="right">Waste</Th></tr></thead>
               <tbody>
                 {[...rows].sort((a, x) => x.now.net - a.now.net).map((r) => (
                   <tr key={r.outletId} className={rowClass}>

@@ -1,56 +1,35 @@
 # Tyll platform demo
 
-An interactive demonstration of Tyll, the hospitality financial and operational intelligence platform. It covers Tyll Overview, Money, Stock, Forecast, Flow, Rooms, Investigations (the Money Back List), Reports and Settings for a fictional two-hotel group.
+An interactive demonstration of Tyll, the hospitality intelligence and operations platform, for a fictional two-hotel group (Grand Resort Dubai in AED, Grand Resort Doha in QAR). Modules: Overview, Money, Stock and investigations, Forecast and purchasing, Sales & Events with staff support, Rooms & Guests, Finance, Reports, and Tyll Staff for phones.
 
-Everything in it is simulated. No real hotel system, customer record or language model is connected, and nothing you enter leaves your browser. The separate Tyll payment reconciliation product is deliberately not rebuilt here.
+Everything is simulated. No real hotel system, guest, supplier, payment service or language model is connected. The separate Tyll payment reconciliation product is not rebuilt here.
+
+**To present it, read [DEMO_WALKTHROUGH.md](DEMO_WALKTHROUGH.md).**
 
 ## Run it
 
-Requires Node.js 20.9 or later.
+Requires Node.js 20.9 or later and npm (the repository has a `package-lock.json`).
 
 ```bash
 npm install
-npm run dev
+npm run dev -- -p 3210
 ```
 
-Open http://localhost:3000 and sign in. On the sign-in page, choosing a demo account fills in its email and password; management accounts then enter their PIN, which the PIN screen shows in demo mode.
+Open http://localhost:3210. Settings are described in `.env.example`; copy it to `.env.local` to change them. In Claude Code or VS Code, open the `tyll-platform` folder and use the same commands in the terminal.
 
-On the machine this was built on, Node lives in `~/.local/share/node-lts` and is not on the shell `PATH`. Either add it once:
-
-```bash
-echo 'export PATH="$HOME/.local/share/node-lts/bin:$PATH"' >> ~/.zshrc
-```
-
-or prefix a single command: `PATH="$HOME/.local/share/node-lts/bin:$PATH" npm run dev`.
+On the machine this was built on, Node lives in `~/.local/share/node-lts` and is not on the shell `PATH`: prefix commands with `PATH="$HOME/.local/share/node-lts/bin:$PATH"`.
 
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Development server with hot reload |
 | `npm run build` then `npm run start` | Production build and server |
-| `npm run test` | 46 automated tests of the calculations, rules, permissions and store actions |
+| `npm run test` | Automated tests of calculations, workflows, permissions, search, notifications and reset |
 | `npm run lint` / `npm run typecheck` | Static checks |
 | `npm run check` | All of the above in one go |
 
-## The five-minute owner demo
+## Demo accounts and reset
 
-Sign in as **Layla Al Mansoori** (owner) and choose **Five-minute owner demo** at the bottom of the sidebar. Eight steps walk from the group overview, to The Terrace's falling margin, to the Coke removed from a bill six minutes after its ticket went to the bar, to the manager recording the outcome, back to the updated overview, and on to Forecast.
-
-**Settings → Reset demo data** restores the original records at any time.
-
-## Demo accounts
-
-Credentials for all six fictional accounts are in `config/demo-accounts.json`. The server turns them into salted scrypt verifiers in `.data/auth.json` on first start and never stores the plain values. Delete `.data/` to start again with fresh sessions and counters.
-
-| Account | Role | Sees |
-| --- | --- | --- |
-| Layla Al Mansoori | Hotel group owner | Both hotels, every module |
-| James Whitfield | General manager | Grand Resort Dubai, including Rooms |
-| Priya Raman | Financial controller | Both hotels, financial modules, read-only Rooms |
-| Marco Bellini | F&B director | All Dubai outlets |
-| Sara Haddad | Restaurant manager | The Terrace only |
-| Omar Farouk | Operational employee | Own tasks: waste logging, counts, order board |
-
-Operational staff (Omar) do not need a management PIN. The staff waste app still has its own demo PIN, `2580`, until Phase 3 moves it to the server.
+22 fictional people, grouped by department on the sign-in page. Credentials are in `config/demo-accounts.json`; the server stores only salted scrypt verifiers of them in `.data/auth.json`. Shared records are in `.data/purchasing.json`. The owner or general manager can reset them from **Settings → Reset demo data** or per story from the guided demo. Deleting `.data/` starts completely fresh.
 
 ## Security model
 

@@ -44,7 +44,7 @@ export function Help({ text, label = "What is this?", className }: { text: strin
     return () => { document.removeEventListener("mousedown", away); document.removeEventListener("keydown", esc); };
   }, [open]);
   return (
-    <span ref={ref} className={cn("relative inline-flex align-middle", className)}>
+    <span ref={ref} className={cn("inline-flex align-middle", className?.includes("absolute") ? "" : "relative", className)}>
       <button type="button" aria-label={label} aria-expanded={open} aria-controls={id} onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpen((o) => !o); }}
         className="inline-flex h-6 w-6 items-center justify-center rounded-full text-fog transition-colors hover:text-graphite focus-visible:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ink">
         <HelpCircle size={15} strokeWidth={1.8} aria-hidden />

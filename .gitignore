@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Demo auth store (sessions, verifiers, audit)
 /.data/
+
+# The example file documents settings and holds no secrets
+!.env.example

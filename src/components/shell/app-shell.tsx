@@ -313,16 +313,16 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
       <div className="mx-auto flex min-h-[68px] w-full max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 sm:px-6 lg:px-8">
         <button type="button" onClick={onMenu} className="rounded-full p-2 text-graphite hover:bg-mist md:hidden" aria-label="Open menu"><Menu size={20} /></button>
         {showScope ? (
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-            <Select label="Property" hideLabel className="w-[190px]" value={scope.propertyId} onChange={(e) => setScope({ propertyId: e.target.value })} disabled={props.length === 1}>
+          <div className="order-last flex min-w-0 basis-full flex-wrap items-center gap-2 md:order-none md:basis-auto md:flex-1">
+            <Select label="Property" hideLabel className="w-[calc(50%-4px)] sm:w-[190px]" value={scope.propertyId} onChange={(e) => setScope({ propertyId: e.target.value })} disabled={props.length === 1}>
               {props.length > 1 && <option value="all">All properties</option>}
               {props.map((id) => <option key={id} value={id}>{propertyById[id].name}</option>)}
             </Select>
-            <Select label="Outlet" hideLabel className="w-[170px]" value={scope.outletId} onChange={(e) => setScope({ outletId: e.target.value })} disabled={outlets.length === 1}>
+            <Select label="Outlet" hideLabel className="w-[calc(50%-4px)] sm:w-[170px]" value={scope.outletId} onChange={(e) => setScope({ outletId: e.target.value })} disabled={outlets.length === 1}>
               {outlets.length > 1 && <option value="all">All outlets</option>}
               {outlets.map((id) => <option key={id} value={id}>{scope.propertyId === "all" ? outletLabel(id) : outletById[id].name}</option>)}
             </Select>
-            <Select label="Department" hideLabel className="w-[150px]" value={scope.dept} onChange={(e) => setScope({ dept: e.target.value as "all" | Dept })}>
+            <Select label="Department" hideLabel className="w-[calc(50%-4px)] sm:w-[150px]" value={scope.dept} onChange={(e) => setScope({ dept: e.target.value as "all" | Dept })}>
               <option value="all">All departments</option>
               <option value="food">Kitchen (food)</option>
               <option value="beverage">Bar (beverage)</option>

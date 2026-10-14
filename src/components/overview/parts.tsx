@@ -32,7 +32,7 @@ export function KpiCard({ label, value, sub, delta, spark, sparkGood = "up", onC
   );
   if (!help) return card;
   // The explanation sits beside the card's button, not inside it.
-  return <div className="relative flex min-w-0 flex-col [&>button]:flex-1">{card}<Help text={help} label={`What is ${label}?`} className="absolute right-9 top-3 sm:top-4" /></div>;
+  return <div className="relative grid min-w-0 [&>button]:h-full">{card}<Help text={help} label={`What is ${label}?`} className="absolute right-9 top-3 sm:top-4" /></div>;
 }
 
 export type ChartMetric = "revenue" | "expenses" | "profit";
@@ -44,7 +44,7 @@ export function PerformanceChart({ days, money, title = "Performance", hasOps }:
   const [metric, setMetric] = useState<ChartMetric>("revenue");
   const pick = (t: Totals) => (metric === "revenue" ? t.net : metric === "expenses" ? expensesOf(t) : profitOf(t));
   const data = days.map((d) => ({ label: fmtDate(d.date), now: pick(d.now), before: pick(d.before) }));
-  const profitLabel = hasOps ? "Operating profit" : "Gross profit";
+  const profitLabel = hasOps ? "Operating contribution" : "Gross profit";
   return (
     <Panel
       title={title}

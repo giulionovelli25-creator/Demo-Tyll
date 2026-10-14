@@ -378,3 +378,11 @@ All under **Rooms & Guests** (`/rooms`); sections depend on the role (`src/compo
 - **Shared stock entries** (`src/lib/server/stock-log.ts`, `src/lib/shared-stock.ts`): waste, corrections and counts are saved on the server and included in every stock calculation. Older browser entries are uploaded once (keyed by user and entry, so a retry is not counted twice). Price, recipe and receipt corrections remain browser-held.
 - Accounts added: ravi (commis chef, 3690), ahmed (storekeeper, 4826), noor (sales, 6157), daniel (director of sales, 7215), mariam (sales Doha, 8364), elena (accountant Doha, 952718). Passwords are in `config/demo-accounts.json`.
 - The logo shows "Tyll" (`public/brand/tyll-lockup-ink-tyll.png`, the supplied artwork cropped before ".ai"). Choosing a demo account scrolls back to the sign-in form.
+
+## Stage 7: Integration, notifications, search, guided demo and polish (done)
+- **Notifications** (`src/lib/server/notify.ts`, bell in `components/shell/notifications.tsx`): purchase requests (purchasing, accounting, GM, result to requester, delivery expected), staff support (lending managers, answers), Guest Connect (venue, answer), guest requests (department), rooms (priority, assignment), bell (new, assignment), prep tasks (assignment, problem), sales discounts, staff counts. Notices resolve when the work is done. Email is logged as a preview unless `TYLL_EMAIL_PROVIDER=resend` is configured; Settings shows each email's status and lets a person turn email off.
+- **Search** (`src/lib/server/search.ts`, Ctrl+K): screens and records, partial words and one-letter typos, filtered on the server by access.
+- **Guided demo** (`components/shell/demo-guide.tsx`): six main stories plus short ones and the owner tour. **Reset** per story or everything (`src/lib/server/demo.ts`, owner or GM, demo mode only).
+- **Navigation:** main modules per role with "More"; search and the bell for every role; Tyll Staff has the bell too. Sign-in groups people by department and scrolls to the form.
+- **Explanations:** `?` on module choices and key Overview figures. "Estimated operating profit" is now "Estimated operating contribution" everywhere.
+- Docs: `DEMO_WALKTHROUGH.md`, `.env.example`, README and CLAUDE.md updated.

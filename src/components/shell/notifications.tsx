@@ -57,7 +57,7 @@ export function NotificationBell({ attention = [], align = "right" }: { attentio
           : count > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-warn ring-2 ring-paper" aria-hidden />}
       </button>
       {open && (
-        <div role="dialog" aria-label="Notifications" className={cn("animate-rise absolute top-12 z-40 w-[min(360px,calc(100vw-2rem))] rounded-2xl border border-line bg-paper p-2 shadow-float", align === "right" ? "right-0" : "left-0")}>
+        <div role="dialog" aria-label="Notifications" className={cn("animate-rise fixed inset-x-3 top-16 z-50 rounded-2xl border border-line bg-paper p-2 shadow-float sm:absolute sm:inset-x-auto sm:top-12 sm:w-[360px]", align === "right" ? "sm:right-0" : "sm:left-0")}>
           <div className="flex items-center justify-between px-3 py-2">
             <p className="text-[13px] text-steel">For you</p>
             {unread > 0 && <button type="button" onClick={readAll} className="text-[13px] text-graphite underline-offset-2 hover:underline">Mark all read</button>}

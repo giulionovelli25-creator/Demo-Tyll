@@ -88,7 +88,7 @@ export function Login() {
         </div>
       </section>
 
-      <section className="flex flex-col justify-center px-6 py-10 sm:px-12">
+      <section className="flex min-w-0 flex-col justify-center px-6 py-10 sm:px-12">
         <div className="animate-rise mx-auto w-full max-w-md">
           <div className="flex items-center gap-4 lg:hidden"><TyllIcon size={48} /><TyllLogo height={26} priority /></div>
           <h1 ref={top} className="scroll-mt-6 mt-8 text-[34px] leading-[1.1] tracking-[-0.03em] lg:mt-0">Sign in</h1>
