@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/*
+  Tyll design tokens.
+  Type, pill controls and easing follow tyll.ai (Inter at regular weight with tight tracking,
+  999px buttons, cubic-bezier(.22,1,.36,1)). The palette is the cool white and silver of the
+  Tyll icon and banner artwork.
+*/
+@theme {
+  --color-ink: #14161a;
+  --color-graphite: #343840;
+  --color-steel: #666c75;
+  --color-fog: #9299a3;
+  --color-line: #e2e5e9;
+  --color-hair: #eceef1;
+  --color-mist: #f4f5f7;
+  --color-cloud: #fafbfc;
+  --color-paper: #ffffff;
+  --color-pos: #1b7a50;
+  --color-pos-soft: #e7f3ec;
+  --color-warn: #9a5f0b;
+  --color-warn-soft: #fbf2df;
+  --color-neg: #b0352b;
+  --color-neg-soft: #fbebe9;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: var(--font-arabic), var(--font-inter), system-ui, sans-serif;
+
+  --ease-tyll: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius-panel: 18px;
+  --shadow-panel: 0 1px 0 rgba(20, 22, 26, 0.03), 0 12px 32px -24px rgba(20, 22, 26, 0.18);
+  --shadow-float: 0 24px 60px -20px rgba(20, 22, 26, 0.28), 0 2px 6px rgba(20, 22, 26, 0.06);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-mist);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  font-feature-settings: "cv11", "ss03";
+}
+
+h1, h2, h3 {
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Financial figures line up in columns. */
+.num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* The flowing silver layers from the Tyll banner, used behind headers and empty states only. */
+.waves {
+  position: relative;
+  isolation: isolate;
+}
+.waves::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url("/brand/tyll-waves.webp") right 38% / max(100%, 880px) auto no-repeat;
+  filter: grayscale(0.55) contrast(1.28) brightness(0.985);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 45%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 45%, #000 100%);
+  pointer-events: none;
+}
+.waves-full::before {
+  -webkit-mask-image: none;
+  mask-image: none;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Scroll containers are positioned so that visually hidden text inside them is clipped with the rest. */
+.scroll-thin {
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slide-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-rise { animation: rise 0.6s var(--ease-tyll) both; }
+.animate-slide-in { animation: slide-in 0.35s var(--ease-tyll) both; }
+.animate-fade { animation: fade 0.25s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise, .animate-slide-in, .animate-fade { animation: none; }
+  * { transition-duration: 0.01ms !important; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  main { padding: 0 !important; }
+}
+
+/* Recharts: keep focus outlines off the SVG surface, the wrapper is not interactive. */
+.recharts-wrapper:focus, .recharts-surface:focus { outline: none; }

@@ -1,0 +1,11 @@
+{
+  "_note": "Demo credentials for the fictional accounts only. The server stores salted scrypt verifiers of these values in .data/auth.json and never the values themselves. Never reuse these anywhere real.",
+  "accounts": [
+    { "userId": "u-owner", "email": "layla@grandresorts.example", "password": "Tyll-Demo-Owner-26", "pin": "482913" },
+    { "userId": "u-gm", "email": "james@grandresorts.example", "password": "Tyll-Demo-GM-26", "pin": "7364" },
+    { "userId": "u-fc", "email": "priya@grandresorts.example", "password": "Tyll-Demo-Finance-26", "pin": "591846" },
+    { "userId": "u-fnb", "email": "marco@grandresorts.example", "password": "Tyll-Demo-FnB-26", "pin": "2468" },
+    { "userId": "u-rm", "email": "sara@grandresorts.example", "password": "Tyll-Demo-Terrace-26", "pin": "3197" },
+    { "userId": "u-emp", "email": "omar@grandresorts.example", "password": "Tyll-Demo-Staff-26", "pin": "2580" }
+  ]
+}
