@@ -3,15 +3,23 @@
 import fs from "node:fs";
 import path from "node:path";
 import { ingredientById } from "../data/catalog";
-import type { Delivery, PrepPlan, PurchaseRequest } from "../types";
+import type { Assignment, Delivery, EventRecord, PrepPlan, PurchaseRequest, SupportRequest } from "../types";
+import { seedOps } from "./ops-seed";
 import { DEMO_TODAY } from "../util";
 
-interface Shape {
+export interface Shape {
   version: 1;
   seq: number;
   requests: PurchaseRequest[];
   plans: PrepPlan[];
+  /** Events, staff support requests and assignments (Stage 4). Seeded on first use. */
+  events: EventRecord[];
+  support: SupportRequest[];
+  assignments: Assignment[];
+  counters: Record<string, number>;
 }
+
+const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps() });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? path.join(process.cwd(), ".data", "purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
@@ -20,10 +28,14 @@ export function loadStore(): Shape {
   const f = file();
   if (!fs.existsSync(f)) {
     fs.mkdirSync(path.dirname(f), { recursive: true });
-    writeStore({ version: 1, seq: 0, requests: [], plans: [] });
+    writeStore(empty());
   }
   const mtime = fs.statSync(f).mtimeMs;
   if (!cache || cache.path !== f || cache.mtime !== mtime) cache = { path: f, mtime, data: JSON.parse(fs.readFileSync(f, "utf8")) as Shape };
+  // A store from before Stage 4 gets its events and staffing records added once.
+  if (!cache.data.events) {
+    writeStore({ ...cache.data, ...seedOps() });
+  }
   return cache.data;
 }
 
@@ -44,8 +56,11 @@ export function mutateStore<T>(run: (s: Shape) => T): T {
 }
 
 export function resetPurchasingStore() {
-  writeStore({ version: 1, seq: 0, requests: [], plans: [] });
+  writeStore(empty());
 }
+
+/** Takes the next number in a sequence, such as events or support requests at one hotel. */
+export const nextNumber = (s: Shape, key: string) => (s.counters[key] = (s.counters[key] ?? 0) + 1);
 
 /** Approved orders that have been received, as deliveries. This is the only way a request raises stock. */
 export function receivedDeliveries(propertyId?: string): Delivery[] {

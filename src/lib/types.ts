@@ -513,7 +513,7 @@ export interface GuestRequest {
 
 // ---- Access -----------------------------------------------------------------
 
-export type Role = "owner" | "gm" | "controller" | "fnb_director" | "restaurant_manager" | "purchasing" | "chef" | "employee";
+export type Role = "owner" | "gm" | "controller" | "fnb_director" | "restaurant_manager" | "event_manager" | "purchasing" | "chef" | "employee";
 
 export interface User {
   id: string;
@@ -587,6 +587,8 @@ export interface PurchaseRequest {
   comment?: string;
   /** Prep plan the request was raised from, if any. */
   prepPlanId?: string;
+  /** Event the request buys for, if any. */
+  eventId?: string;
   /** Set when approved. Demo only: nothing is sent to a supplier. */
   poNumber?: string;
   history: RequestEvent[];
@@ -600,6 +602,8 @@ export interface PrepTask {
   done: boolean;
   doneBy?: string;
   doneAt?: string;
+  /** Set when the task is an event's portions. */
+  eventId?: string;
 }
 
 export interface PrepPlan {
@@ -616,4 +620,112 @@ export interface PrepPlan {
   createdBy: string;
   updatedAt: string;
   updatedBy: string;
+}
+
+// ---- Events and staffing ------------------------------------------------------
+// Stored on the server with purchasing, so every department sees the same record.
+
+export type EventStatus = "draft" | "planning" | "ready" | "in_progress" | "completed" | "cancelled";
+export type EventType = "Conference" | "Wedding" | "Corporate dinner" | "Banquet" | "Private dining" | "Cocktail reception" | "Hotel function";
+export type ServiceFormat = "seated" | "buffet" | "reception" | "theatre";
+export type ServiceId = "coffee_break" | "breakfast_buffet" | "lunch_buffet" | "set_menu" | "three_course" | "cocktail" | "soft_drinks" | "wine";
+
+export interface EventService {
+  id: ServiceId;
+  /** Guests taking this service. Defaults to the event's guests. */
+  guests: number;
+  items: { itemId: string; perGuest: number }[];
+}
+
+/** Guests per person for each event role. 0 means the role is not needed. Demo planning assumptions. */
+export type StaffRatios = Record<"waiter" | "bartender" | "chef" | "setup" | "supervisor" | "runner" | "cleaning", number>;
+
+export interface EventRecord {
+  id: string;
+  propertyId: string;
+  name: string;
+  type: EventType;
+  venue: string;
+  date: string;
+  /** Minutes from midnight. */
+  start: number;
+  end: number;
+  setupStart: number;
+  cleanupEnd: number;
+  guests: number;
+  format: ServiceFormat;
+  dietary: string;
+  notes: string;
+  status: EventStatus;
+  /** Kitchen that prepares the food. Its prep plan shows the event's portions. */
+  kitchenOutletId: string;
+  services: EventService[];
+  ratios: StaffRatios;
+  /** Agreed price per guest, if known. Used only for an estimated contribution. */
+  pricePerGuest?: number;
+  /** Stock already issued from the storeroom to this event, so it is not counted again. */
+  issued: { ingredientId: string; qty: number; ref: string }[];
+  /** Portions the kitchen changed, by dish, replacing the calculated figure. */
+  kitchenPortions?: Record<string, number>;
+  /** The seeded record this event continues, if any. */
+  seedId?: string;
+  createdBy: string;
+  updatedAt: string;
+  history: { at: string; by: string; action: string; detail?: string }[];
+}
+
+export type SupportItemStatus = "pending" | "approved" | "declined" | "alternative" | "cancelled";
+
+export interface SupportItem {
+  id: string;
+  /** The person asked for, or empty when the lending department chooses. */
+  employeeId?: string;
+  deptId: string;
+  status: SupportItemStatus;
+  /** A lending manager's counter-proposal: another person, other hours, or both. */
+  proposed?: { employeeId: string; start: number; end: number };
+  assignmentId?: string;
+  decidedBy?: string;
+  comment?: string;
+}
+
+export interface SupportRequest {
+  id: string;
+  propertyId: string;
+  requestedBy: string;
+  /** Department receiving the help. */
+  toDeptId: string;
+  eventId?: string;
+  kind: string;
+  skill: string;
+  date: string;
+  start: number;
+  end: number;
+  count: number;
+  reason: string;
+  priority: "normal" | "urgent";
+  status: "open" | "filled" | "cancelled";
+  items: SupportItem[];
+  createdAt: string;
+  updatedAt: string;
+  history: { at: string; by: string; action: string; comment?: string }[];
+}
+
+export interface Assignment {
+  id: string;
+  employeeId: string;
+  propertyId: string;
+  fromDeptId: string;
+  toDeptId: string;
+  eventId?: string;
+  requestId?: string;
+  date: string;
+  start: number;
+  end: number;
+  skill: string;
+  status: "confirmed" | "cancelled";
+  approvedBy: string;
+  createdAt: string;
+  cancelledReason?: string;
+  done?: boolean;
 }

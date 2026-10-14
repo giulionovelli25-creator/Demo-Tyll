@@ -8,7 +8,8 @@ import {
   baselineFor, buyLines, demandFor, ingredientsFor, mealShares, needByDay, periodOf,
   type Assumptions, type Baseline, type BuyLine, type Meal, type Period, type PeriodKind, type Source,
 } from "../domain/planning";
-import type { PrepPlan, PrepTask, PurchaseRequest, RequestLine, RequestStatus, User } from "../types";
+import { eventPortions, eventStoreNeed, isCommitted } from "../domain/events";
+import type { EventRecord, PrepPlan, PrepTask, PurchaseRequest, RequestLine, RequestStatus, User } from "../types";
 import { DEMO_TODAY, addDays, eachDay, sum } from "../util";
 import { loadStore, mutateStore } from "./purchasing-store";
 import { stockFor, type SessionEntries } from "./stock";
@@ -69,6 +70,8 @@ export interface BuyPlanOut {
   lines: BuyLine[];
   /** Set when the plan carries a kitchen prep plan's portions. */
   prepPlanId?: string;
+  /** Set when the plan buys for one event. */
+  eventId?: string;
   sharedNote?: string;
 }
 
@@ -95,11 +98,12 @@ function arrivalsFor(propertyId: string, period: Period) {
 }
 
 /** Quantities on requests still going through approval, so the same need is not requested twice. */
-function openRequested(propertyId: string, outletIds: string[], exceptId?: string) {
+function openRequested(propertyId: string, outletIds: string[], exceptId?: string, eventId?: string) {
   const out = new Map<string, number>();
   for (const r of loadStore().requests) {
     if (r.id === exceptId || r.propertyId !== propertyId || !["purchasing", "accounting", "manager"].includes(r.status)) continue;
-    if (!r.outletIds.some((o) => outletIds.includes(o))) continue;
+    // An event's requests count only for that event; an outlet's only for its outlets.
+    if (eventId ? r.eventId !== eventId : r.eventId || !r.outletIds.some((o) => outletIds.includes(o))) continue;
     for (const l of r.lines) out.set(l.ingredientId, (out.get(l.ingredientId) ?? 0) + l.qty);
   }
   return out;
@@ -113,18 +117,23 @@ export function buyPlan(user: User, body: Record<string, unknown>, entries: Sess
 /** The calculation behind What to buy, also used by What to prep for stock availability. Access is checked by outlet. */
 function computeBuyPlan(user: User, body: Record<string, unknown>, entries: SessionEntries): Result<{ plan: BuyPlanOut }> {
   const propertyId = String(body.propertyId ?? "");
-  const outletIds = scopeOutlets(user, propertyId, body.outletIds);
+  // Event mode: buying for one event, after the outlets' own forecast use.
+  const eventId = typeof body.eventId === "string" ? body.eventId : undefined;
+  const event = eventId ? loadStore().events.find((e) => e.id === eventId) : undefined;
+  if (eventId && (!event || event.propertyId !== propertyId || !allowedProperties(user).includes(propertyId) || !(can(user, "events.plan") || can(user, "purchase.create")))) return fail(404, "This event is not available.");
+  const outletIds = event ? [] : scopeOutlets(user, propertyId, body.outletIds);
   if (!outletIds) return fail(403, "This outlet is outside your access.");
-  const period = readPeriod(body);
-  const data = getDataset();
-  const baseline = baselineFor(data, outletIds, period);
+  const period = event ? { from: event.date, to: event.date } : readPeriod(body);
+  const data = planningData();
+  const allOutlets = outletsOfProperty(propertyId).map((o) => o.id);
+  const baseline = baselineFor(data, outletIds.length ? outletIds : allOutlets, period);
   const { values, sources } = readAssumptions(body.assumptions, baseline);
-  const demand = demandFor(data, outletIds, period, values, baseline);
-  const mine = needByDay(demand, outletIds, entries.recipes);
+  const demand = demandFor(data, outletIds.length ? outletIds : allOutlets, period, values, baseline);
+  const mine = event ? eventNeedByDay([event], period, entries) : needByDay(demand, outletIds, entries.recipes);
 
   // A saved prep plan replaces the forecast for its dishes, outlet and days.
   let prepPlanId: string | undefined;
-  if (typeof body.prepPlanId === "string") {
+  if (!event && typeof body.prepPlanId === "string") {
     const plan = loadStore().plans.find((p) => p.id === body.prepPlanId);
     if (plan && outletIds.includes(plan.outletId)) {
       prepPlanId = plan.id;
@@ -140,24 +149,62 @@ function computeBuyPlan(user: User, body: Record<string, unknown>, entries: Sess
     }
   }
 
-  // Other outlets drawing on the same storeroom, at Tyll's own figures. Only their totals are used.
-  const others = outletsOfProperty(propertyId).map((o) => o.id).filter((o) => !outletIds.includes(o));
+  // Other outlets drawing on the same storeroom, at Tyll's own figures, and every other committed event. Only totals are used.
+  const others = allOutlets.filter((o) => !outletIds.includes(o));
   const othersNeed = others.length ? needByDay(demandFor(data, others, period, baselineFor(data, others, period).values, baselineFor(data, others, period)), others, entries.recipes) : new Map<string, number[]>();
+  const otherEvents = loadStore().events.filter((e) => isCommitted(e) && e.propertyId === propertyId && e.id !== event?.id);
+  for (const [g, row] of eventNeedByDay(otherEvents, period, entries)) {
+    const cur = othersNeed.get(g) ?? row.map(() => 0);
+    othersNeed.set(g, cur.map((v, i) => v + row[i]));
+  }
 
   const lines = buyLines({
     propertyId, period, mine, others: othersNeed,
     stock: stockFor(user, propertyId, entries),
     arrivals: arrivalsFor(propertyId, period),
-    requested: openRequested(propertyId, outletIds),
-    safetyDays: values.safetyDays,
+    requested: openRequested(propertyId, outletIds, undefined, event?.id),
+    safetyDays: event ? 0 : values.safetyDays,
   });
+  const reservedFor = [others.length && `${others.length} outlet${others.length === 1 ? "" : "s"}`, otherEvents.some((e) => e.date >= period.from && e.date <= period.to) && "confirmed events"].filter(Boolean).join(" and ");
   return {
     ok: true,
     plan: {
-      propertyId, outletIds, period, baseline, assumptions: values, sources, guests: demand.guests, lines, prepPlanId,
-      sharedNote: others.length ? `Shared stock is first reserved for the forecast use of ${others.length} other outlet${others.length === 1 ? "" : "s"} at this hotel. Their sales are not shown.` : undefined,
+      propertyId, outletIds, period, baseline, assumptions: values, sources, guests: demand.guests, lines, prepPlanId, eventId: event?.id,
+      sharedNote: reservedFor ? `Shared stock is first reserved for the forecast use of ${reservedFor} at this hotel. Their sales are not shown.` : undefined,
     },
   };
+}
+
+/** Lines to buy for one event. Empty when the user cannot see the event's purchasing. */
+export function buyPlanForEvent(user: User, e: EventRecord, entries: SessionEntries): BuyLine[] {
+  const r = computeBuyPlan(user, { propertyId: e.propertyId, eventId: e.id }, entries);
+  return r.ok ? r.plan.lines : [];
+}
+
+/** What events still need from the storeroom, by ingredient and day. Stock already issued to an event is not counted again. */
+function eventNeedByDay(events: readonly EventRecord[], period: Period, entries: SessionEntries): Map<string, number[]> {
+  const days = eachDay(period);
+  const out = new Map<string, number[]>();
+  for (const e of events) {
+    const i = days.indexOf(e.date);
+    if (i < 0) continue;
+    for (const [g, q] of eventStoreNeed(e, entries.recipes)) {
+      const row = out.get(g) ?? days.map(() => 0);
+      row[i] += q;
+      out.set(g, row);
+    }
+  }
+  return out;
+}
+
+/** The dataset with events as they stand now: committed events only, at their current guest numbers. Drafts count for nothing. */
+let planningCache: { key: string; data: ReturnType<typeof getDataset> } | null = null;
+function planningData() {
+  const d = getDataset();
+  const events = loadStore().events.filter(isCommitted).map((e) => ({ id: e.id, propertyId: e.propertyId, date: e.date, name: e.name, attendance: e.guests }));
+  const key = JSON.stringify(events);
+  if (!planningCache || planningCache.key !== key) planningCache = { key, data: { ...d, events } };
+  return planningCache.data;
 }
 
 /** How much a prep plan changes ingredient use against the forecast for the same dishes and days. */
@@ -188,7 +235,7 @@ function prepDelta(plan: PrepPlan, entries: SessionEntries): Map<string, Map<str
 
 /** Expected portions by dish for one outlet, period and meal, at Tyll's own figures. */
 function prepForecast(outletId: string, period: Period, meal: Meal, assumptions?: Assumptions) {
-  const data = getDataset();
+  const data = planningData();
   const base = baselineFor(data, [outletId], period);
   const demand = demandFor(data, [outletId], period, assumptions ?? base.values, base);
   const shares = meal === "all" ? null : mealShares(data.orders, outletId);
@@ -220,6 +267,8 @@ export interface PrepOut {
   otherUse: Record<string, number>;
   plan: PrepPlan | null;
   meals: Meal[];
+  /** Committed events this kitchen prepares in the period. Their ingredients are reserved separately, not in "available". */
+  events: { id: string; name: string; date: string; guests: number; dishes: { itemId: string; portions: number; calculated: number }[] }[];
 }
 
 export function prepPlanFor(user: User, body: Record<string, unknown>, entries: SessionEntries): Result<{ prep: PrepOut }> {
@@ -228,7 +277,7 @@ export function prepPlanFor(user: User, body: Record<string, unknown>, entries: 
   if (!outletById[outletId] || !allowedOutlets(user).includes(outletId)) return fail(403, "This outlet is outside your access.");
   const period = readPeriod(body);
   const meal = (["all", "breakfast", "lunch", "dinner"] as const).find((m) => m === body.meal) ?? "all";
-  const data = getDataset();
+  const data = planningData();
   const base = baselineFor(data, [outletId], period);
   const { values, sources } = readAssumptions(body.assumptions, base);
   const f = prepForecast(outletId, period, meal, values);
@@ -250,8 +299,15 @@ export function prepPlanFor(user: User, body: Record<string, unknown>, entries: 
   const plan = loadStore().plans.find((p) => p.outletId === outletId && p.period.from === period.from && p.period.to === period.to && p.meal === meal) ?? null;
   const shares = mealShares(data.orders, outletId);
   const meals = (["breakfast", "lunch", "dinner"] as const).filter((m) => [...shares.values()].some((s) => s[m] > 0.05));
-  return { ok: true, prep: { outletId, period, meal, baseline: base, assumptions: values, sources, suggested, available, otherUse, plan, meals: ["all", ...meals] } };
+  const events = kitchenEvents(outletId, period).map((e) => ({
+    id: e.id, name: e.name, date: e.date, guests: e.guests,
+    dishes: eventPortions(e).filter((p) => itemById[p.itemId].dept === "food").map((p) => ({ itemId: p.itemId, portions: p.portions, calculated: p.calculated })),
+  }));
+  return { ok: true, prep: { outletId, period, meal, baseline: base, assumptions: values, sources, suggested, available, otherUse, plan, meals: ["all", ...meals], events } };
 }
+
+/** Committed events a kitchen prepares within a period. */
+const kitchenEvents = (outletId: string, period: Period) => loadStore().events.filter((e) => isCommitted(e) && e.kitchenOutletId === outletId && e.date >= period.from && e.date <= period.to);
 
 const planId = (outletId: string, period: Period, meal: Meal) => `PP-${outletById[outletId].code}-${period.from.slice(5).replace("-", "")}-${eachDay(period).length}D-${meal.toUpperCase()}`;
 
@@ -279,6 +335,14 @@ export function savePrepPlan(user: User, body: Record<string, unknown>): Result<
       const was = old?.tasks.find((t) => t.itemId === itemId);
       return was && was.portions === n ? was : { id: `${id}-${itemId}`, itemId, portions: n, assigneeId: was?.assigneeId, done: false };
     });
+    // Each event this kitchen prepares adds its own tasks, at the event's current portions.
+    for (const e of kitchenEvents(outletId, period)) {
+      for (const p of eventPortions(e).filter((x) => itemById[x.itemId].dept === "food" && x.portions > 0)) {
+        const tid = `${id}-ev-${e.id}-${p.itemId}`;
+        const was = old?.tasks.find((t) => t.id === tid);
+        tasks.push(was && was.portions === p.portions ? was : { id: tid, itemId: p.itemId, portions: p.portions, eventId: e.id, assigneeId: was?.assigneeId, done: false });
+      }
+    }
     const next: PrepPlan = { id, propertyId: outletById[outletId].propertyId, outletId, period, meal, portions, suggested, tasks, createdBy: old?.createdBy ?? user.id, updatedAt: now(), updatedBy: user.id };
     s.plans = [...s.plans.filter((p) => p.id !== id), next];
     return next;
@@ -338,6 +402,7 @@ export function canSee(user: User, r: PurchaseRequest): boolean {
   if (r.createdBy === user.id) return true;
   if (can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveManager")) return true;
   if (hasWholeProperty(user, r.propertyId) && can(user, "purchase.create")) return true;
+  if (r.eventId && can(user, "events.plan")) return true;
   if (!can(user, "purchase.create")) return false;
   const mine = allowedOutlets(user);
   return r.outletIds.some((o) => mine.includes(o));
@@ -378,12 +443,16 @@ export function saveRequest(user: User, body: Record<string, unknown>): Result<{
   if (body.id && !existing) return fail(404, "This request does not exist.");
   if (existing && (existing.createdBy !== user.id || !["draft", "changes"].includes(existing.status))) return fail(403, "Only the author can change a request, and only before it is submitted or when changes are requested.");
   const propertyId = existing?.propertyId ?? String(body.propertyId ?? "");
-  const outletIds = existing?.outletIds ?? scopeOutlets(user, propertyId, body.outletIds);
+  // A request for an event buys for the event, not for an outlet.
+  const eventId = existing?.eventId ?? (typeof body.eventId === "string" ? body.eventId : undefined);
+  const event = eventId ? loadStore().events.find((e) => e.id === eventId && e.propertyId === propertyId) : undefined;
+  if (eventId && (!event || !can(user, "events.plan") || !allowedProperties(user).includes(propertyId))) return fail(403, "This event is outside your access.");
+  const outletIds = existing?.outletIds ?? (event ? [] : scopeOutlets(user, propertyId, body.outletIds));
   if (!outletIds) return fail(403, "This outlet is outside your access.");
   const read = readLines(user, propertyId, body.lines);
   if (!read.ok) return read;
   const comment = typeof body.comment === "string" ? body.comment.trim().slice(0, 600) : existing?.comment;
-  const period = existing?.period ?? readPeriod(body);
+  const period = existing?.period ?? (event ? { from: event.date, to: event.date } : readPeriod(body));
   const prepPlanId = typeof body.prepPlanId === "string" ? body.prepPlanId : existing?.prepPlanId;
   const request = mutateStore((s) => {
     if (existing) {
@@ -396,7 +465,7 @@ export function saveRequest(user: User, body: Record<string, unknown>): Result<{
     }
     s.seq += 1;
     const id = `PR-${propertyId.toUpperCase()}-${String(s.seq).padStart(4, "0")}`;
-    const r: PurchaseRequest = { id, propertyId, outletIds, period, createdBy: user.id, createdAt: now(), updatedAt: now(), status: "draft", lines: read.lines, comment, prepPlanId, history: [{ at: now(), by: user.id, action: "Draft created", status: "draft" }] };
+    const r: PurchaseRequest = { id, propertyId, outletIds, period, createdBy: user.id, createdAt: now(), updatedAt: now(), status: "draft", lines: read.lines, comment, prepPlanId, eventId, history: [{ at: now(), by: user.id, action: "Draft created", status: "draft" }] };
     s.requests.push(r);
     return r;
   });

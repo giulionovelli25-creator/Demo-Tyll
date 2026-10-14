@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Banknote, BedDouble, Bell, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, TrendingUp, UtensilsCrossed, X,
+  Banknote, BedDouble, Bell, CalendarDays, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, TrendingUp, UtensilsCrossed, X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { BrandLoader, TyllLogo, TyllMark } from "@/components/brand";
@@ -28,13 +28,14 @@ const NAV: Record<ModuleId, { label: string; icon: typeof Banknote }> = {
   money: { label: "Tyll Money", icon: Banknote },
   stock: { label: "Tyll Stock", icon: Package },
   forecast: { label: "Tyll Forecast", icon: TrendingUp },
+  events: { label: "Sales & Events", icon: CalendarDays },
   flow: { label: "Tyll Flow", icon: UtensilsCrossed },
   rooms: { label: "Tyll Rooms", icon: BedDouble },
   investigations: { label: "Investigations", icon: FileSearch },
   reports: { label: "Reports", icon: FileText },
   settings: { label: "Settings", icon: Settings },
 };
-const ORDER: ModuleId[] = ["tasks", "overview", "money", "stock", "forecast", "flow", "rooms", "investigations", "reports", "settings"];
+const ORDER: ModuleId[] = ["tasks", "overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "reports", "settings"];
 
 const subscribe = () => () => {};
 const useHydrated = () => useSyncExternalStore(subscribe, () => true, () => false);

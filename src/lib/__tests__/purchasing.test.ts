@@ -150,7 +150,8 @@ describe("Scenario C: shared storeroom", () => {
     const all = lineOf(owner, { ...tomorrow, period: "3" }, "coke")!;
     const terrace = lineOf(sara, { ...tomorrow, period: "3" }, "coke")!;
     expect(terrace.reservedForOthers).toBeGreaterThan(0);
-    expect(all.reservedForOthers).toBe(0);
+    // Hotel-wide there are no other outlets; only the confirmed conference (180 soft drinks) is held back.
+    expect(all.reservedForOthers).toBeCloseTo(180, 6);
     // Terrace's available stock is what is left after the others' share.
     expect(terrace.available + terrace.reservedForOthers).toBeCloseTo(all.usable, 6);
     expect(terrace.requirement).toBeLessThan(all.requirement);

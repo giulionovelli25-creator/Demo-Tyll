@@ -3,7 +3,7 @@
 import { OUTLETS, PROPERTIES, outletById } from "../data/catalog";
 import type { Currency, Role, Scope, User } from "../types";
 
-export type ModuleId = "overview" | "money" | "stock" | "forecast" | "flow" | "rooms" | "investigations" | "reports" | "settings" | "tasks";
+export type ModuleId = "overview" | "money" | "stock" | "forecast" | "events" | "flow" | "rooms" | "investigations" | "reports" | "settings" | "tasks";
 
 export type Permission =
   | "investigation.assign"
@@ -32,40 +32,49 @@ export type Permission =
   /** Create and change kitchen preparation plans. */
   | "prep.plan"
   /** Tick off preparation tasks. */
-  | "prep.complete";
+  | "prep.complete"
+  /** Create and change events. */
+  | "events.plan"
+  /** Ask other departments for staff. */
+  | "staff.request"
+  /** Release staff from a department the user manages. Which departments is checked separately. */
+  | "staff.lend";
 
 const MODULES: Record<Role, ModuleId[]> = {
-  owner: ["overview", "money", "stock", "forecast", "flow", "rooms", "investigations", "reports", "settings"],
-  gm: ["overview", "money", "stock", "forecast", "flow", "rooms", "investigations", "reports", "settings"],
+  owner: ["overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "reports", "settings"],
+  gm: ["overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "reports", "settings"],
   controller: ["overview", "money", "stock", "forecast", "rooms", "investigations", "reports", "settings"],
-  fnb_director: ["overview", "money", "stock", "forecast", "flow", "investigations", "reports", "settings"],
-  restaurant_manager: ["overview", "money", "stock", "forecast", "flow", "investigations", "reports", "settings"],
+  fnb_director: ["overview", "money", "stock", "forecast", "events", "flow", "investigations", "reports", "settings"],
+  restaurant_manager: ["overview", "money", "stock", "forecast", "events", "flow", "investigations", "reports", "settings"],
   // Purchasing sees requests, stock and suppliers, not sales. The head chef sees preparation and stock, not finances.
   purchasing: ["forecast", "stock", "settings"],
-  chef: ["forecast", "tasks", "stock", "flow", "settings"],
+  chef: ["forecast", "events", "tasks", "stock", "flow", "settings"],
+  // Sales and events: events, their purchasing and staff. No outlet sales.
+  event_manager: ["events", "forecast", "settings"],
   employee: ["tasks", "stock", "flow", "settings"],
 };
 
 const PERMISSIONS: Record<Role, Permission[]> = {
-  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan"],
-  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan"],
+  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend"],
+  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend"],
   controller: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.editPrices", "reports.export", "settings.reset", "settings.audit", "purchase.approveFinance"],
-  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan"],
-  restaurant_manager: ["investigation.assign", "investigation.note", "investigation.close", "stock.logWaste", "stock.count", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "prep.complete"],
+  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "events.plan", "staff.request", "staff.lend"],
+  restaurant_manager: ["investigation.assign", "investigation.note", "investigation.close", "stock.logWaste", "stock.count", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "staff.lend"],
+  event_manager: ["settings.reset", "purchase.create", "events.plan", "staff.request", "staff.lend"],
   purchasing: ["stock.count", "settings.reset", "purchase.review", "purchase.receive"],
-  chef: ["stock.logWaste", "stock.count", "flow.updateOrder", "settings.reset", "purchase.create", "prep.plan", "prep.complete"],
+  chef: ["stock.logWaste", "stock.count", "flow.updateOrder", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request"],
   employee: ["stock.logWaste", "stock.count", "flow.updateOrder", "settings.reset", "prep.complete"],
 };
 
 export const MODULE_PATH: Record<ModuleId, string> = {
-  overview: "/", money: "/money", stock: "/stock", forecast: "/forecast", flow: "/flow", rooms: "/rooms",
+  overview: "/", money: "/money", stock: "/stock", forecast: "/forecast", events: "/events", flow: "/flow", rooms: "/rooms",
   investigations: "/investigations", reports: "/reports", settings: "/settings", tasks: "/tasks",
 };
 
 export const modulesFor = (user: User): ModuleId[] => MODULES[user.role];
 export const canOpen = (user: User, module: ModuleId) => MODULES[user.role].includes(module);
 export const can = (user: User, permission: Permission) => PERMISSIONS[user.role].includes(permission);
-export const homePath = (user: User) => (user.role === "employee" ? "/tasks" : user.role === "purchasing" ? "/forecast?tab=approvals" : user.role === "chef" ? "/forecast?tab=prep" : "/");
+export const homePath = (user: User) => (user.role === "employee" ? "/tasks" : user.role === "purchasing" ? "/forecast?tab=approvals" : user.role === "chef" ? "/forecast?tab=prep" : user.role === "event_manager" ? "/events" : "/");
 
 /** Which module a URL path belongs to, for route guarding. */
 export function moduleOfPath(path: string): ModuleId {
