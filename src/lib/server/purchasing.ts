@@ -408,6 +408,7 @@ export function canSee(user: User, r: PurchaseRequest): boolean {
   if (can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveManager")) return true;
   if (hasWholeProperty(user, r.propertyId) && can(user, "purchase.create")) return true;
   if (r.eventId && can(user, "events.plan")) return true;
+  if (r.deptId && user.deptId === r.deptId) return true;
   if (!can(user, "purchase.create")) return false;
   const mine = allowedOutlets(user);
   return r.outletIds.some((o) => mine.includes(o));
@@ -451,12 +452,20 @@ export function saveRequest(user: User, body: Record<string, unknown>): Result<{
   const propertyId = existing?.propertyId ?? String(body.propertyId ?? "");
   // A request for an event buys for the event, not for an outlet.
   const eventId = existing?.eventId ?? (typeof body.eventId === "string" ? body.eventId : undefined);
+  // A department such as Housekeeping buys supplies for itself, through the same workflow.
+  const deptId = existing?.deptId ?? (typeof body.deptId === "string" ? body.deptId : undefined);
+  if (deptId && (user.deptId !== deptId || !propertyId.length || !deptId.startsWith(`${propertyId}-`))) return fail(403, "You can only request supplies for your own department.");
   const event = eventId ? loadStore().events.find((e) => e.id === eventId && e.propertyId === propertyId) : undefined;
   if (eventId && (!event || !can(user, "events.plan") || !allowedProperties(user).includes(propertyId))) return fail(403, "This event is outside your access.");
-  const outletIds = existing?.outletIds ?? (event ? [] : scopeOutlets(user, propertyId, body.outletIds));
+  const outletIds = existing?.outletIds ?? (event || deptId ? [] : scopeOutlets(user, propertyId, body.outletIds));
   if (!outletIds) return fail(403, "This outlet is outside your access.");
   const read = readLines(user, propertyId, body.lines, !!eventId);
   if (!read.ok) return read;
+  // One open request per shortage: the same department asking again for an item already on its way is sent to that request.
+  if (deptId && !existing) {
+    const open = loadStore().requests.find((r) => r.deptId === deptId && !["received", "rejected"].includes(r.status) && r.lines.some((l) => read.lines.some((n) => n.ingredientId === l.ingredientId)));
+    if (open) return fail(409, `${open.id} already asks for this item (${open.status}). Open it instead of starting another.`);
+  }
   const comment = typeof body.comment === "string" ? body.comment.trim().slice(0, 600) : existing?.comment;
   const period = existing?.period ?? (event ? { from: event.date, to: event.date } : readPeriod(body));
   const prepPlanId = typeof body.prepPlanId === "string" ? body.prepPlanId : existing?.prepPlanId;
@@ -471,7 +480,7 @@ export function saveRequest(user: User, body: Record<string, unknown>): Result<{
     }
     s.seq += 1;
     const id = `PR-${propertyId.toUpperCase()}-${String(s.seq).padStart(4, "0")}`;
-    const r: PurchaseRequest = { id, propertyId, outletIds, period, createdBy: user.id, createdAt: now(), updatedAt: now(), status: "draft", lines: read.lines, comment, prepPlanId, eventId, history: [{ at: now(), by: user.id, action: "Draft created", status: "draft" }] };
+    const r: PurchaseRequest = { id, propertyId, outletIds, period, createdBy: user.id, createdAt: now(), updatedAt: now(), status: "draft", lines: read.lines, comment, prepPlanId, eventId, deptId, history: [{ at: now(), by: user.id, action: "Draft created", status: "draft" }] };
     s.requests.push(r);
     return r;
   });

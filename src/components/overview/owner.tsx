@@ -1,5 +1,6 @@
 "use client";
 import { StockAlert } from "./stock-alert";
+import { GuestStrip } from "@/components/guest/service";
 // The owner's control center: five figures, one chart, one comparison list, one list of issues.
 import Link from "next/link";
 import { ArrowRight, ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
@@ -89,6 +90,8 @@ export function OwnerOverview() {
         <span><span className="num text-ink">{open.length}</span> <span className="text-steel">still unresolved</span></span>
         <Link href="/investigations" className="ml-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} /></Link>
       </section>
+
+      <GuestStrip />
 
       <KpiDrawer kpi={kpi} onClose={() => setKpi(null)} c={c} rows={rows} ctx={ctx} sel={sel} investigations={investigations} money={money} onOutlet={(id) => setScope({ outletId: id })} />
     </div>

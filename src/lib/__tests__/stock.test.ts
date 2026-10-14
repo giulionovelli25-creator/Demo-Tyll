@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tyll-stock-"));
 process.env.TYLL_AUTH_STORE = path.join(dir, "auth.json");
+process.env.TYLL_PURCHASING_STORE = path.join(dir, "purchasing.json");
 
 const { SESSION_COOKIE, demoAccounts, login, resetAuthStore, verifyPin } = await import("../server/auth");
 const { stockFor, forecastFor } = await import("../server/stock");

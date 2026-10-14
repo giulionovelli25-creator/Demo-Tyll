@@ -17,7 +17,8 @@ const LABEL: Record<Tab, string> = { buy: "What to buy", prep: "What to prep", a
 export default function ForecastPage() {
   const { user } = useView();
   const tabs = ([
-    can(user, "purchase.create") && "buy",
+    // What to buy plans for outlets; departments raise their requests from their own screens.
+    can(user, "purchase.create") && (user.outletIds === "all" || user.outletIds.length > 0 || can(user, "events.plan")) && "buy",
     (can(user, "prep.plan") || can(user, "prep.complete")) && "prep",
     "approvals",
   ].filter(Boolean) as Tab[]);

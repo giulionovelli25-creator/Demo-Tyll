@@ -19,7 +19,8 @@ export function Inventory({ propertyId }: { propertyId: string }) {
   const property = propertyById[propertyId];
   const money = (n: number, decimals = false) => fmtMoney(n, property.currency, { decimals });
   const { data } = useServerStock(propertyId);
-  const rows = useMemo(() => data?.rows ?? [], [data]);
+  // Housekeeping supplies live in the same storeroom but belong to Housekeeping, not F&B.
+  const rows = useMemo(() => (data?.rows ?? []).filter((r) => ingredientById[r.ingredientId].dept !== "supplies"), [data]);
   const [q, setQ] = useState("");
   const [priority, setPriority] = useState(false);
   const { sort, toggle } = useSort<Key>({ key: "value", dir: "desc" });

@@ -7,6 +7,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 // A private store for these tests, created before the auth module reads its settings.
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tyll-auth-"));
 process.env.TYLL_AUTH_STORE = path.join(dir, "auth.json");
+process.env.TYLL_PURCHASING_STORE = path.join(dir, "purchasing.json");
 
 const { AUTH_POLICY, SESSION_COOKIE, demoAccounts, login, resetAuthStore, resolveSession, verifyPin, lockSession, logout } = await import("../server/auth");
 const { snapshotFor, orderById, ordersOnDate, ordersWithItem, searchOrders } = await import("../server/snapshot");

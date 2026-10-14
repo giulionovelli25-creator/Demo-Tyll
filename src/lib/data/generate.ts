@@ -405,6 +405,12 @@ function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
         });
       }
     }
+    // Housekeeping supplies, counted in the storeroom at the last full count. Amenity kits are running low.
+    if (p.id === "dxb") {
+      for (const [id, qty] of [["amenity", 60], ["towel", 420], ["chem", 38]] as const) {
+        out.push({ id: `C-${p.id}-${LAST_FULL_COUNT}-${id}`, propertyId: p.id, ingredientId: id, date: LAST_FULL_COUNT, kind: "weekly", expected: qty, counted: qty, by: "HK-09", seq: 0, allocation: {} });
+      }
+    }
     // Daily spot checks on a few items, up to the day before the last full count.
     for (const date of eachDay({ from: addDays(LAST_FULL_COUNT, -14), to: addDays(LAST_FULL_COUNT, -1) })) {
       if (weekday(date) === 0) continue;

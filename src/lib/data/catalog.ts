@@ -16,6 +16,7 @@ export const SUPPLIERS: Supplier[] = [
   { id: "dry", name: "Emirates Dairy & Dry Goods" },
   { id: "bev", name: "Cellar & Co. Beverages" },
   { id: "ware", name: "Horeca Tableware" },
+  { id: "hk", name: "Linen & Amenities Co." },
 ];
 
 const ing = (
@@ -87,6 +88,10 @@ export const INGREDIENTS: Ingredient[] = [
   ing("wineglass", "Wine glasses", "كؤوس نبيذ", "each", 18, "ware", 3650, 5, 24, false, "glassware"),
   ing("highball", "Highball glasses", "كؤوس طويلة", "each", 9, "ware", 3650, 5, 24, false, "glassware"),
   ing("plate", "Dinner plates", "أطباق عشاء", "each", 32, "ware", 3650, 5, 12, false, "glassware"),
+  // Housekeeping supplies, bought through the same purchasing workflow. Not used by any recipe.
+  ing("amenity", "Guest amenity kits", "أطقم ضيافة", "each", 12, "hk", 730, 2, 50, false, "supplies"),
+  ing("towel", "Bath towels", "مناشف حمام", "each", 28, "hk", 3650, 3, 20, false, "supplies"),
+  ing("chem", "Cleaning chemicals", "مواد تنظيف", "l", 22, "hk", 365, 2, 5, false, "supplies"),
 ];
 
 type R = [string, number][];

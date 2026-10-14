@@ -54,7 +54,7 @@ export interface Ingredient {
   leadDays: number;
   packSize: number;
   priority: boolean;
-  dept: Dept | "glassware";
+  dept: Dept | "glassware" | "supplies";
 }
 
 export interface RecipeLine {

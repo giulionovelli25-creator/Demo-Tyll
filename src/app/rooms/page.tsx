@@ -3,6 +3,7 @@ import { BedDouble, ConciergeBell, Gauge, Luggage, MessageSquareText, Sparkles, 
 import type { ReactNode } from "react";
 import { BellLuggage } from "@/components/guest/bell";
 import { HousekeepingBoard, RoomReadiness } from "@/components/guest/rooms";
+import { GuestConnect, GuestRequests, ServicePerformance, SuppliesPanel, TableRequests } from "@/components/guest/service";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
 import { Crumbs, PageHeader, Tabs } from "@/components/ui";
@@ -25,7 +26,11 @@ const DETAIL: Record<Tab, { detail: string; icon: typeof BedDouble }> = {
 
 const SECTIONS: Partial<Record<Tab, () => ReactNode>> = {
   readiness: () => <RoomReadiness />,
-  housekeeping: () => <HousekeepingBoard />,
+  housekeeping: () => <div className="space-y-5"><HousekeepingBoard /><SuppliesPanel /></div>,
+  requests: () => <GuestRequests />,
+  connect: () => <GuestConnect />,
+  tables: () => <TableRequests />,
+  service: () => <ServicePerformance />,
   bell: () => <BellLuggage />,
 };
 

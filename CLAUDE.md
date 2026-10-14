@@ -3,7 +3,7 @@
 Read `HANDOVER.md` first. It describes what has been built, the stage plan, the demo accounts and the setup steps. Also read `AGENTS.md`: this project uses Next.js 16, which differs from older versions (for example, `src/proxy.ts` replaces middleware).
 
 ## Working rules
-- Work in stages, and stop for the owner's approval after each one. Stage 4 is complete; Stage 5 is guest experience.
+- Work in stages, and stop for the owner's approval after each one. Stages 1–5 are complete; Stage 6 waits for approval.
 - Keep the existing design and branding. Make focused changes, not rewrites. Do not rebuild the payment reconciliation product.
 - Before reporting work as done, run `npm run check` (type-check, lint, tests and build), and test in a browser where possible. Never claim a test passed unless it was run.
 - Do not deploy publicly or connect real customer systems without approval.

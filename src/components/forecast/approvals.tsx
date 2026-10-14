@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Badge, Button, EmptyState, Field, Note, Panel, TableWrap, Td, Th, TextArea, cn, rowClass, toast } from "@/components/ui";
 import { ingredientById, outletById, propertyById } from "@/lib/data/catalog";
 import { supplierName } from "@/lib/data/purchasing-rules";
+import { deptById } from "@/lib/data/workforce";
 import { allowedOutlets, can } from "@/lib/domain/access";
 import { personName, useView } from "@/lib/hooks";
 import { type RequestDetail, useMutate, useRequest, useRequests } from "@/lib/plan-hooks";
@@ -33,7 +34,7 @@ const inQueue = (r: PurchaseRequest, q: Queue, user: User) =>
 
 const total = (r: PurchaseRequest) => r.lines.reduce((s, l) => s + l.qty * l.unitPrice, 0);
 const unitOf = (g: string) => (ingredientById[g].unit === "each" ? "units" : ingredientById[g].unit);
-const where = (r: PurchaseRequest) => (r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : `${r.outletIds.length} outlets`);
+const where = (r: PurchaseRequest) => (r.deptId ? deptById[r.deptId]?.name ?? r.deptId : r.eventId ? "Event" : r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : `${r.outletIds.length} outlets`);
 
 export function Approvals() {
   const params = useSearchParams();

@@ -7,7 +7,7 @@ type Tab = RoomsTab;
 /** Which choices a person sees. The owner gets the strategic view; departments get their own work. */
 export function roomsTabs(user: User): Tab[] {
   const ops = can(user, "fo.desk") || can(user, "hk.manage") || can(user, "bell.dispatch");
-  const strategic = can(user, "rooms.view") && !can(user, "fo.desk") && !can(user, "hk.manage") && !can(user, "bell.dispatch");
+  const strategic = can(user, "rooms.view") && !can(user, "fo.desk") && !can(user, "hk.manage") && !can(user, "bell.dispatch") && !can(user, "concierge");
   return ([
     (can(user, "fo.desk") || can(user, "hk.manage") || strategic) && "readiness",
     can(user, "hk.manage") && "housekeeping",

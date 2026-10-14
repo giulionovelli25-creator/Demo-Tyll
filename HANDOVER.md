@@ -358,3 +358,15 @@ Claude's memory is stored per machine and does not move with the repo. Its conte
 - Keep explanations concise.
 - Never claim a test passed unless it was actually run. Separate what fully works from what is simulated.
 - Do not deploy publicly or connect real customer systems without approval.
+
+## Stage 5: Guest experience and connected hotel operations (done, awaiting approval)
+All under **Rooms & Guests** (`/rooms`); sections depend on the role (`src/components/guest/tabs.ts`).
+- **Room readiness / Housekeeping** (`src/lib/server/guest.ts`, `components/guest/rooms.tsx`): ready-time estimates from rules in `src/lib/domain/guest.ts`, priority, helpers, inspection, issues, moving an arrival. Borrowed staff count only once Staff Support approves.
+- **Bell & luggage** (`components/guest/bell.tsx`): requested → assigned → on the way → collected → delivered (handover note, not a signature) → completed.
+- **Guest requests and Guest Connect** (`src/lib/server/guest-service.ts`, `components/guest/service.tsx`): a taxi is confirmed only with a recorded (simulated) reference. Venue requests are pending until the outlet accepts; capacity is rechecked on every acceptance; changes return to the venue; duplicates are refused. Availability is a simulated pattern.
+- **Table requests**: outlet managers answer (accept, decline with reason, suggest a time). The spa and activities are answered by the GM.
+- **Housekeeping supplies**: the supplies panel drafts a department purchase request (`deptId`) in the Stage 3 workflow; one open request per item; receiving raises stock.
+- **Service performance** and the owner's one-line Overview strip: figures from recorded times only; no satisfaction score.
+- Guest notices are merged into `/api/ops/alerts`; the owner gets at most one.
+- Accounts: leila (front office, 3344), grace (housekeeping, 5566), maria (room attendant, 1122), lina (concierge, 7788), tomas (bell captain, 9900), yusuf (bell, 2233). Passwords are in `config/demo-accounts.json`.
+- Demo clock: 20:55 plus real minutes elapsed since the store was created, capped at 23:59. Delete `.data/purchasing.json` to reset.
