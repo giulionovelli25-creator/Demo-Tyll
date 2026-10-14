@@ -4,8 +4,9 @@ import { requestsFor, saveRequest } from "@/lib/server/purchasing";
 
 /** Purchase requests the user may see. */
 export async function GET(req: NextRequest) {
-  const g = guard(req, { module: "forecast" });
-  if (!g.ok) return g.response;
+  const f = guard(req, { module: "forecast" });
+  const g = f.ok ? f : guard(req, { module: "staff", permission: "purchase.receive" });
+  if (!g.ok) return f.ok ? g.response : f.response;
   return json({ requests: requestsFor(g.user) });
 }
 

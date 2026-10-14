@@ -61,9 +61,20 @@ export function requestAction(user: User, id: string, body: Record<string, unkno
   if (["completed", "cancelled", "unable"].includes(r.status)) return fail(409, "This request is already closed.");
   if (body.expect !== undefined && body.expect !== r.status) return fail(409, "Someone else updated this request. Refresh and try again.");
   const action = String(body.action ?? "");
+  const note = text(body.note);
+  if (action === "escalate") {
+    if (note.length < 3) return fail(400, "Say why it needs escalating.");
+    const now0 = demoNow(s.guest);
+    const request = mutateStore((x) => {
+      const y = x.guest.requests.find((z) => z.id === id)!;
+      y.priority = "urgent";
+      y.history.push({ min: now0, by: user.id, action: "Escalated to the front office manager", note });
+      return y;
+    });
+    return { ok: true, request };
+  }
   const to = STEP[action];
   if (!to) return fail(400, "Unknown action.");
-  const note = text(body.note);
   if (action === "confirm") {
     if (r.kind === "restaurant" || r.kind === "spa" || r.kind === "activity") return fail(409, "Hotel venues confirm through Guest Connect.");
     if (note.length < 3) return fail(400, "Enter the confirmation you received, such as the taxi company's reference.");

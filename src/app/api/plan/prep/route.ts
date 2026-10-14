@@ -6,7 +6,8 @@ import { cleanEntries } from "@/lib/server/stock";
 /** Saved preparation plans for the user's outlets. */
 export async function GET(req: NextRequest) {
   const g = guard(req, { module: "forecast" });
-  const alt = g.ok ? g : guard(req, { module: "tasks" });
+  const t = g.ok ? g : guard(req, { module: "tasks" });
+  const alt = t.ok ? t : guard(req, { module: "staff" });
   if (!alt.ok) return alt.response;
   const plans = plansFor(alt.user);
   return json({ plans, assignees: Object.fromEntries([...new Set(plans.map((p) => p.outletId))].map((o) => [o, prepAssignees(o)])) });

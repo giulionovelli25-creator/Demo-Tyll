@@ -35,8 +35,12 @@ export function Login() {
     if (!reveal) return;
     // Bring the filled-in form back into view; keyboard users land on Sign in.
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    top.current?.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
-    signIn.current?.focus({ preventScroll: true });
+    // The button is enabled once the details are filled in, so this runs after that render. Focus first:
+    // moving focus during a smooth scroll would stop the scroll.
+    setTimeout(() => {
+      signIn.current?.focus({ preventScroll: true });
+      top.current?.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+    }, 0);
   };
 
   useEffect(() => {

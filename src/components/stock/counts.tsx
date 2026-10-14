@@ -1,4 +1,5 @@
 "use client";
+import { CountReview } from "./count-review";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ColumnChart } from "@/components/charts";
@@ -60,6 +61,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
 
   return (
     <div className="space-y-5">
+      <CountReview propertyId={propertyId} />
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.2fr_1fr]">
         <Panel title="Today's spot checks" description="Five priority items each day. Count first: the expected quantity is shown only after you record yours, so the count is not led by the number on screen.">
           {!mayCount ? <Note>Your role cannot record counts. Outlet and kitchen accounts can.</Note> : (

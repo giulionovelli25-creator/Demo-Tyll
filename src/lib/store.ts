@@ -86,6 +86,8 @@ interface Actions {
   dismissAlert(id: string): void;
   syncWaste(): void;
   setOffline(offline: boolean): void;
+  /** Removes this device's copies of entries now saved on the server. */
+  dropUploaded(ids: { waste?: string[]; counts?: string[] }): void;
   /** The expected quantity and how a difference is shared between outlets both come from the server's stock figures. */
   recordCount(input: { propertyId: string; ingredientId: string; counted: number; expected: number; allocation: Record<string, number> }): Result;
   setIngredientPrice(ingredientId: string, cost: number): Result;
@@ -415,8 +417,14 @@ export const useDemo = create<DemoState>()(
           set({ offline });
           if (!offline) get().syncWaste();
         },
+        dropUploaded({ waste = [], counts = [] }) {
+          const w = new Set(waste), c = new Set(counts);
+          set((s) => ({ wasteLogs: s.wasteLogs.filter((x) => !w.has(x.id)), wasteCorrections: s.wasteCorrections.filter((x) => !w.has(x.wasteId)), counts: s.counts.filter((x) => !c.has(x.id)) }));
+        },
         recordCount(input) {
           return guarded("stock.count", undefined, (user) => {
+            // Staff counts wait for a manager's review, so they are submitted from Tyll Staff.
+            if (user.role === "employee" || user.role === "storekeeper") return fail("Submit counts from Tyll Staff, so a manager can review them.");
             if (!user.propertyIds.includes(input.propertyId) && user.propertyIds !== "all") return fail("This property is outside your access.");
             if (!ingredientById[input.ingredientId]) return fail("Choose an item to count.");
             if (!Number.isFinite(input.counted) || input.counted < 0) return fail("Enter the quantity you counted.");

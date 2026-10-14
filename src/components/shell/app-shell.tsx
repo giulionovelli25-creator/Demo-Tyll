@@ -21,6 +21,7 @@ import { currentRange, useDemo } from "@/lib/store";
 import type { Dept, User } from "@/lib/types";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
 import { Login } from "./login";
+import { SharedStockSync } from "@/lib/shared-stock";
 import { PinScreen } from "./pin";
 import { Tour } from "./tour";
 
@@ -129,7 +130,34 @@ function Authed({ children }: { children: ReactNode }) {
 
   if (session.status === "locked" && session.userId) return <PinScreen userId={session.userId} demoPin={session.demoPin} onUnlocked={refresh} />;
   if (session.status !== "ready" || !user) return <BrandLoader />;
-  return <Signed user={user}>{children}</Signed>;
+  return <><SharedStockSync user={user} /><Signed user={user}>{children}</Signed></>;
+}
+
+/** Tyll Staff: phone-first, no management chrome. The same session, PIN and records. */
+function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
+  const signOut = useDemo((s) => s.signOut);
+  // Concierge and bell captains also have a desk view; frontline staff stay in Tyll Staff.
+  const frontline = user.role === "employee" || user.role === "storekeeper";
+  const others = frontline ? [] : modulesFor(user).filter((m) => !["staff", "tasks", "settings"].includes(m));
+  const leave = async () => {
+    await api("/api/auth/logout", { method: "POST", body: {} }).catch(() => undefined);
+    signOut();
+    clearDataset();
+    reloadTo("/login");
+  };
+  return (
+    <div className="min-h-screen bg-paper">
+      <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-hair bg-paper/90 px-4 backdrop-blur">
+        <Link href="/staff" className="flex items-center gap-2" aria-label="Tyll Staff home"><TyllLogo height={20} /><span className="text-[13px] text-steel">Staff</span></Link>
+        <span className="flex items-center gap-1">
+          {others.length > 0 && <Link href={MODULE_PATH[others[0]]} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Full Tyll</Link>}
+          <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Sign out</button>
+        </span>
+      </header>
+      <main className="mx-auto w-full max-w-md px-4 pb-24 pt-5">{children}</main>
+      <Toaster />
+    </div>
+  );
 }
 
 function Signed({ user, children }: { user: User; children: ReactNode }) {
@@ -137,6 +165,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const current = moduleOfPath(pathname);
   const allowed = canOpen(user, current);
+  if (current === "staff" && allowed) return <StaffFrame user={user}>{children}</StaffFrame>;
   return (
     <div className="flex min-h-screen">
       <Sidebar user={user} active={current} open={menuOpen} onClose={() => setMenuOpen(false)} />
@@ -242,7 +271,8 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
   const [panel, setPanel] = useState<null | "search" | "alerts" | "profile" | "dates">(null);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Staff and the events team have no outlets to choose between.
-  const showScope = user.role !== "employee" && user.role !== "event_manager" && !user.deptId;
+  // The outlet and date pickers drive sales figures; roles without outlet sales do not see them.
+  const showScope = !["employee", "event_manager", "sales", "sales_director", "storekeeper"].includes(user.role) && !user.deptId;
 
   return (
     <div className="no-print sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">

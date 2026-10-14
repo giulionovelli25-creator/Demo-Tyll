@@ -371,14 +371,19 @@ export function updatePrepTask(user: User, body: Record<string, unknown>): Resul
     if (!can(user, "prep.plan")) return fail(403, "Your role cannot assign preparation tasks.");
     const who = String(body.assigneeId ?? "");
     if (who && !prepAssignees(plan.outletId).some((p) => p.id === who)) return fail(400, "Choose someone from this kitchen.");
-  } else if (body.op === "complete") {
-    if (!can(user, "prep.complete")) return fail(403, "Your role cannot tick off preparation tasks.");
-    if (user.role === "employee" && task.assigneeId && task.assigneeId !== user.id) return fail(403, "This task is assigned to someone else.");
+  } else if (body.op === "complete" || body.op === "start" || body.op === "report") {
+    if (!can(user, "prep.complete")) return fail(403, "Your role cannot work on preparation tasks.");
+    // Staff work only on tasks given to them; the chef assigns the rest.
+    if (user.role === "employee" && task.assigneeId !== user.id) return fail(403, task.assigneeId ? "This task is assigned to someone else." : "Ask the chef to assign this task to you first.");
+    if (body.op === "start" && (task.done || task.startedAt)) return fail(409, task.done ? "This task is already complete." : "Already started.");
+    if (body.op === "report" && (typeof body.note !== "string" || body.note.trim().length < 3)) return fail(400, "Say what is missing or wrong.");
   } else return fail(400, "Unknown action.");
   const saved = mutateStore((s) => {
     const p = s.plans.find((x) => x.id === plan.id)!;
     const t = p.tasks.find((x) => x.id === task.id)!;
     if (body.op === "assign") t.assigneeId = String(body.assigneeId ?? "") || undefined;
+    else if (body.op === "start") t.startedAt = now();
+    else if (body.op === "report") t.issue = { note: String(body.note).trim().slice(0, 300), by: user.id, at: now() };
     else {
       t.done = body.done !== false;
       t.doneBy = t.done ? user.id : undefined;
@@ -580,8 +585,9 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       if (r.status !== "approved") return fail(409, "Only an approved order can be received.");
       const raw = Array.isArray(body.received) ? (body.received as Record<string, unknown>[]) : [];
       const received = new Map(raw.filter((x) => num(x.qty, 0, 100000)).map((x) => [String(x.ingredientId), x.qty as number]));
+      const notes = new Map(raw.filter((x) => typeof x.note === "string" && x.note.trim()).map((x) => [String(x.ingredientId), String(x.note).trim().slice(0, 200)]));
       return apply((x, store) => {
-        x.lines = x.lines.map((l) => ({ ...l, received: received.has(l.ingredientId) ? received.get(l.ingredientId)! : l.qty }));
+        x.lines = x.lines.map((l) => ({ ...l, received: received.has(l.ingredientId) ? received.get(l.ingredientId)! : l.qty, receiveNote: notes.get(l.ingredientId) }));
         x.status = "received";
         // Bought for an event: the delivery is issued straight to it, so it is not also counted as storeroom stock.
         const ev = x.eventId ? store.events.find((e) => e.id === x.eventId) : undefined;

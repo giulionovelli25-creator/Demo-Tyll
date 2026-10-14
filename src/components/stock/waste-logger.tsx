@@ -7,6 +7,8 @@ import { can } from "@/lib/domain/access";
 import { wasteCost } from "@/lib/domain/inventory";
 import { personName, useCtx, useServerStock, useUser, useView } from "@/lib/hooks";
 import { REASON_LABEL } from "@/lib/labels";
+import { api } from "@/lib/api";
+import { useShared } from "@/lib/shared-stock";
 import { useDemo } from "@/lib/store";
 import type { WasteLog, WasteReason } from "@/lib/types";
 import { DEMO_TODAY, fmtMoney, fmtQty } from "@/lib/util";
@@ -121,7 +123,10 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
     setQty("1");
   };
 
-  const mine = userLogs.filter((w) => outletById[w.outletId].propertyId === propertyId).slice().reverse();
+  const shared = useShared((s) => s.waste);
+  // This device's entries not yet uploaded, then everything this person saved on the server.
+  const mine = [...shared.filter((w) => w.byUser === user.id), ...userLogs].filter((w) => outletById[w.outletId].propertyId === propertyId).sort((a, b) => b.seq - a.seq);
+  const others = can(user, "stock.review") ? shared.filter((w) => w.byUser !== user.id && outletById[w.outletId].propertyId === propertyId).sort((a, b) => b.seq - a.seq) : [];
   const pending = userLogs.filter((w) => !w.synced).length;
   const { data: stockData } = useServerStock(propertyId);
   const position = useMemo(() => stockData?.rows ?? [], [stockData]);
@@ -271,6 +276,12 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
           )}
         </Panel>
 
+        {others.length > 0 && (
+          <Panel title="Recent entries at your outlets" description="Logged by your team, on any device. Saved on the Tyll server.">
+            <ul className="divide-y divide-hair">{others.slice(0, 8).map((w) => <EntryRow key={w.id} w={w} money={money} />)}</ul>
+          </Panel>
+        )}
+
         <Panel title="Working without a connection" description="Kitchens and stores often have no signal. Entries made offline are kept on the device and released when the connection returns.">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <label className="flex cursor-pointer items-center gap-3 text-sm">
@@ -279,7 +290,7 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
             </label>
             <p className="num text-sm text-graphite">{pending} entr{pending === 1 ? "y" : "ies"} waiting to synchronise</p>
           </div>
-          <Note className="mt-3 max-w-[90ch]">Offline entries stay out of stock and reports until they synchronise. In this demo they synchronise into this browser&rsquo;s storage as soon as you untick the box or the browser reconnects. Synchronising to a Tyll server, with conflict handling across devices, is planned and not built here.</Note>
+          <Note className="mt-3 max-w-[90ch]">Offline entries stay on this device, out of stock and reports, until the connection returns. They are then saved on the Tyll server once, so every device and manager sees the same entry. Two devices correcting the same entry are both recorded; the latest correction applies.</Note>
         </Panel>
       </div>
     </div>
@@ -287,10 +298,21 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
 }
 
 /** One entry made in Tyll, with its latest correction and a way to correct it again. */
-function EntryRow({ w, money }: { w: WasteLog; money: (n: number) => string }) {
+function EntryRow({ w, money }: { w: WasteLog & { byUser?: string; at?: string }; money: (n: number) => string }) {
   const ctx = useCtx();
-  const corrections = useDemo((s) => s.wasteCorrections).filter((c) => c.wasteId === w.id).sort((a, b) => b.seq - a.seq);
-  const correct = useDemo((s) => s.correctWaste);
+  const local = useDemo((s) => s.wasteCorrections);
+  const remote = useShared((s) => s.corrections);
+  const onServer = w.id.startsWith("W-S-");
+  const corrections = (onServer ? remote : local).filter((c) => c.wasteId === w.id).sort((a, b) => b.seq - a.seq);
+  const correctLocal = useDemo((s) => s.correctWaste);
+  const correct = (id: string, qty: number, why: string) => {
+    if (!onServer) return correctLocal(id, qty, why);
+    // Saved entries are corrected on the server; the original stays on record.
+    api<{ correction: (typeof remote)[number] }>(`/api/stock/waste/${id}`, { method: "POST", body: { qty, reason: why } })
+      .then((r) => { useShared.setState((st) => ({ corrections: [...st.corrections, r.correction] })); toast.done(qty === 0 ? "Entry cancelled. Stock and waste figures are updated." : "Entry corrected. Stock and waste figures are updated."); })
+      .catch((e: unknown) => toast.error(e instanceof Error ? e.message : "Could not save the correction."));
+    return { ok: true as const };
+  };
   const [editing, setEditing] = useState(false);
   const [qty, setQty] = useState(String(w.qty));
   const [why, setWhy] = useState("");
@@ -304,18 +326,19 @@ function EntryRow({ w, money }: { w: WasteLog; money: (n: number) => string }) {
         <span>
           <span className={cn("num text-ink", effective === 0 && "line-through")}>{fmtQty(effective, u)} {u === "each" ? "× " : ""}{name}</span>
           {latest && <span className="ml-2 text-xs text-steel">{effective === 0 ? "cancelled" : `corrected from ${fmtQty(w.qty, u)}`}: {latest.reason}</span>}
-          <span className="block text-xs text-steel">{REASON_LABEL[w.reason].en} · {outletById[w.outletId].name} · {personName(w.by)}{w.periodId ? " · late entry" : ""}</span>
+          <span className="block text-xs text-steel">{REASON_LABEL[w.reason].en} · {outletById[w.outletId].name} · {personName(w.byUser ?? w.by)}{w.at ? ` · ${w.at.slice(0, 16).replace("T", " ")}` : ""}{w.periodId ? " · late entry" : ""}</span>
         </span>
         <span className="flex items-center gap-3">
           <span className="num">{money(effective > 0 ? wasteCost({ ...w, qty: effective }, ctx.overrides) : 0)}</span>
-          {w.synced ? <Badge tone="pos">in reports</Badge> : <Badge tone="warn">waiting to sync</Badge>}
+          {!w.synced ? <Badge tone="warn">waiting to sync</Badge> : onServer ? <Badge tone="pos">saved</Badge> : <Badge tone="ink">uploading</Badge>}
           <Button size="sm" variant="ghost" onClick={() => setEditing(!editing)}>Correct</Button>
         </span>
       </div>
       {editing && (
         <form className="mt-3 flex flex-wrap items-end gap-2" onSubmit={(e) => {
           e.preventDefault();
-          if (report(correct(w.id, Number(qty), why), Number(qty) === 0 ? "Entry cancelled. Stock and waste figures are updated." : "Entry corrected. Stock and waste figures are updated.")) { setEditing(false); setWhy(""); }
+          const r = correct(w.id, Number(qty), why);
+          if (onServer || report(r, Number(qty) === 0 ? "Entry cancelled. Stock and waste figures are updated." : "Entry corrected. Stock and waste figures are updated.")) { setEditing(false); setWhy(""); }
         }}>
           <Field label="Correct quantity" className="w-32" type="number" inputMode="decimal" min="0" step="0.01" value={qty} onChange={(e) => setQty(e.target.value)} hint="0 cancels it" />
           <Field label="Why?" className="min-w-[200px] flex-1" value={why} onChange={(e) => setWhy(e.target.value)} placeholder="For example: entered 10 instead of 1" />

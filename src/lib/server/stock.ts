@@ -3,6 +3,7 @@
 import { ingredientById, itemById, storeOwner } from "../data/catalog";
 import { getDataset } from "../data/generate";
 import { receivedDeliveries } from "./purchasing-store";
+import { sharedCounts, sharedWaste, uploadedKeys } from "./stock-log";
 import { allowedOutlets, allowedProperties, can, hasWholeProperty } from "../domain/access";
 import { buildForecast, defaultInputs, type Forecast, type ForecastInputs } from "../domain/forecast";
 import { receivedAsCorrected, stockPosition, varianceAllocation, type StockInputs, type StockRow } from "../domain/inventory";
@@ -53,12 +54,16 @@ export function cleanEntries(user: User, body: unknown): SessionEntries {
       return !!d && props.has(d.propertyId) && d.lines.some((l) => l.ingredientId === x.ingredientId) && num(x.received, 0, 1e5) && num(x.seq, 1, 1e9);
     })
     : [];
-  return { waste: waste.map((w) => ({ ...w, synced: true })), counts, overrides, recipes, receipts };
+  // A browser entry already saved on the server is counted from the server copy only.
+  const saved = uploadedKeys();
+  const fresh = <T extends { id: string }>(x: T) => !saved.has(`${user.id}:${x.id}`);
+  return { waste: waste.filter(fresh).map((w) => ({ ...w, synced: true })), counts: counts.filter(fresh), overrides, recipes, receipts };
 }
 
+/** The dataset, the server's shared entries and this session's own entries. Shared entries apply to everyone. */
 export const fullInputs = (e: SessionEntries): StockInputs => {
   const d = getDataset();
-  return { dayItems: d.dayItems, counts: [...d.counts, ...e.counts], deliveries: [...receivedAsCorrected(d.deliveries, e.receipts), ...receivedDeliveries()], transfers: d.transfers, waste: [...d.wasteLogs, ...e.waste], recipes: e.recipes };
+  return { dayItems: d.dayItems, counts: [...d.counts, ...sharedCounts(), ...e.counts], deliveries: [...receivedAsCorrected(d.deliveries, e.receipts), ...receivedDeliveries()], transfers: d.transfers, waste: [...d.wasteLogs, ...sharedWaste(), ...e.waste], recipes: e.recipes };
 };
 
 /** An outlet-only store is visible only to people with access to that outlet. */

@@ -563,6 +563,8 @@ export interface RequestLine {
   /** Quoted price, set on the server from the supplier's quote. */
   unitPrice: number;
   received?: number;
+  /** What the receiver noted: damaged, missing or wrong items. */
+  receiveNote?: string;
 }
 
 export interface RequestEvent {
@@ -608,6 +610,9 @@ export interface PrepTask {
   doneAt?: string;
   /** Set when the task is an event's portions. */
   eventId?: string;
+  startedAt?: string;
+  /** A problem reported from the kitchen, such as a missing ingredient. */
+  issue?: { note: string; by: string; at: string };
 }
 
 export interface PrepPlan {

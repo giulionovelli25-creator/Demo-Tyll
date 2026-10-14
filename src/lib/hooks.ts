@@ -7,6 +7,7 @@ import { allowedOutlets, allowedProperties, clampScope, hasWholeProperty, scopeC
 import { detectPatterns } from "./domain/detect";
 import type { StockInputs } from "./domain/inventory";
 import { exceptionInSel, listInvestigations, type Ctx, type Sel } from "./domain/metrics";
+import { useShared } from "./shared-stock";
 import { correctedWaste, currentRange, useDemo } from "./store";
 import type { ForecastInputs } from "./domain/forecast";
 import type { ForecastOut, StockRowOut } from "./server/stock";
@@ -28,13 +29,16 @@ export function useCtx(): Ctx {
   const recounts = useDemo((s) => s.recounts);
   const recipes = useDemo((s) => s.recipeChanges);
   const corrections = useDemo((s) => s.wasteCorrections);
+  const shared = useShared();
   return useMemo(() => {
     const base = getDataset();
     // Stock cases opened in this session join the flagged transactions everywhere cases are listed.
     const data = stockCases.length ? { ...base, exceptions: [...base.exceptions, ...stockCases] } : base;
-    const session = correctedWaste(wasteLogs, corrections);
-    return { data, waste: [...data.wasteLogs, ...session], counts: [...data.counts, ...counts], overrides, investigations, adjust: { recounts, recipes, waste: session } };
-  }, [wasteLogs, counts, overrides, investigations, stockCases, recounts, recipes, corrections]);
+    // This device's entries and everyone's entries saved on the server, each counted once.
+    const session = correctedWaste([...wasteLogs, ...shared.waste], [...corrections, ...shared.corrections]);
+    const accepted = shared.counts.filter((c) => c.status === "accepted").map((c) => ({ id: c.id, propertyId: c.propertyId, ingredientId: c.ingredientId, date: c.date, kind: "spot" as const, expected: c.expected, counted: c.counted, by: c.by, seq: c.seq, allocation: c.allocation }));
+    return { data, waste: [...data.wasteLogs, ...session], counts: [...data.counts, ...accepted, ...counts], overrides, investigations, adjust: { recounts, recipes, waste: session } };
+  }, [wasteLogs, counts, overrides, investigations, stockCases, recounts, recipes, corrections, shared]);
 }
 
 export function useStockInputs(): StockInputs {

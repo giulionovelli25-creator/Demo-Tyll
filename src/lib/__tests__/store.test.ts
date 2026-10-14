@@ -92,8 +92,10 @@ describe("stock and forecast actions", () => {
     expect(s().wasteLogs[0].synced).toBe(true);
   });
 
-  it("records a count against the current estimate", () => {
+  it("records a manager's count against the current estimate; staff counts go to review instead", () => {
     signIn("u-emp");
+    expect(s().recordCount({ propertyId: "dxb", ingredientId: "coke", counted: 100, expected: 90, allocation: {} }).ok).toBe(false);
+    signIn("u-rm");
     expect(s().recordCount({ propertyId: "doh", ingredientId: "coke", counted: 10, expected: 12, allocation: {} }).ok).toBe(false);
     expect(s().recordCount({ propertyId: "dxb", ingredientId: "coke", counted: -1, expected: 12, allocation: {} }).ok).toBe(false);
     expect(s().recordCount({ propertyId: "dxb", ingredientId: "coke", counted: 100, expected: 90, allocation: { "dxb-terrace": 1 } }).ok).toBe(true);

@@ -84,7 +84,7 @@ function NewBell({ onDone, room: presetRoom = "" }: { onDone: (id?: string) => v
   );
 }
 
-export function BellTaskView({ id }: { id: string }) {
+export function BellTaskView({ id, back }: { id: string; back?: string }) {
   const router = useRouter();
   const { user } = useView();
   const { data } = useBell();
@@ -104,7 +104,7 @@ export function BellTaskView({ id }: { id: string }) {
   const closed = ["completed", "cancelled"].includes(t.status);
   return (
     <div className="space-y-5">
-      <Button variant="ghost" size="sm" onClick={() => router.push(data.mine ? "/tasks" : "/rooms?tab=bell")}><ArrowLeft size={15} /> Back</Button>
+      <Button variant="ghost" size="sm" onClick={() => router.push(back ?? (data.mine ? "/tasks" : "/rooms?tab=bell"))}><ArrowLeft size={15} /> Back</Button>
       <Panel title={<span className="flex flex-wrap items-center gap-3"><span>Room {t.room} · {KIND[t.kind]}</span><Badge tone={BELL_STATUS[t.status].tone}>{BELL_STATUS[t.status].label}</Badge>{t.overdue && <Badge tone="neg">overdue</Badge>}</span>}
         description={`${t.id} · ${t.from} to ${t.to} · ${t.bags} bag${t.bags === 1 ? "" : "s"} · requested ${hm(t.requestedMin)} by ${personName(t.requestedBy)}`}>
         <p className="text-sm text-graphite">Assigned to: <span className="text-ink">{t.assigneeName ?? "nobody yet"}</span>{t.handover ? ` · Handover: ${t.handover}` : ""}</p>
