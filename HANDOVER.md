@@ -265,7 +265,7 @@ env -u PORT -u FORCE_COLOR -u MallocNanoZone npm run dev
 5. To run the app, use VS Code's integrated terminal (Ctrl+`) for `npm run dev`.
 
 ### Pushing the work to GitHub
-The local repo was **4 commits ahead** of GitHub when this file was written: the stock fix, both Stage 2 commits and this handover. Pushing failed earlier with a 403 because the stored token lacked write access. To push:
+The local repo was **5 commits ahead** of GitHub when this file was written: Stage 1, the stock fix, both Stage 2 commits and this handover. Pushing failed earlier with a 403 because the stored token lacked write access. To push:
 
 ```bash
 git push origin main
