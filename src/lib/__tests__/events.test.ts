@@ -212,3 +212,31 @@ describe("Scenario E: permissions", () => {
     expect(DEFAULT_RATIOS.seated.waiter).toBe(15);
   });
 });
+
+describe("event purchasing", () => {
+  it("buys an event's own-store item for the event, counts it once, and issues the delivery to the event", () => {
+    const e = ok(O.saveEvent(yasmin, { propertyId: "dxb", name: "Gala", type: "Banquet", date: "2026-10-17", start: h(19), end: h(22), guests: 150, format: "seated", services: [{ id: "three_course", guests: 150 }] })).event;
+    ok(O.setEventStatus(yasmin, e.id, { status: "planning" }, none));
+    const line = () => P.buyPlanForEvent(yasmin, loadStore().events.find((x) => x.id === e.id)!, none).find((l) => l.ingredientId === "tenderloin")!;
+    // Maison Lune's own tenderloin and its deliveries are not available to the event.
+    expect(line().usable).toBe(0);
+    expect(line().incoming).toBe(0);
+    expect(line().suggested).toBeGreaterThanOrEqual(15);
+    const pr = ok(P.saveRequest(yasmin, { propertyId: "dxb", eventId: e.id, lines: [{ ingredientId: "tenderloin", qty: line().suggested }] })).request;
+    ok(P.actOnRequest(yasmin, pr.id, { action: "submit" }));
+    expect(line().suggested).toBe(0);
+    ok(P.actOnRequest(U("u-buy"), pr.id, { action: "purchasing", decision: "approve" }));
+    ok(P.actOnRequest(U("u-fc"), pr.id, { action: "accounting", decision: "approve" }));
+    if (P.requestsFor(yasmin).find((r) => r.id === pr.id)!.status === "manager") ok(P.actOnRequest(james, pr.id, { action: "manager", decision: "approve" }));
+    expect(line().suggested).toBe(0);
+    const lune = () => P.buyPlan(U("u-owner"), { propertyId: "dxb", outletIds: ["dxb-lune"], period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
+    const luneBefore = lune();
+    ok(P.actOnRequest(U("u-buy"), pr.id, { action: "receive", received: [] }));
+    // Received: issued to the event, not added to Lune's store.
+    expect(loadStore().events.find((x) => x.id === e.id)!.issued.some((i) => i.ingredientId === "tenderloin")).toBe(true);
+    // Fully issued, so nothing more is needed from stores.
+    expect(P.buyPlanForEvent(yasmin, loadStore().events.find((x) => x.id === e.id)!, none).find((l) => l.ingredientId === "tenderloin")?.suggested ?? 0).toBe(0);
+    const luneAfter = lune();
+    if (luneBefore.ok && luneAfter.ok) expect(luneAfter.plan.lines.find((l) => l.ingredientId === "tenderloin")?.usable).toBeCloseTo(luneBefore.plan.lines.find((l) => l.ingredientId === "tenderloin")?.usable ?? 0, 6);
+  });
+});

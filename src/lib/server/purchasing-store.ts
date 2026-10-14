@@ -65,7 +65,8 @@ export const nextNumber = (s: Shape, key: string) => (s.counters[key] = (s.count
 /** Approved orders that have been received, as deliveries. This is the only way a request raises stock. */
 export function receivedDeliveries(propertyId?: string): Delivery[] {
   return loadStore().requests
-    .filter((r) => r.status === "received" && (!propertyId || r.propertyId === propertyId))
+    // Orders for events are issued to the event on receipt, not added to the storeroom.
+    .filter((r) => r.status === "received" && !r.eventId && (!propertyId || r.propertyId === propertyId))
     .map((r) => {
       return {
         id: r.poNumber ?? r.id, propertyId: r.propertyId, supplierId: ingredientById[r.lines[0]?.ingredientId]?.supplierId ?? "dry",

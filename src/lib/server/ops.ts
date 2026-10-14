@@ -433,6 +433,11 @@ export function setEventStatus(user: User, id: string, body: Record<string, unkn
         r.status = "cancelled";
         r.history.push({ at: ev.updatedAt, by: user.id, action: "Withdrawn: event cancelled" });
       }
+      // Purchase requests for the event are not withdrawn silently: purchasing is told, and decides.
+      for (const pr of x.requests) if (pr.eventId === id && ["draft", "purchasing", "accounting", "manager", "approved"].includes(pr.status)) {
+        pr.history.push({ at: ev.updatedAt, by: user.id, action: "Event cancelled", status: pr.status, comment: `${ev.name} was cancelled. Reject this request${pr.status === "approved" ? " or cancel the order with the supplier" : ""} if it is no longer needed.` });
+        pr.updatedAt = ev.updatedAt;
+      }
     }
     return ev;
   });
@@ -547,7 +552,7 @@ export function markAssignmentDone(user: User, id: string): Result<{ id: string 
 
 export interface OpsAlert { id: string; text: string; href: string; action: string }
 
-const dayWord = (date: string) => (date === addDays(DEMO_TODAY, 1) ? "Tomorrow's" : date === DEMO_TODAY ? "Today's" : `${fmtDate(date, true).split(" ")[0]}'s`);
+const dayWord = (date: string) => (date === addDays(DEMO_TODAY, 1) ? "Tomorrow's" : date === DEMO_TODAY ? "Today's" : `${new Date(`${date}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "long", timeZone: "UTC" })}'s`);
 const shortName = (e: EventRecord) => (e.type === "Conference" ? "conference" : e.type === "Wedding" ? "wedding" : e.name.toLowerCase());
 const words = (n: number) => ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"][n] ?? String(n);
 
@@ -558,7 +563,7 @@ export function opsAlerts(user: User, entries: SessionEntries): OpsAlert[] {
   for (const r of s.support.filter((x) => x.status === "open" && allowedProperties(user).includes(x.propertyId))) {
     const mine = r.items.filter((i) => i.status === "pending" && managesDept(user, i.deptId) && can(user, "staff.lend"));
     if (mine.length) {
-      out.push({ id: `sr-${r.id}-${mine.length}`, text: `The ${deptById[r.toDeptId].name} team has requested ${words(mine.length)} ${r.skill === "waiter" ? "waiter" : SKILL_LABEL[r.skill as Skill].toLowerCase()}${mine.length === 1 ? "" : "s"} from your department.`, href: `/events?tab=support&request=${r.id}`, action: "Review request" });
+      out.push({ id: `sr-${r.id}-${mine.length}`, text: `The ${deptById[r.toDeptId].name.replace(/^The /, "")} team has requested ${words(mine.length)} ${r.skill === "waiter" ? "waiter" : SKILL_LABEL[r.skill as Skill].toLowerCase()}${mine.length === 1 ? "" : "s"} from your department.`, href: `/events?tab=support&request=${r.id}`, action: "Review request" });
     }
   }
   // Suggestions and confirmations for the requester.
@@ -566,7 +571,7 @@ export function opsAlerts(user: User, entries: SessionEntries): OpsAlert[] {
     if (r.items.some((i) => i.status === "alternative")) out.push({ id: `alt-${r.id}-${r.items.filter((i) => i.status === "alternative").length}`, text: `${deptById[r.items.find((i) => i.status === "alternative")!.deptId].name} suggested an alternative for your request.`, href: `/events?tab=support&request=${r.id}`, action: "Review" });
     if (r.status === "filled") {
       const e = r.eventId ? s.events.find((x) => x.id === r.eventId) : undefined;
-      out.push({ id: `ok-${r.id}`, text: e ? `Staff support confirmed for ${dayWord(e.date).toLowerCase().replace("'s", "")}'s ${shortName(e)}.`.replace(/^./, (c) => c.toUpperCase()) : `Staff support confirmed for ${deptById[r.toDeptId].name}.`, href: e ? `/events?tab=events&event=${e.id}` : `/events?tab=support&request=${r.id}`, action: e ? "View event" : "View" });
+      out.push({ id: `ok-${r.id}`, text: e ? `Staff support confirmed for ${dayWord(e.date).replace(/^(Today|Tomorrow)/, (w) => w.toLowerCase())} ${shortName(e)}.` : `Staff support confirmed for ${deptById[r.toDeptId].name}.`, href: e ? `/events?tab=events&event=${e.id}` : `/events?tab=support&request=${r.id}`, action: e ? "View event" : "View" });
     }
   }
   // Events this planner runs: staff still needed, or ingredients to buy.
@@ -575,7 +580,7 @@ export function opsAlerts(user: User, entries: SessionEntries): OpsAlert[] {
       const short = coverage(e, s.assignments, s.support).filter((c) => c.stillNeeded > 0 && c.stillNeeded > c.requested);
       if (short.length) {
         const c = short[0];
-        out.push({ id: `staff-${e.id}-${short.map((x) => `${x.skill}${x.stillNeeded}`).join("")}`, text: `${dayWord(e.date)} ${shortName(e)} needs ${words(c.stillNeeded)} additional ${SKILL_LABEL[c.skill].toLowerCase()}${c.stillNeeded === 1 ? "" : "s"}${short.length > 1 ? ` and ${short.length - 1} more role${short.length > 2 ? "s" : ""}` : ""}.`, href: `/events?tab=events&event=${e.id}&step=4`, action: "Find staff" });
+        out.push({ id: `staff-${e.id}-${short.map((x) => `${x.skill}${x.stillNeeded}`).join("")}`, text: `${dayWord(e.date)} ${shortName(e)} needs ${words(c.stillNeeded)} additional ${SKILL_LABEL[c.skill].toLowerCase()}${c.stillNeeded === 1 ? "" : "s"}${short.length > 1 ? `, and ${words(short.length - 1)} other role${short.length > 2 ? "s are" : " is"} short` : ""}.`, href: `/events?tab=events&event=${e.id}&step=4`, action: "Find staff" });
       }
       if (can(user, "purchase.create") && buyPlanForEvent(user, e, entries).some((l) => l.suggested > 0)) {
         out.push({ id: `buy-${e.id}-${e.updatedAt}`, text: `${dayWord(e.date)} ${shortName(e)} menu has an ingredient shortage.`, href: `/events?tab=events&event=${e.id}&step=3`, action: "Review ingredients" });

@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { ArrowRight, ClipboardCheck, Trash2, UtensilsCrossed } from "lucide-react";
-import { Badge, PageHeader, Panel } from "@/components/ui";
+import { Badge, Button, PageHeader, Panel, toast } from "@/components/ui";
+import { toHm, useMyAssignments } from "@/lib/ops-hooks";
 import { ingredientById, itemById, outletById, propertyById } from "@/lib/data/catalog";
 import { allowedOutlets } from "@/lib/domain/access";
 import { ACTIVE_STATUSES } from "@/lib/domain/operations";
@@ -10,7 +11,27 @@ import { REASON_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
 import { DEMO_TODAY, addDays, fmtDate, fmtQty } from "@/lib/util";
 import { Checklist } from "@/components/forecast/prep";
-import { usePrepPlans } from "@/lib/plan-hooks";
+import { useMutate, usePrepPlans } from "@/lib/plan-hooks";
+
+/** Help this person has been lent to give: where, when and doing what. They tick it off afterwards. */
+function MyAssignments() {
+  const { data } = useMyAssignments();
+  const mutate = useMutate();
+  const list = (data?.assignments ?? []).filter((a) => a.status === "confirmed");
+  if (!list.length) return null;
+  return (
+    <Panel title="Where you are helping" description="Confirmed by your manager. Your usual shift is unchanged.">
+      <ul className="divide-y divide-hair rounded-2xl border border-line">
+        {list.map((a) => (
+          <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+            <span><span className="text-[15px] text-ink">{a.skillLabel} for {a.for}</span><span className="block text-sm text-steel">{fmtDate(a.date, true)}, {toHm(a.start)} to {toHm(a.end)}{a.where && a.where !== a.for ? ` · ${a.where}` : ""}</span></span>
+            {a.done ? <Badge tone="pos">Done</Badge> : <Button size="sm" onClick={async () => { const r = await mutate("/api/me/assignments", { id: a.id }); if (!r.ok) toast.error(r.error); else toast.done("Marked as done."); }}>Mark as done</Button>}
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
+}
 
 /** Tomorrow's prep plan for this kitchen, as a checklist. Staff tick off their own jobs; the plan itself is the chef's. */
 function PrepForShift({ outletId }: { outletId: string }) {
@@ -55,6 +76,7 @@ export default function TasksPage() {
           </Link>
         ))}
       </div>
+      <MyAssignments />
       <PrepForShift outletId={outletId} />
       <Panel title="What you have logged" description="Your entries feed the stock and waste figures managers see. Sales and cost figures are not shown on this account.">
         {myWaste.length === 0 ? <p className="text-sm text-steel">Nothing yet this session.</p> : (

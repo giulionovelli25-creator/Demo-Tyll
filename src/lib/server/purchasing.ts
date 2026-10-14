@@ -89,6 +89,8 @@ function arrivalsFor(propertyId: string, period: Period) {
   }
   for (const r of loadStore().requests) {
     if (r.propertyId !== propertyId || r.status !== "approved") continue;
+    // An event's order is counted for that event as already on order, not as storeroom stock.
+    if (r.eventId) continue;
     for (const l of r.lines) {
       const arrive = addDays(DEMO_TODAY, ingredientById[l.ingredientId].leadDays);
       if (arrive <= period.to) add(l.ingredientId, arrive < period.from ? period.from : arrive, l.qty);
@@ -101,7 +103,9 @@ function arrivalsFor(propertyId: string, period: Period) {
 function openRequested(propertyId: string, outletIds: string[], exceptId?: string, eventId?: string) {
   const out = new Map<string, number>();
   for (const r of loadStore().requests) {
-    if (r.id === exceptId || r.propertyId !== propertyId || !["purchasing", "accounting", "manager"].includes(r.status)) continue;
+    // For an event, approved orders not yet received are also on order for it.
+    const open = eventId ? ["purchasing", "accounting", "manager", "approved"] : ["purchasing", "accounting", "manager"];
+    if (r.id === exceptId || r.propertyId !== propertyId || !open.includes(r.status)) continue;
     // An event's requests count only for that event; an outlet's only for its outlets.
     if (eventId ? r.eventId !== eventId : r.eventId || !r.outletIds.some((o) => outletIds.includes(o))) continue;
     for (const l of r.lines) out.set(l.ingredientId, (out.get(l.ingredientId) ?? 0) + l.qty);
@@ -164,6 +168,7 @@ function computeBuyPlan(user: User, body: Record<string, unknown>, entries: Sess
     arrivals: arrivalsFor(propertyId, period),
     requested: openRequested(propertyId, outletIds, undefined, event?.id),
     safetyDays: event ? 0 : values.safetyDays,
+    mineOutlets: outletIds,
   });
   const reservedFor = [others.length && `${others.length} outlet${others.length === 1 ? "" : "s"}`, otherEvents.some((e) => e.date >= period.from && e.date <= period.to) && "confirmed events"].filter(Boolean).join(" and ");
   return {
@@ -418,14 +423,15 @@ export function budgetFor(propertyId: string, exceptId?: string) {
   return { ...b, committed, available: b.budget - b.spentBefore - committed };
 }
 
-function readLines(user: User, propertyId: string, raw: unknown): Result<{ lines: RequestLine[] }> {
+function readLines(user: User, propertyId: string, raw: unknown, forEvent = false): Result<{ lines: RequestLine[] }> {
   if (!Array.isArray(raw) || raw.length === 0) return fail(400, "Add at least one item.");
   if (raw.length > 80) return fail(400, "That is too many lines for one request.");
   const lines: RequestLine[] = [];
   for (const x of raw as Record<string, unknown>[]) {
     const g = ingredientById[String(x.ingredientId)];
     if (!g) return fail(400, "Unknown item on the request.");
-    if (storeOwner(propertyId, g.id) && !allowedOutlets(user).includes(storeOwner(propertyId, g.id)!)) return fail(403, `${g.name} is held in another outlet's own store.`);
+    // An outlet's own store is bought for by that outlet. An event buys for itself; its delivery goes to the event.
+    if (!forEvent && storeOwner(propertyId, g.id) && !allowedOutlets(user).includes(storeOwner(propertyId, g.id)!)) return fail(403, `${g.name} is held in another outlet's own store.`);
     if (!num(x.qty, 0, 100000)) return fail(400, `Enter a quantity for ${g.name}.`);
     const quotes = quotesFor(g.id, propertyId, DEMO_TODAY);
     const quote = quotes.find((q) => q.supplierId === x.supplierId) ?? quotes[0];
@@ -449,7 +455,7 @@ export function saveRequest(user: User, body: Record<string, unknown>): Result<{
   if (eventId && (!event || !can(user, "events.plan") || !allowedProperties(user).includes(propertyId))) return fail(403, "This event is outside your access.");
   const outletIds = existing?.outletIds ?? (event ? [] : scopeOutlets(user, propertyId, body.outletIds));
   if (!outletIds) return fail(403, "This outlet is outside your access.");
-  const read = readLines(user, propertyId, body.lines);
+  const read = readLines(user, propertyId, body.lines, !!eventId);
   if (!read.ok) return read;
   const comment = typeof body.comment === "string" ? body.comment.trim().slice(0, 600) : existing?.comment;
   const period = existing?.period ?? (event ? { from: event.date, to: event.date } : readPeriod(body));
@@ -487,10 +493,10 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
   const comment = typeof body.comment === "string" ? body.comment.trim().slice(0, 600) : "";
   const decision = (["approve", "changes", "reject"] as const).find((d) => d === body.decision) as Decision | undefined;
 
-  const apply = (change: (x: PurchaseRequest) => void, label: string, extra: Partial<PurchaseRequest["history"][number]> = {}) => {
+  const apply = (change: (x: PurchaseRequest, store: Parameters<Parameters<typeof mutateStore>[0]>[0]) => void, label: string, extra: Partial<PurchaseRequest["history"][number]> = {}) => {
     const request = mutateStore((s) => {
       const x = s.requests.find((y) => y.id === id)!;
-      change(x);
+      change(x, s);
       x.updatedAt = now();
       if (x.status === "approved" && !x.poNumber) x.poNumber = `PO-${x.id.slice(3)}`;
       x.history.push({ at: x.updatedAt, by: user.id, action: label, status: x.status, comment: comment || undefined, ...extra });
@@ -563,9 +569,12 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       if (r.status !== "approved") return fail(409, "Only an approved order can be received.");
       const raw = Array.isArray(body.received) ? (body.received as Record<string, unknown>[]) : [];
       const received = new Map(raw.filter((x) => num(x.qty, 0, 100000)).map((x) => [String(x.ingredientId), x.qty as number]));
-      return apply((x) => {
+      return apply((x, store) => {
         x.lines = x.lines.map((l) => ({ ...l, received: received.has(l.ingredientId) ? received.get(l.ingredientId)! : l.qty }));
         x.status = "received";
+        // Bought for an event: the delivery is issued straight to it, so it is not also counted as storeroom stock.
+        const ev = x.eventId ? store.events.find((e) => e.id === x.eventId) : undefined;
+        if (ev) for (const l of x.lines) if ((l.received ?? 0) > 0) ev.issued.push({ ingredientId: l.ingredientId, qty: l.received!, ref: `${x.poNumber ?? x.id}, received` });
       }, "Delivery received", { changes: r.lines.filter((l) => received.has(l.ingredientId) && Math.abs(received.get(l.ingredientId)! - l.qty) > 1e-9).map((l) => ({ ingredientId: l.ingredientId, from: l.qty, to: received.get(l.ingredientId)!, reason: "Received quantity" })) });
     }
     case "comment": {

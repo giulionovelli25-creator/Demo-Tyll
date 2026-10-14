@@ -75,7 +75,7 @@ function team(deptId: string, propertyId: string, code: string, rows: { n: numbe
     for (let k = 0; k < r.n; k++) {
       i += 1;
       const h = hashString(`${deptId}|${i}`);
-      out.push({ id: `${code}-${String(i).padStart(2, "0")}`, name: `${FIRST[h % FIRST.length]} ${LAST[(h >> 5) % LAST.length]}`, propertyId, deptId, title: r.title, skills: r.skills });
+      out.push({ id: `${code}-${String(i).padStart(2, "0")}`, name: `${FIRST[h % FIRST.length]} ${LAST[Math.floor(h / 32) % LAST.length]}`, propertyId, deptId, title: r.title, skills: r.skills });
     }
   }
   return out;

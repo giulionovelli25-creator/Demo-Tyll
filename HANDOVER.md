@@ -125,13 +125,37 @@ The work follows a seven-stage plan, and each stage stopped for approval before 
 - **Server-backed:** requests and prep plans live in `.data/purchasing.json` (`src/lib/server/purchasing*.ts`), so every account sees the same record.
 - **Demo scenario:** Banqueting took 30 kg of chicken today and tomorrow's chicken is unconfirmed, so The Terrace gets "requires an additional 12 kg of chicken breast". Only tomorrow's supplier deliveries are confirmed.
 
+### Stage 4: Events, staffing and cross-department support
+- **Sales & Events** (`/events`): Plan an event, My events, Staff support (`src/app/events/page.tsx`, `src/components/events/*`).
+- **Event planner:** five steps: details, food and drinks, requirements, staffing, summary. Statuses: draft → planning (committed) → ready, or cancelled. Ready is refused while any role or ingredient is short.
+- **Calculations** (`src/lib/domain/events.ts`):
+  - Portions are guests × portions per guest, per service, rounded up.
+  - Ingredients come from recipes, including corrected standards.
+  - Staff are counted from editable demo ratios (1 waiter per 15 seated guests, and so on).
+  - Costs are estimates: ingredients from recipe costs, labour at demo hourly rates.
+- **Workforce** (`src/lib/data/workforce.ts`): departments (outlets, Banqueting, Front Office, Housekeeping, Bell Team), verified skills, rostered shifts and leave. A focused demo model, not payroll.
+- **One availability engine for events and everyday help** (`src/lib/server/ops.ts`):
+  - It checks leave, the person's own shift and confirmed assignments.
+  - Matching shows only people with the skill who are free for the whole time, with the reasons.
+  - Only the manager of the person's own department can approve, decline or suggest an alternative.
+  - Availability is checked again at approval, so double bookings are refused.
+- **Links to Forecast:**
+  - Committed events reserve their ingredients in What to Buy and replace the seeded event guests in the outlet forecast.
+  - Stock already issued to an event counts as used. The conference continues seeded event EV-1 with the 30 kg of chicken from transfer T-7.
+  - "Review purchase requirement" opens What to Buy in event mode. Event orders are issued to the event on receipt.
+  - Event portions appear in What to Prep for the chosen kitchen and become checklist tasks.
+- **Records:** events, support requests and assignments are stored on the server in `.data/purchasing.json` and seeded on first run.
+
 ### Known limitations and the next stage
 - Corrections, cases and approvals are stored in the **browser** (zustand plus localStorage). Only sign-in is stored on the server.
 - Pour changes update outlet and storeroom stock, but **not the Forecast page yet**. This belongs in Stage 3.
 - Late waste entries show in the period's records and timeline, but not in the case's own history list.
 - The demo budget is an estimate, and no order is sent to a supplier.
 - Purchase requests and prep plans are stored on the server, but Stage 2 corrections still live in each browser.
-- **Next: Stage 4, Events and Staff Support.** Do not start it without the owner's go-ahead.
+- Event statuses In progress and Completed exist but are not set automatically from the clock.
+- Cancelling an event notes its purchase requests for purchasing but does not reject them automatically.
+- The workforce, shifts and labour rates are simulated demo data.
+- **Next: Stage 5, guest experience.** Do not start it without the owner's go-ahead.
 
 ---
 
@@ -149,6 +173,8 @@ Accounts are defined in `config/demo-accounts.json`. On the sign-in page, pickin
 | F&B director | Marco Bellini | marco@grandresorts.example | Tyll-Demo-FnB-26 | 2468 |
 | Purchasing manager (Stage 3) | Nadia Rahman | nadia@grandresorts.example | Tyll-Demo-Purchasing-26 | 1357 |
 | Head chef, The Terrace (Stage 3) | Rafael Costa | rafael@grandresorts.example | Tyll-Demo-Chef-26 | 8642 |
+| Events manager (Stage 4) | Yasmin Saleh | yasmin@grandresorts.example | Tyll-Demo-Events-26 | 2026 |
+| Lounge manager, Lobby Lounge (Stage 4) | Karim Nassar | karim@grandresorts.example | Tyll-Demo-Lounge-26 | 4455 |
 
 These are demo-only credentials. Never reuse them anywhere real.
 

@@ -237,7 +237,8 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
   const outlets = allowedOutlets(user).filter((id) => scope.propertyId === "all" || outletById[id].propertyId === scope.propertyId);
   const [panel, setPanel] = useState<null | "search" | "alerts" | "profile" | "dates">(null);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
-  const showScope = user.role !== "employee";
+  // Staff and the events team have no outlets to choose between.
+  const showScope = user.role !== "employee" && user.role !== "event_manager";
 
   return (
     <div className="no-print sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
@@ -264,7 +265,7 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
             </div>
           </div>
         ) : (
-          <p className="min-w-0 flex-1 truncate text-sm text-steel">{outletById[allowedOutlets(user)[0]].name}, {propertyById[props[0]].name}</p>
+          <p className="min-w-0 flex-1 truncate text-sm text-steel">{allowedOutlets(user)[0] ? `${outletById[allowedOutlets(user)[0]].name}, ` : ""}{propertyById[props[0]].name}</p>
         )}
         <div className="ml-auto flex items-center gap-1">
           {showScope && (

@@ -7,6 +7,7 @@ import { can, canOpen } from "@/lib/domain/access";
 import { exceptionInSel } from "@/lib/domain/metrics";
 import { plainName } from "@/lib/domain/variance";
 import { useInvestigations, useView } from "@/lib/hooks";
+import { useOpsAlerts } from "@/lib/ops-hooks";
 import { usePlanAlerts } from "@/lib/plan-hooks";
 import { useDemo } from "@/lib/store";
 
@@ -28,11 +29,15 @@ export function StockAlert() {
   const dismissed = useDemo((s) => s.dismissedAlerts);
   const dismiss = useDemo((s) => s.dismissAlert);
   const { data } = usePlanAlerts(canOpen(user, "forecast"));
+  const { data: ops } = useOpsAlerts(canOpen(user, "events"));
 
   const notices: Notice[] = [];
   // Approvals waiting for this person come first: someone else is waiting on them.
   const plan = data?.alerts ?? [];
   notices.push(...plan.filter((a) => /^(acc|buy|mgr|budget)-/.test(a.id)));
+  // Staff requests waiting for this manager's decision, and suggestions to answer.
+  const staff = ops?.alerts ?? [];
+  notices.push(...staff.filter((a) => /^(sr|alt)-/.test(a.id)));
   if (can(user, "investigation.assign")) {
     // New stock cases before assigned ones, then the largest amount.
     const top = cases
@@ -41,7 +46,9 @@ export function StockAlert() {
       .find((c) => !dismissed.includes(c.id));
     if (top?.ingredientId && top.outletId) notices.push({ id: top.id, text: `Unexplained ${plainName(top.ingredientId)} usage detected at ${outletById[top.outletId].name}.`, href: `/investigations/${top.id}`, action: "Investigate" });
   }
+  notices.push(...staff.filter((a) => /^(staff|buy)-EVT/.test(a.id)));
   notices.push(...plan.filter((a) => !/^(acc|buy|mgr|budget)-/.test(a.id)));
+  notices.push(...staff.filter((a) => /^(ok|mine)-/.test(a.id)));
   const top = notices.find((n) => !dismissed.includes(n.id));
   if (!top) return null;
   return (

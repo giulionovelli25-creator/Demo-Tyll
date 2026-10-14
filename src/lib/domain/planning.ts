@@ -262,6 +262,8 @@ export interface BuyContext {
   /** Quantity already on open requests that are not yet approved. */
   requested: Map<string, number>;
   safetyDays: number;
+  /** Outlets the plan is for. An outlet's own store, and its deliveries, serve only that outlet. Empty for an event. */
+  mineOutlets?: string[];
 }
 
 /**
@@ -277,14 +279,17 @@ export function buyLines(c: BuyContext): BuyLine[] {
     if (!need || sum(need, (x) => x) <= 1e-9 || g.dept === "glassware") return [];
     const row = stockBy.get(g.id);
     // An outlet's own store is only drawn by that outlet; other outlets' use does not touch it.
-    const shared = !storeOwner(c.propertyId, g.id);
+    const owner = storeOwner(c.propertyId, g.id);
+    const shared = !owner;
+    // Stock held in another outlet's own store is not available here, nor are deliveries to it.
+    const foreign = !!owner && !!c.mineOutlets && !c.mineOutlets.includes(owner);
     const coverDays = Math.min(days.length, Math.max(1, g.shelfLifeDays));
     const requirement = sum(need.slice(0, coverDays), (x) => x);
     const othersNeed = shared ? sum((c.others.get(g.id) ?? []).slice(0, coverDays), (x) => x) : 0;
-    const usable = Math.max(0, row?.estimated ?? 0);
+    const usable = foreign ? 0 : Math.max(0, row?.estimated ?? 0);
     const reservedForOthers = Math.min(usable, othersNeed);
     const available = usable - reservedForOthers;
-    const arrivals = c.arrivals.get(g.id) ?? new Map<string, number>();
+    const arrivals = foreign ? new Map<string, number>() : c.arrivals.get(g.id) ?? new Map<string, number>();
     const arriving = sum(days.slice(0, coverDays), (d) => arrivals.get(d) ?? 0);
     const othersFromDeliveries = Math.min(arriving, Math.max(0, othersNeed - usable));
     const incoming = arriving - othersFromDeliveries;
@@ -310,7 +315,7 @@ export function buyLines(c: BuyContext): BuyLine[] {
     const steps: BuyStep[] = [
       { label: `Forecast requirement over ${coverDays} day${coverDays === 1 ? "" : "s"}`, value: requirement, sign: "+" },
       { label: `Safety stock, ${c.safetyDays} day${c.safetyDays === 1 ? "" : "s"} of average use`, value: safety, sign: "+" },
-      { label: shared ? "Usable stock in the shared storeroom" : "Usable stock in this outlet's own store", value: usable, sign: "−" },
+      { label: foreign ? `Held in ${outletById[owner!].name}'s own store, not available here` : shared ? "Usable stock in the shared storeroom" : "Usable stock in this outlet's own store", value: usable, sign: "−" },
       ...(reservedForOthers > 0 ? [{ label: "Reserved for other outlets' forecast use", value: reservedForOthers, sign: "+" as const }] : []),
       { label: "Confirmed incoming deliveries", value: incoming, sign: "−" },
       ...(requested > 0 ? [{ label: "Already on open purchase requests", value: requested, sign: "−" as const }] : []),

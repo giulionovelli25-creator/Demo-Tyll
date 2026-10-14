@@ -8,6 +8,7 @@ import { can } from "@/lib/domain/access";
 import { ingredientsFor, type Assumptions, type Meal } from "@/lib/domain/planning";
 import { personName, useCtx, useView } from "@/lib/hooks";
 import { type PrepDraft, useMutate, usePlanDrafts, usePrepSuggest } from "@/lib/plan-hooks";
+import type { PrepOut } from "@/lib/server/purchasing";
 import type { PrepPlan } from "@/lib/types";
 import { fmtDate, fmtQty } from "@/lib/util";
 import { Choice, DemandInputs, PERIOD_OPTIONS, Steps, outletOptions, propertyOptions } from "./parts";
@@ -127,6 +128,8 @@ export function WhatToPrep() {
               {loading && <p className="mt-3 text-[13px] text-steel">Recalculating…</p>}
             </Panel>
 
+            {prep.events.length > 0 && <EventPortions events={prep.events} mayPlan={mayPlan} />}
+
             <Panel title="Ingredients needed" description="Updates as you change portions. Available stock is what this kitchen can use after other outlets' share of the storeroom, plus deliveries already due.">
               {shortages.length > 0 ? (
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-warn/25 bg-warn-soft px-5 py-4">
@@ -165,7 +168,7 @@ export function WhatToPrep() {
         )
       )}
 
-      {draft.step === 3 && <Checklist plan={prep?.plan ?? null} assignees={data?.assignees ?? []} onBack={() => update({ step: 2 })} />}
+      {draft.step === 3 && <Checklist plan={prep?.plan ?? null} assignees={data?.assignees ?? []} onBack={() => update({ step: 2 })} eventNames={Object.fromEntries((prep?.events ?? []).map((e) => [e.id, e.name]))} />}
     </div>
   );
 }
@@ -184,7 +187,7 @@ function AdjustDemand({ prep, draft, update }: { prep: NonNullable<ReturnType<ty
 }
 
 /** The plan as a simple list of jobs, each with who does it and whether it is done. */
-export function Checklist({ plan, assignees, onBack }: { plan: PrepPlan | null; assignees: { id: string; name: string }[]; onBack?: () => void }) {
+export function Checklist({ plan, assignees, onBack, eventNames = {} }: { plan: PrepPlan | null; assignees: { id: string; name: string }[]; onBack?: () => void; eventNames?: Record<string, string> }) {
   const { user } = useView();
   const mutate = useMutate();
   if (!plan) return <Panel><EmptyState title="No prep plan saved yet" action={onBack && <Button onClick={onBack}>Make the plan</Button>}>Save a plan to turn it into a checklist.</EmptyState></Panel>;
@@ -200,7 +203,7 @@ export function Checklist({ plan, assignees, onBack }: { plan: PrepPlan | null; 
         {plan.tasks.slice().sort((a, b) => Number(a.done) - Number(b.done) || b.portions - a.portions).map((t) => (
           <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
             <input type="checkbox" className="h-5 w-5 accent-ink" aria-label={`Done: ${itemById[t.itemId].name}`} checked={t.done} disabled={!can(user, "prep.complete")} onChange={(e) => act(t.id, { op: "complete", done: e.target.checked })} />
-            <span className={cn("flex-1 text-[15px]", t.done ? "text-steel line-through" : "text-ink")}>Prepare {t.portions} {itemById[t.itemId].name.toLowerCase()} portion{t.portions === 1 ? "" : "s"}</span>
+            <span className={cn("flex-1 text-[15px]", t.done ? "text-steel line-through" : "text-ink")}>Prepare {t.portions} {itemById[t.itemId].name.toLowerCase()} portion{t.portions === 1 ? "" : "s"}{t.eventId && <span className="ml-2 text-[13px] text-steel">for {eventNames[t.eventId] ?? "an event"}</span>}</span>
             {can(user, "prep.plan") ? (
               <select aria-label={`Who prepares ${itemById[t.itemId].name}`} value={t.assigneeId ?? ""} onChange={(e) => act(t.id, { op: "assign", assigneeId: e.target.value })} className="h-9 rounded-full border border-line bg-paper px-3 text-[13px] hover:border-fog">
                 <option value="">Not assigned</option>
@@ -210,6 +213,40 @@ export function Checklist({ plan, assignees, onBack }: { plan: PrepPlan | null; 
           </li>
         ))}
       </ul>
+    </Panel>
+  );
+}
+
+/** Events this kitchen prepares in the period. The chef can change portions; the event's ingredients and costs follow. */
+function EventPortions({ events, mayPlan }: { events: PrepOut["events"]; mayPlan: boolean }) {
+  const mutate = useMutate();
+  const [edits, setEdits] = useState<Record<string, Record<string, number>>>({});
+  return (
+    <Panel title="Events" description="Confirmed events this kitchen prepares. Their ingredients are reserved separately, so they are not in the figures below. Saving the plan adds them to the checklist.">
+      <div className="space-y-4">
+        {events.map((e) => (
+          <div key={e.id}>
+            <h3 className="text-[15px] text-ink">{e.name} <span className="text-sm text-steel">· {fmtDate(e.date, true)} · {e.guests} guests</span></h3>
+            <ul className="mt-2 divide-y divide-hair rounded-2xl border border-line">
+              {e.dishes.map((d) => (
+                <li key={d.itemId} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+                  <span className="flex-1 text-ink">{itemById[d.itemId].name}{d.portions !== d.calculated && <span className="block text-xs text-steel">event plan says {d.calculated}</span>}</span>
+                  {mayPlan ? <input aria-label={`Event portions of ${itemById[d.itemId].name}`} type="number" min={0} value={edits[e.id]?.[d.itemId] ?? d.portions} onChange={(ev) => setEdits({ ...edits, [e.id]: { ...edits[e.id], [d.itemId]: Math.max(0, Math.round(Number(ev.target.value))) } })} className="num h-9 w-20 rounded-xl border border-line text-center" /> : <span className="num">{d.portions}</span>}
+                  <span className="w-14 text-right text-xs text-steel">portions</span>
+                </li>
+              ))}
+            </ul>
+            {edits[e.id] && (
+              <Button className="mt-2" size="sm" onClick={async () => {
+                const r = await mutate(`/api/events/${e.id}`, { action: "kitchen", portions: edits[e.id] });
+                if (!r.ok) return toast.error(r.error);
+                setEdits({ ...edits, [e.id]: undefined as unknown as Record<string, number> });
+                toast.done("Event portions updated. The event's ingredients and costs follow.");
+              }}>Save event portions</Button>
+            )}
+          </div>
+        ))}
+      </div>
     </Panel>
   );
 }

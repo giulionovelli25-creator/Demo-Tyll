@@ -6,8 +6,9 @@ import { Badge, Button, EmptyState, Field, Note, Panel, TextArea, cn, toast } fr
 import { ingredientById, outletById, propertyById } from "@/lib/data/catalog";
 import { quotesFor } from "@/lib/data/purchasing-rules";
 import type { Assumptions, BuyLine } from "@/lib/domain/planning";
-import { useView } from "@/lib/hooks";
+import { usePost, useSessionEntries, useView } from "@/lib/hooks";
 import { type BuyDraft, useBuyPlan, useMutate, usePlanDrafts } from "@/lib/plan-hooks";
+import type { BuyPlanOut } from "@/lib/server/purchasing";
 import type { PurchaseRequest } from "@/lib/types";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty } from "@/lib/util";
 import { Choice, DemandInputs, PERIOD_OPTIONS, RISK, Steps, outletOptions, propertyOptions } from "./parts";
@@ -37,7 +38,13 @@ function useBuyDraft(): [BuyDraft, (patch: Partial<BuyDraft>) => void, () => voi
   return [draft, (patch) => set(user.id, { ...draft, ...patch }), () => set(user.id, null)];
 }
 
+/** What to buy for the user's outlets, or, from an event, for that event. */
 export function WhatToBuy() {
+  const eventId = useSearchParams().get("event");
+  return eventId ? <EventBuy eventId={eventId} /> : <OutletBuy />;
+}
+
+function OutletBuy() {
   const { user } = useView();
   const router = useRouter();
   const params = useSearchParams();
@@ -246,3 +253,56 @@ function HowItWorks() {
   );
 }
 
+
+/** Purchasing for one event: its ingredients after the outlets' own forecast use and any stock already issued to it. */
+function EventBuy({ eventId }: { eventId: string }) {
+  const router = useRouter();
+  const entries = useSessionEntries();
+  const version = usePlanDrafts((st) => st.version);
+  const propertyId = eventId.split("-")[1]?.toLowerCase() ?? "dxb";
+  const { data, error, loading } = usePost<{ plan: BuyPlanOut }>("/api/plan/buy", { propertyId, eventId, version, ...entries });
+  const mutate = useMutate();
+  const [picks, setPicks] = useState<Record<string, { selected: boolean; qty?: number; supplierId?: string }>>({});
+  const [open, setOpen] = useState<string | null>(null);
+  const [comment, setComment] = useState("");
+  const [busy, setBusy] = useState(false);
+  const money = (n: number) => fmtMoney(n, propertyById[propertyId].currency, { decimals: true });
+  const lines = (data?.plan.lines ?? []).filter((l) => l.suggested > 0 || picks[l.ingredientId]?.selected).map((l) => {
+    const p = picks[l.ingredientId];
+    const quotes = quotesFor(l.ingredientId, propertyId, DEMO_TODAY);
+    return { l, qty: p?.qty ?? l.suggested, quote: quotes.find((x) => x.supplierId === p?.supplierId) ?? quotes[0], quotes, selected: p?.selected ?? true };
+  });
+  const chosen = lines.filter((x) => x.selected && x.qty > 0);
+  const create = async (submit: boolean) => {
+    if (!chosen.length) return toast.error("Choose at least one item.");
+    setBusy(true);
+    const saved = await mutate<{ request: PurchaseRequest }>("/api/purchasing", { propertyId, eventId, comment, lines: chosen.map(({ l, qty, quote }) => ({ ingredientId: l.ingredientId, qty, supplierId: quote.supplierId, suggested: l.suggested, requirement: l.requirement, available: l.available, incoming: l.incoming, safety: l.safety })) });
+    if (!saved.ok) { setBusy(false); return toast.error(saved.error); }
+    if (submit) { const sent = await mutate(`/api/purchasing/${saved.data.request.id}`, { action: "submit" }); if (!sent.ok) { setBusy(false); return toast.error(sent.error); } }
+    setBusy(false);
+    toast.done(`${saved.data.request.id} ${submit ? "submitted to purchasing" : "saved as a draft"} for the event.`);
+    router.push(`/forecast?tab=approvals&request=${saved.data.request.id}`);
+  };
+  return (
+    <div className="space-y-5">
+      <Button variant="ghost" size="sm" onClick={() => router.push(`/events?tab=events&event=${eventId}&step=3`)}><ArrowLeft size={15} /> Back to the event</Button>
+      <Panel title="What to buy for this event" description="The event's ingredients, less stock already issued to it, after the outlets' own forecast use of the shared storeroom." flush>
+        {!data ? <div className="px-6 pb-6"><EmptyState title={error ?? "Working out the event's needs"} /></div> : lines.length === 0 ? <div className="px-6 pb-6"><EmptyState title="Nothing to buy">Stock covers this event.</EmptyState></div> : (
+          <ul className="divide-y divide-hair border-t border-hair">
+            {lines.map((x) => <BuyRow key={x.l.ingredientId} x={x} money={money} open={open === x.l.ingredientId} onOpen={() => setOpen(open === x.l.ingredientId ? null : x.l.ingredientId)} onPick={(p) => setPicks({ ...picks, [x.l.ingredientId]: { ...picks[x.l.ingredientId], selected: picks[x.l.ingredientId]?.selected ?? x.selected, ...p } })} />)}
+          </ul>
+        )}
+        {loading && <p className="px-6 pb-3 text-[13px] text-steel">Recalculating…</p>}
+        {data?.plan.sharedNote && <Note className="px-6 py-4">{data.plan.sharedNote}</Note>}
+      </Panel>
+      {lines.length > 0 && (
+        <Panel title="Purchase request">
+          <p className="text-sm text-graphite"><span className="num text-[22px] text-ink">{money(chosen.reduce((t, x) => t + x.qty * x.quote.unitPrice, 0))}</span><span className="ml-2">for {chosen.length} item{chosen.length === 1 ? "" : "s"}</span></p>
+          <TextArea className="mt-3" label="Comment for purchasing" value={comment} onChange={(e) => setComment(e.target.value)} />
+          <div className="mt-3 flex flex-wrap gap-2"><Button variant="primary" disabled={busy} onClick={() => create(true)}>Submit to purchasing</Button><Button disabled={busy} onClick={() => create(false)}>Save as draft</Button></div>
+          <Note className="mt-3">Stock rises only when the delivery is received. Nothing is sent to a supplier from this demo.</Note>
+        </Panel>
+      )}
+    </div>
+  );
+}

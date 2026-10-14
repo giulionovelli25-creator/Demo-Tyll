@@ -26,7 +26,7 @@ export function Choice<T extends string>({ label, value, options, onChange }: { 
 }
 
 /** Numbered steps across the top of a workflow. Earlier steps can be revisited. */
-export function Steps({ steps, current, onGo }: { steps: string[]; current: number; onGo: (n: number) => void }) {
+export function Steps({ steps, current, onGo, reachable }: { steps: string[]; current: number; onGo: (n: number) => void; reachable?: number }) {
   return (
     <ol className="flex flex-wrap items-center gap-2 text-sm" aria-label="Steps">
       {steps.map((s, i) => {
@@ -35,8 +35,8 @@ export function Steps({ steps, current, onGo }: { steps: string[]; current: numb
         return (
           <li key={s} className="flex items-center gap-2">
             {i > 0 && <span className="h-px w-5 bg-line" aria-hidden />}
-            <button type="button" disabled={n > current} onClick={() => onGo(n)} aria-current={n === current ? "step" : undefined}
-              className={cn("flex items-center gap-2 rounded-full px-3 py-1.5", n === current ? "bg-ink text-paper" : done ? "text-ink hover:bg-cloud" : "text-fog")}>
+            <button type="button" disabled={n > (reachable ?? current)} onClick={() => onGo(n)} aria-current={n === current ? "step" : undefined}
+              className={cn("flex items-center gap-2 rounded-full px-3 py-1.5", n === current ? "bg-ink text-paper" : done ? "text-ink hover:bg-cloud" : n <= (reachable ?? current) ? "text-graphite hover:bg-cloud" : "text-fog")}>
               <span className={cn("num flex h-5 w-5 items-center justify-center rounded-full text-xs", n === current ? "bg-paper text-ink" : done ? "bg-mist" : "border border-line")}>{n}</span>
               {s}
             </button>
