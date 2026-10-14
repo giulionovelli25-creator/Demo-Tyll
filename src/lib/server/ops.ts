@@ -57,6 +57,8 @@ const banquetingOf = (propertyId: string) => DEPTS.find((d) => d.propertyId === 
 export function canSeeEvent(user: User, e: EventRecord): boolean {
   if (!allowedProperties(user).includes(e.propertyId)) return false;
   if (can(user, "events.plan")) return e.status !== "draft" || e.createdBy === user.id || user.role === "owner" || user.role === "gm" || user.role === "event_manager";
+  // Sales follows the events it confirmed, read only.
+  if (can(user, "sales.view") && e.status !== "draft") return true;
   return user.role === "chef" && allowedOutlets(user).includes(e.kitchenOutletId) && isCommitted(e);
 }
 
@@ -299,7 +301,7 @@ const TYPES: EventType[] = ["Conference", "Wedding", "Corporate dinner", "Banque
 const FORMATS: ServiceFormat[] = ["seated", "buffet", "reception", "theatre"];
 
 /** Reads event fields from a form, keeping only valid values. */
-function readEvent(body: Record<string, unknown>, base?: EventRecord): Result<{ fields: Partial<EventRecord> }> {
+export function readEvent(body: Record<string, unknown>, base?: EventRecord): Result<{ fields: Partial<EventRecord> }> {
   const f: Partial<EventRecord> = {};
   if (body.name !== undefined) { const n = text(body.name, 80); if (n.length < 3) return fail(400, "Give the event a name."); f.name = n; }
   if (body.type !== undefined) { if (!TYPES.includes(body.type as EventType)) return fail(400, "Choose an event type."); f.type = body.type as EventType; }
@@ -390,19 +392,24 @@ export function saveEvent(user: User, body: Record<string, unknown>): Result<{ e
       }
       return e;
     }
-    const n = nextNumber(x, `EVT-${propertyId.toUpperCase()}`);
-    const f = read.fields;
-    const e: EventRecord = {
-      id: `EVT-${propertyId.toUpperCase()}-${String(n).padStart(4, "0")}`, propertyId, name: f.name!, type: f.type!, venue: f.venue ?? "Ballroom", date: f.date!, start: f.start!, end: f.end!,
-      setupStart: f.setupStart ?? f.start! - 120, cleanupEnd: f.cleanupEnd ?? f.end! + 60, guests: f.guests!, format: f.format ?? "seated", dietary: f.dietary ?? "", notes: f.notes ?? "",
-      status: "draft", kitchenOutletId: f.kitchenOutletId ?? Object.values(outletById).find((o) => o.propertyId === propertyId)!.id,
-      services: f.services ?? [], ratios: f.ratios ?? { ...DEFAULT_RATIOS[f.format ?? "seated"] }, pricePerGuest: f.pricePerGuest, issued: [], createdBy: user.id, updatedAt: now(),
-      history: [{ at: now(), by: user.id, action: "Draft created" }],
-    };
-    x.events.push(e);
-    return e;
+    return buildEvent(x, propertyId, read.fields, user.id);
   });
   return { ok: true, event, notes };
+}
+
+/** A new event record from validated fields. Sales uses the same builder when business is confirmed. */
+export function buildEvent(x: Shape, propertyId: string, f: Partial<EventRecord>, by: string, start: { status?: EventStatus; action?: string; detail?: string } = {}): EventRecord {
+  const n = nextNumber(x, `EVT-${propertyId.toUpperCase()}`);
+  const e: EventRecord = {
+    id: `EVT-${propertyId.toUpperCase()}-${String(n).padStart(4, "0")}`, propertyId, name: f.name!, type: f.type!, venue: f.venue ?? "Ballroom", date: f.date!, start: f.start!, end: f.end!,
+    setupStart: f.setupStart ?? f.start! - 120, cleanupEnd: f.cleanupEnd ?? f.end! + 60, guests: f.guests!, format: f.format ?? "seated", dietary: f.dietary ?? "", notes: f.notes ?? "",
+    status: start.status ?? "draft", kitchenOutletId: f.kitchenOutletId ?? Object.values(outletById).find((o) => o.propertyId === propertyId)!.id,
+    services: f.services ?? [], ratios: f.ratios ?? { ...DEFAULT_RATIOS[f.format ?? "seated"] }, pricePerGuest: f.pricePerGuest, issued: [], createdBy: by, updatedAt: now(),
+    opportunityId: f.opportunityId, proposalId: f.proposalId,
+    history: [{ at: now(), by, action: start.action ?? "Draft created", detail: start.detail }],
+  };
+  x.events.push(e);
+  return e;
 }
 
 /** Confirm the plan, mark it ready, or cancel it. Ready needs every role covered. */

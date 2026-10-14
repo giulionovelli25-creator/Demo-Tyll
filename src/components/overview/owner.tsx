@@ -1,6 +1,7 @@
 "use client";
 import { StockAlert } from "./stock-alert";
 import { GuestStrip } from "@/components/guest/service";
+import { BusinessStrip } from "@/components/sales/sales";
 // The owner's control center: five figures, one chart, one comparison list, one list of issues.
 import Link from "next/link";
 import { ArrowRight, ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
@@ -92,6 +93,7 @@ export function OwnerOverview() {
       </section>
 
       <GuestStrip />
+      <BusinessStrip />
 
       <KpiDrawer kpi={kpi} onClose={() => setKpi(null)} c={c} rows={rows} ctx={ctx} sel={sel} investigations={investigations} money={money} onOutlet={(id) => setScope({ outletId: id })} />
     </div>

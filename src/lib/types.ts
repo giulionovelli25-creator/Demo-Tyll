@@ -673,6 +673,9 @@ export interface EventRecord {
   kitchenPortions?: Record<string, number>;
   /** The seeded record this event continues, if any. */
   seedId?: string;
+  /** The sales opportunity and proposal this event was confirmed from. */
+  opportunityId?: string;
+  proposalId?: string;
   createdBy: string;
   updatedAt: string;
   history: { at: string; by: string; action: string; detail?: string }[];
