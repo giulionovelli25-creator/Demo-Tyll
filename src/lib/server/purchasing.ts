@@ -297,18 +297,18 @@ export function updatePrepTask(user: User, body: Record<string, unknown>): Resul
   if (!plan || !allowedOutlets(user).includes(plan.outletId)) return fail(404, "This plan is not available.");
   const task = plan.tasks.find((t) => t.id === body.taskId);
   if (!task) return fail(404, "This task is not on the plan.");
-  if (body.action === "assign") {
+  if (body.op === "assign") {
     if (!can(user, "prep.plan")) return fail(403, "Your role cannot assign preparation tasks.");
     const who = String(body.assigneeId ?? "");
     if (who && !prepAssignees(plan.outletId).some((p) => p.id === who)) return fail(400, "Choose someone from this kitchen.");
-  } else if (body.action === "complete") {
+  } else if (body.op === "complete") {
     if (!can(user, "prep.complete")) return fail(403, "Your role cannot tick off preparation tasks.");
     if (user.role === "employee" && task.assigneeId && task.assigneeId !== user.id) return fail(403, "This task is assigned to someone else.");
   } else return fail(400, "Unknown action.");
   const saved = mutateStore((s) => {
     const p = s.plans.find((x) => x.id === plan.id)!;
     const t = p.tasks.find((x) => x.id === task.id)!;
-    if (body.action === "assign") t.assigneeId = String(body.assigneeId ?? "") || undefined;
+    if (body.op === "assign") t.assigneeId = String(body.assigneeId ?? "") || undefined;
     else {
       t.done = body.done !== false;
       t.doneBy = t.done ? user.id : undefined;
@@ -486,7 +486,7 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       if (!can(user, "purchase.approveManager")) return fail(403, `Only a ${APPROVAL_POLICY[r.propertyId].managerLabel.toLowerCase()} can give this approval.`);
       if (r.status !== "manager") return fail(409, "This request is not waiting for a manager's approval.");
       if (r.createdBy === user.id) return fail(403, "You cannot approve your own request.");
-      return decide("manager", `${APPROVAL_POLICY[r.propertyId].managerLabel} approval`);
+      return decide("manager", APPROVAL_POLICY[r.propertyId].managerLabel);
     }
     case "receive": {
       const mayReceive = can(user, "purchase.receive") || (can(user, "stock.count") && r.outletIds.some((o) => allowedOutlets(user).includes(o)));

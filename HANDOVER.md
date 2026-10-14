@@ -116,11 +116,22 @@ The work follows a seven-stage plan, and each stage stopped for approval before 
   - storeroom count shortfall cases;
   - inventory item detail.
 
+### Stage 3: Forecast, purchasing and kitchen preparation
+- **Forecast home:** three choices: What to buy, What to prep, Approvals (`src/app/forecast/page.tsx`, `src/components/forecast/*`).
+- **Engine** (`src/lib/domain/planning.ts`): guests are reservations, plus walk-ins (usual guests less usual bookings, moved by occupancy), plus about 3 in 10 event attendees. Each guest is counted once. Dishes come from past orders per guest; ingredients from recipes, including corrected standards.
+- **What to buy:** suggested purchase = requirement + safety stock − available usable stock − confirmed incoming − open requests, rounded up to packs. Other outlets' use of a shared storeroom is reserved first, and their sales are never sent.
+- **What to prep:** portions by dish and meal, live ingredient needs and shortages, a saved plan, "Request missing ingredients" into What to buy, and a kitchen checklist that staff tick off on `/tasks`.
+- **Approvals:** Draft → Purchasing → Accounting → (General manager above a threshold) → Approved, which becomes a demo PO. Changes requested and Rejected are possible at each step. Rules and budgets are per hotel in `src/lib/data/purchasing-rules.ts`. Stock rises only when an approved order is recorded as received.
+- **Server-backed:** requests and prep plans live in `.data/purchasing.json` (`src/lib/server/purchasing*.ts`), so every account sees the same record.
+- **Demo scenario:** Banqueting took 30 kg of chicken today and tomorrow's chicken is unconfirmed, so The Terrace gets "requires an additional 12 kg of chicken breast". Only tomorrow's supplier deliveries are confirmed.
+
 ### Known limitations and the next stage
 - Corrections, cases and approvals are stored in the **browser** (zustand plus localStorage). Only sign-in is stored on the server.
 - Pour changes update outlet and storeroom stock, but **not the Forecast page yet**. This belongs in Stage 3.
 - Late waste entries show in the period's records and timeline, but not in the case's own history list.
-- **Next: Stage 3, Forecast and Purchasing.** Do not start it without the owner's go-ahead.
+- The demo budget is an estimate, and no order is sent to a supplier.
+- Purchase requests and prep plans are stored on the server, but Stage 2 corrections still live in each browser.
+- **Next: Stage 4, Events and Staff Support.** Do not start it without the owner's go-ahead.
 
 ---
 
@@ -136,6 +147,8 @@ Accounts are defined in `config/demo-accounts.json`. On the sign-in page, pickin
 | General manager | James Whitfield | james@grandresorts.example | Tyll-Demo-GM-26 | 7364 |
 | Financial controller | Priya Raman | priya@grandresorts.example | Tyll-Demo-Finance-26 | 591846 |
 | F&B director | Marco Bellini | marco@grandresorts.example | Tyll-Demo-FnB-26 | 2468 |
+| Purchasing manager (Stage 3) | Nadia Rahman | nadia@grandresorts.example | Tyll-Demo-Purchasing-26 | 1357 |
+| Head chef, The Terrace (Stage 3) | Rafael Costa | rafael@grandresorts.example | Tyll-Demo-Chef-26 | 8642 |
 
 These are demo-only credentials. Never reuse them anywhere real.
 

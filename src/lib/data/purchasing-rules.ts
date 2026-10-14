@@ -18,7 +18,7 @@ export const APPROVAL_POLICY: Record<string, ApprovalPolicy> = {
 
 /** F&B purchasing budget for the month. Demo estimates, not balances from an accounting system. */
 export const DEMO_BUDGET: Record<string, { month: string; budget: number; spentBefore: number }> = {
-  dxb: { month: "October 2026", budget: 420000, spentBefore: 318500 },
+  dxb: { month: "October 2026", budget: 420000, spentBefore: 409500 },
   doh: { month: "October 2026", budget: 260000, spentBefore: 171200 },
 };
 

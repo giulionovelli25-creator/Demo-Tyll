@@ -136,10 +136,10 @@ describe("Scenario B: prep plan to purchasing", () => {
     const saved = P.savePrepPlan(chef, { outletId: "dxb-terrace", period: "tomorrow", meal: "all", portions: { burger: 30, caesar: 20 } });
     if (!saved.ok) throw new Error(saved.error);
     const task = saved.plan.tasks[0];
-    expect(P.updatePrepTask(chef, { planId: saved.plan.id, taskId: task.id, action: "assign", assigneeId: "u-emp" }).ok).toBe(true);
+    expect(P.updatePrepTask(chef, { planId: saved.plan.id, taskId: task.id, op: "assign", assigneeId: "u-emp" }).ok).toBe(true);
     const omar = U("u-emp");
     expect(P.savePrepPlan(omar, { outletId: "dxb-terrace", period: "tomorrow", meal: "all", portions: { burger: 1 } }).ok).toBe(false);
-    expect(P.updatePrepTask(omar, { planId: saved.plan.id, taskId: task.id, action: "complete" }).ok).toBe(true);
+    expect(P.updatePrepTask(omar, { planId: saved.plan.id, taskId: task.id, op: "complete" }).ok).toBe(true);
     expect(P.plansFor(chef)[0].tasks[0]).toMatchObject({ done: true, doneBy: "u-emp" });
   });
 });

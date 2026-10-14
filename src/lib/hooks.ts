@@ -129,7 +129,7 @@ export function useOrder(id: string | undefined): { order: Order | undefined; st
 }
 
 /** Posts to a protected endpoint whenever the body changes. Keeps the last answer on screen while a new one loads. */
-function usePost<T>(url: string, body: unknown | null, delayMs = 0): { data: T | undefined; loading: boolean; error?: string } {
+export function usePost<T>(url: string, body: unknown | null, delayMs = 0): { data: T | undefined; loading: boolean; error?: string } {
   const key = body === null ? null : JSON.stringify(body);
   const [state, setState] = useState<{ key: string; data?: T; error?: string } | null>(null);
   useEffect(() => {
@@ -149,7 +149,7 @@ function usePost<T>(url: string, body: unknown | null, delayMs = 0): { data: T |
 }
 
 /** This session's own entries, sent along so the server's figures include them. */
-function useSessionEntries() {
+export function useSessionEntries() {
   const waste = useDemo((s) => s.wasteLogs);
   const corrections = useDemo((s) => s.wasteCorrections);
   const counts = useDemo((s) => s.counts);

@@ -8,7 +8,18 @@ import { ACTIVE_STATUSES } from "@/lib/domain/operations";
 import { useCtx, useUser } from "@/lib/hooks";
 import { REASON_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
-import { DEMO_TODAY, fmtDate, fmtQty } from "@/lib/util";
+import { DEMO_TODAY, addDays, fmtDate, fmtQty } from "@/lib/util";
+import { Checklist } from "@/components/forecast/prep";
+import { usePrepPlans } from "@/lib/plan-hooks";
+
+/** Tomorrow's prep plan for this kitchen, as a checklist. Staff tick off their own jobs; the plan itself is the chef's. */
+function PrepForShift({ outletId }: { outletId: string }) {
+  const { data } = usePrepPlans();
+  const plans = (data?.plans ?? []).filter((p) => p.outletId === outletId && p.period.to >= addDays(DEMO_TODAY, 1)).sort((a, b) => (a.period.from < b.period.from ? -1 : 1));
+  const plan = plans[0];
+  if (!plan) return null;
+  return <Checklist plan={plan} assignees={data?.assignees[outletId] ?? []} />;
+}
 
 export default function TasksPage() {
   const user = useUser()!;
@@ -44,6 +55,7 @@ export default function TasksPage() {
           </Link>
         ))}
       </div>
+      <PrepForShift outletId={outletId} />
       <Panel title="What you have logged" description="Your entries feed the stock and waste figures managers see. Sales and cost figures are not shown on this account.">
         {myWaste.length === 0 ? <p className="text-sm text-steel">Nothing yet this session.</p> : (
           <ul className="divide-y divide-hair">

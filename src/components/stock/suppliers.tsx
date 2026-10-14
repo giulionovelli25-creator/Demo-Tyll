@@ -42,7 +42,7 @@ export function Suppliers({ propertyId }: { propertyId: string }) {
           <Stat label="Deliveries checked" value={deliveries.length} sub="last 13 days" />
           <Stat label="With a difference" tone={withIssues.length ? "warn" : undefined} value={withIssues.length} />
           <Stat label="Invoiced beyond delivery or agreed price" tone="warn" value={money(sum(deliveries, (x) => x.over))} sub="to query with suppliers" />
-          <Stat label="Deliveries expected" value={expected.length} sub="next three days" />
+          <Stat label="Deliveries confirmed" value={expected.length} sub="for tomorrow" />
         </div>
       </Panel>
 

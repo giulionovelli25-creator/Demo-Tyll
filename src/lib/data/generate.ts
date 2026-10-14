@@ -435,12 +435,14 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
   const out: Delivery[] = [];
   for (const p of PROPERTIES) {
     const avg = avgDailyUsage(dayItems, p.id);
-    for (const date of eachDay({ from: addDays(DEMO_TODAY, -12), to: addDays(DEMO_TODAY, 3) })) {
+    // Suppliers confirm the next day's delivery; anything later is still to be ordered.
+    for (const date of eachDay({ from: addDays(DEMO_TODAY, -12), to: addDays(DEMO_TODAY, 1) })) {
       for (const supplierId of Object.keys(SUPPLIER_DAYS)) {
         if (!SUPPLIER_DAYS[supplierId](weekday(date))) continue;
         const r = rng(`delivery|${p.id}|${date}|${supplierId}`);
         const future = date > DEMO_TODAY;
-        const lines = INGREDIENTS.filter((g) => g.supplierId === supplierId && (avg.get(g.id) ?? 0) > 0).map((g) => {
+        // Gulf Prime Meats could not confirm chicken for Dubai tomorrow.
+        const lines = INGREDIENTS.filter((g) => g.supplierId === supplierId && (avg.get(g.id) ?? 0) > 0 && !(p.id === "dxb" && g.id === "chicken" && date === addDays(DEMO_TODAY, 1))).map((g) => {
           const want = avg.get(g.id)! * SUPPLIER_COVER[supplierId] * r.between(0.94, 1.08);
           const pack = orderPack(g);
           const ordered = Math.max(pack, Math.round(want / pack) * pack);
@@ -465,6 +467,7 @@ function buildTransfers(): Transfer[] {
     { id: "T-1", propertyId: "dxb", ingredientId: "wine", date: "2026-10-12", qty: 4.5, direction: "out", counterparty: "Banqueting" },
     { id: "T-2", propertyId: "dxb", ingredientId: "chicken", date: "2026-10-13", qty: 6, direction: "out", counterparty: "Staff restaurant" },
     { id: "T-3", propertyId: "dxb", ingredientId: "coke", date: "2026-10-13", qty: 48, direction: "in", counterparty: "Banqueting" },
+    { id: "T-7", propertyId: "dxb", ingredientId: "chicken", date: "2026-10-13", qty: 30, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner" },
     { id: "T-6", propertyId: "dxb", ingredientId: "lobster", date: "2026-10-13", qty: 9, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner" },
     { id: "T-4", propertyId: "doh", ingredientId: "coffee", date: "2026-10-12", qty: 2, direction: "out", counterparty: "Executive lounge" },
     { id: "T-5", propertyId: "doh", ingredientId: "lamb", date: "2026-10-13", qty: 5, direction: "in", counterparty: "Banqueting" },

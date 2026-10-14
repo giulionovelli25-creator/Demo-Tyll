@@ -71,7 +71,7 @@ export function ManagerOverview() {
     }
     if (can(user, "forecast.approve") && serverForecast) {
       const pending = serverForecast.forecast.plans.filter((p) => p.suggested > 0 && used.has(p.ingredientId) && !approvals.some((a) => a.propertyId === pid && a.ingredientId === p.ingredientId));
-      if (pending.length) out.push({ id: "purchases", title: `Approve ${pending.length} purchase suggestion${pending.length === 1 ? "" : "s"}`, detail: "For ingredients this outlet uses", href: "/forecast", urgent: pending.some((p) => p.shortageDay || p.lowDay), approval: true });
+      if (pending.length) out.push({ id: "purchases", title: `Review ${pending.length} suggested purchase${pending.length === 1 ? "" : "s"}`, detail: "Turn them into a purchase request", href: "/forecast?tab=buy", urgent: pending.some((p) => p.shortageDay || p.lowDay), approval: true });
     }
     return out.sort((a, b) => Number(!!b.urgent) - Number(!!a.urgent) || Number(!!b.approval) - Number(!!a.approval));
     // eslint-disable-next-line react-hooks/exhaustive-deps
