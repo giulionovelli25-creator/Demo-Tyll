@@ -5,6 +5,7 @@ import type { CountRecord, Currency, DateRange, DayItem, DayOutlet, Dept, Except
 import { DEMO_NOW_MIN, DEMO_TODAY, eachDay, fxRate, previousRange } from "../util";
 import { REMOVAL_TYPES } from "./detect";
 import { countVarianceValue, isBreakage, wasteCost, wasteDept } from "./inventory";
+import { headlineFor, periodVariance, type Adjustments } from "./variance";
 import { basePriceAt, itemCostAt, itemCostAtProperty, menuPriceAt, type PriceOverrides } from "./pricing";
 
 /** The dataset plus everything changed during the demo session. */
@@ -14,7 +15,13 @@ export interface Ctx {
   counts: readonly CountRecord[];
   overrides: PriceOverrides;
   investigations: Readonly<Record<string, InvestigationState>>;
+  /** Session corrections to outlet stock: recounts, standard quantities, waste. */
+  adjust: Adjustments;
 }
+
+/** Amount at stake in a case. A usage case follows its current figures, so recounts and late waste are reflected. */
+export const liveExposure = (e: Exception, ctx: Pick<Ctx, "adjust">) =>
+  e.period ? Math.max(0, Math.round(periodVariance(e.period, ctx.adjust).value * 100) / 100) : e.exposure;
 
 export interface Sel {
   outletIds: readonly string[];
@@ -88,7 +95,11 @@ export function prevSel(sel: Sel): Sel {
 
 /** Exceptions joined with their current investigation state. */
 export function listInvestigations(ctx: Ctx): Investigation[] {
-  return ctx.data.exceptions.map((e) => ({ ...e, ...(ctx.investigations[e.id] ?? ctx.data.seedInvestigations[e.id]) }));
+  return ctx.data.exceptions.map((e) => {
+    // A usage case's headline and amount follow its current figures.
+    const live = e.period ? { exposure: liveExposure(e, ctx), headline: headlineFor(e.period, periodVariance(e.period, ctx.adjust)) } : {};
+    return { ...e, ...live, ...(ctx.investigations[e.id] ?? ctx.data.seedInvestigations[e.id]) };
+  });
 }
 
 export function exceptionInSel(e: Exception, sel: Pick<Sel, "outletIds" | "wholeProperties">): boolean {
@@ -173,7 +184,7 @@ export function computeTotals(ctx: Ctx, sel: Sel): Totals {
       recovered += st.recovered * rate;
     } else {
       openCases += 1;
-      potentialLoss += e.exposure * rate;
+      potentialLoss += liveExposure(e, ctx) * rate;
     }
   }
 

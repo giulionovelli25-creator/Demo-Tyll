@@ -7,10 +7,10 @@ import { allowedOutlets, allowedProperties, clampScope, hasWholeProperty, scopeC
 import { detectPatterns } from "./domain/detect";
 import type { StockInputs } from "./domain/inventory";
 import { exceptionInSel, listInvestigations, type Ctx, type Sel } from "./domain/metrics";
-import { currentRange, useDemo } from "./store";
+import { correctedWaste, currentRange, useDemo } from "./store";
 import type { ForecastInputs } from "./domain/forecast";
 import type { ForecastOut, StockRowOut } from "./server/stock";
-import type { Currency, Investigation, Order, User } from "./types";
+import type { Currency, Investigation, Order, UsagePeriod, User } from "./types";
 import { DEMO_TODAY, fmtMoney } from "./util";
 
 export function useUser(): User | null {
@@ -25,12 +25,16 @@ export function useCtx(): Ctx {
   const overrides = useDemo((s) => s.priceOverrides);
   const investigations = useDemo((s) => s.investigations);
   const stockCases = useDemo((s) => s.stockCases);
+  const recounts = useDemo((s) => s.recounts);
+  const recipes = useDemo((s) => s.recipeChanges);
+  const corrections = useDemo((s) => s.wasteCorrections);
   return useMemo(() => {
     const base = getDataset();
     // Stock cases opened in this session join the flagged transactions everywhere cases are listed.
     const data = stockCases.length ? { ...base, exceptions: [...base.exceptions, ...stockCases] } : base;
-    return { data, waste: [...data.wasteLogs, ...wasteLogs], counts: [...data.counts, ...counts], overrides, investigations };
-  }, [wasteLogs, counts, overrides, investigations, stockCases]);
+    const session = correctedWaste(wasteLogs, corrections);
+    return { data, waste: [...data.wasteLogs, ...session], counts: [...data.counts, ...counts], overrides, investigations, adjust: { recounts, recipes, waste: session } };
+  }, [wasteLogs, counts, overrides, investigations, stockCases, recounts, recipes, corrections]);
 }
 
 export function useStockInputs(): StockInputs {
@@ -147,9 +151,20 @@ function usePost<T>(url: string, body: unknown | null, delayMs = 0): { data: T |
 /** This session's own entries, sent along so the server's figures include them. */
 function useSessionEntries() {
   const waste = useDemo((s) => s.wasteLogs);
+  const corrections = useDemo((s) => s.wasteCorrections);
   const counts = useDemo((s) => s.counts);
   const overrides = useDemo((s) => s.priceOverrides);
-  return useMemo(() => ({ waste: waste.filter((w) => w.synced), counts, overrides }), [waste, counts, overrides]);
+  const recipes = useDemo((s) => s.recipeChanges);
+  const receipts = useDemo((s) => s.receiptCorrections);
+  return useMemo(
+    () => ({ waste: correctedWaste(waste, corrections).filter((w) => w.synced), counts, overrides, recipes, receipts }),
+    [waste, corrections, counts, overrides, recipes, receipts],
+  );
+}
+
+/** Where did it go? The latest outlet stock period for each counted item, from the server. Figures are worked out here, with the session's corrections. */
+export function useVariancePeriods(propertyId: string | null) {
+  return useApi<{ periods: UsagePeriod[] }>(propertyId ? `/api/variance?propertyId=${propertyId}` : null);
 }
 
 /** Stock worked out on the server from every outlet's use of the shared store. */

@@ -199,7 +199,8 @@ export type ExceptionType =
   | "room_charge_missing"
   | "room_charge_duplicate"
   | "room_charge_incorrect"
-  | "stock_shortfall";
+  | "stock_shortfall"
+  | "usage_variance";
 
 export interface Exception {
   id: string;
@@ -214,6 +215,8 @@ export interface Exception {
   /** For a stock shortfall: the count that found it. */
   countId?: string;
   ingredientId?: string;
+  /** For a usage variance: the records of the stock period, so the figures can be recalculated as corrections arrive. */
+  period?: UsagePeriod;
   /** Potential value involved, in the property's own currency. */
   exposure: number;
   headline: string;
@@ -238,6 +241,9 @@ export interface InvestigationState {
   recovered: number;
   closedAt?: string;
   closedBy?: string;
+  /** For stock cases: the cause the manager verified, and what was done about it. */
+  verifiedCause?: string;
+  correctiveAction?: string;
 }
 
 export interface Investigation extends Exception, InvestigationState {}
@@ -259,6 +265,8 @@ export interface WasteLog {
   synced: boolean;
   /** Order of entry for records created in the demo session. */
   seq: number;
+  /** A late entry recorded against one outlet stock period. */
+  periodId?: string;
 }
 
 export interface CountRecord {
@@ -301,6 +309,124 @@ export interface Transfer {
   qty: number;
   direction: "in" | "out";
   counterparty: string;
+}
+
+// ---- Outlet stock -----------------------------------------------------------
+// Each bar and kitchen holds its own working stock, issued from the main storeroom and counted at handover or close.
+
+export interface OutletCheck {
+  id: string;
+  outletId: string;
+  ingredientId: string;
+  date: string;
+  /** Minute of the day. 1440 is the close of service. */
+  min: number;
+  counted: number;
+  by: string;
+  kind: "handover" | "close";
+}
+
+export interface OutletMovement {
+  id: string;
+  date: string;
+  min: number;
+  /** Positive into the outlet, negative out of it. */
+  qty: number;
+  /** Where it came from or went. */
+  counterparty: string;
+}
+
+export interface PeriodSale {
+  itemId: string;
+  date: string;
+  /** Units recorded in the POS, including complimentary ones. */
+  units: number;
+  comped: number;
+  /** Recipe quantity of this ingredient in one unit, as set at the time. */
+  qtyPerUnit: number;
+}
+
+/** A line sent to the kitchen or bar that never reached the bill. It was probably made, but no sale records it. */
+export interface PeriodRemoval {
+  orderId: string;
+  itemId: string;
+  date: string;
+  sentMin: number;
+  removedMin: number;
+  qty: number;
+  qtyPerUnit: number;
+  how: "removed" | "voided";
+}
+
+export interface PeriodWaste {
+  id: string;
+  date: string;
+  qty: number;
+  reason: WasteReason;
+  by: string;
+}
+
+export interface UsagePeriod {
+  id: string;
+  outletId: string;
+  propertyId: string;
+  ingredientId: string;
+  from: OutletCheck;
+  to: OutletCheck;
+  issues: OutletMovement[];
+  transfers: OutletMovement[];
+  sales: PeriodSale[];
+  removals: PeriodRemoval[];
+  waste: PeriodWaste[];
+  /** Cost of one unit in the property's currency on the closing date. */
+  unitCost: number;
+  /** How far the two counts can be out between them, in the item's unit. */
+  tolerance: number;
+  /** Unexplained quantity in earlier periods at this outlet, oldest first. */
+  history: { to: string; unexplained: number }[];
+}
+
+export interface Recount {
+  id: string;
+  checkId: string;
+  counted: number;
+  reason: string;
+  by: string;
+  date: string;
+  seq: number;
+}
+
+export interface RecipeChange {
+  id: string;
+  itemId: string;
+  ingredientId: string;
+  qty: number;
+  /** Applies to sales on and after this date. */
+  from: string;
+  reason: string;
+  by: string;
+  seq: number;
+}
+
+export interface WasteCorrection {
+  id: string;
+  wasteId: string;
+  /** Corrected quantity. Zero cancels the entry. */
+  qty: number;
+  reason: string;
+  by: string;
+  seq: number;
+}
+
+export interface ReceiptCorrection {
+  id: string;
+  deliveryId: string;
+  ingredientId: string;
+  /** Quantity actually received. */
+  received: number;
+  reason: string;
+  by: string;
+  seq: number;
 }
 
 // ---- Hotel context ----------------------------------------------------------

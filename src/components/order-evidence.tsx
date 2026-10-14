@@ -1,4 +1,5 @@
 "use client";
+import { RecordFields, Timeline, type TimelineItem } from "@/components/timeline";
 import { Badge, cn } from "@/components/ui";
 import { itemById, outletById, propertyById, staffById } from "@/lib/data/catalog";
 import { lineValue, orderTimeline, orderTotals } from "@/lib/domain/orders";
@@ -62,22 +63,24 @@ export function OrderVersusBill({ order }: { order: Order }) {
 
 /** Every recorded step of the order, in time order. Flagged steps are marked. */
 export function OrderTimeline({ order }: { order: Order }) {
+  const money = useMoney(order);
   const events = orderTimeline(order);
-  return (
-    <ol className="relative ml-2 border-l border-line">
-      {events.map((e, i) => (
-        <li key={i} className="relative pb-4 pl-6 last:pb-0">
-          <span className={cn("absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full ring-4 ring-paper", e.flagged ? "bg-warn" : e.kind === "paid" ? "bg-pos" : "bg-fog")} aria-hidden />
-          <p className="flex flex-wrap items-baseline gap-x-3 text-sm">
-            <span className="num w-[70px] shrink-0 text-steel">{fmtTime(e.min)}</span>
-            <span className={cn("text-ink", e.flagged && "font-medium")}>{e.title}</span>
-            {e.flagged && <Badge tone="warn" className="!py-0">flagged</Badge>}
-          </p>
-          {e.detail && <p className="ml-[82px] text-xs text-steel">{e.detail}</p>}
-        </li>
-      ))}
-    </ol>
-  );
+  // Each event opens to the order line it came from: what it was, what it cost and how it ended.
+  const items: TimelineItem[] = events.map((e, i) => ({
+    key: `${i}`, when: fmtTime(e.min), title: e.title, detail: e.detail, tone: e.flagged ? "warn" : e.kind === "paid" ? "pos" : "neutral", flag: e.flagged ? "flagged" : undefined,
+    body: e.line ? (
+      <RecordFields rows={[
+        ["Item", `${e.line.qty} × ${itemById[e.line.itemId].name}`],
+        ["Price", money(e.line.unitPrice * e.line.qty)],
+        ["Entered", fmtTime(e.line.enteredMin)],
+        ["Sent", e.line.sentMin !== undefined ? fmtTime(e.line.sentMin) : "not sent"],
+        ["Outcome", { kept: "on the bill", comped: "complimentary", removed_pre: "removed before preparation", removed_post: "removed after it was sent" }[e.line.state]],
+        ...(e.line.removedMin !== undefined ? [["Removed", `${fmtTime(e.line.removedMin)}, POS login ${staffById[e.line.removedBy ?? ""]?.name ?? e.line.removedBy ?? "not recorded"}`] as [string, string]] : []),
+        ["Reason recorded", e.line.reason ?? "none"],
+      ]} />
+    ) : undefined,
+  }));
+  return <Timeline items={items} />;
 }
 
 /** The preparation tickets sent to the kitchen and bar. */

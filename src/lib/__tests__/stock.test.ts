@@ -16,7 +16,7 @@ const { getDataset } = await import("../data/generate");
 const { stockPosition } = await import("../domain/inventory");
 const { buildForecast, defaultInputs } = await import("../domain/forecast");
 
-const none = { waste: [], counts: [], overrides: [] };
+const none = { waste: [], counts: [], overrides: [], recipes: [], receipts: [] };
 const sara = userById["u-rm"];
 const owner = userById["u-owner"];
 const d = getDataset();
@@ -80,5 +80,25 @@ describe("stock routes", () => {
     expect((await forecastRoute.POST(post("/api/forecast", rm, { propertyId: "dxb" }))).status).toBe(200);
     const staff = session("u-emp");
     expect((await forecastRoute.POST(post("/api/forecast", staff, { propertyId: "dxb" }))).status).toBe(403);
+  });
+});
+
+describe("where did it go", () => {
+  const varianceRoute = () => import("../../app/api/variance/route");
+  const get = (url: string, token: string) => new NextRequest(`http://localhost${url}`, { headers: { cookie: `${SESSION_COOKIE}=${token}`, host: "localhost" } });
+
+  it("sends a manager only their own outlets' periods, and refuses staff and other hotels", async () => {
+    const { GET } = await varianceRoute();
+    const rm = session("u-rm");
+    const res = await GET(get("/api/variance?propertyId=dxb", rm));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { periods: { outletId: string }[] };
+    expect(body.periods.length).toBeGreaterThan(0);
+    expect(body.periods.every((p) => p.outletId === "dxb-terrace")).toBe(true);
+    expect((await GET(get("/api/variance?propertyId=doh", rm))).status).toBe(403);
+    expect((await GET(get("/api/variance?id=UP-LBY-wine-1012-1440", rm))).status).toBe(404);
+    expect((await GET(get("/api/variance?propertyId=dxb", session("u-emp")))).status).toBe(403);
+    const owner = (await (await GET(get("/api/variance?propertyId=dxb", session("u-owner")))).json()) as { periods: { outletId: string }[] };
+    expect(new Set(owner.periods.map((p) => p.outletId)).size).toBeGreaterThan(1);
   });
 });

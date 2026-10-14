@@ -1,3 +1,4 @@
+import { NO_ADJUSTMENTS } from "../domain/variance";
 import { describe, expect, it } from "vitest";
 import { OUTLETS, USERS, ingredientById, outletsOfProperty, userById } from "../data/catalog";
 import { HERO_EXCEPTION_ID, HERO_ORDER_ID, getDataset } from "../data/generate";
@@ -15,7 +16,7 @@ import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fxRate, presetRange, previousRange }
 
 const data = getDataset();
 const ALL = OUTLETS.map((o) => o.id);
-const ctx = (over: Partial<Ctx> = {}): Ctx => ({ data, waste: data.wasteLogs, counts: data.counts, overrides: [], investigations: {}, ...over });
+const ctx = (over: Partial<Ctx> = {}): Ctx => ({ data, waste: data.wasteLogs, counts: data.counts, overrides: [], investigations: {}, adjust: NO_ADJUSTMENTS, ...over });
 const sel = (over: Partial<Sel> = {}): Sel => ({ outletIds: ALL, wholeProperties: ["dxb", "doh"], dept: "all", range: presetRange("week"), currency: "AED", ...over });
 const close = (a: number, b: number, tol = 0.01) => expect(Math.abs(a - b)).toBeLessThan(tol);
 

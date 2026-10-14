@@ -54,7 +54,9 @@ export function buildIssues(
     const impact = i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency);
     const patterned = REMOVAL_TYPES.includes(i.type) && patterns.some((p) => p.exceptionIds.includes(i.id));
     const overdue = !!i.deadline && i.deadline < DEMO_TODAY;
-    const priority: Priority = impact >= ISSUE_RULES.highImpact * aed || (patterned && i.status === "new") || overdue ? "high" : impact >= ISSUE_RULES.mediumImpact * aed ? "medium" : "low";
+    // A new usage difference well beyond counting error is high priority however small the amount: it is fresh and checkable.
+    const freshStock = i.type === "usage_variance" && i.status === "new";
+    const priority: Priority = impact >= ISSUE_RULES.highImpact * aed || (patterned && i.status === "new") || overdue || freshStock ? "high" : impact >= ISSUE_RULES.mediumImpact * aed || i.type === "usage_variance" ? "medium" : "low";
     out.push({
       id: i.id, kind: "investigation", title: i.headline, location: where(i.outletId, i.propertyId), outletId: i.outletId, impact, priority,
       assignee: i.assigneeId, status: overdue ? "Overdue" : { new: "New", assigned: "Assigned", in_review: "In review", closed: "Closed" }[i.status],

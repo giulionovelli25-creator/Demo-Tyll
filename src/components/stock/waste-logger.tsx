@@ -1,14 +1,14 @@
 "use client";
 import { Apple, Beef, Check, ChevronLeft, CloudOff, Coffee, Delete, Fish, GlassWater, Hammer, HelpCircle, Languages, Milk, PackageX, Salad, Soup, Trash2, Wheat, Wine, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Badge, Button, Note, Panel, Select, cn, toast } from "@/components/ui";
+import { Badge, Button, Field, Note, Panel, Select, cn, report, toast } from "@/components/ui";
 import { INGREDIENTS, ingredientById, itemById, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
 import { wasteCost } from "@/lib/domain/inventory";
 import { personName, useCtx, useServerStock, useUser, useView } from "@/lib/hooks";
 import { REASON_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
-import type { WasteReason } from "@/lib/types";
+import type { WasteLog, WasteReason } from "@/lib/types";
 import { DEMO_TODAY, fmtMoney, fmtQty } from "@/lib/util";
 
 /** Demo PIN for the staff app. A live version would issue one per employee. */
@@ -264,17 +264,9 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
                 </div>
               )}
               <ul className="divide-y divide-hair">
-                {mine.slice(0, 8).map((w) => {
-                  const name = w.ingredientId ? ingredientById[w.ingredientId].name : itemById[w.itemId!].name;
-                  const u = w.ingredientId ? ingredientById[w.ingredientId].unit : "each";
-                  return (
-                    <li key={w.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
-                      <span><span className="num text-ink">{fmtQty(w.qty, u)} {u === "each" ? "× " : ""}{name}</span><span className="block text-xs text-steel">{REASON_LABEL[w.reason].en} · {outletById[w.outletId].name} · {personName(w.by)}</span></span>
-                      <span className="flex items-center gap-3"><span className="num">{money(wasteCost(w, ctx.overrides))}</span>{w.synced ? <Badge tone="pos">in reports</Badge> : <Badge tone="warn">waiting to sync</Badge>}</span>
-                    </li>
-                  );
-                })}
+                {mine.slice(0, 8).map((w) => <EntryRow key={w.id} w={w} money={money} />)}
               </ul>
+              <Note className="mt-3">A wrong entry is corrected, never deleted: the original and the correction both stay on record.</Note>
             </>
           )}
         </Panel>
@@ -291,5 +283,45 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
         </Panel>
       </div>
     </div>
+  );
+}
+
+/** One entry made in Tyll, with its latest correction and a way to correct it again. */
+function EntryRow({ w, money }: { w: WasteLog; money: (n: number) => string }) {
+  const ctx = useCtx();
+  const corrections = useDemo((s) => s.wasteCorrections).filter((c) => c.wasteId === w.id).sort((a, b) => b.seq - a.seq);
+  const correct = useDemo((s) => s.correctWaste);
+  const [editing, setEditing] = useState(false);
+  const [qty, setQty] = useState(String(w.qty));
+  const [why, setWhy] = useState("");
+  const latest = corrections[0];
+  const effective = latest ? latest.qty : w.qty;
+  const name = w.ingredientId ? ingredientById[w.ingredientId].name : itemById[w.itemId!].name;
+  const u = w.ingredientId ? ingredientById[w.ingredientId].unit : "each";
+  return (
+    <li className="py-3 text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span>
+          <span className={cn("num text-ink", effective === 0 && "line-through")}>{fmtQty(effective, u)} {u === "each" ? "× " : ""}{name}</span>
+          {latest && <span className="ml-2 text-xs text-steel">{effective === 0 ? "cancelled" : `corrected from ${fmtQty(w.qty, u)}`}: {latest.reason}</span>}
+          <span className="block text-xs text-steel">{REASON_LABEL[w.reason].en} · {outletById[w.outletId].name} · {personName(w.by)}{w.periodId ? " · late entry" : ""}</span>
+        </span>
+        <span className="flex items-center gap-3">
+          <span className="num">{money(effective > 0 ? wasteCost({ ...w, qty: effective }, ctx.overrides) : 0)}</span>
+          {w.synced ? <Badge tone="pos">in reports</Badge> : <Badge tone="warn">waiting to sync</Badge>}
+          <Button size="sm" variant="ghost" onClick={() => setEditing(!editing)}>Correct</Button>
+        </span>
+      </div>
+      {editing && (
+        <form className="mt-3 flex flex-wrap items-end gap-2" onSubmit={(e) => {
+          e.preventDefault();
+          if (report(correct(w.id, Number(qty), why), Number(qty) === 0 ? "Entry cancelled. Stock and waste figures are updated." : "Entry corrected. Stock and waste figures are updated.")) { setEditing(false); setWhy(""); }
+        }}>
+          <Field label="Correct quantity" className="w-32" type="number" inputMode="decimal" min="0" step="0.01" value={qty} onChange={(e) => setQty(e.target.value)} hint="0 cancels it" />
+          <Field label="Why?" className="min-w-[200px] flex-1" value={why} onChange={(e) => setWhy(e.target.value)} placeholder="For example: entered 10 instead of 1" />
+          <Button type="submit" size="sm">Save correction</Button>
+        </form>
+      )}
+    </li>
   );
 }

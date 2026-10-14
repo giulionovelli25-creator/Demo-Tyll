@@ -3,7 +3,8 @@ import { userById } from "../data/catalog";
 import { hydrateDataset } from "../data/dataset";
 import { HERO_EXCEPTION_ID, getDataset } from "../data/generate";
 import { snapshotFor } from "../server/snapshot";
-import { useDemo } from "../store";
+import { correctedWaste, useDemo } from "../store";
+import { listInvestigations } from "../domain/metrics";
 import { DEMO_TODAY, addDays } from "../util";
 
 const s = () => useDemo.getState();
@@ -185,5 +186,57 @@ describe("stock cases", () => {
   it("refuses an unknown assignee", () => {
     signIn("u-rm");
     expect(s().assignInvestigation(HERO_EXCEPTION_ID, "nobody", addDays(DEMO_TODAY, 2)).ok).toBe(false);
+  });
+});
+
+describe("stock intelligence actions", () => {
+  const coke = data.exceptions.find((e) => e.type === "usage_variance" && e.ingredientId === "coke")!;
+  const wineCase = data.exceptions.find((e) => e.type === "usage_variance" && e.ingredientId === "wine")!;
+  const live = (id: string) => listInvestigations({ data: getDataset(), waste: [], counts: [], overrides: [], investigations: s().investigations, adjust: { recounts: s().recounts, recipes: s().recipeChanges, waste: correctedWaste(s().wasteLogs, s().wasteCorrections) } }).find((i) => i.id === id)!;
+
+  it("recalculates a usage case's amount after a late waste entry and a recount", () => {
+    signIn("u-rm");
+    const before = live(coke.id).exposure;
+    expect(s().logWaste({ outletId: "dxb-terrace", ingredientId: "coke", qty: 2, reason: "breakage", periodId: coke.period!.id }).ok).toBe(true);
+    expect(live(coke.id).exposure).toBeCloseTo(before * 6 / 8, 2);
+    expect(s().recordRecount({ checkId: coke.period!.to.id, outletId: "dxb-terrace", ingredientId: "coke", counted: 13, reason: "Recounted the back fridge" }).ok).toBe(true);
+    expect(live(coke.id).exposure).toBeCloseTo(before * 5 / 8, 2);
+    // A correction cancels the late entry; the original stays in the store.
+    const w = s().wasteLogs[0];
+    expect(s().correctWaste(w.id, 0, "Was logged twice").ok).toBe(true);
+    expect(s().wasteLogs).toHaveLength(1);
+    expect(live(coke.id).exposure).toBeCloseTo(before * 7 / 8, 2);
+  });
+
+  it("requires a verified cause to resolve a stock case, never assumes recovery, and reopens cleanly", () => {
+    signIn("u-rm");
+    expect(s().closeInvestigation(coke.id, { outcome: "confirmed_loss", confirmedLoss: 10, recovered: 0, note: "Checked." }).ok).toBe(false);
+    expect(s().closeInvestigation(coke.id, { outcome: "recovered", confirmedLoss: 0, recovered: 0, note: "Checked.", verifiedCause: "Counting error" }).ok).toBe(false);
+    expect(s().closeInvestigation(coke.id, { outcome: "confirmed_loss", confirmedLoss: 10, recovered: 0, note: "Two cans comped without a POS entry.", verifiedCause: "Unrecorded complimentary drinks", correctiveAction: "Comps must be entered" }).ok).toBe(true);
+    expect(s().investigations[coke.id]).toMatchObject({ status: "closed", verifiedCause: "Unrecorded complimentary drinks", recovered: 0 });
+    signIn("u-gm");
+    expect(s().reopenInvestigation(coke.id).ok).toBe(true);
+    expect(s().investigations[coke.id].verifiedCause).toBeUndefined();
+  });
+
+  it("limits standard quantities, receiving corrections and recounts to the right roles and outlets", () => {
+    signIn("u-rm");
+    expect(s().setStandardQty({ itemId: "wine", ingredientId: "wine", qty: 0.175, from: "2026-10-01", reason: "Menu says 175 ml" }).ok).toBe(false);
+    expect(s().recordRecount({ checkId: wineCase.period!.to.id, outletId: "dxb-lobby", ingredientId: "wine", counted: 7, reason: "Recount" }).ok).toBe(false);
+    signIn("u-fnb");
+    expect(s().setStandardQty({ itemId: "wine", ingredientId: "wine", qty: 0.6, from: "2026-10-01", reason: "Typo" }).ok).toBe(false);
+    expect(s().setStandardQty({ itemId: "wine", ingredientId: "wine", qty: 0.1875, from: "2026-10-01", reason: "Menu serves 187.5 ml" }).ok).toBe(true);
+    expect(live(wineCase.id).exposure).toBeCloseTo(0, 2);
+    const d = data.deliveries.find((x) => x.propertyId === "dxb" && x.status === "delivered")!;
+    expect(s().recordReceipt({ deliveryId: d.id, ingredientId: d.lines[0].ingredientId, received: d.lines[0].delivered - 1, reason: "One short on the pallet" }).ok).toBe(true);
+    signIn("u-fc");
+    expect(s().recordReceipt({ deliveryId: d.id, ingredientId: d.lines[0].ingredientId, received: 1, reason: "x" }).ok).toBe(false);
+    signIn("u-emp");
+    expect(s().openVarianceCase(coke.period!).ok).toBe(false);
+  });
+
+  it("refuses late entries older than a week", () => {
+    signIn("u-rm");
+    expect(s().logWaste({ outletId: "dxb-terrace", ingredientId: "coke", qty: 1, reason: "waste", date: "2026-09-01" }).ok).toBe(false);
   });
 });

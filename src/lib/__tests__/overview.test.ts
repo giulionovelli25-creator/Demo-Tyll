@@ -1,3 +1,4 @@
+import { NO_ADJUSTMENTS } from "../domain/variance";
 import { describe, expect, it } from "vitest";
 import { OUTLETS } from "../data/catalog";
 import { HERO_EXCEPTION_ID, getDataset } from "../data/generate";
@@ -7,7 +8,7 @@ import { compare, listInvestigations, totalsByOutlet, type Ctx, type Sel } from 
 import { DEMO_TODAY, presetRange } from "../util";
 
 const data = getDataset();
-const ctx = (over: Partial<Ctx> = {}): Ctx => ({ data, waste: data.wasteLogs, counts: data.counts, overrides: [], investigations: {}, ...over });
+const ctx = (over: Partial<Ctx> = {}): Ctx => ({ data, waste: data.wasteLogs, counts: data.counts, overrides: [], investigations: {}, adjust: NO_ADJUSTMENTS, ...over });
 const ALL = OUTLETS.map((o) => o.id);
 const group: Sel = { outletIds: ALL, wholeProperties: ["dxb", "doh"], dept: "all", range: presetRange("week"), currency: "AED" };
 const terrace: Sel = { ...group, outletIds: ["dxb-terrace"], wholeProperties: [] };

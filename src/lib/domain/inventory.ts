@@ -1,6 +1,6 @@
 // Stock arithmetic: expected usage from recipes, estimated stock, waste cost and count variance.
 import { INGREDIENTS, ingredientById, itemById, outletById, outletsOfProperty, propertyById, storeOwner } from "../data/catalog";
-import type { CountRecord, DayItem, Delivery, DeliveryLine, Transfer, WasteLog } from "../types";
+import type { CountRecord, DayItem, Delivery, DeliveryLine, ReceiptCorrection, RecipeChange, Transfer, WasteLog } from "../types";
 import { DEMO_TODAY, addDays, round2 } from "../util";
 import { ingredientCostAt, itemCostAtProperty, type PriceOverrides } from "./pricing";
 
@@ -10,6 +10,15 @@ export interface StockInputs {
   deliveries: readonly Delivery[];
   transfers: readonly Transfer[];
   waste: readonly WasteLog[];
+  /** Authorised changes to recipe quantities, such as a corrected standard pour. */
+  recipes?: readonly RecipeChange[];
+}
+
+/** Recipe quantity of an ingredient in one unit of an item sold on a date, after any authorised change. */
+export function qtyPerUnit(base: number, itemId: string, ingredientId: string, date: string, recipes: readonly RecipeChange[] = []): number {
+  if (recipes.length === 0) return base;
+  const change = recipes.filter((c) => c.itemId === itemId && c.ingredientId === ingredientId && c.from <= date).sort((a, b) => b.seq - a.seq)[0];
+  return change ? change.qty : base;
 }
 
 /** Ingredient quantities the recipes say were used for the given sales rows. */
@@ -118,7 +127,7 @@ export function stockPosition(propertyId: string, inp: StockInputs, overrides?: 
     if (!recipe) continue;
     let m = usageByDate.get(r.date);
     if (!m) usageByDate.set(r.date, (m = new Map()));
-    for (const l of recipe) if (draws(l.ingredientId, r.outletId)) m.set(l.ingredientId, (m.get(l.ingredientId) ?? 0) + l.qty * r.units);
+    for (const l of recipe) if (draws(l.ingredientId, r.outletId)) m.set(l.ingredientId, (m.get(l.ingredientId) ?? 0) + qtyPerUnit(l.qty, r.itemId, l.ingredientId, r.date, inp.recipes) * r.units);
   }
 
   return INGREDIENTS.flatMap((ing) => {
@@ -189,6 +198,19 @@ export function varianceAllocation(dayItems: readonly DayItem[], propertyId: str
   const out: Record<string, number> = {};
   for (const o of outlets) out[o.id] = total > 0 ? used[o.id] / total : 1 / outlets.length;
   return out;
+}
+
+/** Deliveries with any recorded receiving corrections applied. The original figures stay in the delivery record. */
+export function receivedAsCorrected(deliveries: readonly Delivery[], receipts: readonly ReceiptCorrection[]): Delivery[] {
+  if (receipts.length === 0) return [...deliveries];
+  return deliveries.map((d) => {
+    const mine = receipts.filter((r) => r.deliveryId === d.id);
+    if (mine.length === 0) return d;
+    return { ...d, lines: d.lines.map((l) => {
+      const latest = mine.filter((r) => r.ingredientId === l.ingredientId).sort((a, b) => b.seq - a.seq)[0];
+      return latest ? { ...l, delivered: latest.received } : l;
+    }) };
+  });
 }
 
 export type MatchIssue = "short_delivery" | "invoiced_not_delivered" | "price_above_po" | "over_delivery";

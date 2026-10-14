@@ -3,14 +3,15 @@
 // Each action checks the signed-in user's permissions before it changes anything, and writes an audit entry.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ingredientById, outletById, propertyById, staffById, storeOwner, userById } from "./data/catalog";
+import { ingredientById, itemById, outletById, propertyById, staffById, storeOwner, userById } from "./data/catalog";
 import { getDataset } from "./data/dataset";
 import { AccessError, assertCan, clampScope, hasWholeProperty, type Permission } from "./domain/access";
 import type { ForecastInputs } from "./domain/forecast";
 import { countVariance, countVarianceValue } from "./domain/inventory";
+import { headlineFor, periodVariance, type Adjustments } from "./domain/variance";
 import type { FlowSim } from "./domain/operations";
 import type {
-  Arrival, AuditEntry, CountRecord, Exception, DateRange, FlowStatus, InvestigationState, Outcome, PriceChange, Room, Scope, User, WasteLog, WasteReason,
+  Arrival, AuditEntry, CountRecord, Exception, ReceiptCorrection, RecipeChange, Recount, UsagePeriod, WasteCorrection, DateRange, FlowStatus, InvestigationState, Outcome, PriceChange, Room, Scope, User, WasteLog, WasteReason,
 } from "./types";
 import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtQty, presetRange, type RangePreset } from "./util";
 
@@ -36,6 +37,13 @@ interface Persisted {
   investigations: Record<string, InvestigationState>;
   /** Cases opened by hand from a stock count shortfall. */
   stockCases: Exception[];
+  /** Stock corrections. Each keeps the original record and says who changed what, and why. */
+  recounts: Recount[];
+  recipeChanges: RecipeChange[];
+  wasteCorrections: WasteCorrection[];
+  receiptCorrections: ReceiptCorrection[];
+  /** Daily alerts the user has closed. */
+  dismissedAlerts: string[];
   wasteLogs: WasteLog[];
   counts: CountRecord[];
   priceOverrides: PriceChange[];
@@ -63,11 +71,19 @@ interface Actions {
   assignInvestigation(id: string, assigneeId: string, deadline: string): Result;
   addNote(id: string, text: string): Result;
   startReview(id: string): Result;
-  closeInvestigation(id: string, input: { outcome: Outcome; confirmedLoss: number; recovered: number; note: string }): Result;
+  closeInvestigation(id: string, input: { outcome: Outcome; confirmedLoss: number; recovered: number; note: string; verifiedCause?: string; correctiveAction?: string }): Result;
   reopenInvestigation(id: string): Result;
   /** Opens an investigation into a count shortfall, charged to one outlet. Returns the existing case if one is already open. */
   openStockCase(countId: string, outletId: string): Result & { id?: string };
-  logWaste(input: { outletId: string; ingredientId?: string; itemId?: string; qty: number; reason: WasteReason }): Result;
+  /** Opens a case for an outlet stock period that did not open one by itself. Returns the existing case if there is one. */
+  openVarianceCase(period: UsagePeriod): Result & { id?: string };
+  /** A late entry names the period it belongs to and the day it happened. */
+  logWaste(input: { outletId: string; ingredientId?: string; itemId?: string; qty: number; reason: WasteReason; date?: string; periodId?: string }): Result;
+  correctWaste(wasteId: string, qty: number, reason: string): Result;
+  recordRecount(input: { checkId: string; outletId: string; ingredientId: string; counted: number; reason: string }): Result;
+  setStandardQty(input: { itemId: string; ingredientId: string; qty: number; from: string; reason: string }): Result;
+  recordReceipt(input: { deliveryId: string; ingredientId: string; received: number; reason: string }): Result;
+  dismissAlert(id: string): void;
   syncWaste(): void;
   setOffline(offline: boolean): void;
   /** The expected quantity and how a difference is shared between outlets both come from the server's stock figures. */
@@ -96,6 +112,11 @@ const initial = (): Persisted => ({
   seq: 0,
   investigations: {},
   stockCases: [],
+  recounts: [],
+  recipeChanges: [],
+  wasteCorrections: [],
+  receiptCorrections: [],
+  dismissedAlerts: [],
   wasteLogs: [],
   counts: [],
   priceOverrides: [],
@@ -114,6 +135,16 @@ const initial = (): Persisted => ({
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const fail = (error: string): Result => ({ ok: false, error });
+
+/** Waste entries with their latest correction applied. Cancelled entries drop out; the originals stay in the store. */
+export function correctedWaste(logs: readonly WasteLog[], corrections: readonly WasteCorrection[]): WasteLog[] {
+  if (corrections.length === 0) return [...logs];
+  return logs.flatMap((w) => {
+    const c = corrections.filter((x) => x.wasteId === w.id).sort((a, b) => b.seq - a.seq)[0];
+    if (!c) return [w];
+    return c.qty > 0 ? [{ ...w, qty: c.qty }] : [];
+  });
+}
 const OK: Result = { ok: true };
 
 export const useDemo = create<DemoState>()(
@@ -135,14 +166,20 @@ export const useDemo = create<DemoState>()(
         }
       };
 
-      const exceptionOf = (id: string) => getDataset().exceptions.find((e) => e.id === id) ?? get().stockCases.find((e) => e.id === id);
+      const exceptionOf = (id: string) => get().stockCases.find((e) => e.id === id) ?? getDataset().exceptions.find((e) => e.id === id);
+      const adjustments = (): Adjustments => {
+        const s = get();
+        return { recounts: s.recounts, recipes: s.recipeChanges, waste: correctedWaste(s.wasteLogs, s.wasteCorrections) };
+      };
+      /** For a usage case the amount at stake follows the current figures, so corrections are reflected. */
+      const exposureOf = (e: Exception) => (e.period ? Math.max(0, Math.round(periodVariance(e.period, adjustments()).value * 100) / 100) : e.exposure);
       const currentState = (id: string): InvestigationState => get().investigations[id] ?? getDataset().seedInvestigations[id];
       const guardInvestigation = (permission: Permission, id: string, run: (user: User, state: InvestigationState, exposure: number) => Result): Result => {
         const e = exceptionOf(id);
         if (!e) return fail("This investigation no longer exists.");
         return guarded(permission, e.outletId, (user) => {
           if (!e.outletId && !hasWholeProperty(user, e.propertyId)) return fail("This record belongs to the whole property and is outside your access.");
-          return run(user, currentState(id), e.exposure);
+          return run(user, currentState(id), exposureOf(e));
         });
       };
       const saveInvestigation = (id: string, state: InvestigationState) => set((s) => ({ investigations: { ...s.investigations, [id]: state } }));
@@ -225,8 +262,13 @@ export const useDemo = create<DemoState>()(
             if (outcome === "recovered" && recovered <= 0) return fail("Enter the amount recovered.");
             if ((outcome === "legitimate" || outcome === "inconclusive") && confirmedLoss + recovered > 0) return fail("This outcome carries no amounts. Choose a loss or a recovery instead.");
             if (note.trim().length < 3) return fail("Add a short note on what you found.");
+            const e = exceptionOf(id)!;
+            const stockCase = e.type === "usage_variance" || e.type === "stock_shortfall";
+            const verifiedCause = input.verifiedCause?.trim() || undefined;
+            const correctiveAction = input.correctiveAction?.trim().slice(0, 400) || undefined;
+            if (stockCase && outcome !== "inconclusive" && !verifiedCause) return fail("Choose the cause you verified, or record no finding.");
             saveInvestigation(id, {
-              ...state, status: "closed", outcome, confirmedLoss, recovered, closedAt: DEMO_TODAY, closedBy: user.id,
+              ...state, status: "closed", outcome, confirmedLoss, recovered, closedAt: DEMO_TODAY, closedBy: user.id, verifiedCause, correctiveAction,
               assigneeId: state.assigneeId ?? user.id,
               notes: [...state.notes, { at: DEMO_TODAY, by: user.id, text: note.trim() }],
             });
@@ -238,7 +280,7 @@ export const useDemo = create<DemoState>()(
           return guardInvestigation("investigation.reopen", id, (user, state) => {
             if (state.status !== "closed") return fail("This investigation is already open.");
             saveInvestigation(id, {
-              ...state, status: "in_review", outcome: undefined, confirmedLoss: 0, recovered: 0, closedAt: undefined, closedBy: undefined,
+              ...state, status: "in_review", outcome: undefined, confirmedLoss: 0, recovered: 0, closedAt: undefined, closedBy: undefined, verifiedCause: undefined, correctiveAction: undefined,
               notes: [...state.notes, { at: DEMO_TODAY, by: user.id, text: "Reopened for another look." }],
             });
             log("Investigation reopened", id);
@@ -275,14 +317,87 @@ export const useDemo = create<DemoState>()(
             return { ok: true, id };
           });
         },
+        openVarianceCase(period) {
+          return guarded("investigation.assign", period.outletId, (user) => {
+            const existing = [...get().stockCases, ...getDataset().exceptions].find((e) => e.period?.id === period.id);
+            if (existing) return { ok: true, id: existing.id };
+            const v = periodVariance(period, adjustments());
+            if (v.unexplained <= 0) return fail("Nothing is unexplained in this period.");
+            const seq = get().seq + 1;
+            const id = `EX-STK-${String(seq).padStart(3, "0")}`;
+            const e: Exception = {
+              id, type: "usage_variance", propertyId: period.propertyId, outletId: period.outletId, date: period.to.date, min: period.to.min,
+              ingredientId: period.ingredientId, exposure: Math.max(0, Math.round(v.value * 100) / 100), headline: headlineFor(period, v), period,
+            };
+            set((s) => ({ seq, stockCases: [...s.stockCases, e], investigations: { ...s.investigations, [id]: { status: "new", notes: [], confirmedLoss: 0, recovered: 0 } } }));
+            log("Stock case opened", `${id} by ${user.name}`);
+            return { ok: true, id };
+          });
+        },
+        correctWaste(wasteId, qty, reason) {
+          const w = get().wasteLogs.find((x) => x.id === wasteId);
+          if (!w) return fail("Only entries made in Tyll can be corrected here.");
+          return guarded("stock.logWaste", w.outletId, (user) => {
+            if (!Number.isFinite(qty) || qty < 0 || qty > 500) return fail("Enter the correct quantity, or zero to cancel the entry.");
+            if (reason.trim().length < 3) return fail("Say why the entry is being corrected.");
+            const seq = get().seq + 1;
+            set((s) => ({ seq, wasteCorrections: [...s.wasteCorrections, { id: `WC-${seq}`, wasteId, qty, reason: reason.trim(), by: user.id, seq }] }));
+            log("Waste entry corrected", `${wasteId}: ${w.qty} to ${qty}. ${reason.trim()}`);
+            return OK;
+          });
+        },
+        recordRecount(input) {
+          return guarded("stock.count", input.outletId, (user) => {
+            if (!ingredientById[input.ingredientId]) return fail("Choose an item.");
+            if (!Number.isFinite(input.counted) || input.counted < 0 || input.counted > 1e5) return fail("Enter the quantity you counted.");
+            if (input.reason.trim().length < 3) return fail("Say why the item was recounted.");
+            const seq = get().seq + 1;
+            set((s) => ({ seq, recounts: [...s.recounts, { id: `RC-${seq}`, checkId: input.checkId, counted: input.counted, reason: input.reason.trim(), by: user.id, date: DEMO_TODAY, seq }] }));
+            log("Recount recorded", `${input.checkId}: ${ingredientById[input.ingredientId].name} recounted at ${input.counted}. ${input.reason.trim()}`);
+            return OK;
+          });
+        },
+        setStandardQty(input) {
+          return guarded("stock.editPrices", undefined, (user) => {
+            const base = itemById[input.itemId]?.recipe?.find((l) => l.ingredientId === input.ingredientId)?.qty;
+            if (base === undefined) return fail("This ingredient is not in that recipe.");
+            if (!Number.isFinite(input.qty) || input.qty < base * 0.5 || input.qty > base * 2) return fail("Choose a quantity between half and double the current standard.");
+            if (!ISO_DATE.test(input.from) || input.from > DEMO_TODAY) return fail("Choose the date the setting was wrong from.");
+            if (input.reason.trim().length < 3) return fail("Say why the standard is changing.");
+            const seq = get().seq + 1;
+            set((s) => ({ seq, recipeChanges: [...s.recipeChanges, { id: `RQ-${seq}`, itemId: input.itemId, ingredientId: input.ingredientId, qty: input.qty, from: input.from, reason: input.reason.trim(), by: user.id, seq }] }));
+            log("Standard quantity changed", `${itemById[input.itemId].name}: ${ingredientById[input.ingredientId].name} ${base} to ${input.qty} from ${input.from}. ${input.reason.trim()}`);
+            return OK;
+          });
+        },
+        recordReceipt(input) {
+          const d = getDataset().deliveries.find((x) => x.id === input.deliveryId);
+          if (!d) return fail("This delivery does not exist.");
+          return guarded("stock.count", undefined, (user) => {
+            if (user.propertyIds !== "all" && !user.propertyIds.includes(d.propertyId)) return fail("This property is outside your access.");
+            const line = d.lines.find((l) => l.ingredientId === input.ingredientId);
+            if (!line) return fail("This item is not on the delivery.");
+            if (!Number.isFinite(input.received) || input.received < 0 || input.received > line.ordered * 3) return fail("Enter the quantity actually received.");
+            if (input.reason.trim().length < 3) return fail("Say how the difference was found.");
+            const seq = get().seq + 1;
+            set((s) => ({ seq, receiptCorrections: [...s.receiptCorrections, { id: `RR-${seq}`, deliveryId: d.id, ingredientId: input.ingredientId, received: input.received, reason: input.reason.trim(), by: user.id, seq }] }));
+            log("Delivery difference recorded", `${d.id}: ${ingredientById[input.ingredientId].name} received ${input.received}, recorded ${line.delivered}. ${input.reason.trim()}`);
+            return OK;
+          });
+        },
+        dismissAlert(id) {
+          set((s) => ({ dismissedAlerts: [...new Set([...s.dismissedAlerts, id])] }));
+        },
         logWaste(input) {
           return guarded("stock.logWaste", input.outletId, (user) => {
             if (!input.ingredientId && !input.itemId) return fail("Choose an item.");
+            const date = input.date ?? DEMO_TODAY;
+            if (!ISO_DATE.test(date) || date > DEMO_TODAY || date < addDays(DEMO_TODAY, -7)) return fail("Late entries can go back up to seven days.");
             if (!Number.isFinite(input.qty) || input.qty <= 0) return fail("Enter a quantity above zero.");
             if (input.qty > 500) return fail("That quantity looks too large. Check the amount.");
             const seq = get().seq + 1;
             const entry: WasteLog = {
-              id: `W-USER-${seq}`, outletId: input.outletId, date: DEMO_TODAY, ingredientId: input.ingredientId, itemId: input.itemId,
+              id: `W-USER-${seq}`, outletId: input.outletId, date, periodId: input.periodId, ingredientId: input.ingredientId, itemId: input.itemId,
               qty: input.qty, reason: input.reason, by: user.staffId ?? user.id, synced: !get().offline, seq,
             };
             set((s) => ({ seq, wasteLogs: [...s.wasteLogs, entry] }));

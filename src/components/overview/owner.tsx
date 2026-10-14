@@ -1,4 +1,5 @@
 "use client";
+import { StockAlert } from "./stock-alert";
 // The owner's control center: five figures, one chart, one comparison list, one list of issues.
 import Link from "next/link";
 import { ArrowRight, ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
@@ -63,6 +64,7 @@ export function OwnerOverview() {
         <Badge>{fmtRange(sel.range)}</Badge>
         <Badge>Updated 8:55 PM today · simulated data</Badge>
       </PageHeader>
+      <StockAlert />
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <KpiCard label="Revenue" value={money(t.net, { compact: true })} delta={<Delta value={pctChange(t.net, b.net)} />} sub="net sales" spark={spark((x) => x.net)} onClick={() => setKpi("revenue")} />

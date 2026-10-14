@@ -1,11 +1,11 @@
 // Stock and forecast figures are worked out here, on complete data, because a shared store is drawn on
 // by every outlet. Each user then receives only the rows and detail their access allows.
-import { ingredientById, storeOwner } from "../data/catalog";
+import { ingredientById, itemById, storeOwner } from "../data/catalog";
 import { getDataset } from "../data/generate";
 import { allowedOutlets, allowedProperties, can, hasWholeProperty } from "../domain/access";
 import { buildForecast, defaultInputs, type Forecast, type ForecastInputs } from "../domain/forecast";
-import { stockPosition, varianceAllocation, type StockInputs, type StockRow } from "../domain/inventory";
-import type { CountRecord, PriceChange, User, WasteLog, WasteReason } from "../types";
+import { receivedAsCorrected, stockPosition, varianceAllocation, type StockInputs, type StockRow } from "../domain/inventory";
+import type { CountRecord, PriceChange, ReceiptCorrection, RecipeChange, User, WasteLog, WasteReason } from "../types";
 import { DEMO_TODAY } from "../util";
 
 /** Entries the user made in this session. They are held in the browser until actions move to the server. */
@@ -13,6 +13,8 @@ export interface SessionEntries {
   waste: WasteLog[];
   counts: CountRecord[];
   overrides: PriceChange[];
+  recipes: RecipeChange[];
+  receipts: ReceiptCorrection[];
 }
 
 const REASONS: WasteReason[] = ["waste", "breakage", "spoilage", "damaged", "other"];
@@ -36,12 +38,26 @@ export function cleanEntries(user: User, body: unknown): SessionEntries {
   const overrides = can(user, "stock.editPrices")
     ? list(b.overrides).filter((p): p is PriceChange => !!ingredientById[(p as PriceChange).id] && ISO.test((p as PriceChange).from) && num((p as PriceChange).value, 0.01, 100000))
     : [];
-  return { waste: waste.map((w) => ({ ...w, synced: true })), counts, overrides };
+  const recipes = can(user, "stock.editPrices")
+    ? list(b.recipes).filter((c): c is RecipeChange => {
+      const x = c as RecipeChange;
+      const base = itemById[x.itemId]?.recipe?.find((l) => l.ingredientId === x.ingredientId)?.qty;
+      return base !== undefined && ISO.test(x.from) && num(x.qty, base * 0.5, base * 2) && num(x.seq, 1, 1e9);
+    })
+    : [];
+  const receipts = can(user, "stock.count")
+    ? list(b.receipts).filter((c): c is ReceiptCorrection => {
+      const x = c as ReceiptCorrection;
+      const d = getDataset().deliveries.find((dl) => dl.id === x.deliveryId);
+      return !!d && props.has(d.propertyId) && d.lines.some((l) => l.ingredientId === x.ingredientId) && num(x.received, 0, 1e5) && num(x.seq, 1, 1e9);
+    })
+    : [];
+  return { waste: waste.map((w) => ({ ...w, synced: true })), counts, overrides, recipes, receipts };
 }
 
 const fullInputs = (e: SessionEntries): StockInputs => {
   const d = getDataset();
-  return { dayItems: d.dayItems, counts: [...d.counts, ...e.counts], deliveries: d.deliveries, transfers: d.transfers, waste: [...d.wasteLogs, ...e.waste] };
+  return { dayItems: d.dayItems, counts: [...d.counts, ...e.counts], deliveries: receivedAsCorrected(d.deliveries, e.receipts), transfers: d.transfers, waste: [...d.wasteLogs, ...e.waste], recipes: e.recipes };
 };
 
 /** An outlet-only store is visible only to people with access to that outlet. */

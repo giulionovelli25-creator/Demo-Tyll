@@ -1,4 +1,5 @@
 "use client";
+import { StockAlert } from "./stock-alert";
 // The outlet manager's overview: what to do today, before the bigger picture.
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
@@ -107,6 +108,7 @@ export function ManagerOverview() {
         <Badge>{personName(user.id)}</Badge>
         <Badge>Updated 8:55 PM today · simulated data</Badge>
       </PageHeader>
+      <StockAlert />
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <KpiCard label="Revenue today" value={money(today.now.net)} delta={<Delta value={pctChange(today.now.net, today.before.net)} versus="than yesterday at this time" />} sub="so far, to 8:55 PM" onClick={() => setKpi({ key: "revenue", today: true })} />

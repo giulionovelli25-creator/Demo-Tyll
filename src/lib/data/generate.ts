@@ -9,7 +9,7 @@ import {
 } from "../util";
 import { INGREDIENTS, MENU_ITEMS, OUTLETS, PROPERTIES, ingredientById, itemById, outletsOfProperty, propertyById } from "./catalog";
 import { detectExceptions } from "../domain/detect";
-import { avgDailyUsage, orderPack, usageFromSales, varianceAllocation } from "../domain/inventory";
+import { avgDailyUsage, orderPack, usageFromSales, varianceAllocation, wasteQuantities } from "../domain/inventory";
 import { buildRollups, lineValue, orderTotals } from "../domain/orders";
 import { ingredientCostAt, menuPriceAt } from "../domain/pricing";
 
@@ -39,6 +39,8 @@ export interface Dataset {
 }
 
 import { HERO_EXCEPTION_ID, HERO_ORDER_ID } from "./constants";
+import { SCENARIOS, buildOutletStock, latestPeriods, type OutletStock } from "./outlet-stock";
+import { headlineFor, needsCase, periodVariance } from "../domain/variance";
 export { HERO_EXCEPTION_ID, HERO_ORDER_ID };
 /** From this date the demo story has The Terrace drifting: more adjustments and more waste, building week by week. */
 const DRIFT_FROM = "2026-09-22";
@@ -574,15 +576,47 @@ function buildRooms(): { rooms: Room[]; arrivals: Arrival[]; attendants: Attenda
 }
 
 let cached: Dataset | null = null;
+let outletStock: OutletStock | null = null;
+
+/** Outlet stock periods. Server only: they hold timed sales for every outlet. */
+export function getOutletStock(): OutletStock {
+  getDataset();
+  return outletStock!;
+}
+
+/** Usage differences large enough to open a case by themselves. */
+function varianceExceptions(stock: OutletStock): Exception[] {
+  return latestPeriods(stock.periods).flatMap((p) => {
+    const v = periodVariance(p);
+    if (!needsCase(v)) return [];
+    const code = OUTLETS.find((o) => o.id === p.outletId)!.code;
+    return [{
+      id: `EX-VAR-${code}-${p.ingredientId.toUpperCase()}-${p.to.date.slice(5).replace("-", "")}`,
+      type: "usage_variance" as const, propertyId: p.propertyId, outletId: p.outletId, date: p.to.date, min: p.to.min,
+      ingredientId: p.ingredientId, exposure: Math.round(v.value * 100) / 100, headline: headlineFor(p, v), period: p,
+    }];
+  });
+}
 
 export function getDataset(): Dataset {
   if (cached) return cached;
   const orders = buildOrders();
   const { dayItems, dayOutlets } = buildRollups(orders);
   const roomCharges = buildRoomCharges(orders);
-  const exceptions = detectExceptions(orders, roomCharges);
+  // The worked examples assume no waste was recorded for their item at their outlet during the period.
+  const wasteLogs = buildWaste().filter((w) => !SCENARIOS.some((s) => w.outletId === s.outletId && w.date >= s.fromDate && w.date <= s.to.date && wasteQuantities(w).some((q) => q.ingredientId === s.ingredientId)));
+  outletStock = buildOutletStock(orders, wasteLogs);
+  const flagged = detectExceptions(orders, roomCharges);
   const seedInvestigations: Record<string, InvestigationState> = {};
-  for (const e of exceptions) seedInvestigations[e.id] = seedInvestigation(e);
+  for (const e of flagged) seedInvestigations[e.id] = seedInvestigation(e);
+  // Stock differences found by today's counts are new, except the Wagyu case, which the outlet manager already has.
+  const variances = varianceExceptions(outletStock);
+  for (const e of variances) {
+    seedInvestigations[e.id] = e.ingredientId === "wagyu" && e.outletId === "dxb-terrace"
+      ? { status: "assigned", assigneeId: "TRC-S7", deadline: addDays(DEMO_TODAY, 2), notes: [], confirmedLoss: 0, recovered: 0 }
+      : { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
+  }
+  const exceptions = [...flagged, ...variances];
   cached = {
     orders,
     ordersById: new Map(orders.map((o) => [o.id, o])),
@@ -592,7 +626,7 @@ export function getDataset(): Dataset {
     chargesById: new Map(roomCharges.map((c) => [c.id, c])),
     exceptions,
     seedInvestigations,
-    wasteLogs: buildWaste(),
+    wasteLogs,
     counts: buildCounts(orders, dayItems),
     deliveries: buildDeliveries(dayItems),
     transfers: buildTransfers(),

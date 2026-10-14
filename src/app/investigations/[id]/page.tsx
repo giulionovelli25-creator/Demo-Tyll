@@ -4,17 +4,21 @@ import { useParams, useRouter } from "next/navigation";
 import { Check, CircleHelp, ListChecks, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ChargeEvidence, OrderTimeline, OrderVersusBill, Tickets } from "@/components/order-evidence";
+import { UsageCaseBody } from "@/components/stock/usage";
 import { Badge, Button, Crumbs, EmptyState, Field, Note, PageHeader, Panel, Select, TextArea, cn, report } from "@/components/ui";
 import { ingredientById, outletById, propertyById, staffById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
 import { TYPE_LABEL } from "@/lib/domain/detect";
 import { explain } from "@/lib/domain/explain";
+import { causesFor, periodVariance } from "@/lib/domain/variance";
 import { assignablePeople, personName, useCtx, useInvestigations, useOrder, usePatterns, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL, STOCK_OUTCOME_HELP } from "@/lib/labels";
 import type { Outcome } from "@/lib/types";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "@/lib/util";
 
+
+const SHORTFALL_CAUSES = ["Counting error", "Waste or breakage not logged", "Delivery shorter than recorded", "Portions or recipe differ from the standard", "Transfer not recorded", "Stock taken without authorisation"];
 
 export default function InvestigationPage() {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +38,8 @@ export default function InvestigationPage() {
   const [recovered, setRecovered] = useState("");
   const [closeNote, setCloseNote] = useState("");
   const [formError, setFormError] = useState("");
+  const [cause, setCause] = useState("");
+  const [action, setAction] = useState("");
 
   const { order: fetchedOrder, status: orderStatus } = useOrder(inv?.orderId);
   const explanation = useMemo(() => (inv ? explain(inv, ctx.data, ctx.counts, patterns, fetchedOrder) : null), [inv, ctx, patterns, fetchedOrder]);
@@ -57,6 +63,12 @@ export default function InvestigationPage() {
   const mayClose = can(user, "investigation.close");
   const mayReopen = can(user, "investigation.reopen");
   const stockCase = inv.type === "stock_shortfall";
+  const usage = inv.type === "usage_variance" && inv.period ? inv.period : null;
+  const stockAny = stockCase || !!usage;
+  // A stock case asks for the cause the manager verified. The choices are the possibilities Tyll listed.
+  const causeOptions = usage ? causesFor(usage, periodVariance(usage, ctx.adjust)).map((c) => c.title) : stockCase ? SHORTFALL_CAUSES : [];
+  // An order whose removed item falls inside a stock period with a case: the two investigations share evidence.
+  const linkedStock = inv.orderId ? investigations.filter((i) => i.id !== inv.id && i.period?.removals.some((r) => r.orderId === inv.orderId)) : [];
   // Every recorded action on this case, newest first, from the audit trail.
   const history = store.audit.filter((a) => a.detail === inv.id || a.detail.startsWith(`${inv.id} `) || a.detail.startsWith(`${inv.id}:`));
   const stockRecords = explanation.stock.length > 0 && (
@@ -81,11 +93,14 @@ export default function InvestigationPage() {
 
   const submitClose = () => {
     const confirmedLoss = outcome === "confirmed_loss" ? Number(loss || inv.exposure) : outcome === "recovered" ? Number(loss || 0) : 0;
-    const rec = outcome === "recovered" ? Number(recovered || inv.exposure) : outcome === "confirmed_loss" ? Number(recovered || 0) : 0;
-    const result = store.closeInvestigation(inv.id, { outcome, confirmedLoss, recovered: rec, note: closeNote });
+    // Recovered money on a stock case must be entered: it is never assumed from the amount at stake.
+    const rec = outcome === "recovered" ? Number(recovered || (stockAny ? 0 : inv.exposure)) : outcome === "confirmed_loss" ? Number(recovered || 0) : 0;
+    const result = store.closeInvestigation(inv.id, { outcome, confirmedLoss, recovered: rec, note: closeNote, verifiedCause: cause, correctiveAction: action });
     if (result.ok) {
       setFormError("");
       setCloseNote("");
+      setCause("");
+      setAction("");
       report(result, `Closed as ${OUTCOME_LABEL[outcome].toLowerCase()}. The overview and Money Back List are updated.`);
     } else setFormError(result.error);
   };
@@ -95,7 +110,7 @@ export default function InvestigationPage() {
       <PageHeader
         crumbs={<Crumbs items={[{ label: "Money Back List", onClick: () => router.push("/investigations") }, { label: inv.id.replace("EX-", "Case ") }]} />}
         title={inv.headline}
-        lead={explanation.whatHappened !== inv.headline ? explanation.whatHappened : undefined}
+        lead={!usage && explanation.whatHappened !== inv.headline ? explanation.whatHappened : undefined}
       >
         <Badge tone={closed ? (inv.outcome === "confirmed_loss" ? "neg" : inv.outcome === "recovered" ? "pos" : "neutral") : "warn"}>{closed ? OUTCOME_LABEL[inv.outcome!] : STATUS_LABEL[inv.status]}</Badge>
         <Badge>{TYPE_LABEL[inv.type]}</Badge>
@@ -107,10 +122,10 @@ export default function InvestigationPage() {
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
               <div><dt className="text-[13px] text-steel">Hotel</dt><dd>{property.name}</dd></div>
               <div><dt className="text-[13px] text-steel">Outlet</dt><dd>{inv.outletId ? outletById[inv.outletId].name : "Property-wide"}</dd></div>
-              <div><dt className="text-[13px] text-steel">{stockCase ? "Count date" : "Date and time"}</dt><dd className="num">{fmtDate(inv.date, true)}{stockCase ? "" : `, ${fmtTime(inv.min)}`}</dd></div>
+              <div><dt className="text-[13px] text-steel">{stockCase ? "Count date" : usage ? "Counted" : "Date and time"}</dt><dd className="num">{fmtDate(inv.date, true)}{stockCase ? "" : `, ${fmtTime(inv.min)}`}</dd></div>
               <div>
                 <dt className="text-[13px] text-steel">Transaction</dt>
-                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : <span className="num">{charge?.id ?? "–"}</span>}</dd>
+                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : usage ? <Link href={`/stock?tab=where&period=${usage.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{ingredientById[usage.ingredientId].name} stock period</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : <span className="num">{charge?.id ?? "–"}</span>}</dd>
               </div>
               {order && <div><dt className="text-[13px] text-steel">Table or room</dt><dd>{order.table}</dd></div>}
               {inv.staffId && (
@@ -122,6 +137,17 @@ export default function InvestigationPage() {
             </dl>
             {inv.staffId && <Note className="mt-4">A POS login shows which account was signed in to the terminal. It does not establish who made the change, or why.</Note>}
           </Panel>
+
+          {linkedStock.map((s) => (
+            <Panel key={s.id} title="Linked stock investigation">
+              <p className="text-sm text-graphite">
+                This order&rsquo;s removed item falls inside a stock period at {s.outletId ? outletById[s.outletId].name : property.name} where use is higher than sales explain: <Link href={`/investigations/${s.id}`} className="text-ink underline underline-offset-4">{s.headline}</Link>.
+              </p>
+              <Note className="mt-2">The removal is one possible explanation for part of that difference. Neither record shows that the item was served.</Note>
+            </Panel>
+          ))}
+
+          {usage ? <UsageCaseBody p={usage} /> : (<>
 
           <Panel title={<span id="evidence" className="scroll-mt-24">Evidence</span>} description={stockCase ? "Taken directly from the stock count. Nothing here is inferred." : "Taken directly from the recorded transaction. Nothing here is inferred."}>
             {orderStatus === "loading" && <p className="text-sm text-steel">Loading the order records.</p>}
@@ -178,6 +204,7 @@ export default function InvestigationPage() {
               ))}
             </ol>
           </Panel>
+          </>)}
         </div>
 
         <div className="space-y-5 xl:sticky xl:top-24">
@@ -199,6 +226,8 @@ export default function InvestigationPage() {
               <div>
                 <p className="text-sm text-ink">{OUTCOME_LABEL[inv.outcome!]}</p>
                 <p className="mt-1 text-[13px] text-steel">Closed {inv.closedAt ? fmtDate(inv.closedAt) : ""} by {personName(inv.closedBy)}</p>
+                {inv.verifiedCause && <p className="mt-3 text-sm"><span className="text-steel">Verified cause: </span>{inv.verifiedCause}</p>}
+                {inv.correctiveAction && <p className="mt-1 text-sm"><span className="text-steel">Corrective action: </span>{inv.correctiveAction}</p>}
                 {mayReopen ? (
                   <Button className="mt-4" onClick={() => report(store.reopenInvestigation(inv.id), "Case reopened. Its amount counts as a potential loss again.")}><RotateCcw size={15} /> Reopen the case</Button>
                 ) : (
@@ -254,10 +283,18 @@ export default function InvestigationPage() {
                     {(outcome === "confirmed_loss" || outcome === "recovered") && (
                       <div className="grid grid-cols-2 gap-3">
                         <Field label="Confirmed loss" suffix={property.currency} type="number" inputMode="decimal" step="0.01" min="0" max={inv.exposure} value={loss} placeholder={outcome === "confirmed_loss" ? inv.exposure.toFixed(2) : "0.00"} onChange={(e) => setLoss(e.target.value)} />
-                        <Field label="Recovered" suffix={property.currency} type="number" inputMode="decimal" step="0.01" min="0" max={inv.exposure} value={recovered} placeholder={outcome === "recovered" ? inv.exposure.toFixed(2) : "0.00"} onChange={(e) => setRecovered(e.target.value)} />
-                        <Note className="col-span-2">Together these cannot exceed the {money(inv.exposure)} involved. Leave blank to use the full amount.</Note>
+                        <Field label="Recovered" suffix={property.currency} type="number" inputMode="decimal" step="0.01" min="0" max={inv.exposure} value={recovered} placeholder={outcome === "recovered" && !stockAny ? inv.exposure.toFixed(2) : "0.00"} onChange={(e) => setRecovered(e.target.value)} />
+                        <Note className="col-span-2">{stockAny ? `Together these cannot exceed the ${money(inv.exposure)} involved. Enter only what has been recovered and checked, such as a supplier credit.` : `Together these cannot exceed the ${money(inv.exposure)} involved. Leave blank to use the full amount.`}</Note>
                       </div>
                     )}
+                    {stockAny && outcome !== "inconclusive" && (
+                      <Select label="Verified cause" value={cause} onChange={(e) => { setCause(e.target.value); setFormError(""); }}>
+                        <option value="">Choose what you confirmed</option>
+                        {causeOptions.map((c) => <option key={c} value={c}>{c}</option>)}
+                        <option value="Another cause, described in the note">Another cause, described in the note</option>
+                      </Select>
+                    )}
+                    {stockAny && <Field label="Corrective action" value={action} onChange={(e) => setAction(e.target.value)} placeholder="For example: pour measures issued to the bar" />}
                     <TextArea label="What did you find?" value={closeNote} onChange={(e) => setCloseNote(e.target.value)} placeholder="For example: bar confirmed the drink was poured and served. Guest had left." error={formError || undefined} />
                     <Button type="submit" variant="primary" className="w-full">Close the investigation</Button>
                   </form>

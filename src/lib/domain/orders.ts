@@ -77,6 +77,8 @@ export interface TimelineEvent {
   title: string;
   detail?: string;
   flagged?: boolean;
+  /** The order line the event belongs to, when there is one. */
+  line?: OrderLine;
 }
 
 const stationOf = (itemId: string) => (itemById[itemId].station === "bar" ? "bar" : "kitchen");
@@ -89,9 +91,9 @@ export function orderTimeline(o: Order): TimelineEvent[] {
   ];
   for (const l of o.lines) {
     const name = `${l.qty > 1 ? `${l.qty} × ` : ""}${itemById[l.itemId].name}`;
-    ev.push({ min: l.enteredMin, kind: "entered", title: `${name} entered` });
-    if (l.sentMin !== undefined) ev.push({ min: l.sentMin, kind: "sent", title: `${name} sent to ${stationOf(l.itemId)}`, detail: "Preparation ticket printed" });
-    if (l.completedMin !== undefined) ev.push({ min: l.completedMin, kind: "completed", title: `${name} marked ready`, detail: "Kitchen display" });
+    ev.push({ min: l.enteredMin, kind: "entered", title: `${name} entered`, line: l });
+    if (l.sentMin !== undefined) ev.push({ min: l.sentMin, kind: "sent", title: `${name} sent to ${stationOf(l.itemId)}`, detail: "Preparation ticket printed", line: l });
+    if (l.completedMin !== undefined) ev.push({ min: l.completedMin, kind: "completed", title: `${name} marked ready`, detail: "Kitchen display", line: l });
     if ((l.state === "removed_pre" || l.state === "removed_post") && l.removedMin !== undefined) {
       const after = l.state === "removed_post";
       ev.push({
@@ -100,6 +102,7 @@ export function orderTimeline(o: Order): TimelineEvent[] {
         title: `${name} removed from the order`,
         detail: `POS login ${who(l.removedBy)} · reason: ${l.reason ?? "none recorded"} · approval: ${l.approvedBy ? who(l.approvedBy) : "none recorded"}`,
         flagged: after && !l.approvedBy,
+        line: l,
       });
     }
     if (l.state === "comped") {
@@ -109,6 +112,7 @@ export function orderTimeline(o: Order): TimelineEvent[] {
         title: `${name} marked complimentary`,
         detail: `Reason: ${l.reason ?? "none recorded"} · approval: ${l.approvedBy ? who(l.approvedBy) : "none recorded"}`,
         flagged: !l.reason || !l.approvedBy,
+        line: l,
       });
     }
   }
