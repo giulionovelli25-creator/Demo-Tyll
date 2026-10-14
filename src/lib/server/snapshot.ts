@@ -1,6 +1,6 @@
 // What each user is allowed to receive. Records outside a user's outlets never leave the server,
 // and operational staff receive quantities only, with no sales or cost figures.
-import { outletById } from "../data/catalog";
+import { outletById, storeOwner } from "../data/catalog";
 import { getDataset, type Dataset } from "../data/generate";
 import { allowedOutlets, allowedProperties, hasWholeProperty } from "../domain/access";
 import { detectOrderException } from "../domain/detect";
@@ -33,7 +33,8 @@ export function snapshotFor(user: User): Snapshot {
     exceptions,
     seedInvestigations,
     wasteLogs: byOutlet(d.wasteLogs),
-    counts: d.counts.filter((c) => props.has(c.propertyId)),
+    // Counts of an outlet's own store go only to people with access to that outlet.
+    counts: d.counts.filter((c) => props.has(c.propertyId) && (!storeOwner(c.propertyId, c.ingredientId) || outlets.has(storeOwner(c.propertyId, c.ingredientId)!))),
     deliveries: d.deliveries.filter((x) => props.has(x.propertyId)).map((x) => (staff ? { ...x, lines: x.lines.map((l) => ({ ...l, poPrice: 0, invoicePrice: 0 })) } : x)),
     transfers: d.transfers.filter((t) => props.has(t.propertyId)),
     occupancy: d.occupancy.filter((o) => props.has(o.propertyId)),

@@ -24,10 +24,13 @@ export function useCtx(): Ctx {
   const counts = useDemo((s) => s.counts);
   const overrides = useDemo((s) => s.priceOverrides);
   const investigations = useDemo((s) => s.investigations);
+  const stockCases = useDemo((s) => s.stockCases);
   return useMemo(() => {
-    const data = getDataset();
+    const base = getDataset();
+    // Stock cases opened in this session join the flagged transactions everywhere cases are listed.
+    const data = stockCases.length ? { ...base, exceptions: [...base.exceptions, ...stockCases] } : base;
     return { data, waste: [...data.wasteLogs, ...wasteLogs], counts: [...data.counts, ...counts], overrides, investigations };
-  }, [wasteLogs, counts, overrides, investigations]);
+  }, [wasteLogs, counts, overrides, investigations, stockCases]);
 }
 
 export function useStockInputs(): StockInputs {

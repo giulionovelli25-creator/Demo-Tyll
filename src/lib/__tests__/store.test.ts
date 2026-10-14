@@ -150,3 +150,40 @@ describe("scope, operations and reset", () => {
     expect(s().userId).toBe("u-gm");
   });
 });
+
+describe("stock cases", () => {
+  const sharedShort = data.counts.find((c) => c.propertyId === "dxb" && c.kind === "weekly" && (c.allocation["dxb-terrace"] ?? 0) > 0 && (c.allocation["dxb-terrace"] ?? 0) < 1 && c.counted < c.expected - 0.5)!;
+  const luneShort = data.counts.find((c) => c.propertyId === "dxb" && c.ingredientId === "lobster" && c.counted < c.expected - 0.01);
+
+  it("opens a case for an outlet's share of a shortfall, once, and lists it with the other cases", () => {
+    signIn("u-rm");
+    const r = s().openStockCase(sharedShort.id, "dxb-terrace");
+    expect(r).toMatchObject({ ok: true });
+    const id = r.id!;
+    expect(s().openStockCase(sharedShort.id, "dxb-terrace")).toEqual({ ok: true, id });
+    expect(s().stockCases).toHaveLength(1);
+    const e = s().stockCases[0];
+    expect(e).toMatchObject({ type: "stock_shortfall", outletId: "dxb-terrace", ingredientId: sharedShort.ingredientId });
+    expect(e.exposure).toBeGreaterThan(0);
+    expect(s().investigations[id]).toMatchObject({ status: "new" });
+    // It then runs through the normal workflow.
+    expect(s().assignInvestigation(id, "TRC-S6", addDays(DEMO_TODAY, 2)).ok).toBe(true);
+    expect(s().closeInvestigation(id, { outcome: "inconclusive", confirmedLoss: 0, recovered: 0, note: "Recounted, still short." }).ok).toBe(true);
+  });
+
+  it("refuses outlets outside the user's access, outlets that did not use the item, other stores and staff", () => {
+    signIn("u-rm");
+    expect(s().openStockCase(sharedShort.id, "dxb-lune").ok).toBe(false);
+    if (luneShort) expect(s().openStockCase(luneShort.id, "dxb-terrace").ok).toBe(false);
+    signIn("u-emp");
+    expect(s().openStockCase(sharedShort.id, "dxb-terrace").ok).toBe(false);
+    signIn("u-gm");
+    if (luneShort) expect(s().openStockCase(luneShort.id, "dxb-lune").ok).toBe(true);
+    expect(s().openStockCase("C-NOPE", "dxb-terrace").ok).toBe(false);
+  });
+
+  it("refuses an unknown assignee", () => {
+    signIn("u-rm");
+    expect(s().assignInvestigation(HERO_EXCEPTION_ID, "nobody", addDays(DEMO_TODAY, 2)).ok).toBe(false);
+  });
+});

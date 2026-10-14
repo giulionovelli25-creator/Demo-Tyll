@@ -198,7 +198,8 @@ export type ExceptionType =
   | "unexplained_void"
   | "room_charge_missing"
   | "room_charge_duplicate"
-  | "room_charge_incorrect";
+  | "room_charge_incorrect"
+  | "stock_shortfall";
 
 export interface Exception {
   id: string;
@@ -210,6 +211,9 @@ export interface Exception {
   orderId?: string;
   chargeId?: string;
   staffId?: string;
+  /** For a stock shortfall: the count that found it. */
+  countId?: string;
+  ingredientId?: string;
   /** Potential value involved, in the property's own currency. */
   exposure: number;
   headline: string;

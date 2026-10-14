@@ -28,6 +28,7 @@ export const TYPE_LABEL: Record<ExceptionType, string> = {
   room_charge_missing: "Room charge missing",
   room_charge_duplicate: "Room charge duplicated",
   room_charge_incorrect: "Room charge amount differs",
+  stock_shortfall: "Stock shortfall",
 };
 
 export const REMOVAL_TYPES: ExceptionType[] = ["removed_after_dispatch", "prepared_not_charged", "bill_mismatch"];

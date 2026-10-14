@@ -11,7 +11,7 @@ import { TYPE_LABEL } from "@/lib/domain/detect";
 import { explain } from "@/lib/domain/explain";
 import { assignablePeople, personName, useCtx, useInvestigations, useOrder, usePatterns, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
-import { OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL } from "@/lib/labels";
+import { OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL, STOCK_OUTCOME_HELP } from "@/lib/labels";
 import type { Outcome } from "@/lib/types";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "@/lib/util";
 
@@ -56,6 +56,28 @@ export default function InvestigationPage() {
   const mayAssign = can(user, "investigation.assign");
   const mayClose = can(user, "investigation.close");
   const mayReopen = can(user, "investigation.reopen");
+  const stockCase = inv.type === "stock_shortfall";
+  // Every recorded action on this case, newest first, from the audit trail.
+  const history = store.audit.filter((a) => a.detail === inv.id || a.detail.startsWith(`${inv.id} `) || a.detail.startsWith(`${inv.id}:`));
+  const stockRecords = explanation.stock.length > 0 && (
+    <div>
+      <h3 className="mb-3 text-[15px]">{stockCase ? "The count" : "Stock records for the items involved"}</h3>
+      <ul className="divide-y divide-hair rounded-2xl border border-line text-sm">
+        {explanation.stock.map((s) => {
+          const g = ingredientById[s.ingredientId];
+          return (
+            <li key={s.ingredientId} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 px-4 py-3">
+              <span>{g.name}<span className="ml-2 text-xs text-steel">counted {fmtDate(s.count.date)} by {personName(s.count.by)}</span></span>
+              <span className="num text-graphite">expected {fmtQty(s.count.expected, g.unit)}, counted {fmtQty(s.count.counted, g.unit)}</span>
+              <span className={cn("num", s.variance < 0 ? "text-warn" : "text-steel")}>{s.variance < 0 ? `${fmtQty(Math.abs(s.variance), g.unit)} short, ${money(Math.abs(s.value))}` : "no shortfall"}</span>
+            </li>
+          );
+        })}
+      </ul>
+      {explanation.stockNote && <Note className="mt-2 max-w-[80ch]">{explanation.stockNote}</Note>}
+      {stockCase && <Link href={`/stock?tab=inventory&item=${explanation.stock[0].ingredientId}`} className="mt-3 inline-block text-[13px] underline underline-offset-4">See this item in inventory</Link>}
+    </div>
+  );
 
   const submitClose = () => {
     const confirmedLoss = outcome === "confirmed_loss" ? Number(loss || inv.exposure) : outcome === "recovered" ? Number(loss || 0) : 0;
@@ -85,10 +107,10 @@ export default function InvestigationPage() {
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
               <div><dt className="text-[13px] text-steel">Hotel</dt><dd>{property.name}</dd></div>
               <div><dt className="text-[13px] text-steel">Outlet</dt><dd>{inv.outletId ? outletById[inv.outletId].name : "Property-wide"}</dd></div>
-              <div><dt className="text-[13px] text-steel">Date and time</dt><dd className="num">{fmtDate(inv.date, true)}, {fmtTime(inv.min)}</dd></div>
+              <div><dt className="text-[13px] text-steel">{stockCase ? "Count date" : "Date and time"}</dt><dd className="num">{fmtDate(inv.date, true)}{stockCase ? "" : `, ${fmtTime(inv.min)}`}</dd></div>
               <div>
                 <dt className="text-[13px] text-steel">Transaction</dt>
-                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : <span className="num">{charge?.id ?? "–"}</span>}</dd>
+                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : <span className="num">{charge?.id ?? "–"}</span>}</dd>
               </div>
               {order && <div><dt className="text-[13px] text-steel">Table or room</dt><dd>{order.table}</dd></div>}
               {inv.staffId && (
@@ -101,7 +123,7 @@ export default function InvestigationPage() {
             {inv.staffId && <Note className="mt-4">A POS login shows which account was signed in to the terminal. It does not establish who made the change, or why.</Note>}
           </Panel>
 
-          <Panel title={<span id="evidence" className="scroll-mt-24">Evidence</span>} description="Taken directly from the recorded transaction. Nothing here is inferred.">
+          <Panel title={<span id="evidence" className="scroll-mt-24">Evidence</span>} description={stockCase ? "Taken directly from the stock count. Nothing here is inferred." : "Taken directly from the recorded transaction. Nothing here is inferred."}>
             {orderStatus === "loading" && <p className="text-sm text-steel">Loading the order records.</p>}
             {order && (
               <div className="space-y-6">
@@ -114,26 +136,10 @@ export default function InvestigationPage() {
                   <h3 className="mb-3 text-[15px]">Kitchen and bar tickets</h3>
                   <Tickets order={order} />
                 </div>
-                {explanation.stock.length > 0 && (
-                  <div>
-                    <h3 className="mb-3 text-[15px]">Stock records for the items involved</h3>
-                    <ul className="divide-y divide-hair rounded-2xl border border-line text-sm">
-                      {explanation.stock.map((s) => {
-                        const g = ingredientById[s.ingredientId];
-                        return (
-                          <li key={s.ingredientId} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 px-4 py-3">
-                            <span>{g.name}<span className="ml-2 text-xs text-steel">counted {fmtDate(s.count.date)}</span></span>
-                            <span className="num text-graphite">expected {fmtQty(s.count.expected, g.unit)}, counted {fmtQty(s.count.counted, g.unit)}</span>
-                            <span className={cn("num", s.variance < 0 ? "text-warn" : "text-steel")}>{s.variance < 0 ? `${fmtQty(Math.abs(s.variance), g.unit)} short, ${money(Math.abs(s.value))}` : "no shortfall"}</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                    {explanation.stockNote && <Note className="mt-2 max-w-[80ch]">{explanation.stockNote}</Note>}
-                  </div>
-                )}
+                {stockRecords}
               </div>
             )}
+            {stockCase && stockRecords}
             {charge && !order && <ChargeEvidence charge={charge} />}
             {charge && order && <div className="mt-6"><h3 className="mb-3 text-[15px]">Guest bill posting</h3><ChargeEvidence charge={charge} /></div>}
           </Panel>
@@ -240,7 +246,7 @@ export default function InvestigationPage() {
                         {(Object.keys(OUTCOME_LABEL) as Outcome[]).map((o) => (
                           <label key={o} className={cn("flex cursor-pointer gap-3 rounded-xl border px-3.5 py-3 transition-colors duration-200", outcome === o ? "border-ink bg-cloud" : "border-line hover:border-fog")}>
                             <input type="radio" name="outcome" value={o} checked={outcome === o} onChange={() => { setOutcome(o); setFormError(""); }} className="mt-1 accent-ink" />
-                            <span><span className="block text-sm text-ink">{OUTCOME_LABEL[o]}</span><span className="block text-xs text-steel">{OUTCOME_HELP[o]}</span></span>
+                            <span><span className="block text-sm text-ink">{OUTCOME_LABEL[o]}</span><span className="block text-xs text-steel">{(stockCase ? STOCK_OUTCOME_HELP : OUTCOME_HELP)[o]}</span></span>
                           </label>
                         ))}
                       </div>
@@ -263,6 +269,16 @@ export default function InvestigationPage() {
           </Panel>
 
           <Panel title="Notes and history">
+            {history.length > 0 && (
+              <ul className="mb-5 space-y-2 border-b border-hair pb-4">
+                {history.map((a, i) => (
+                  <li key={i} className="flex items-baseline justify-between gap-3 text-[13px]">
+                    <span className="text-graphite">{a.action}</span>
+                    <span className="shrink-0 text-xs text-steel">{personName(a.userId)} · {fmtDate(DEMO_TODAY)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
             {inv.notes.length === 0 ? <p className="text-sm text-steel">No notes yet.</p> : (
               <ul className="space-y-4">
                 {inv.notes.map((n, i) => (

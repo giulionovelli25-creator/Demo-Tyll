@@ -1,4 +1,5 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ColumnChart } from "@/components/charts";
 import { Badge, Button, EmptyState, Field, Note, Panel, Select, Stat, TableWrap, Td, Th, cn, report, rowClass } from "@/components/ui";
@@ -7,6 +8,7 @@ import { can } from "@/lib/domain/access";
 import { countVariance, countVarianceValue } from "@/lib/domain/inventory";
 import { personName, useCtx, useServerStock, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
+import { OpenStockCase } from "./stock-case";
 import { DEMO_TODAY, fmtDate, fmtMoney, fmtQty, fmtShort, hashString, sum } from "@/lib/util";
 
 /** Glasses that fit one dishwasher rack, for counting by rack. */
@@ -19,10 +21,13 @@ export function Counts({ propertyId }: { propertyId: string }) {
   const property = propertyById[propertyId];
   const money = (n: number) => fmtMoney(n, property.currency, { decimals: Math.abs(n) < 100 });
   const mayCount = can(user, "stock.count");
+  const mayOpen = can(user, "investigation.assign");
   const { data } = useServerStock(propertyId);
   const position = useMemo(() => data?.rows ?? [], [data]);
+  const params = useSearchParams();
   const [entered, setEntered] = useState<Record<string, string>>({});
-  const [extra, setExtra] = useState("");
+  // A link from Inventory or a case can name the item to count.
+  const [extra, setExtra] = useState(params.get("item") ?? "");
   const [rackItem, setRackItem] = useState("highball");
   const [racks, setRacks] = useState("");
   const [loose, setLoose] = useState("");
@@ -134,7 +139,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
             <div className="scroll-thin max-h-[440px] overflow-y-auto">
               <TableWrap>
                 <table className="w-full min-w-[560px] text-sm">
-                  <thead className="sticky top-0 bg-paper"><tr><Th>Item</Th><Th align="right">Expected</Th><Th align="right">Counted</Th><Th align="right">Difference</Th><Th align="right">Value</Th></tr></thead>
+                  <thead className="sticky top-0 bg-paper"><tr><Th>Item</Th><Th align="right">Expected</Th><Th align="right">Counted</Th><Th align="right">Difference</Th><Th align="right">Value</Th>{mayOpen && <Th align="right"><span className="sr-only">Investigation</span></Th>}</tr></thead>
                   <tbody>
                     {lastRows.map(({ c, v, value }) => {
                       const g = ingredientById[c.ingredientId];
@@ -145,6 +150,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
                           <Td align="right">{fmtQty(c.counted, g.unit)}</Td>
                           <Td align="right" className={cn(v < -0.005 && "text-warn")}>{Math.abs(v) < 0.005 ? "–" : `${v < 0 ? "−" : "+"}${fmtQty(Math.abs(v), g.unit)}`}</Td>
                           <Td align="right" className={cn(value < -0.5 && "text-warn")}>{Math.abs(value) < 0.5 ? "–" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
+                          {mayOpen && <Td align="right">{value < -0.5 && <OpenStockCase count={c} />}</Td>}
                         </tr>
                       );
                     })}
@@ -161,7 +167,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
         <Panel title="Counts recorded today" flush>
           <TableWrap>
             <table className="w-full min-w-[560px] text-sm">
-              <thead><tr><Th>Item</Th><Th align="right">Expected</Th><Th align="right">Counted</Th><Th align="right">Value of difference</Th><Th>By</Th></tr></thead>
+              <thead><tr><Th>Item</Th><Th align="right">Expected</Th><Th align="right">Counted</Th><Th align="right">Value of difference</Th><Th>By</Th>{mayOpen && <Th align="right"><span className="sr-only">Investigation</span></Th>}</tr></thead>
               <tbody>
                 {today.map((c) => {
                   const g = ingredientById[c.ingredientId];
@@ -173,6 +179,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
                       <Td align="right">{fmtQty(c.counted, g.unit)}</Td>
                       <Td align="right" className={cn(value < -0.5 && "text-warn")}>{Math.abs(value) < 0.005 ? "–" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
                       <Td>{personName(c.by)}</Td>
+                      {mayOpen && <Td align="right">{value < -0.5 && <OpenStockCase count={c} />}</Td>}
                     </tr>
                   );
                 })}

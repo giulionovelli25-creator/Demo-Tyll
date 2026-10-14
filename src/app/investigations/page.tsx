@@ -2,15 +2,16 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Badge, Button, EmptyState, PageHeader, Panel, Segmented, Select, Stat, TableWrap, Td, Th, cn, rowClass, toast, useSort } from "@/components/ui";
+import { Badge, Button, EmptyState, Field, PageHeader, Panel, Segmented, Select, Stat, TableWrap, Td, Th, cn, rowClass, toast, useSort } from "@/components/ui";
 import { outletById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
 import { ROOM_TYPES, TYPE_LABEL } from "@/lib/domain/detect";
 import { exceptionInSel } from "@/lib/domain/metrics";
-import { personName, useInvestigations, useView } from "@/lib/hooks";
+import { assignablePeople, personName, useInvestigations, useView } from "@/lib/hooks";
+import { useDemo } from "@/lib/store";
 import { OUTCOME_LABEL, STATUS_LABEL } from "@/lib/labels";
 import type { ExceptionType, Investigation, Outcome } from "@/lib/types";
-import { DEMO_TODAY, downloadCsv, fmtDate, fmtRange, fmtTime, fxRate, sum } from "@/lib/util";
+import { DEMO_TODAY, addDays, downloadCsv, fmtDate, fmtRange, fmtTime, fxRate, sum } from "@/lib/util";
 
 type Key = "when" | "outlet" | "type" | "assignee" | "deadline" | "impact" | "status";
 type StatusFilter = "open" | "closed" | "all";
@@ -28,6 +29,11 @@ export default function MoneyBackListPage() {
   const [inPeriod, setInPeriod] = useState<"any" | "period">(params.get("status") === "closed" ? "period" : "any");
   const [shown, setShown] = useState(PAGE);
   const { sort, toggle } = useSort<Key>({ key: "when", dir: "desc" });
+  const assign = useDemo((s) => s.assignInvestigation);
+  const mayAssign = can(user, "investigation.assign");
+  const [picked, setPicked] = useState<string[]>([]);
+  const [bulkTo, setBulkTo] = useState("");
+  const [bulkDue, setBulkDue] = useState(addDays(DEMO_TODAY, 2));
 
   const toDisplay = (i: Investigation, n: number) => n * fxRate(propertyById[i.propertyId].currency, currency);
   const inScope = useMemo(() => all.filter((i) => exceptionInSel(i, sel)), [all, sel]);
@@ -56,6 +62,22 @@ export default function MoneyBackListPage() {
   const closed = inScope.filter((i) => i.status === "closed");
   const overdue = open.filter((i) => i.deadline && i.deadline < DEMO_TODAY).length;
   const assignees = [...new Set(inScope.map((i) => i.assigneeId).filter(Boolean))] as string[];
+
+  // Bulk assignment: only open cases can be picked, and only people who may work on every picked case are offered.
+  const pickedCases = all.filter((i) => picked.includes(i.id) && i.status !== "closed");
+  const lists = pickedCases.map((i) => assignablePeople(i.outletId, i.propertyId));
+  const bulkPeople = lists.length ? lists[0].filter((p) => lists.every((l) => l.some((x) => x.id === p.id))) : [];
+  const pageRows = rows.slice(0, shown).filter((i) => i.status !== "closed");
+  const allPicked = pageRows.length > 0 && pageRows.every((i) => picked.includes(i.id));
+  const togglePick = (id: string) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
+  const assignPicked = () => {
+    if (!bulkTo) return toast.error("Choose who is responsible.");
+    const failed = pickedCases.map((i) => assign(i.id, bulkTo, bulkDue)).filter((r) => !r.ok);
+    const done = pickedCases.length - failed.length;
+    if (failed.length) toast.error(`${done} assigned. ${failed.length} could not be: ${failed[0].ok ? "" : failed[0].error}`);
+    else toast.done(`${done} case${done === 1 ? "" : "s"} assigned to ${personName(bulkTo)}, due ${fmtDate(bulkDue)}.`);
+    if (done) { setPicked([]); setBulkTo(""); }
+  };
 
   const exportCsv = () => {
     if (!can(user, "reports.export")) return toast.error("Your role cannot export.");
@@ -102,6 +124,19 @@ export default function MoneyBackListPage() {
           </Select>
           <p className="num ml-auto pb-2 text-[13px] text-steel">{rows.length} case{rows.length === 1 ? "" : "s"}</p>
         </div>
+        {mayAssign && pickedCases.length > 0 && (
+          <form className="mx-5 mb-4 flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-cloud px-4 py-3 sm:mx-6" onSubmit={(e) => { e.preventDefault(); assignPicked(); }}>
+            <p className="pb-2.5 text-sm text-ink">{pickedCases.length} selected</p>
+            <Select label="Assign to" className="w-[230px]" value={bulkTo} onChange={(e) => setBulkTo(e.target.value)}>
+              <option value="">Choose a person</option>
+              {bulkPeople.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+            </Select>
+            <Field label="Deadline" type="date" className="w-[170px]" min={DEMO_TODAY} value={bulkDue} onChange={(e) => setBulkDue(e.target.value)} />
+            <Button type="submit" variant="primary">Assign {pickedCases.length}</Button>
+            <Button variant="ghost" onClick={() => setPicked([])}>Clear</Button>
+            {bulkPeople.length === 0 && <p className="w-full text-xs text-steel">No one can take all of these cases. Pick cases from one outlet.</p>}
+          </form>
+        )}
         {rows.length === 0 ? (
           <div className="px-5 pb-6 sm:px-6"><EmptyState title="No cases match these filters">Widen the status or date filter, or choose another outlet in the top bar.</EmptyState></div>
         ) : (
@@ -110,6 +145,7 @@ export default function MoneyBackListPage() {
               <table className="w-full min-w-[1080px] text-sm">
                 <thead>
                   <tr>
+                    {mayAssign && <Th><input type="checkbox" aria-label="Select all open cases shown" className="accent-ink" checked={allPicked} onChange={() => setPicked(allPicked ? picked.filter((id) => !pageRows.some((i) => i.id === id)) : [...new Set([...picked, ...pageRows.map((i) => i.id)])])} /></Th>}
                     <Th>Issue</Th>
                     <Th sortKey="outlet" sort={sort} onSort={toggle}>Outlet</Th>
                     <Th sortKey="when" sort={sort} onSort={toggle}>When</Th>
@@ -124,13 +160,14 @@ export default function MoneyBackListPage() {
                   {rows.slice(0, shown).map((i) => {
                     const late = i.status !== "closed" && i.deadline && i.deadline < DEMO_TODAY;
                     return (
-                      <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
+                      <tr key={i.id} className={cn(rowClass, "cursor-pointer", picked.includes(i.id) && "bg-cloud")} onClick={() => router.push(`/investigations/${i.id}`)}>
+                        {mayAssign && <Td className="w-10">{i.status !== "closed" && <input type="checkbox" aria-label={`Select ${i.headline}`} className="accent-ink" checked={picked.includes(i.id)} onClick={(e) => e.stopPropagation()} onChange={() => togglePick(i.id)} />}</Td>}
                         <Td className="max-w-[360px]">
                           <button type="button" className="text-left text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/investigations/${i.id}`); }}>{i.headline}</button>
                           <span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]} · {i.id.replace("EX-", "")}</span>
                         </Td>
                         <Td>{i.outletId ? outletLabel(i.outletId) : <span className="text-steel">{propertyById[i.propertyId].name}</span>}</Td>
-                        <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
+                        <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}{i.type === "stock_shortfall" ? ", count" : `, ${fmtTime(i.min)}`}</Td>
                         <Td className={cn(!i.assigneeId && "text-steel")}>{personName(i.assigneeId)}</Td>
                         <Td className={cn("num whitespace-nowrap", late ? "text-neg" : "text-graphite")}>{i.deadline ? fmtDate(i.deadline) : <span className="text-fog">not set</span>}{late && <span className="block text-xs">overdue</span>}</Td>
                         <Td align="right">{money(toDisplay(i, i.exposure), { decimals: true })}</Td>

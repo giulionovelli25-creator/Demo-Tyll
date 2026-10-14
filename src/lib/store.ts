@@ -3,15 +3,16 @@
 // Each action checks the signed-in user's permissions before it changes anything, and writes an audit entry.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ingredientById, outletById, propertyById, userById } from "./data/catalog";
+import { ingredientById, outletById, propertyById, staffById, storeOwner, userById } from "./data/catalog";
 import { getDataset } from "./data/dataset";
 import { AccessError, assertCan, clampScope, hasWholeProperty, type Permission } from "./domain/access";
 import type { ForecastInputs } from "./domain/forecast";
+import { countVariance, countVarianceValue } from "./domain/inventory";
 import type { FlowSim } from "./domain/operations";
 import type {
-  Arrival, AuditEntry, CountRecord, DateRange, FlowStatus, InvestigationState, Outcome, PriceChange, Room, Scope, User, WasteLog, WasteReason,
+  Arrival, AuditEntry, CountRecord, Exception, DateRange, FlowStatus, InvestigationState, Outcome, PriceChange, Room, Scope, User, WasteLog, WasteReason,
 } from "./types";
-import { DATA_START, DEMO_TODAY, addDays, presetRange, type RangePreset } from "./util";
+import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtQty, presetRange, type RangePreset } from "./util";
 
 export type Result = { ok: true } | { ok: false; error: string };
 
@@ -33,6 +34,8 @@ interface Persisted {
   lang: "en" | "ar";
   seq: number;
   investigations: Record<string, InvestigationState>;
+  /** Cases opened by hand from a stock count shortfall. */
+  stockCases: Exception[];
   wasteLogs: WasteLog[];
   counts: CountRecord[];
   priceOverrides: PriceChange[];
@@ -62,6 +65,8 @@ interface Actions {
   startReview(id: string): Result;
   closeInvestigation(id: string, input: { outcome: Outcome; confirmedLoss: number; recovered: number; note: string }): Result;
   reopenInvestigation(id: string): Result;
+  /** Opens an investigation into a count shortfall, charged to one outlet. Returns the existing case if one is already open. */
+  openStockCase(countId: string, outletId: string): Result & { id?: string };
   logWaste(input: { outletId: string; ingredientId?: string; itemId?: string; qty: number; reason: WasteReason }): Result;
   syncWaste(): void;
   setOffline(offline: boolean): void;
@@ -90,6 +95,7 @@ const initial = (): Persisted => ({
   lang: "en",
   seq: 0,
   investigations: {},
+  stockCases: [],
   wasteLogs: [],
   counts: [],
   priceOverrides: [],
@@ -129,7 +135,7 @@ export const useDemo = create<DemoState>()(
         }
       };
 
-      const exceptionOf = (id: string) => getDataset().exceptions.find((e) => e.id === id);
+      const exceptionOf = (id: string) => getDataset().exceptions.find((e) => e.id === id) ?? get().stockCases.find((e) => e.id === id);
       const currentState = (id: string): InvestigationState => get().investigations[id] ?? getDataset().seedInvestigations[id];
       const guardInvestigation = (permission: Permission, id: string, run: (user: User, state: InvestigationState, exposure: number) => Result): Result => {
         const e = exceptionOf(id);
@@ -181,7 +187,7 @@ export const useDemo = create<DemoState>()(
         assignInvestigation(id, assigneeId, deadline) {
           return guardInvestigation("investigation.assign", id, (_u, state) => {
             if (state.status === "closed") return fail("Reopen the investigation before assigning it.");
-            if (!assigneeId) return fail("Choose who is responsible.");
+            if (!assigneeId || !(userById[assigneeId] || staffById[assigneeId])) return fail("Choose who is responsible.");
             if (!ISO_DATE.test(deadline)) return fail("Choose a deadline.");
             if (deadline < DEMO_TODAY) return fail("The deadline cannot be in the past.");
             saveInvestigation(id, { ...state, status: state.status === "new" ? "assigned" : state.status, assigneeId, deadline });
@@ -240,6 +246,35 @@ export const useDemo = create<DemoState>()(
           });
         },
 
+        openStockCase(countId, outletId) {
+          return guarded("investigation.assign", outletId, (user) => {
+            const count = [...getDataset().counts, ...get().counts].find((c) => c.id === countId);
+            if (!count) return fail("This count no longer exists.");
+            const outlet = outletById[outletId];
+            if (!outlet || outlet.propertyId !== count.propertyId) return fail("Choose an outlet at this hotel.");
+            const owner = storeOwner(count.propertyId, count.ingredientId);
+            if (owner && owner !== outletId) return fail(`This item is held in ${outletById[owner].name}'s own store.`);
+            const existing = get().stockCases.find((e) => e.countId === countId && e.outletId === outletId);
+            if (existing) return { ok: true, id: existing.id };
+            const value = -countVarianceValue(count, get().priceOverrides);
+            if (value < 0.5) return fail("This count shows no shortfall.");
+            const shares = count.allocation ?? {};
+            const share = owner || Object.keys(shares).length === 0 ? 1 : (shares[outletId] ?? 0);
+            if (share <= 0) return fail(`${outlet.name} did not use this item in the week before the count.`);
+            const g = ingredientById[count.ingredientId];
+            const exposure = Math.round(value * share * 100) / 100;
+            const seq = get().seq + 1;
+            const id = `EX-STK-${String(seq).padStart(3, "0")}`;
+            const e: Exception = {
+              id, type: "stock_shortfall", propertyId: count.propertyId, outletId, date: count.date, min: count.date === DEMO_TODAY ? DEMO_NOW_MIN : 7 * 60,
+              countId, ingredientId: count.ingredientId, exposure,
+              headline: `${g.name}: ${fmtQty(-countVariance(count) * share, g.unit)} short at the ${fmtDate(count.date)} count`,
+            };
+            set((s) => ({ seq, stockCases: [...s.stockCases, e], investigations: { ...s.investigations, [id]: { status: "new", notes: [], confirmedLoss: 0, recovered: 0 } } }));
+            log("Stock case opened", `${id} by ${user.name}`);
+            return { ok: true, id };
+          });
+        },
         logWaste(input) {
           return guarded("stock.logWaste", input.outletId, (user) => {
             if (!input.ingredientId && !input.itemId) return fail("Choose an item.");

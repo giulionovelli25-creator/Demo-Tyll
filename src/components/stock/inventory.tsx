@@ -1,10 +1,15 @@
 "use client";
-import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { ChevronDown, Search } from "lucide-react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Badge, EmptyState, Note, Panel, Stat, TableWrap, Td, Th, cn, rowClass, useSort } from "@/components/ui";
 import { ingredientById, outletById, propertyById, supplierById } from "@/lib/data/catalog";
-import { countVarianceValue, type StockRow } from "@/lib/domain/inventory";
-import { useCtx, useServerStock } from "@/lib/hooks";
+import { can } from "@/lib/domain/access";
+import { countVariance, countVarianceValue, type StockRow } from "@/lib/domain/inventory";
+import { personName, useCtx, useInvestigations, useServerStock, useUser } from "@/lib/hooks";
+import { STATUS_LABEL } from "@/lib/labels";
+import { OpenStockCase } from "./stock-case";
 import { fmtDate, fmtMoney, fmtNum, fmtQty, sum } from "@/lib/util";
 
 type Key = "name" | "estimated" | "usage" | "value" | "cover" | "waste";
@@ -18,6 +23,14 @@ export function Inventory({ propertyId }: { propertyId: string }) {
   const [q, setQ] = useState("");
   const [priority, setPriority] = useState(false);
   const { sort, toggle } = useSort<Key>({ key: "value", dir: "desc" });
+  const user = useUser()!;
+  const investigations = useInvestigations();
+  // A link from a case names the item to open.
+  const linked = useSearchParams().get("item");
+  const [open, setOpen] = useState<string | null>(linked);
+  useEffect(() => {
+    if (linked && data) document.getElementById(`item-${linked}`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [linked, data]);
 
   const lastFull = useMemo(() => {
     const dates = ctx.counts.filter((c) => c.propertyId === propertyId && c.kind === "weekly").map((c) => c.date).sort();
@@ -83,8 +96,9 @@ export function Inventory({ propertyId }: { propertyId: string }) {
                   const net = r.transferIn - r.transferOut;
                   const low = r.daysCover !== null && r.daysCover < 1;
                   return (
-                    <tr key={r.ingredientId} className={rowClass}>
-                      <Td><span className="text-ink">{g.name}</span>{g.priority && <Badge className="ml-2 !py-0">priority</Badge>}{r.store && <Badge className="ml-2 !py-0">{outletById[r.store].name} store</Badge>}<span className="block text-xs text-steel">{supplierById[g.supplierId].name}</span></Td>
+                    <Fragment key={r.ingredientId}>
+                    <tr id={`item-${r.ingredientId}`} className={cn(rowClass, "cursor-pointer scroll-mt-40")} onClick={() => setOpen(open === r.ingredientId ? null : r.ingredientId)}>
+                      <Td><button type="button" aria-expanded={open === r.ingredientId} className="inline-flex items-center gap-1.5 text-left text-ink" onClick={(e) => { e.stopPropagation(); setOpen(open === r.ingredientId ? null : r.ingredientId); }}><ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open === r.ingredientId && "rotate-180")} aria-hidden />{g.name}</button>{g.priority && <Badge className="ml-2 !py-0">priority</Badge>}{r.store && <Badge className="ml-2 !py-0">{outletById[r.store].name} store</Badge>}<span className="block text-xs text-steel">{supplierById[g.supplierId].name}</span></Td>
                       <Td align="right">{fmtQty(r.baselineQty, g.unit)}<span className="block text-xs text-steel">{fmtDate(r.baselineDate)}</span></Td>
                       <Td align="right">{r.received ? `+${fmtQty(r.received, g.unit)}` : "–"}</Td>
                       <Td align="right">{r.usage ? `−${fmtQty(r.usage, g.unit)}` : "–"}</Td>
@@ -94,6 +108,14 @@ export function Inventory({ propertyId }: { propertyId: string }) {
                       <Td align="right">{r.daysCover === null ? "–" : <span className={cn(low && "text-warn")}>{fmtNum(Math.max(0, r.daysCover), 1)}{low && <Badge tone="warn" className="ml-2 !py-0">low</Badge>}</span>}</Td>
                       <Td align="right">{money(r.value)}</Td>
                     </tr>
+                    {open === r.ingredientId && (
+                      <tr className="border-b border-hair bg-cloud/60">
+                        <td colSpan={9} className="p-0">
+                          <ItemDetail row={r} propertyId={propertyId} money={money} cases={investigations.filter((i) => i.type === "stock_shortfall" && i.ingredientId === r.ingredientId && i.propertyId === propertyId)} mayCount={can(user, "stock.count")} mayLog={can(user, "stock.logWaste")} />
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   );
                 })}
               </tbody>
@@ -102,6 +124,79 @@ export function Inventory({ propertyId }: { propertyId: string }) {
         )}
         <Note className="px-6 py-4">Quantities for {property.name}, valued at today&rsquo;s cost in {property.currency}. Expected usage covers the first 20 recipes. Items sold at a standard cost do not draw down stock yet.</Note>
       </Panel>
+    </div>
+  );
+}
+
+/** What sits behind one inventory figure: recent counts, open cases and the next thing to do. */
+function ItemDetail({ row, propertyId, money, cases, mayCount, mayLog }: {
+  row: StockRow & { allocation?: Record<string, number> };
+  propertyId: string;
+  money: (n: number, decimals?: boolean) => string;
+  cases: { id: string; headline: string; status: keyof typeof STATUS_LABEL }[];
+  mayCount: boolean;
+  mayLog: boolean;
+}) {
+  const ctx = useCtx();
+  const g = ingredientById[row.ingredientId];
+  const history = ctx.counts.filter((c) => c.propertyId === propertyId && c.ingredientId === row.ingredientId).sort((a, b) => b.date.localeCompare(a.date) || b.seq - a.seq).slice(0, 4);
+  const shares = Object.entries(row.allocation ?? {}).filter(([, s]) => s > 0);
+  // The table scrolls sideways on narrow screens. The detail stays pinned to the visible width.
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState<number>();
+  useEffect(() => {
+    const box = ref.current?.closest(".overflow-x-auto");
+    if (!box) return;
+    const ro = new ResizeObserver(() => setWidth(box.clientWidth));
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div ref={ref} style={{ width }} className="sticky left-0 grid gap-6 px-5 py-5 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
+      <div>
+        <h3 className="text-[15px]">Recent counts</h3>
+        {history.length === 0 ? <p className="mt-2 text-sm text-steel">Not counted yet.</p> : (
+          <ul className="mt-2 divide-y divide-hair rounded-2xl border border-line bg-paper text-sm">
+            {history.map((c) => {
+              const v = countVariance(c);
+              const value = countVarianceValue(c, ctx.overrides);
+              return (
+                <li key={c.id} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
+                  <span className="min-w-[150px]">{fmtDate(c.date, true)}<span className="block text-xs text-steel">{c.kind === "weekly" ? "weekly count" : "spot check"}, {personName(c.by)}</span></span>
+                  <span className="num text-graphite">counted {fmtQty(c.counted, g.unit)} of {fmtQty(c.expected, g.unit)}</span>
+                  <span className={cn("num", value < -0.5 ? "text-warn" : "text-steel")}>{Math.abs(v) < 0.005 ? "matches" : `${v < 0 ? "−" : "+"}${money(Math.abs(value), true)}`}</span>
+                  {value < -0.5 && <OpenStockCase count={c} />}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      <div className="space-y-5">
+        {shares.length > 0 && (
+          <div>
+            <h3 className="text-[15px]">Use in the past week</h3>
+            <ul className="mt-2 space-y-1 text-sm">
+              {shares.map(([id, s]) => <li key={id} className="flex justify-between gap-4"><span className="text-graphite">{outletById[id].name}</span><span className="num">{Math.round(s * 100)}%</span></li>)}
+            </ul>
+            <p className="mt-1 text-xs text-steel">Count differences are shared out in these proportions.</p>
+          </div>
+        )}
+        {cases.length > 0 && (
+          <div>
+            <h3 className="text-[15px]">Cases</h3>
+            <ul className="mt-2 space-y-1.5 text-sm">
+              {cases.map((c) => <li key={c.id}><Link href={`/investigations/${c.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{c.headline}</Link> <Badge className="ml-1 !py-0">{STATUS_LABEL[c.status]}</Badge></li>)}
+            </ul>
+          </div>
+        )}
+        {(mayCount || mayLog) && (
+          <div className="flex flex-wrap gap-2">
+            {mayCount && <Link href={`/stock?tab=counts&item=${row.ingredientId}`} className="inline-flex h-9 items-center rounded-full border border-line bg-paper px-4 text-[13px] hover:border-fog">Count this item</Link>}
+            {mayLog && <Link href="/stock?tab=log" className="inline-flex h-9 items-center rounded-full border border-line bg-paper px-4 text-[13px] hover:border-fog">Log waste or breakage</Link>}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

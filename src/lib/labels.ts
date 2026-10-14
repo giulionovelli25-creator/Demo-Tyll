@@ -9,6 +9,14 @@ export const OUTCOME_LABEL: Record<Outcome, string> = {
   inconclusive: "No finding",
 };
 
+/** The same outcomes, worded for a stock count shortfall. */
+export const STOCK_OUTCOME_HELP: Record<Outcome, string> = {
+  legitimate: "A recount, a delivery or a recorded transfer explains it. Nothing was lost.",
+  confirmed_loss: "The stock is gone and cannot be accounted for.",
+  recovered: "The stock was found, or the supplier credited it, and this has been verified.",
+  inconclusive: "The records cannot settle it either way.",
+};
+
 export const OUTCOME_HELP: Record<Outcome, string> = {
   legitimate: "The change was valid. Nothing was lost.",
   confirmed_loss: "The item was served or made and cannot be charged.",

@@ -132,6 +132,9 @@ describe("protected data", () => {
     expect(snap.exceptions.every((e) => e.outletId === "dxb-terrace")).toBe(true);
     expect(snap.rooms).toHaveLength(0);
     expect(snap.roomCharges.every((c) => c.outletId === "dxb-terrace")).toBe(true);
+    // Counts of Maison Lune's own store stay with Lune.
+    expect(snap.counts.some((c) => ["lobster", "truffle", "tenderloin"].includes(c.ingredientId))).toBe(false);
+    expect(snapshotFor(userById["u-gm"]).counts.some((c) => c.ingredientId === "tenderloin")).toBe(true);
   });
 
   it("sends operational staff quantities but no sales, costs or cases", () => {

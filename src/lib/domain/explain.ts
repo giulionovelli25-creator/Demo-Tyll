@@ -3,7 +3,7 @@
 import { ingredientById, itemById, outletById, propertyById, staffById } from "../data/catalog";
 import type { Dataset } from "../data/generate";
 import type { CountRecord, Exception, Order, RoomCharge } from "../types";
-import { addDays, fmtMoney, fmtQty, fmtTime } from "../util";
+import { addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "../util";
 import { POLICY, REMOVAL_TYPES, type Pattern } from "./detect";
 import { countVariance, countVarianceValue } from "./inventory";
 import { orderTotals } from "./orders";
@@ -89,6 +89,38 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
       base.recommended = ["Compare the outlet check with the guest bill line.", "Correct the posting and record the result here."];
       base.message = `The recorded charge is ${money(charge.expected)} but the guest bill shows ${money(posted)}. Please compare the two and correct the posting.`;
     }
+    return base;
+  }
+
+  if (e.type === "stock_shortfall") {
+    const count = counts.find((c) => c.id === e.countId);
+    if (!count) return base;
+    const g = ingredientById[count.ingredientId];
+    const variance = countVariance(count);
+    const value = countVarianceValue(count);
+    const share = Math.abs(value) > 0 ? e.exposure / Math.abs(value) : 1;
+    base.stock = [{ ingredientId: count.ingredientId, count, variance, value }];
+    base.facts = [
+      `On ${fmtDate(count.date, true)} ${fmtQty(count.counted, g.unit)} of ${g.name} was counted against ${fmtQty(count.expected, g.unit)} expected.`,
+      `Expected stock is the previous count plus deliveries, less recipe use, recorded waste and transfers.`,
+      share < 0.999
+        ? `${outlet?.name} used ${Math.round(share * 100)}% of this item in the week before the count, so ${money(e.exposure)} of the ${money(Math.abs(value))} shortfall is charged to it.`
+        : `The full ${money(e.exposure)} is charged to ${outlet?.name}.`,
+    ];
+    base.possibleCauses = [
+      "Waste, spillage or breakage that was not logged.",
+      "Portions larger than the recipe, or a recipe that is out of date.",
+      "A delivery recorded for more than arrived, or a transfer not recorded.",
+      "A counting error, in this count or the one before.",
+      "Stock taken without a sale.",
+    ];
+    base.recommended = [
+      `Recount ${g.name} to rule out a counting error.`,
+      "Check the delivery notes and transfers since the previous count.",
+      "Compare portioning in the kitchen with the recipe.",
+      "Ask the team whether any waste went unrecorded, and log it if so.",
+    ];
+    base.message = `${g.name} at ${outlet?.name ?? propertyById[e.propertyId].name} was ${fmtQty(Math.abs(variance) * share, g.unit)} short at the ${fmtDate(count.date)} count, worth ${money(e.exposure)}. Please recount the item and check deliveries, waste and portioning before recording an outcome.`;
     return base;
   }
 
