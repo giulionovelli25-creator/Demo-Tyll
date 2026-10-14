@@ -3,6 +3,7 @@ import { BadgeCheck, CalendarPlus, CalendarRange, FileSignature, Target, Users }
 import { MyEvents, PlanEvent } from "@/components/events/events";
 import { StaffSupport } from "@/components/events/staff";
 import { ConfirmedBusiness, Opportunities, Proposals } from "@/components/sales/sales";
+import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
 import { Crumbs, PageHeader, Tabs } from "@/components/ui";
@@ -37,12 +38,12 @@ export default function EventsPage() {
         <ModuleHub
           onPick={setTab}
           choices={[
-            ...(tabs.includes("opportunities") ? [{ value: "opportunities" as Tab, title: "Opportunities", detail: "Potential business and sales enquiries.", icon: Target }] : []),
-            ...(tabs.includes("proposals") ? [{ value: "proposals" as Tab, title: "Proposals", detail: "Quotes and offers for customers.", icon: FileSignature }] : []),
-            ...(tabs.includes("confirmed") ? [{ value: "confirmed" as Tab, title: "Confirmed business", detail: "Confirmed deals, their events and sales performance.", icon: BadgeCheck }] : []),
-            ...(tabs.includes("plan") ? [{ value: "plan" as Tab, title: "Plan an event", detail: "Create an event and work out food, stock and staff.", icon: CalendarPlus }] : []),
+            ...(tabs.includes("opportunities") ? [{ value: "opportunities" as Tab, title: "Opportunities", detail: "Potential business and sales enquiries.", icon: Target, help: HELP.opportunities }] : []),
+            ...(tabs.includes("proposals") ? [{ value: "proposals" as Tab, title: "Proposals", detail: "Quotes and offers for customers.", icon: FileSignature, help: HELP.proposals }] : []),
+            ...(tabs.includes("confirmed") ? [{ value: "confirmed" as Tab, title: "Confirmed business", detail: "Confirmed deals, their events and sales performance.", icon: BadgeCheck, help: HELP.confirmed }] : []),
+            ...(tabs.includes("plan") ? [{ value: "plan" as Tab, title: "Plan an event", detail: "Create an event and work out food, stock and staff.", icon: CalendarPlus, help: HELP.plan }] : []),
             ...(tabs.includes("events") ? [{ value: "events" as Tab, title: "My events", detail: "Open, change and follow up planned events.", icon: CalendarRange }] : []),
-            ...(tabs.includes("support") ? [{ value: "support" as Tab, title: "Staff support", detail: "Ask for extra help, or answer other teams' requests.", icon: Users }] : []),
+            ...(tabs.includes("support") ? [{ value: "support" as Tab, title: "Staff support", detail: "Ask for extra help, or answer other teams' requests.", icon: Users, help: HELP.support }] : []),
           ]}
         />
       )}

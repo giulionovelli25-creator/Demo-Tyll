@@ -6,6 +6,7 @@ import { ingredientById } from "../data/catalog";
 import type { Assignment, Delivery, EventRecord, PrepPlan, PurchaseRequest, SupportRequest } from "../types";
 import { seedOps } from "./ops-seed";
 import { seedGuest, type GuestShape } from "./guest-seed";
+import { emptyNotify, type NotifyShape } from "./notify";
 import { seedStage6, type FinanceShape, type SalesShape, type StockLogShape } from "./stage6-seed";
 import { DEMO_TODAY } from "../util";
 
@@ -27,9 +28,11 @@ export interface Shape {
   sales: SalesShape;
   /** Waste, corrections and stock counts saved on the server, shared by every device (Stage 6). */
   stockLog: StockLogShape;
+  /** Notifications and the email log (Stage 7). */
+  notify: NotifyShape;
 }
 
-const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6() });
+const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify() });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? path.join(process.cwd(), ".data", "purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
@@ -49,6 +52,7 @@ export function loadStore(): Shape {
   if (!cache.data.guest) {
     writeStore({ ...cache.data, guest: seedGuest() });
   }
+  if (!cache.data.notify) writeStore({ ...cache.data, notify: emptyNotify() });
   if (!cache.data.finance || !cache.data.sales || !cache.data.stockLog) {
     const add = seedStage6();
     writeStore({ ...cache.data, finance: cache.data.finance ?? add.finance, sales: cache.data.sales ?? add.sales, stockLog: cache.data.stockLog ?? add.stockLog });

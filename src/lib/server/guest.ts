@@ -1,6 +1,7 @@
 // Rooms and guest service, shared on the server so the front desk, housekeeping, the bell team and the outlets all see
 // the same record. Each action checks the role, the department or outlet, and the record's current state.
-import { userById } from "../data/catalog";
+import { USERS, userById } from "../data/catalog";
+import { notify, resolve } from "./notify";
 import { EMPLOYEES, deptById, employeeById, shiftsOf } from "../data/workforce";
 import { allowedProperties, can } from "../domain/access";
 import { SERVICE_TARGETS, assessArrival, estimateReady, needsInspection, type ArrivalAssessment, type ReadyEstimate } from "../domain/guest";
@@ -102,21 +103,34 @@ export function roomAction(user: User, roomId: string, body: Record<string, unkn
   const mine = !!user.staffId && (room.housekeeperId === user.staffId || room.helperId === user.staffId);
   const manager = can(user, "hk.manage");
   const hks = housekeepersOnShift(s, now);
-  const save = (change: (r: RoomOps, x: Shape) => void) => ({ ok: true as const, room: mutateStore((x) => { const r = x.guest.rooms.find((y) => y.roomId === roomId)!; change(r, x); return r; }) });
+  const userOf = (staffId?: string) => USERS.find((u) => u.staffId && u.staffId === staffId);
+  const save = (change: (r: RoomOps, x: Shape) => void) => ({ ok: true as const, room: mutateStore((x) => {
+    const r = x.guest.rooms.find((y) => y.roomId === roomId)!;
+    change(r, x);
+    if (r.status === "ready") resolve(x, ["room-priority", "room-assign"], r.roomId);
+    return r;
+  }) });
 
   switch (action) {
     case "priority": {
       if (!can(user, "fo.desk") && !manager) return fail(403, "Only the front desk or housekeeping can prioritise a room.");
       if (room.priority) return fail(409, "This room is already a priority.");
       if (!["vacant_dirty", "cleaning", "inspection"].includes(room.status)) return fail(409, "Only a room waiting to be cleaned or inspected can be prioritised.");
-      return save((r) => { r.priority = true; r.priorityRequestedMin = now; roomEvent(r, user.id, "Priority cleaning requested", now, text(body.note) || undefined); });
+      return save((r, x) => {
+        r.priority = true; r.priorityRequestedMin = now; roomEvent(r, user.id, "Priority cleaning requested", now, text(body.note) || undefined);
+        notify(x, { to: [...USERS.filter((u) => u.role === "housekeeping_manager" && u.deptId === `${r.propertyId}-hk`), ...(userOf(r.housekeeperId) ? [userOf(r.housekeeperId)!] : [])], type: "room-priority", ref: r.roomId, propertyId: r.propertyId, from: user.id, title: `Room ${r.number}: clean first`, body: "The front desk asked for this room to be cleaned first. A guest is due.", href: `/rooms?tab=housekeeping&room=${r.roomId}` });
+      });
     }
     case "assign": {
       if (!manager) return fail(403, "Only a housekeeping manager can assign rooms.");
       const hk = String(body.housekeeperId ?? "");
       if (!hks.includes(hk)) return fail(400, "Choose a housekeeper who is on shift now.");
       if (!["vacant_dirty", "cleaning"].includes(room.status)) return fail(409, "This room is not waiting to be cleaned.");
-      return save((r) => { const was = r.housekeeperId; r.housekeeperId = hk; roomEvent(r, user.id, was ? `Reassigned to ${employeeById[hk].name}` : `Assigned to ${employeeById[hk].name}`, now); });
+      return save((r, x) => {
+        const was = r.housekeeperId; r.housekeeperId = hk; roomEvent(r, user.id, was ? `Reassigned to ${employeeById[hk].name}` : `Assigned to ${employeeById[hk].name}`, now);
+        const u = userOf(hk);
+        if (u) notify(x, { to: [u], type: "room-assign", ref: r.roomId, propertyId: r.propertyId, from: user.id, title: `Room ${r.number} assigned to you`, body: r.priority ? "Priority: a guest is due." : "Added to your rooms.", href: `/staff?do=rooms&room=${r.roomId}` });
+      });
     }
     case "helper": {
       if (!manager) return fail(403, "Only a housekeeping manager can add help.");
@@ -247,6 +261,7 @@ export function createBell(user: User, body: Record<string, unknown>): Result<{ 
     const id = `BT-DXB-${String(nextNumber(x, "BT-DXB") + 2).padStart(4, "0")}`;
     const t: BellTask = { id, propertyId: "dxb", kind, room, from, to, bags, requestedBy: user.id, requestedMin: now, priority: body.priority === "urgent" ? "urgent" : "normal", status: "requested", sourceRequestId: typeof body.sourceRequestId === "string" ? body.sourceRequestId : undefined, history: [{ min: now, by: user.id, action: "Requested", note: text(body.note) || undefined }] };
     x.guest.bell.push(t);
+    notify(x, { to: USERS.filter((u) => can(u, "bell.dispatch") && u.role === "bell_captain"), type: "bell-new", ref: id, propertyId: "dxb", from: user.id, title: `Luggage help for room ${room}`, body: `${bags} bag${bags === 1 ? "" : "s"}, ${from} to ${to}. Assign someone from the bell team.`, href: `/rooms?tab=bell&task=${id}` });
     return t;
   });
   return { ok: true, task };
@@ -264,7 +279,14 @@ export function bellAction(user: User, id: string, body: Record<string, unknown>
   const assignee = !!user.staffId && user.staffId === t.assigneeId && can(user, "bell.task");
   const save = (status: BellStatus | null, label: string, change?: (x: BellTask, store: Shape) => void) => ({
     ok: true as const,
-    task: mutateStore((x) => { const y = x.guest.bell.find((z) => z.id === id)!; if (status) y.status = status; change?.(y, x); y.history.push({ min: now, by: user.id, action: label, note: text(body.note) || undefined }); return y; }),
+    task: mutateStore((x) => {
+      const y = x.guest.bell.find((z) => z.id === id)!;
+      if (status) y.status = status;
+      change?.(y, x);
+      y.history.push({ min: now, by: user.id, action: label, note: text(body.note) || undefined });
+      if (["completed", "cancelled"].includes(y.status)) resolve(x, ["bell-new", "bell-assign"], y.id);
+      return y;
+    }),
   });
   if (["completed", "cancelled"].includes(t.status)) return fail(409, "This task is already closed.");
   switch (action) {
@@ -273,7 +295,12 @@ export function bellAction(user: User, id: string, body: Record<string, unknown>
       const who = String(body.assigneeId ?? "");
       if (!bellPeople().some((e) => e.id === who)) return fail(400, "Choose someone from the bell team.");
       if (!["requested", "assigned", "on_the_way"].includes(t.status)) return fail(409, "The bags have already been collected; reassigning now would break the handover record.");
-      return save("assigned", t.assigneeId ? `Reassigned to ${employeeById[who].name}` : `Assigned to ${employeeById[who].name}`, (x) => { x.assigneeId = who; });
+      return save("assigned", t.assigneeId ? `Reassigned to ${employeeById[who].name}` : `Assigned to ${employeeById[who].name}`, (y, x) => {
+        y.assigneeId = who;
+        resolve(x, ["bell-new", "bell-assign"], y.id);
+        const u = USERS.find((z) => z.staffId === who);
+        if (u) notify(x, { to: [u], type: "bell-assign", ref: y.id, propertyId: "dxb", from: user.id, title: `Luggage task: room ${y.room}`, body: `${y.bags} bags, ${y.from} to ${y.to}.`, href: `/staff?do=bell&task=${y.id}` });
+      });
     }
     case "on_the_way":
     case "collected":

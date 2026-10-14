@@ -8,6 +8,7 @@ import type { Currency, EventRecord, EventType, Opportunity, OppStatus, OppType,
 import { DEMO_TODAY, addDays } from "../util";
 import { buildEvent, readEvent } from "./ops";
 import { loadStore, mutateStore, type Shape } from "./purchasing-store";
+import { notify, peopleWith, resolve } from "./notify";
 
 type Fail = { ok: false; status: number; error: string };
 export type Result<T = object> = ({ ok: true } & T) | Fail;
@@ -177,11 +178,17 @@ export function saveProposal(user: User, body: Record<string, unknown>): Result<
   const needsApproval = Math.round(discountPct * 100) / 100 > SALES_POLICY[o.propertyId].discountApprovalAbove;
   const fields = { date, guests, start, end, format, services, pricePerGuest: Math.round(price * 100) / 100, discountPct: Math.round(discountPct * 100) / 100, extras, validUntil, venue: text(body.venue, 60) || existing?.venue || "Grand Ballroom", notes: body.notes !== undefined ? text(body.notes, 800) : existing?.notes ?? "" };
   const status: ProposalStatus = needsApproval ? "discount_pending" : "ready";
+  const askApproval = (x: Shape, p: Proposal) => {
+    if (p.status !== "discount_pending") return;
+    notify(x, { to: peopleWith("sales.approve", o.propertyId, (u) => u.id !== user.id), type: "discount", ref: p.id, propertyId: o.propertyId, from: user.id, title: `${o.customer}: ${p.discountPct}% discount needs approval`, body: `${p.id} is above the ${SALES_POLICY[o.propertyId].discountApprovalAbove}% limit. Approve, reject or request changes.`, href: `/events?tab=proposals&opp=${o.id}`, email: true });
+  };
   const proposal = mutateStore((x) => {
     if (existing) {
       const p = x.sales.proposals.find((y) => y.id === existing.id)!;
       Object.assign(p, fields, { status, updatedAt: now(), approval: undefined });
       p.history.push({ at: p.updatedAt, by: user.id, action: needsApproval ? `Updated; ${fields.discountPct}% discount needs approval` : "Updated" });
+      resolve(x, ["discount", "discount-answer"], p.id);
+      askApproval(x, p);
       return p;
     }
     // A new version replaces earlier proposals that were never accepted.
@@ -196,6 +203,7 @@ export function saveProposal(user: User, body: Record<string, unknown>): Result<
     const opp = x.sales.opps.find((y) => y.id === o.id)!;
     if (["new", "contacted"].includes(opp.status)) { opp.status = "proposal_needed"; opp.updatedAt = now(); }
     opp.history.push({ at: now(), by: user.id, action: `Proposal ${p.id} prepared (version ${version})` });
+    askApproval(x, p);
     return p;
   });
   return { ok: true, proposal };
@@ -231,7 +239,11 @@ export function proposalAction(user: User, id: string, body: Record<string, unkn
       if (p.status !== "discount_pending") return fail(409, "This proposal is not waiting for a discount decision.");
       if (action !== "approve" && note.length < 3) return fail(400, "Say why, so sales can revise the proposal.");
       const decision = action === "approve" ? "approved" : action === "reject" ? "rejected" : "changes";
-      return save(action === "approve" ? "ready" : "changes_requested", action === "approve" ? `${p.discountPct}% discount approved` : action === "reject" ? `${p.discountPct}% discount rejected` : "Changes requested", (y) => { y.approval = { by: user.id, at: now(), decision, note }; });
+      return save(action === "approve" ? "ready" : "changes_requested", action === "approve" ? `${p.discountPct}% discount approved` : action === "reject" ? `${p.discountPct}% discount rejected` : "Changes requested", (y, x) => {
+        y.approval = { by: user.id, at: now(), decision, note };
+        resolve(x, "discount", y.id);
+        notify(x, { to: [y.createdBy], type: "discount-answer", ref: y.id, propertyId: y.propertyId, from: user.id, title: `${y.id}: discount ${decision === "changes" ? "needs changes" : decision}`, body: note || "Open the proposal for details.", href: `/events?tab=proposals&opp=${y.oppId}`, email: true });
+      });
     }
     case "mark_sent": {
       if (!can(user, "sales.work")) return fail(403, "Only sales can record this.");

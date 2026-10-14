@@ -7,6 +7,9 @@ import { ROLE_LABEL, USERS, outletById, propertyById, userById } from "@/lib/dat
 import { allowedOutlets, allowedProperties, can, canOpen, type ModuleId, type Permission } from "@/lib/domain/access";
 import { POLICY } from "@/lib/domain/detect";
 import { useApi, useUser } from "@/lib/hooks";
+import { NotificationSettings } from "@/components/shell/notification-settings";
+import { api } from "@/lib/api";
+import { usePlanDrafts } from "@/lib/plan-hooks";
 import { useDemo } from "@/lib/store";
 import type { Role } from "@/lib/types";
 import { DEMO_TODAY, downloadCsv } from "@/lib/util";
@@ -28,6 +31,8 @@ export default function SettingsPage() {
   const audit = useDemo((s) => s.audit);
   const reset = useDemo((s) => s.resetDemo);
   const [confirming, setConfirming] = useState(false);
+  const bump = usePlanDrafts((s) => s.bump);
+  const serverReset = user.role === "owner" || user.role === "gm";
   const mayAudit = can(user, "settings.audit");
   const { data: security } = useApi<{ entries: { at: string; name: string; action: string; detail: string; ip: string }[] }>(mayAudit ? "/api/audit" : null);
   const sample = (role: Role) => USERS.find((u) => u.role === role)!;
@@ -47,12 +52,15 @@ export default function SettingsPage() {
           <Note className="mt-4">The server checks your session, role and PIN before every page and every data request, and sends only the records your role may see. Changes you make are still saved in this browser; moving them to the server is the next step.</Note>
         </Panel>
 
-        <Panel title="Demo data" description={`Business date ${DEMO_TODAY}. Everything you change is saved in this browser only.`}>
-          <p className="max-w-[70ch] text-sm text-graphite">Reset clears investigations you assigned or closed, waste and counts you logged, price changes, purchase approvals, order and room changes, and the audit trail. The original demo records come back exactly as they were.</p>
+        <Panel title="Demo data" description={`Business date ${DEMO_TODAY}. Shared records (requests, events, rooms, sales, finance, waste) are on the demo server; investigation decisions and price changes are kept in this browser.`}>
+          <p className="max-w-[70ch] text-sm text-graphite">{serverReset ? "Reset puts every seeded demo record back to its starting point, on the server and in this browser, and clears notifications. Sign-in accounts and the access log are kept." : "Reset clears the changes kept in this browser. Only the owner or general manager can reset the shared demo records."} To reset one story only, use Reset in the guided demo.</p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             {confirming ? (
               <>
-                <Button variant="danger" onClick={() => { reset(); setConfirming(false); toast.done("Demo data restored to its original state."); }}><RotateCcw size={15} /> Yes, reset everything</Button>
+                <Button variant="danger" onClick={async () => {
+                  if (serverReset) { try { await api("/api/demo/reset", { method: "POST", body: { scope: "all", confirm: true } }); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not reset."); return; } }
+                  reset(); setConfirming(false); bump(); toast.done(serverReset ? "All demo records restored to their starting point." : "This browser's demo changes were cleared.");
+                }}><RotateCcw size={15} /> Yes, reset everything</Button>
                 <Button variant="ghost" onClick={() => setConfirming(false)}>Keep my changes</Button>
               </>
             ) : (
@@ -61,6 +69,8 @@ export default function SettingsPage() {
           </div>
         </Panel>
       </div>
+
+      <NotificationSettings />
 
       <Panel title="Data sources" description="Tyll reads from the hotel's existing systems and changes nothing in them. This is what stands behind each figure in the demo." flush>
         <TableWrap>

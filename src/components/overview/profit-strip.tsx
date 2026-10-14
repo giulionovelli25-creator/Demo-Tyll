@@ -24,7 +24,7 @@ export const METRICS: MetricDef[] = [
   { key: "grossProfit", label: "Gross profit", kind: "total", goodWhen: "up", help: "Net sales less food and beverage cost." },
   { key: "labor", label: "Labor", kind: "deduction", goodWhen: "down", help: "Estimated from rostered hours. Payroll is not connected." },
   { key: "opex", label: "Other operating costs", kind: "deduction", goodWhen: "down", help: "Allocated estimate for utilities, supplies, linen and similar." },
-  { key: "operatingProfit", label: "Estimated operating profit", kind: "total", goodWhen: "up", help: "Net sales less the three cost lines above. An estimate, not accounting profit." },
+  { key: "operatingProfit", label: "Estimated operating contribution", kind: "total", goodWhen: "up", help: "Net sales less the three cost lines above. An estimate, not accounting profit." },
 ];
 
 export const metricValue = (t: Totals, key: MetricKey): number | null => t[key];
@@ -88,8 +88,8 @@ export function ProfitStrip({ c, money, onOpen, partialDay }: { c: Compared; mon
       </ol>
       <Note className="mt-2 max-w-[100ch]">
         {hasOps
-          ? "Estimated operating profit is net sales less food and beverage cost, rostered labor and allocated overheads. It is not accounting profit: no ledger or payroll is connected, and rent, depreciation, management fees and tax are left out."
-          : "Labor and overheads are not split by department, so operating profit is shown only for all departments."}
+          ? "Estimated operating contribution is net sales less food and beverage cost, rostered labor and allocated overheads. It is not accounting profit: no ledger or payroll is connected, and rent, depreciation, management fees and tax are left out."
+          : "Labor and overheads are not split by department, so operating contribution is shown only for all departments."}
         {partialDay && " Today runs to 8:55 PM, with dinner still in service: sales count only checks already closed, while most of the day's labor has been worked."}
       </Note>
     </div>

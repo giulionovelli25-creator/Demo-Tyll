@@ -47,7 +47,7 @@ export default function ReportsPage() {
     { label: "Gross profit", now: t.grossProfit, before: b.grossProfit, kind: "total", goodWhen: "up" },
     { label: "Labor", now: t.labor === null ? null : -t.labor, before: b.labor === null ? null : -b.labor, kind: "sub", goodWhen: "up", note: "estimate" },
     { label: "Other operating costs", now: t.opex === null ? null : -t.opex, before: b.opex === null ? null : -b.opex, kind: "sub", goodWhen: "up", note: "estimate" },
-    { label: "Estimated operating profit", now: t.operatingProfit, before: b.operatingProfit, kind: "total", goodWhen: "up", note: "estimate" },
+    { label: "Estimated operating contribution", now: t.operatingProfit, before: b.operatingProfit, kind: "total", goodWhen: "up", note: "estimate" },
   ];
   const risk: Line[] = [
     { label: "Potential losses, open cases", now: t.potentialLoss, before: null },
@@ -128,7 +128,7 @@ export default function ReportsPage() {
             <tbody>{risk.map((l) => <Row key={l.label} l={l} />)}</tbody>
           </table>
         </TableWrap>
-        <Note className="px-6 py-4">Simulated data. Labor is estimated from rostered hours and other operating costs are allocated. Estimated operating profit is not accounting profit: no ledger is connected, and rent, depreciation, management fees and tax are left out. Amounts recovered are reported separately and are not added to net sales.</Note>
+        <Note className="px-6 py-4">Simulated data. Labor is estimated from rostered hours and other operating costs are allocated. Estimated operating contribution is not accounting profit: no ledger is connected, and rent, depreciation, management fees and tax are left out. Amounts recovered are reported separately and are not added to net sales.</Note>
       </Panel>
 
       {rows.length > 1 && (

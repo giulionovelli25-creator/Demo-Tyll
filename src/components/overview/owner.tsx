@@ -1,5 +1,6 @@
 "use client";
 import { StockAlert } from "./stock-alert";
+import { HELP } from "@/components/help";
 import { GuestStrip } from "@/components/guest/service";
 import { BusinessStrip } from "@/components/sales/sales";
 // The owner's control center: five figures, one chart, one comparison list, one list of issues.
@@ -71,8 +72,8 @@ export function OwnerOverview() {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <KpiCard label="Revenue" value={money(t.net, { compact: true })} delta={<Delta value={pctChange(t.net, b.net)} />} sub="net sales" spark={spark((x) => x.net)} onClick={() => setKpi("revenue")} />
         <KpiCard label="Expenses" value={money(expensesOf(t), { compact: true })} delta={<Delta value={pctChange(expensesOf(t), expensesOf(b))} goodWhen="down" />} sub={hasOps ? "incl. estimates" : "F&B cost only"} spark={spark(expensesOf)} sparkGood="down" onClick={() => setKpi("expenses")} />
-        <KpiCard label={hasOps ? "Est. operating profit" : "Gross profit"} value={money(profitOf(t), { compact: true })} delta={<Delta value={pctChange(profitOf(t), profitOf(b))} />} sub={`${fmtPct(marginOf(t))} margin`} spark={spark(profitOf)} onClick={() => setKpi("profit")} />
-        <KpiCard label="Potential losses" tone={openValue > 0 ? "warn" : undefined} value={money(openValue, { compact: true })} delta={<Delta value={pctChange(t.flaggedCases, b.flaggedCases)} goodWhen="down" versus="new cases than the previous period" />} sub={`${open.length} open cases`} onClick={() => setKpi("losses")} />
+        <KpiCard label={hasOps ? "Est. operating contribution" : "Gross profit"} help={hasOps ? HELP.opContribution : "Revenue less the cost of food and drink used. It does not include labour or overheads."} value={money(profitOf(t), { compact: true })} delta={<Delta value={pctChange(profitOf(t), profitOf(b))} />} sub={`${fmtPct(marginOf(t))} margin`} spark={spark(profitOf)} onClick={() => setKpi("profit")} />
+        <KpiCard label="Potential losses" help={HELP.potentialLoss} tone={openValue > 0 ? "warn" : undefined} value={money(openValue, { compact: true })} delta={<Delta value={pctChange(t.flaggedCases, b.flaggedCases)} goodWhen="down" versus="new cases than the previous period" />} sub={`${open.length} open cases`} onClick={() => setKpi("losses")} />
         <KpiCard label="Open issues" value={String(issues.length)} sub={`${issues.filter((i) => i.priority === "high").length} high priority`} delta={<span className="text-xs text-steel">{open.length} cases, {issues.length - issues.filter((i) => i.kind === "investigation").length} other</span>} onClick={() => setKpi("issues")} />
       </div>
 

@@ -1,5 +1,6 @@
 "use client";
 // Building blocks shared by the owner and manager overviews.
+import { Help } from "@/components/help";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -12,8 +13,8 @@ import { personName } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { DEMO_TODAY, fmtDate, fmtShort } from "@/lib/util";
 
-export function KpiCard({ label, value, sub, delta, spark, sparkGood = "up", onClick, tone }: { label: string; value: string; sub?: string; delta?: React.ReactNode; spark?: number[]; sparkGood?: "up" | "down"; onClick: () => void; tone?: "warn" }) {
-  return (
+export function KpiCard({ label, value, sub, delta, spark, sparkGood = "up", onClick, tone, help }: { label: string; value: string; sub?: string; delta?: React.ReactNode; spark?: number[]; sparkGood?: "up" | "down"; onClick: () => void; tone?: "warn"; help?: string }) {
+  const card = (
     <button type="button" onClick={onClick} className="group flex min-w-0 flex-col justify-between rounded-panel border border-line bg-paper p-4 text-left sm:p-5 shadow-panel transition-colors duration-300 ease-tyll hover:border-fog">
       <span className="flex items-center justify-between gap-2 text-[13px] text-steel">
         {label}
@@ -29,6 +30,9 @@ export function KpiCard({ label, value, sub, delta, spark, sparkGood = "up", onC
       </span>
     </button>
   );
+  if (!help) return card;
+  // The explanation sits beside the card's button, not inside it.
+  return <div className="relative flex min-w-0 flex-col [&>button]:flex-1">{card}<Help text={help} label={`What is ${label}?`} className="absolute right-9 top-3 sm:top-4" /></div>;
 }
 
 export type ChartMetric = "revenue" | "expenses" | "profit";

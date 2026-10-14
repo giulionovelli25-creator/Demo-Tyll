@@ -2,6 +2,7 @@
 import { BarChart3, ReceiptText, Stamp } from "lucide-react";
 import { Invoices, Reports, useFinanceHome, useFinanceProperty } from "@/components/finance/finance";
 import { Approvals } from "@/components/forecast/approvals";
+import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
 import { Crumbs, PageHeader, Tabs } from "@/components/ui";
@@ -31,7 +32,7 @@ export default function FinancePage() {
         <ModuleHub
           onPick={setTab}
           choices={tabs.map((t) => ({
-            value: t, title: LABEL[t], icon: t === "approvals" ? Stamp : t === "invoices" ? ReceiptText : BarChart3,
+            value: t, title: LABEL[t], help: t === "approvals" ? HELP.approvals : t === "invoices" ? HELP.invoices : HELP.budgets, icon: t === "approvals" ? Stamp : t === "invoices" ? ReceiptText : BarChart3,
             detail: t === "approvals" ? (data ? n(data.approvals, "request needs your review.", "requests need your review.") : "Requests waiting for financial review.")
               : t === "invoices" ? (data ? n(data.invoices, "supplier invoice needs checking.", "supplier invoices need checking.") : "Supplier invoices, expenses and differences.")
               : data?.overBudget.length ? `${data.overBudget.join(", ")}: over budget once open items are recorded.` : "Review this month's spending.",

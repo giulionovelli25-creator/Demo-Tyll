@@ -80,7 +80,7 @@ export function KpiDrawer({ kpi, onClose, c, rows, ctx, sel, investigations, mon
   }, [open, sel.currency]);
 
   if (!kpi) return null;
-  const titles: Record<KpiKey, string> = { revenue: "Revenue", expenses: "Expenses", profit: hasOps ? "Estimated operating profit" : "Gross profit", losses: "Potential losses", issues: "Open issues" };
+  const titles: Record<KpiKey, string> = { revenue: "Revenue", expenses: "Expenses", profit: hasOps ? "Estimated operating contribution" : "Gross profit", losses: "Potential losses", issues: "Open issues" };
 
   return (
     <Drawer open onClose={onClose} title={titles[kpi]} wide>

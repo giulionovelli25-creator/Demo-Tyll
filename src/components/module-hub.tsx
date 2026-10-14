@@ -1,6 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronRight, type LucideIcon } from "lucide-react";
+import { Help } from "./help";
 
 export interface HubChoice<T extends string> {
   value: T;
@@ -8,14 +9,17 @@ export interface HubChoice<T extends string> {
   detail: string;
   icon: LucideIcon;
   badge?: string;
+  /** A short explanation behind a "?" on the card. */
+  help?: string;
 }
 
 /** A few clearly labelled ways into a module. Each opens one workflow. */
 export function ModuleHub<T extends string>({ choices, onPick }: { choices: HubChoice<T>[]; onPick: (v: T) => void }) {
   return (
     <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {choices.map(({ value, title, detail, icon: Icon, badge }) => (
-        <li key={value}>
+      {choices.map(({ value, title, detail, icon: Icon, badge, help }) => (
+        <li key={value} className="relative">
+          {help && <Help text={help} label={`What is ${title}?`} className="absolute bottom-4 right-4 z-10" />}
           <button type="button" onClick={() => onPick(value)} className="group flex h-full w-full flex-col justify-between rounded-panel border border-line bg-paper p-5 text-left shadow-panel transition-colors duration-300 ease-tyll hover:border-fog">
             <span className="flex items-center justify-between">
               <Icon size={24} strokeWidth={1.5} aria-hidden />

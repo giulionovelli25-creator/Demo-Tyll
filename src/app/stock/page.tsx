@@ -9,6 +9,7 @@ import { Suppliers } from "@/components/stock/suppliers";
 import { WasteAnalytics } from "@/components/stock/waste-analytics";
 import { WasteLogger } from "@/components/stock/waste-logger";
 import { WhereDidItGo } from "@/components/stock/where";
+import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { Badge, Crumbs, PageHeader, Segmented, Tabs } from "@/components/ui";
 import { ingredientById, propertyById } from "@/lib/data/catalog";
@@ -68,9 +69,9 @@ export default function StockPage() {
           onPick={setTab}
           choices={[
             { value: "inventory", title: "Check inventory", detail: "Stock levels, and what is running low.", icon: Boxes },
-            ...(canOpen(user, "investigations") ? [{ value: "where" as const, title: "Where did it go?", detail: "Missing stock and use that sales do not explain.", icon: SearchCheck }] : []),
-            { value: "waste", title: "Waste and breakage", detail: "Record and review waste, breakage and spoilage.", icon: Trash2 },
-            { value: "counts", title: "Stock counts", detail: "Enter what is actually on the shelf.", icon: ClipboardCheck },
+            ...(canOpen(user, "investigations") ? [{ value: "where" as const, title: "Where did it go?", detail: "Missing stock and use that sales do not explain.", icon: SearchCheck, help: HELP.where }] : []),
+            { value: "waste", title: "Waste and breakage", detail: "Record and review waste, breakage and spoilage.", icon: Trash2, help: HELP.waste },
+            { value: "counts", title: "Stock counts", detail: "Enter what is actually on the shelf.", icon: ClipboardCheck, help: HELP.counts },
             { value: "recipes", title: "Recipes and costs", detail: "Ingredient use and the margin of each dish.", icon: ScrollText },
             { value: "suppliers", title: "Suppliers", detail: "Deliveries, and quantities that did not match.", icon: PackageX },
           ]}

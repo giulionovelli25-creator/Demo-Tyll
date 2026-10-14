@@ -5,13 +5,23 @@ import { useEffect, useRef, useState } from "react";
 import { TyllIcon, TyllLogo } from "@/components/brand";
 import { Button, Field, cn } from "@/components/ui";
 import { ApiError, api, reloadTo } from "@/lib/api";
-import { ROLE_LABEL, userById } from "@/lib/data/catalog";
+import { userById } from "@/lib/data/catalog";
 
 interface DemoAccount {
   userId: string;
   email: string;
   password: string;
 }
+
+/** Demo people by department. Each account has its own permissions, so approvals can pass from one person to the next. */
+const GROUPS: { label: string; ids: string[] }[] = [
+  { label: "Leadership", ids: ["u-owner", "u-gm"] },
+  { label: "Restaurants and kitchen", ids: ["u-fnb", "u-rm", "u-lby", "u-chef", "u-cook", "u-emp"] },
+  { label: "Purchasing and stores", ids: ["u-buy", "u-store"] },
+  { label: "Finance", ids: ["u-fc", "u-acc-doh"] },
+  { label: "Sales and events", ids: ["u-sales", "u-dos", "u-events", "u-sales-doh"] },
+  { label: "Rooms and guests", ids: ["u-fo", "u-con", "u-hk", "u-maid", "u-bellcap", "u-bell"] },
+];
 
 /** Only relative paths inside the app are accepted as a destination after sign-in. */
 const safeNext = (next: string | null) => (next && next.startsWith("/") && !next.startsWith("//") ? next : "/");
@@ -91,24 +101,33 @@ export function Login() {
 
           {demo.length > 0 && (
             <div className="mt-10">
-              <p className="text-[13px] text-steel">Demo accounts. Choose one to fill in its details.</p>
-              <ul className="mt-3 overflow-hidden rounded-panel border border-line">
-                {demo.map((a) => {
-                  const u = userById[a.userId];
-                  return (
-                    <li key={a.userId} className="border-t border-hair first:border-t-0">
-                      <button type="button" onClick={() => choose(a, true)} aria-pressed={picked === a.userId} className={cn("flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-300 ease-tyll hover:bg-mist", picked === a.userId && "bg-mist")}>
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paper text-xs font-medium text-graphite ring-1 ring-line" aria-hidden>{u.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-sm text-ink">{u.name}</span>
-                          <span className="block truncate text-xs text-steel">{ROLE_LABEL[u.role]}</span>
-                        </span>
-                        <ArrowRight size={15} className="text-fog" aria-hidden />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+              <p className="text-[13px] text-steel">Demo accounts by department. Choose a person to fill in their details.</p>
+              {GROUPS.map((g) => {
+                const list = g.ids.map((id) => demo.find((a) => a.userId === id)).filter((a): a is DemoAccount => !!a);
+                if (!list.length) return null;
+                return (
+                  <div key={g.label} className="mt-4">
+                    <p className="mb-1.5 text-xs text-steel">{g.label}</p>
+                    <ul className="overflow-hidden rounded-panel border border-line">
+                      {list.map((a) => {
+                        const u = userById[a.userId];
+                        return (
+                          <li key={a.userId} className="border-t border-hair first:border-t-0">
+                            <button type="button" onClick={() => choose(a, true)} aria-pressed={picked === a.userId} className={cn("flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors duration-300 ease-tyll hover:bg-mist", picked === a.userId && "bg-mist")}>
+                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-paper text-[11px] font-medium text-graphite ring-1 ring-line" aria-hidden>{u.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-sm text-ink">{u.name}</span>
+                                <span className="block truncate text-xs text-steel">{u.title}</span>
+                              </span>
+                              <ArrowRight size={15} className="text-fog" aria-hidden />
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                );
+              })}
               <p className="mt-3 text-xs leading-relaxed text-steel">Fictional people and simulated data. Demo credentials are listed in config/demo-accounts.json.</p>
             </div>
           )}

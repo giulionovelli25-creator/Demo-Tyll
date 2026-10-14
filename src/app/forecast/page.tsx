@@ -3,6 +3,7 @@ import { ClipboardList, ShoppingCart, Stamp } from "lucide-react";
 import { Approvals } from "@/components/forecast/approvals";
 import { WhatToBuy } from "@/components/forecast/buy";
 import { WhatToPrep } from "@/components/forecast/prep";
+import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
 import { Crumbs, PageHeader, Tabs } from "@/components/ui";
@@ -36,9 +37,9 @@ export default function ForecastPage() {
         <ModuleHub
           onPick={setTab}
           choices={[
-            ...(tabs.includes("buy") ? [{ value: "buy" as Tab, title: "What to buy", detail: "Work out ingredient needs and create a purchase request.", icon: ShoppingCart }] : []),
-            ...(tabs.includes("prep") ? [{ value: "prep" as Tab, title: "What to prep", detail: "How many portions the kitchen should prepare.", icon: ClipboardList }] : []),
-            { value: "approvals" as Tab, title: "Approvals", detail: "Review and approve purchase requests.", icon: Stamp },
+            ...(tabs.includes("buy") ? [{ value: "buy" as Tab, title: "What to buy", detail: "Work out ingredient needs and create a purchase request.", icon: ShoppingCart, help: HELP.buy }] : []),
+            ...(tabs.includes("prep") ? [{ value: "prep" as Tab, title: "What to prep", detail: "How many portions the kitchen should prepare.", icon: ClipboardList, help: HELP.prep }] : []),
+            { value: "approvals" as Tab, title: "Approvals", detail: "Review and approve purchase requests.", icon: Stamp, help: HELP.approvals },
           ]}
         />
       )}

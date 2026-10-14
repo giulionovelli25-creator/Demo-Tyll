@@ -7,6 +7,7 @@ import { DEFAULT_RATIOS, ROLE_ORDER, SERVICES, coverage, eventCost, eventIngredi
 import type { Assignment, EventRecord, EventStatus, EventType, ServiceFormat, ServiceId, StaffRatios, SupportRequest, User } from "../types";
 import { DEMO_TODAY, addDays, fmtDate } from "../util";
 import { loadStore, mutateStore, nextNumber, type Shape } from "./purchasing-store";
+import { notify, resolve } from "./notify";
 import { buyPlanForEvent } from "./purchasing";
 import type { SessionEntries } from "./stock";
 
@@ -185,6 +186,9 @@ export function createSupport(user: User, body: Record<string, unknown>): Result
       history: [{ at: now(), by: user.id, action: `Requested ${count} ${SKILL_LABEL[skill].toLowerCase()}${count === 1 ? "" : "s"}`, comment: reason }],
     };
     x.support.push(r);
+    const depts = [...new Set(items.map((i) => i.deptId))];
+    notify(x, { to: Object.values(userById).filter((u) => can(u, "staff.lend") && u.role !== "owner" && depts.some((d) => managesDept(u, d))), type: "support-ask", ref: id, propertyId, from: user.id,
+      title: `${deptById[toDeptId].name} asks for ${count} ${SKILL_LABEL[skill].toLowerCase()}${count === 1 ? "" : "s"}`, body: `Staff support for ${date}: ${reason}. Approve, decline or suggest someone else.`, href: `/events?tab=support&request=${id}`, email: true });
     return r;
   });
   return { ok: true, request };
@@ -269,10 +273,28 @@ function save(user: User, requestId: string, change: (r: SupportRequest, s: Shap
     settle(r);
     r.updatedAt = now();
     r.history.push({ at: r.updatedAt, by: user.id, action, comment: comment || undefined });
+    supportHandoff(s, r, user, action);
     return r;
   });
   return { ok: true, request };
 }
+
+/** Lending managers hear about new asks; the requester hears each decision. */
+function supportHandoff(s: Shape, r: SupportRequest, user: User, action: string) {
+  const href = `/events?tab=support&request=${r.id}`;
+  const pending = new Set(r.items.filter((i) => i.status === "pending").map((i) => i.deptId));
+  // Lending managers whose part is decided no longer need the notice.
+  for (const n of s.notify.notices) {
+    const u = userById[n.to];
+    if (n.ref === r.id && n.type === "support-ask" && (!u || ![...pending].some((d) => managesDept(u, d)))) n.resolved = true;
+  }
+  if (r.status === "cancelled") return resolve(s, ["support-ask", "support-answer"], r.id);
+  if (user.id !== r.requestedBy) {
+    resolve(s, "support-answer", r.id);
+    notify(s, { to: [r.requestedBy], type: "support-answer", ref: r.id, propertyId: r.propertyId, from: user.id, title: `${r.id}: ${action}`, body: `${deptById[r.items[0]?.deptId]?.name ?? "A department"} answered your staff support request.`, href, email: true });
+  }
+}
+
 
 /** Withdraw a request. Confirmed people from it are released, with the original decisions kept on record. */
 export function cancelSupport(user: User, requestId: string, body: Record<string, unknown>): Result<{ request: SupportRequest }> {

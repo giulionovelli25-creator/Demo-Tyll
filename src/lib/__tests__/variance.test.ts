@@ -41,6 +41,14 @@ describe("worked examples", () => {
     expect(causesFor(wine, v).find((c) => c.id === "overpour")!.status).toBe("open");
   });
 
+  it("Wine at a 175 ml standard: 3,500 ml expected and 250 ml unexplained, with the other facts unchanged", () => {
+    const pour: RecipeChange = { id: "RQ-1", itemId: "wine", ingredientId: "wine", qty: 0.175, from: wine.from.date, reason: "Pour standard reviewed", by: "u-fnb", seq: 1 };
+    const v = periodVariance(wine, { recounts: [], recipes: [pour], waste: [] });
+    near(v.expected, 3.5);
+    near(v.actual, 3.75);
+    near(v.unexplained, 0.25);
+  });
+
   it("Wagyu beef: 80 burgers at 180 g, 16.2 kg used, 1.8 kg unexplained, valued at cost", () => {
     const v = periodVariance(beef);
     expect(beef.sales.filter((s) => s.itemId === "burger").reduce((n, s) => n + s.units, 0)).toBe(80);

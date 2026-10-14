@@ -2,11 +2,12 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Banknote, BedDouble, Bell, CalendarDays, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, TrendingUp, UtensilsCrossed, X,
+  Banknote, BedDouble, CalendarDays, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, TrendingUp, UtensilsCrossed, X,
+  ChevronDown,
   Landmark,
   Smartphone,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { BrandLoader, TyllLogo, TyllMark } from "@/components/brand";
 import { Badge, Button, EmptyState, Field, Segmented, Select, Toaster, cn, report } from "@/components/ui";
 import { MENU_ITEMS, PROPERTIES, ROLE_LABEL, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
@@ -21,6 +22,8 @@ import { currentRange, useDemo } from "@/lib/store";
 import type { Dept, User } from "@/lib/types";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
 import { Login } from "./login";
+import { NotificationBell } from "./notifications";
+import { DemoGuide, DemoPicker } from "./demo-guide";
 import { SharedStockSync } from "@/lib/shared-stock";
 import { PinScreen } from "./pin";
 import { Tour } from "./tour";
@@ -40,6 +43,15 @@ const NAV: Record<ModuleId, { label: string; icon: typeof Banknote }> = {
   reports: { label: "Reports", icon: FileText },
   settings: { label: "Settings", icon: Settings },
 };
+/** What each role sees first. Everything else the role may open sits under "More", and search finds it too. */
+const PRIMARY: Partial<Record<User["role"], ModuleId[]>> = {
+  owner: ["overview", "investigations", "finance", "reports"],
+  gm: ["overview", "rooms", "events", "forecast", "finance", "investigations"],
+  controller: ["finance", "overview", "investigations", "reports"],
+  fnb_director: ["overview", "stock", "forecast", "events", "investigations", "money"],
+  restaurant_manager: ["overview", "stock", "forecast", "events", "investigations", "money"],
+};
+
 const ORDER: ModuleId[] = ["staff", "tasks", "overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "finance", "reports", "settings"];
 
 const subscribe = () => () => {};
@@ -150,11 +162,13 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
       <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-hair bg-paper/90 px-4 backdrop-blur">
         <Link href="/staff" className="flex items-center gap-2" aria-label="Tyll Staff home"><TyllLogo height={20} /><span className="text-[13px] text-steel">Staff</span></Link>
         <span className="flex items-center gap-1">
+          <NotificationBell />
           {others.length > 0 && <Link href={MODULE_PATH[others[0]]} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Full Tyll</Link>}
           <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Sign out</button>
         </span>
       </header>
       <main className="mx-auto w-full max-w-md px-4 pb-24 pt-5">{children}</main>
+      <DemoGuide user={user} />
       <Toaster />
     </div>
   );
@@ -182,6 +196,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
         </main>
       </div>
       <Tour />
+      <DemoGuide user={user} />
       <Toaster />
     </div>
   );
@@ -190,9 +205,13 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
 function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId; open: boolean; onClose: () => void }) {
   const modules = modulesFor(user);
   const openCases = useInvestigations().filter((i) => i.status !== "closed").length;
-  const setTour = useDemo((s) => s.setTour);
-  const canTour = user.role !== "employee";
-  const items = ORDER.filter((m) => modules.includes(m));
+  const canTour = user.role !== "employee" && user.role !== "storekeeper";
+  const [picking, setPicking] = useState(false);
+  const all = ORDER.filter((m) => modules.includes(m) && m !== "settings");
+  const first = PRIMARY[user.role];
+  const items = first ? all.filter((m) => first.includes(m)) : all;
+  const more = first ? all.filter((m) => !first.includes(m)) : [];
+  const [showMore, setShowMore] = useState(more.includes(active));
   return (
     <>
       {open && <button type="button" aria-label="Close menu" className="no-print fixed inset-0 z-40 bg-ink/25 md:hidden" onClick={onClose} />}
@@ -211,11 +230,19 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
         </div>
         <nav aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-3 py-2 md:px-2.5 xl:px-3">
           <ul className="space-y-0.5">
-            {items.map((m) => {
+            {[...items, ...(showMore ? more : []), "settings" as ModuleId].filter((m) => modules.includes(m)).map((m, idx, list) => {
+              const divider = more.length > 0 && m === "settings" ? (
+                <li key="more" className="pt-1">
+                  <button type="button" onClick={() => setShowMore((v) => !v)} aria-expanded={showMore} className="flex h-9 w-full items-center gap-3 rounded-xl px-3 text-[13px] text-steel hover:bg-cloud hover:text-ink md:justify-center md:px-0 xl:justify-start xl:px-3">
+                    <ChevronDown size={16} className={cn("transition-transform", showMore && "rotate-180")} aria-hidden /><span className="md:hidden xl:inline">{showMore ? "Fewer" : `More (${more.length})`}</span>
+                  </button>
+                </li>
+              ) : null;
+              void idx; void list;
               const { label, icon: Icon } = NAV[m];
               const on = active === m;
               return (
-                <li key={m}>
+                <Fragment key={m}>{divider}<li>
                   <Link
                     href={MODULE_PATH[m]}
                     onClick={onClose}
@@ -233,21 +260,22 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
                       <span className="num ml-auto rounded-full bg-ink px-1.5 text-[11px] leading-[18px] text-paper md:absolute md:right-1.5 md:top-1 xl:static">{openCases}</span>
                     )}
                   </Link>
-                </li>
+                </li></Fragment>
               );
             })}
           </ul>
         </nav>
         <div className="space-y-3 border-t border-hair p-4 md:p-2.5 xl:p-4">
           {canTour && (
-            <button type="button" onClick={() => { setTour(true, 0); onClose(); }} title="Start the five-minute owner demo" className="flex h-10 w-full items-center gap-3 rounded-xl border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist md:justify-center md:px-0 xl:justify-start xl:px-3">
+            <button type="button" onClick={() => { setPicking(true); onClose(); }} title="Guided demo" className="flex h-10 w-full items-center gap-3 rounded-xl border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist md:justify-center md:px-0 xl:justify-start xl:px-3">
               <PlayCircle size={18} strokeWidth={1.6} aria-hidden />
-              <span className="md:hidden xl:inline">Five-minute owner demo</span>
+              <span className="md:hidden xl:inline">Guided demo</span>
             </button>
           )}
           <p className="text-xs leading-relaxed text-steel md:hidden xl:block">Demonstration with simulated data. Business date {fmtDate(DEMO_TODAY, true)}, {fmtTime(DEMO_NOW_MIN)}.</p>
         </div>
       </aside>
+      {picking && <DemoPicker user={user} onClose={() => setPicking(false)} />}
     </>
   );
 }
@@ -270,6 +298,12 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
   const outlets = allowedOutlets(user).filter((id) => scope.propertyId === "all" || outletById[id].propertyId === scope.propertyId);
   const [panel, setPanel] = useState<null | "search" | "alerts" | "profile" | "dates">(null);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
+  // Ctrl+K or Cmd+K opens search from anywhere.
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPanel((cur) => (cur === "search" ? null : "search")); } };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, []);
   // Staff and the events team have no outlets to choose between.
   // The outlet and date pickers drive sales figures; roles without outlet sales do not see them.
   const showScope = !["employee", "event_manager", "sales", "sales_director", "storekeeper"].includes(user.role) && !user.deptId;
@@ -302,14 +336,8 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
           <p className="min-w-0 flex-1 truncate text-sm text-steel">{allowedOutlets(user)[0] ? `${outletById[allowedOutlets(user)[0]].name}, ` : ""}{propertyById[props[0]].name}</p>
         )}
         <div className="ml-auto flex items-center gap-1">
-          {showScope && (
-            <>
-              <IconButton label="Search" onClick={() => toggle("search")} active={panel === "search"}><Search size={18} strokeWidth={1.7} /></IconButton>
-              <div className="relative">
-                <AlertsButton user={user} open={panel === "alerts"} onToggle={() => toggle("alerts")} onClose={() => setPanel(null)} />
-              </div>
-            </>
-          )}
+          <IconButton label="Search (Ctrl K)" onClick={() => toggle("search")} active={panel === "search"}><Search size={18} strokeWidth={1.7} /></IconButton>
+          <AlertsButton user={user} />
           <div className="relative">
             <button type="button" onClick={() => toggle("profile")} aria-expanded={panel === "profile"} aria-haspopup="menu" className="ml-1 flex items-center gap-2.5 rounded-full border border-line py-1 pl-1 pr-3 text-left transition-colors duration-300 ease-tyll hover:border-fog">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-xs font-medium text-paper" aria-hidden>{user.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
@@ -457,43 +485,9 @@ function useAlerts(user: User): Alert[] {
   }, [investigations, user, wasteLogs, roomState, arrivalState]);
 }
 
-function AlertsButton({ user, open, onToggle, onClose }: { user: User; open: boolean; onToggle: () => void; onClose: () => void }) {
+function AlertsButton({ user }: { user: User }) {
   const alerts = useAlerts(user);
-  return (
-    <>
-      <IconButton label={`Notifications, ${alerts.length}`} onClick={onToggle} active={open}>
-        <Bell size={18} strokeWidth={1.7} />
-        {alerts.length > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-warn ring-2 ring-paper" aria-hidden />}
-      </IconButton>
-      {open && <AlertsPanel alerts={alerts} onClose={onClose} />}
-    </>
-  );
-}
-
-function AlertsPanel({ alerts, onClose }: { alerts: Alert[]; onClose: () => void }) {
-  const ref = useDismiss(onClose);
-  return (
-    <div ref={ref} className="animate-rise absolute right-0 top-12 z-40 w-[340px] rounded-2xl border border-line bg-paper p-2 shadow-float">
-      <p className="px-3 py-2 text-[13px] text-steel">Notifications</p>
-      {alerts.length === 0 ? (
-        <p className="px-3 pb-3 text-sm text-graphite">Nothing needs your attention.</p>
-      ) : (
-        <ul>
-          {alerts.map((a) => (
-            <li key={a.id}>
-              <Link href={a.href} onClick={onClose} className="flex gap-3 rounded-xl px-3 py-2.5 hover:bg-mist">
-                <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", a.tone === "neg" ? "bg-neg" : a.tone === "warn" ? "bg-warn" : "bg-fog")} aria-hidden />
-                <span className="min-w-0">
-                  <span className="block text-sm text-ink">{a.text}</span>
-                  <span className="block truncate text-xs text-steel">{a.detail}</span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+  return <NotificationBell attention={alerts} />;
 }
 
 interface Hit {
@@ -520,6 +514,22 @@ function SearchPanel({ user, onClose }: { user: User; onClose: () => void }) {
     }, 250);
     return () => clearTimeout(t);
   }, [q, user]);
+  // Saved records (requests, events, rooms, invoices and more) come from the server, already limited to this person.
+  const [recordHits, setRecordHits] = useState<{ q: string; hits: { group: string; label: string; detail: string; href: string }[] }>({ q: "", hits: [] });
+  useEffect(() => {
+    const term = q.trim();
+    if (term.length < 2) return;
+    const t = setTimeout(() => {
+      api<{ hits: { group: string; label: string; detail: string; href: string }[] }>(`/api/search?q=${encodeURIComponent(term)}`).then((r) => setRecordHits({ q: term, hits: r.hits })).catch(() => setRecordHits({ q: term, hits: [] }));
+    }, 200);
+    return () => clearTimeout(t);
+  }, [q]);
+  const [recent, setRecent] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem("tyll-recent-search") ?? "[]") as string[]; } catch { return []; } });
+  const remember = (term: string) => {
+    const next = [term, ...recent.filter((r) => r !== term)].slice(0, 5);
+    setRecent(next);
+    try { localStorage.setItem("tyll-recent-search", JSON.stringify(next)); } catch { /* private window */ }
+  };
   const hits = useMemo<Hit[]>(() => {
     const term = q.trim().toLowerCase();
     if (term.length < 2) return [];
@@ -542,19 +552,28 @@ function SearchPanel({ user, onClose }: { user: User; onClose: () => void }) {
     if (term.length >= 3 && orderHits.q.toLowerCase() === term) {
       for (const o of orderHits.hits) out.push({ group: "Orders", label: o.id, detail: `${outletById[o.outletId].name} · ${fmtDate(o.date)} ${fmtTime(o.openMin)}`, href: `/money/orders/${o.id}` });
     }
-    return out.slice(0, 24);
-  }, [q, user, investigations, router, setScope, orderHits]);
+    if (recordHits.q.toLowerCase() === term) for (const h of recordHits.hits) if (!(h.group === "Features" && out.some((o) => o.href === h.href))) out.push(h);
+    // Records first, then screens and places.
+    const rank = (g: string) => (g === "Features" ? 1 : ["Pages", "Properties", "Outlets"].includes(g) ? 2 : 0);
+    return out.sort((a, b) => rank(a.group) - rank(b.group)).slice(0, 40);
+  }, [q, user, investigations, router, setScope, orderHits, recordHits]);
   const groups = [...new Set(hits.map((h) => h.group))];
   return (
     <div className="border-t border-line bg-paper">
       <div ref={ref} className="mx-auto w-full max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
         <div className="relative">
           <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
-          <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search outlets, menu items, order numbers, investigations" aria-label="Search" className="h-12 w-full rounded-full border border-line bg-cloud pl-11 pr-4 text-[15px] placeholder:text-fog" />
+          <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search records and screens: Coca-Cola, PR-DXB-0001, room 1211, Guest Connect" aria-label="Search" className="h-12 w-full rounded-full border border-line bg-cloud pl-11 pr-4 text-[15px] placeholder:text-fog" />
         </div>
+        {q.trim().length < 2 && recent.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 px-1 text-sm">
+            <span className="text-xs text-steel">Recent</span>
+            {recent.map((r) => <button key={r} type="button" onClick={() => setQ(r)} className="rounded-full border border-line px-3 py-1 text-graphite hover:bg-mist">{r}</button>)}
+          </div>
+        )}
         {q.trim().length >= 2 && (
           <div className="scroll-thin mt-3 max-h-[50vh] overflow-y-auto">
-            {hits.length === 0 && <p className="px-2 py-3 text-sm text-steel">Nothing matches &ldquo;{q}&rdquo;. Try an outlet name, a dish, or an order number such as TRC-1013.</p>}
+            {hits.length === 0 && <p className="px-2 py-3 text-sm text-steel">{recordHits.q !== q.trim() ? "Searching" : <>Nothing you can open matches &ldquo;{q}&rdquo;. Try an item such as Coca-Cola, a reference such as PR-DXB-0001, a room number or a screen such as What to buy.</>}</p>}
             {groups.map((g) => (
               <div key={g} className="mb-2">
                 <p className="px-2 py-1 text-xs text-steel">{g}</p>
@@ -564,6 +583,7 @@ function SearchPanel({ user, onClose }: { user: User; onClose: () => void }) {
                       <button
                         type="button"
                         onClick={() => {
+                          remember(q.trim());
                           h.run?.();
                           if (h.href) router.push(h.href);
                           onClose();

@@ -5,6 +5,7 @@ import { allowedOutlets, allowedProperties, can } from "../domain/access";
 import type { CountRecord, SharedCount, SharedWaste, SharedWasteCorrection, User, WasteLog, WasteReason } from "../types";
 import { DEMO_TODAY, addDays } from "../util";
 import { loadStore, mutateStore, nextNumber, type Shape } from "./purchasing-store";
+import { notify, peopleWith, resolve } from "./notify";
 
 type Fail = { ok: false; status: number; error: string };
 export type Result<T = object> = ({ ok: true } & T) | Fail;
@@ -123,6 +124,7 @@ export function submitCount(user: User, body: Record<string, unknown>, expectedO
       ...(reviewer ? { reviewedBy: user.id, reviewedAt: now(), reviewNote: "Counted by a manager" } : {}),
     };
     x.stockLog.counts.push(c);
+    if (c.status === "submitted") notify(x, { to: peopleWith("stock.review", propertyId, (u) => u.role === "restaurant_manager" || u.role === "purchasing"), type: "count-review", ref: c.id, propertyId, from: user.id, title: `Count to review: ${ingredientById[ingredientId].name}`, body: `${user.name} counted ${c.counted} (${ingredientById[ingredientId].unit}). Accept or reject it.`, href: "/stock?tab=counts" });
     return c;
   });
   return { ok: true, count };
@@ -142,6 +144,7 @@ export function reviewCount(user: User, id: string, body: Record<string, unknown
   const count = mutateStore((x) => {
     const y = x.stockLog.counts.find((z) => z.id === id)!;
     y.status = decision; y.reviewedBy = user.id; y.reviewedAt = now(); y.reviewNote = note || undefined;
+    resolve(x, "count-review", y.id);
     return y;
   });
   return { ok: true, count };

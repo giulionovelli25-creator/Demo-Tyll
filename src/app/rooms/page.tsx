@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { BellLuggage } from "@/components/guest/bell";
 import { HousekeepingBoard, RoomReadiness } from "@/components/guest/rooms";
 import { GuestConnect, GuestRequests, ServicePerformance, SuppliesPanel, TableRequests } from "@/components/guest/service";
+import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
 import { Crumbs, PageHeader, Tabs } from "@/components/ui";
@@ -23,6 +24,8 @@ const DETAIL: Record<Tab, { detail: string; icon: typeof BedDouble }> = {
   bell: { detail: "Request luggage help and follow it to the room.", icon: Luggage },
   service: { detail: "Rooms ready on time, requests within target, response times.", icon: Gauge },
 };
+
+const ROOM_HELP: Record<Tab, string> = { readiness: HELP.readiness, housekeeping: HELP.housekeeping, requests: "Guest requests such as taxis or help in the room. A request shows as confirmed only when the outside confirmation is recorded.", connect: HELP.guestConnect, tables: HELP.tables, bell: HELP.bell, service: HELP.service };
 
 const SECTIONS: Partial<Record<Tab, () => ReactNode>> = {
   readiness: () => <RoomReadiness />,
@@ -46,7 +49,7 @@ export default function RoomsPage() {
         crumbs={tab && tabs.length > 1 ? <Crumbs items={[{ label: "Rooms & Guests", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert />}
-      {tab === null && <ModuleHub onPick={setTab} choices={tabs.map((t) => ({ value: t, title: LABEL[t], ...DETAIL[t] }))} />}
+      {tab === null && <ModuleHub onPick={setTab} choices={tabs.map((t) => ({ value: t, title: LABEL[t], ...DETAIL[t], help: ROOM_HELP[t] }))} />}
       {tab !== null && tabs.length > 1 && <Tabs value={tab} onChange={setTab} tabs={tabs.map((t) => ({ value: t, label: LABEL[t] }))} />}
       {tab && SECTIONS[tab]?.()}
     </div>

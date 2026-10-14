@@ -8,6 +8,8 @@ import type { GcRequest, GcStatus, GuestRequestKind, ServiceRequest, User } from
 import { DEMO_TODAY, addDays } from "../util";
 import { bellBoard, demoNow, fail, roomsBoard, type Result } from "./guest";
 import { loadStore, mutateStore, nextNumber, type Shape } from "./purchasing-store";
+import { notify, resolve } from "./notify";
+import { USERS } from "../data/catalog";
 import { stockFor, type SessionEntries } from "./stock";
 
 const text = (v: unknown, max = 300) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -44,10 +46,13 @@ export function createRequest(user: User, body: Record<string, unknown>): Result
     const id = `GR-DXB-${String(nextNumber(x, "GR-DXB") + 6).padStart(4, "0")}`;
     const r: ServiceRequest = { id, propertyId: "dxb", kind, room, details, forMin, priority: body.priority === "urgent" ? "urgent" : "normal", deptId: ROUTE[kind], status: "new", createdBy: user.id, createdMin: now, history: [{ min: now, by: user.id, action: `Request raised for ${deptById[ROUTE[kind]].name}` }] };
     x.guest.requests.push(r);
+    notify(x, { to: USERS.filter((u) => u.deptId === r.deptId && u.role !== "employee"), type: "guest-request", ref: id, propertyId: "dxb", from: user.id, title: `Guest request for room ${room}: ${KIND_WORD[kind]}`, body: `${details}. ${r.priority === "urgent" ? "Marked urgent. " : ""}Open it to take it on.`, href: `/rooms?tab=requests&request=${id}` });
     return r;
   });
   return { ok: true, request };
 }
+
+const KIND_WORD: Record<GuestRequestKind, string> = { taxi: "taxi", restaurant: "restaurant", spa: "spa", activity: "activity", assistance: "room assistance", bell: "luggage", general: "other" };
 
 const STEP: Partial<Record<string, ServiceRequest["status"]>> = { assign: "assigned", start: "in_progress", awaiting: "awaiting_confirmation", confirm: "confirmed", complete: "completed", cancel: "cancelled", unable: "unable" };
 
@@ -85,6 +90,7 @@ export function requestAction(user: User, id: string, body: Record<string, unkno
     const y = x.guest.requests.find((z) => z.id === id)!;
     y.status = to;
     if (action === "assign") y.assigneeId = user.id;
+    if (action !== "awaiting") resolve(x, "guest-request", y.id);
     if (action === "confirm") y.confirmation = `${note} (recorded by staff; simulated in this demo)`;
     y.history.push({ min: now, by: user.id, action: { assign: "Taken on", start: "Started", awaiting: "Waiting for an outside confirmation", confirm: "Confirmation recorded", complete: "Completed", cancel: "Cancelled", unable: "Unable to fulfil" }[action]!, note: note || undefined });
     if (to === "completed") {
@@ -150,6 +156,7 @@ export function createGc(user: User, body: Record<string, unknown>): Result<{ re
     const r: GcRequest = { id, propertyId: "dxb", venueId: v.id, room, party, date, timeMin, notes: text(body.notes, 200), status: "pending", createdBy: user.id, fromDeptId: user.deptId ?? "dxb-fo", createdMin: now, sourceRequestId: typeof body.sourceRequestId === "string" ? body.sourceRequestId : undefined,
       history: [{ min: now, by: user.id, action: `Asked ${v.name} for ${party} at ${hm(timeMin)}${date !== DEMO_TODAY ? " tomorrow" : ""}` }] };
     x.guest.gc.push(r);
+    notify(x, { to: USERS.filter((u) => u.role !== "owner" && (v.outletId ? u.role !== "gm" : true) && mayRespond(u, v)), type: "gc-request", ref: id, propertyId: "dxb", from: user.id, title: `${v.name}: table request for ${party} at ${hm(timeMin)}`, body: `${deptById[r.fromDeptId]?.name ?? "The front desk"} asks whether you can take this booking. Accept, decline or suggest another time.`, href: `/rooms?tab=tables&request=${id}`, email: true });
     if (r.sourceRequestId) { const sr = x.guest.requests.find((y) => y.id === r.sourceRequestId); if (sr) { sr.status = "awaiting_confirmation"; sr.linkedId = id; sr.history.push({ min: now, by: user.id, action: `Sent to ${v.name} through Guest Connect (${id})` }); } }
     return r;
   });
@@ -187,6 +194,16 @@ export function gcAction(user: User, id: string, body: Record<string, unknown>):
       const sr = y.sourceRequestId ? x.guest.requests.find((z) => z.id === y.sourceRequestId) : undefined;
       if (sr && status === "confirmed") { sr.status = "confirmed"; sr.history.push({ min: now, by: user.id, action: `${v.name} confirmed for ${y.party} at ${hm(y.timeMin)}` }); }
       if (sr && (status === "declined" || status === "cancelled")) sr.history.push({ min: now, by: user.id, action: `${v.name}: ${status}` });
+      // The venue's answer goes back to the requester; a change goes back to the venue.
+      if (was === "pending" && ["accepted", "declined", "alternative"].includes(status)) {
+        resolve(x, "gc-request", y.id);
+        notify(x, { to: [y.createdBy], type: "gc-answer", ref: y.id, propertyId: "dxb", from: user.id, title: `${v.name} ${status === "accepted" ? "accepted" : status === "declined" ? "declined" : "suggested another time for"} ${y.id}`, body: status === "accepted" ? "Confirm it with the guest, then mark it confirmed." : status === "alternative" ? `Suggested time: ${hm(y.proposedMin!)}. Accept it or cancel.` : "Find another option for the guest.", href: `/rooms?tab=connect&request=${y.id}`, email: true });
+      }
+      if (status === "pending") {
+        resolve(x, ["gc-request", "gc-answer"], y.id);
+        notify(x, { to: USERS.filter((u) => u.role !== "owner" && (v.outletId ? u.role !== "gm" : true) && mayRespond(u, v)), type: "gc-request", ref: y.id, propertyId: "dxb", from: user.id, title: `${v.name}: changed request ${y.id}`, body: `Now ${y.party} at ${hm(y.timeMin)}. Please answer again.`, href: `/rooms?tab=tables&request=${y.id}` });
+      }
+      if (status === "confirmed" || status === "cancelled") resolve(x, ["gc-request", "gc-answer"], y.id);
       return y;
     }),
   });

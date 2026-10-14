@@ -12,7 +12,9 @@ import {
 import { eventPortions, eventStoreNeed, isCommitted } from "../domain/events";
 import type { EventRecord, PrepPlan, PrepTask, PurchaseRequest, RequestLine, RequestStatus, User } from "../types";
 import { DEMO_TODAY, addDays, eachDay, sum } from "../util";
-import { loadStore, mutateStore } from "./purchasing-store";
+import { loadStore, mutateStore, type Shape } from "./purchasing-store";
+import { notify, peopleWith, resolve } from "./notify";
+import { deptById } from "../data/workforce";
 import { stockFor, type SessionEntries } from "./stock";
 
 export type Result<T = object> = ({ ok: true } & T) | { ok: false; status: number; error: string };
@@ -381,13 +383,19 @@ export function updatePrepTask(user: User, body: Record<string, unknown>): Resul
   const saved = mutateStore((s) => {
     const p = s.plans.find((x) => x.id === plan.id)!;
     const t = p.tasks.find((x) => x.id === task.id)!;
-    if (body.op === "assign") t.assigneeId = String(body.assigneeId ?? "") || undefined;
-    else if (body.op === "start") t.startedAt = now();
-    else if (body.op === "report") t.issue = { note: String(body.note).trim().slice(0, 300), by: user.id, at: now() };
-    else {
+    if (body.op === "assign") {
+      t.assigneeId = String(body.assigneeId ?? "") || undefined;
+      if (t.assigneeId) notify(s, { to: [t.assigneeId], type: "prep-task", ref: t.id, propertyId: p.propertyId, from: user.id, title: `New prep task: ${t.portions} ${itemById[t.itemId].name.toLowerCase()}`, body: `${user.name} assigned you a preparation task.`, href: "/staff?do=prep" });
+    }
+    if (body.op === "start") t.startedAt = now();
+    else if (body.op === "report") {
+      t.issue = { note: String(body.note).trim().slice(0, 300), by: user.id, at: now() };
+      notify(s, { to: peopleWith("prep.plan", p.propertyId, (u) => allowedOutlets(u).includes(p.outletId) && u.outletIds !== "all"), type: "prep-issue", ref: t.id, propertyId: p.propertyId, from: user.id, title: `Problem on prep task: ${itemById[t.itemId].name}`, body: `${user.name}: ${t.issue.note}`, href: "/forecast?tab=prep" });
+    } else if (body.op === "complete") {
       t.done = body.done !== false;
       t.doneBy = t.done ? user.id : undefined;
       t.doneAt = t.done ? now() : undefined;
+      if (t.done) resolve(s, "prep-task", t.id);
     }
     p.updatedAt = now();
     p.updatedBy = user.id;
@@ -494,6 +502,27 @@ export function saveRequest(user: User, body: Record<string, unknown>): Result<{
   return { ok: true, request };
 }
 
+/** Who is told about a request at each step: the next reviewer, then the person who asked. */
+function handoff(s: Shape, r: PurchaseRequest, user: User) {
+  const ref = r.id, propertyId = r.propertyId, from = user.id;
+  const href = `/forecast?tab=approvals&request=${r.id}`;
+  const where = r.deptId ? deptById[r.deptId]?.name ?? "A department" : r.eventId ? "Events" : outletLabelFor(r);
+  resolve(s, ["pr-review", "pr-result"], ref);
+  const stage: Record<string, { perm: Parameters<typeof peopleWith>[0]; who: string }> = {
+    purchasing: { perm: "purchase.review", who: "purchasing review" }, accounting: { perm: "purchase.approveFinance", who: "accounting approval" }, manager: { perm: "purchase.approveManager", who: "the general manager's approval" },
+  };
+  const next = stage[r.status];
+  if (next) {
+    notify(s, { to: peopleWith(next.perm, propertyId, (u) => u.id !== r.createdBy), type: "pr-review", ref, propertyId, from, title: `${r.id} needs ${next.who}`, body: `${where} sent a purchase request for ${r.lines.length} item${r.lines.length === 1 ? "" : "s"}. Open it to review and decide.`, href: r.status === "accounting" ? `/finance?tab=approvals&request=${r.id}` : href, email: true });
+  } else if (["approved", "rejected", "changes"].includes(r.status)) {
+    const word = r.status === "approved" ? `approved as ${r.poNumber}` : r.status === "rejected" ? "rejected" : "sent back with changes requested";
+    notify(s, { to: [r.createdBy], type: "pr-result", ref, propertyId, from, title: `${r.id} was ${word}`, body: `Your purchase request was ${word}. Open it to see the comments.`, href, email: true });
+    if (r.status === "approved") notify(s, { to: peopleWith("purchase.receive", propertyId, (u) => u.role === "storekeeper"), type: "pr-deliver", ref, propertyId, from, title: `Delivery expected: ${r.poNumber}`, body: "An approved order is due. Record what arrives when it is delivered.", href: `/staff?do=receive&order=${r.id}` });
+  } else if (r.status === "received") {
+    resolve(s, "pr-deliver", ref);
+  }
+}
+
 const nextAfter = (r: PurchaseRequest, stage: "purchasing" | "accounting" | "manager"): RequestStatus => {
   const steps = approvalSteps(r.propertyId, requestTotal(r));
   return (steps[steps.indexOf(stage) + 1] ?? "approved") as RequestStatus;
@@ -516,6 +545,7 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       x.updatedAt = now();
       if (x.status === "approved" && !x.poNumber) x.poNumber = `PO-${x.id.slice(3)}`;
       x.history.push({ at: x.updatedAt, by: user.id, action: label, status: x.status, comment: comment || undefined, ...extra });
+      handoff(s, x, user);
       return x;
     });
     return { ok: true as const, request };
@@ -663,6 +693,8 @@ export function alertsFor(user: User, entries: SessionEntries): PlanAlert[] {
   return out;
 }
 
-const outletLabelFor = (r: PurchaseRequest) => (r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : "the hotel");
+function outletLabelFor(r: PurchaseRequest) {
+  return r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : "The hotel";
+}
 export const userName = (id: string) => userById[id]?.name ?? id;
 export const ingredientIds = () => INGREDIENTS.map((g) => g.id);
