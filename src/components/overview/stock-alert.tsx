@@ -22,7 +22,19 @@ interface Notice {
  * One short notice at a time: the most important thing for this user, until they open it or close it.
  * Closed notices stay closed in this browser, so the same one does not keep coming back.
  */
-export function StockAlert() {
+type Where = "overview" | "stock" | "forecast" | "events" | "finance" | "rooms";
+/** Which notices belong on which page. Everything still reaches the bell; a page shows only what relates to it. */
+const FITS: Record<Where, (id: string) => boolean> = {
+  overview: () => true,
+  stock: (id) => id.startsWith("EX"),
+  // Purchasing and prep notices; stock cases and staffing stay on their own pages.
+  forecast: (id) => !id.startsWith("EX") && !/^(sr|alt|staff|ok|mine)-/.test(id) && !/^buy-EVT/.test(id),
+  finance: (id) => /^(acc|budget)-/.test(id),
+  events: (id) => /^(sr|alt|staff|ok|mine)-/.test(id) || /^buy-EVT/.test(id),
+  rooms: (id) => /^(sr|alt|ok)-/.test(id),
+};
+
+export function StockAlert({ where = "overview" }: { where?: Where }) {
   const router = useRouter();
   const { user, sel } = useView();
   const cases = useInvestigations();
@@ -49,7 +61,7 @@ export function StockAlert() {
   notices.push(...staff.filter((a) => /^(staff|buy)-EVT/.test(a.id)));
   notices.push(...plan.filter((a) => !/^(acc|buy|mgr|budget)-/.test(a.id)));
   notices.push(...staff.filter((a) => /^(ok|mine)-/.test(a.id)));
-  const top = notices.find((n) => !dismissed.includes(n.id));
+  const top = notices.find((n) => !dismissed.includes(n.id) && FITS[where](n.id));
   if (!top) return null;
   return (
     <div role="status" className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-2xl border border-warn/25 bg-warn-soft px-5 py-4">

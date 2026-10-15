@@ -51,6 +51,14 @@ const PRIMARY: Partial<Record<User["role"], ModuleId[]>> = {
   controller: ["finance", "overview", "investigations", "reports"],
   fnb_director: ["overview", "stock", "forecast", "events", "investigations", "money"],
   restaurant_manager: ["overview", "stock", "forecast", "events", "investigations", "money"],
+  chef: ["forecast", "tasks", "stock"],
+  purchasing: ["forecast", "stock"],
+};
+
+/** The same module named for what this role does there. Routes do not change. */
+const ROLE_NAV: Partial<Record<User["role"], Partial<Record<ModuleId, string>>>> = {
+  purchasing: { forecast: "Purchasing", stock: "Stock and suppliers" },
+  chef: { forecast: "Kitchen planning", tasks: "Kitchen tasks" },
 };
 
 const ORDER: ModuleId[] = ["staff", "tasks", "overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "finance", "reports", "settings"];
@@ -240,12 +248,13 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
               const divider = more.length > 0 && m === "settings" ? (
                 <li key="more" className="pt-1">
                   <button type="button" onClick={() => setShowMore((v) => !v)} aria-expanded={showMore} className="flex h-9 w-full items-center gap-3 rounded-xl px-3 text-[13px] text-steel hover:bg-cloud hover:text-ink md:justify-center md:px-0 xl:justify-start xl:px-3">
-                    <ChevronDown size={16} className={cn("transition-transform", showMore && "rotate-180")} aria-hidden /><span className="md:hidden xl:inline">{showMore ? "Fewer" : `More (${more.length})`}</span>
+                    <ChevronDown size={16} className={cn("transition-transform", showMore && "rotate-180")} aria-hidden /><span className="md:hidden xl:inline">{showMore ? "Fewer tools" : `More tools (${more.length})`}</span>
                   </button>
                 </li>
               ) : null;
               void idx; void list;
-              const { label, icon: Icon } = NAV[m];
+              const { icon: Icon } = NAV[m];
+              const label = ROLE_NAV[user.role]?.[m] ?? NAV[m].label;
               const on = active === m;
               return (
                 <Fragment key={m}>{divider}<li>

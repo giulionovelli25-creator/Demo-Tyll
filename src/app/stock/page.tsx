@@ -1,6 +1,6 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import { Boxes, ClipboardCheck, PackageX, ScrollText, SearchCheck, Trash2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Boxes, ClipboardCheck, PackageX, ScrollText, SearchCheck, ShoppingCart, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Counts } from "@/components/stock/counts";
 import { Inventory } from "@/components/stock/inventory";
@@ -13,8 +13,9 @@ import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { Badge, Crumbs, PageHeader, Segmented, Tabs } from "@/components/ui";
 import { ingredientById, propertyById } from "@/lib/data/catalog";
-import { allowedProperties, canOpen } from "@/lib/domain/access";
-import { useView } from "@/lib/hooks";
+import { allowedProperties, can, canOpen } from "@/lib/domain/access";
+import { useInvestigations, useView } from "@/lib/hooks";
+import { StockAlert } from "@/components/overview/stock-alert";
 
 // "log" and "waste" are the two halves of Waste and breakage: recording an item, and reviewing what was recorded.
 type Tab = "inventory" | "where" | "waste" | "log" | "counts" | "recipes" | "suppliers";
@@ -52,6 +53,9 @@ export default function StockPage() {
   const shown: Tab | null = !employee && tab === "log" ? "waste" : tab;
   const label = tabs.find((t) => t.value === shown)?.label ?? "Tyll Stock";
   const inDetail = tab === "where" && params.get("period");
+  const router = useRouter();
+  const investigations = useInvestigations();
+  const openStock = investigations.filter((i) => i.status !== "closed" && (i.type === "usage_variance" || i.type === "stock_shortfall")).length;
 
   return (
     <div className="space-y-5">
@@ -64,16 +68,19 @@ export default function StockPage() {
           <Segmented label="Hotel" value={picked} onChange={setPicked} options={props.map((p) => ({ value: p, label: propertyById[p].name }))} />
         ))}
       </PageHeader>
+      {tab === null && <StockAlert where="stock" />}
       {tab === null && (
         <ModuleHub
-          onPick={setTab}
+          onPick={(v) => (v === "order" ? router.push("/forecast?tab=buy") : setTab(v as Tab))}
           choices={[
-            { value: "inventory", title: "Check inventory", detail: "Stock levels, and what is running low.", icon: Boxes },
-            ...(canOpen(user, "investigations") ? [{ value: "where" as const, title: "Where did it go?", detail: "Missing stock and use that sales do not explain.", icon: SearchCheck, help: HELP.where }] : []),
-            { value: "waste", title: "Waste and breakage", detail: "Record and review waste, breakage and spoilage.", icon: Trash2, help: HELP.waste },
-            { value: "counts", title: "Stock counts", detail: "Enter what is actually on the shelf.", icon: ClipboardCheck, help: HELP.counts },
-            { value: "recipes", title: "Recipes and costs", detail: "Ingredient use and the margin of each dish.", icon: ScrollText, more: true },
-            { value: "suppliers", title: "Suppliers", detail: "Deliveries, and quantities that did not match.", icon: PackageX, more: true },
+            ...(can(user, "purchase.create") ? [{ value: "order" as const, title: "Order stock", detail: "Check what you need and send a request to Purchasing.", icon: ShoppingCart, help: HELP.buy }] : []),
+            ...(can(user, "stock.logWaste") ? [{ value: "log" as const, title: "Log waste or breakage", detail: "Quickly record wasted, damaged or broken items.", icon: Trash2, help: HELP.waste }] : []),
+            ...(canOpen(user, "investigations") ? [{ value: "where" as const, title: "Investigate stock differences", detail: "Find out why stock used does not match sales and records.", icon: SearchCheck, help: HELP.where, badge: openStock ? `${openStock} open` : undefined }] : []),
+            { value: "inventory" as const, title: "Check inventory", detail: "Review available stock, counts and shortages.", icon: Boxes },
+            { value: "counts" as const, title: "Stock counts", detail: "Enter what is actually on the shelf.", icon: ClipboardCheck, help: HELP.counts, more: true },
+            { value: "waste" as const, title: "Waste and breakage history", detail: "What was logged, its cost, and the trend.", icon: Trash2, more: true },
+            { value: "recipes" as const, title: "Recipes and costs", detail: "Ingredient use and the margin of each dish.", icon: ScrollText, more: true },
+            { value: "suppliers" as const, title: "Suppliers", detail: "Deliveries, and quantities that did not match.", icon: PackageX, more: true },
           ]}
         />
       )}

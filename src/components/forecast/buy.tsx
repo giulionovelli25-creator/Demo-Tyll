@@ -87,9 +87,9 @@ function OutletBuy() {
       if (!sent.ok) { setBusy(false); return toast.error(sent.error); }
     }
     setBusy(false);
-    toast.done(submit ? `${saved.data.request.id} submitted to purchasing. Stock changes only when the delivery is received.` : `${saved.data.request.id} saved as a draft.`);
+    toast.done(submit ? `Request ${saved.data.request.id} sent to Purchasing.` : `${saved.data.request.id} saved as a draft. It has not been sent.`);
     clear();
-    router.push(`/forecast?tab=approvals&request=${saved.data.request.id}`);
+    router.push(`/forecast?tab=approvals&request=${saved.data.request.id}${submit ? "&sent=1" : ""}`);
   };
 
   const mine = outletOptions(user, draft.propertyId);
@@ -161,10 +161,10 @@ function OutletBuy() {
               <p className="text-sm text-graphite"><span className="num text-[22px] text-ink">{money(total)}</span><span className="ml-2">for {chosen.length} item{chosen.length === 1 ? "" : "s"}, at the suppliers&rsquo; quoted prices</span></p>
               <TextArea label="Comment for purchasing" value={draft.comment} onChange={(e) => update({ comment: e.target.value })} placeholder="For example: conference on Thursday, order early" />
               <div className="flex flex-wrap gap-2">
-                <Button variant="primary" disabled={busy} onClick={() => create(true)}>Submit to purchasing</Button>
-                <Button disabled={busy} onClick={() => create(false)}>Save as draft</Button>
+                <Button variant="primary" disabled={busy} onClick={() => create(true)}>Send to Purchasing</Button>
+                <Button disabled={busy} onClick={() => create(false)}>Save draft</Button>
               </div>
-              <Note>Submitting does not change stock. Stock rises only when the delivery is received. Nothing is sent to a supplier from this demo.</Note>
+              <Note>Send to Purchasing starts the approval. Save draft keeps it to yourself. Stock rises only when the delivery is recorded; nothing goes to a supplier from this demo.</Note>
             </div>
           </Panel>
         </>
@@ -280,7 +280,7 @@ function EventBuy({ eventId }: { eventId: string }) {
     if (!saved.ok) { setBusy(false); return toast.error(saved.error); }
     if (submit) { const sent = await mutate(`/api/purchasing/${saved.data.request.id}`, { action: "submit" }); if (!sent.ok) { setBusy(false); return toast.error(sent.error); } }
     setBusy(false);
-    toast.done(`${saved.data.request.id} ${submit ? "submitted to purchasing" : "saved as a draft"} for the event.`);
+    toast.done(`${saved.data.request.id} ${submit ? "sent to Purchasing" : "saved as a draft"} for the event.`);
     router.push(`/forecast?tab=approvals&request=${saved.data.request.id}`);
   };
   return (
@@ -299,7 +299,7 @@ function EventBuy({ eventId }: { eventId: string }) {
         <Panel title="Purchase request">
           <p className="text-sm text-graphite"><span className="num text-[22px] text-ink">{money(chosen.reduce((t, x) => t + x.qty * x.quote.unitPrice, 0))}</span><span className="ml-2">for {chosen.length} item{chosen.length === 1 ? "" : "s"}</span></p>
           <TextArea className="mt-3" label="Comment for purchasing" value={comment} onChange={(e) => setComment(e.target.value)} />
-          <div className="mt-3 flex flex-wrap gap-2"><Button variant="primary" disabled={busy} onClick={() => create(true)}>Submit to purchasing</Button><Button disabled={busy} onClick={() => create(false)}>Save as draft</Button></div>
+          <div className="mt-3 flex flex-wrap gap-2"><Button variant="primary" disabled={busy} onClick={() => create(true)}>Send to Purchasing</Button><Button disabled={busy} onClick={() => create(false)}>Save draft</Button></div>
           <Note className="mt-3">Stock rises only when the delivery is received. Nothing is sent to a supplier from this demo.</Note>
         </Panel>
       )}

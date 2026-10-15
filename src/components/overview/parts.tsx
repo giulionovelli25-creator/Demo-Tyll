@@ -88,11 +88,11 @@ export function NeedsAttention({ issues, money, title = "Needs your attention", 
   const setScope = useDemo((s) => s.setScope);
   const onOutlet = (id: string) => setScope({ outletId: id });
   return (
-    <Panel title={title} action={issues.length > 5 ? <Button size="sm" variant="ghost" onClick={() => setAll(true)}>All {issues.length}</Button> : undefined} flush>
+    <Panel title={title} action={issues.length > 3 ? <Button size="sm" variant="ghost" onClick={() => setAll(true)}>View all issues ({issues.length})</Button> : undefined} flush>
       {issues.length === 0 ? (
         <div className="px-5 pb-5 sm:px-6"><EmptyState title={empty} /></div>
       ) : (
-        <ul className="pb-1">{issues.slice(0, 5).map((i) => <IssueRow key={i.id} issue={i} money={money} onOutlet={onOutlet} />)}</ul>
+        <ul className="pb-1">{issues.slice(0, 3).map((i) => <IssueRow key={i.id} issue={i} money={money} onOutlet={onOutlet} />)}</ul>
       )}
       <Drawer open={all} onClose={() => setAll(false)} title={`${issues.length} open issues`} description="Highest priority first.">
         <ul className="-mx-6">{issues.map((i) => <IssueRow key={i.id} issue={i} money={money} onOutlet={onOutlet} />)}</ul>

@@ -22,10 +22,9 @@ const S = {
 };
 
 const ownerLike = (u: User): TourStep[] => [
-  { path: "/", target: "kpis", title: "How the business is doing", text: "Revenue, costs, estimated operating contribution and potential losses for the period. Tap a figure for its breakdown, or the ? for what it means.", module: "overview" },
-  { path: "/", target: "attention", title: "Needs your attention", text: "The few issues worth your time today, most important first. Each one opens its evidence.", module: "overview" },
-  { path: "/", target: "compare", title: "Hotels and outlets", text: "How each outlet compares on margin and open issues. Choose a row to narrow every figure to it.", module: "overview" },
-  { path: "/", target: "more", title: "More when you want it", text: "Trends, confirmed results, guest experience and confirmed new business are one tap away.", module: "overview" },
+  { path: "/", target: "kpis", title: "How the business is doing", text: "Revenue, estimated operating contribution and potential losses for the period. Tap a figure for its breakdown, or the ? for what it means.", module: "overview" },
+  { path: "/", target: "attention", title: "Needs your attention", text: "The three issues most worth your time, each with its evidence. View all issues lists the rest.", module: "overview" },
+  { path: "/", target: "more", title: "Explore performance", text: "Outlet comparison, trends, results, guest experience and confirmed new business are one tap away.", module: "overview" },
   S.page("/investigations", "Investigations", "Every open case with its evidence and what the team decided. Potential losses become confirmed or recovered only when a case is closed.", "investigations"),
   (u.role === "owner" ? S.page : S.hub)("/finance", "Finance", u.role === "owner" ? "Budgets and reports: spending against budget for each department, in each hotel's own currency." : "Approvals, supplier invoices, budgets and reports.", "finance"),
   ...(u.role === "gm" ? [S.hub("/rooms", "Rooms and guests", "Arrivals, room readiness, housekeeping and guest service for the hotel.", "rooms")] : []),
@@ -46,14 +45,15 @@ const TOURS: Partial<Record<User["role"], (u: User) => TourStep[]>> = {
   restaurant_manager: () => [
     { path: "/", target: "kpis", title: "Your restaurant today", text: "Revenue, margin, open issues and your tasks at a glance.", module: "overview" },
     { path: "/", target: "attention", title: "Tasks and problems", text: "What is waiting for you and the problems at this outlet. Each opens the record.", module: "overview" },
-    S.hub("/stock", "Stock", "Check where stock went, log waste and breakage, and count what is on the shelf.", "stock"),
+    S.hub("/stock", "Stock: your main actions", "Order stock, log waste or breakage, investigate differences and check inventory. Counts, recipes and suppliers are under More tools.", "stock"),
     S.page("/stock?tab=where", "Where did it go?", "Stock used that sales do not explain, item by item. Open one to see the calculation and what to check.", "investigations"),
-    S.hub("/forecast", "Forecast", "What to buy, what to prep and the approvals for your requests.", "forecast"),
+    S.hub("/forecast", "Ordering and requests", "Order stock sends a request to Purchasing; My requests shows where each one is.", "forecast"),
     S.hub("/events", "Events and staff support", "Ask other teams for staff, or answer their requests for yours.", "events"),
     S.nav("/"), S.search("/"), S.bell("/"),
   ],
   purchasing: () => [
-    S.page("/forecast?tab=approvals", "Incoming requests", "Every purchase request waiting for purchasing. Open one to check quantities and choose the supplier, then approve or send it back.", "forecast"),
+    S.hub("/forecast", "Your purchasing home", "Requests to review, purchase orders and deliveries, each with how many are waiting.", "forecast"),
+    S.page("/forecast?tab=approvals&queue=purchasing", "Requests to review", "Open a request to check quantities and choose the supplier, then approve or send it back.", "forecast"),
     S.bell("/forecast?tab=approvals"),
     S.hub("/stock", "Stock and deliveries", "Stock levels, and supplier deliveries that did not match the order.", "stock"),
     S.search("/forecast?tab=approvals"),

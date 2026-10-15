@@ -48,7 +48,7 @@ export default function RoomsPage() {
         lead={tab ? undefined : "What do you want to do?"}
         crumbs={tab && tabs.length > 1 ? <Crumbs items={[{ label: "Rooms & Guests", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
-      {tab === null && <StockAlert />}
+      {tab === null && <StockAlert where="rooms" />}
       {tab === null && <ModuleHub onPick={setTab} choices={tabs.map((t) => ({ value: t, title: LABEL[t], ...DETAIL[t], help: ROOM_HELP[t], more: tabs.length > 4 && ["connect", "tables", "bell"].includes(t) }))} />}
       {tab !== null && tabs.length > 1 && <Tabs value={tab} onChange={setTab} tabs={tabs.map((t) => ({ value: t, label: LABEL[t] }))} />}
       {tab && SECTIONS[tab]?.()}

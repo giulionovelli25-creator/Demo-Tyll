@@ -117,7 +117,7 @@ export const MODULE_PATH: Record<ModuleId, string> = {
 export const modulesFor = (user: User): ModuleId[] => MODULES[user.role];
 export const canOpen = (user: User, module: ModuleId) => MODULES[user.role].includes(module);
 export const can = (user: User, permission: Permission) => PERMISSIONS[user.role].includes(permission);
-export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/forecast?tab=approvals" : user.role === "chef" ? "/forecast?tab=prep" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : "/");
+export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/forecast" : user.role === "chef" ? "/forecast?tab=prep" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : "/");
 
 /** Which module a URL path belongs to, for route guarding. */
 export function moduleOfPath(path: string): ModuleId {

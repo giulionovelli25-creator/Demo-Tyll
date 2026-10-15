@@ -33,7 +33,7 @@ export default function EventsPage() {
         lead={tab ? undefined : "What do you want to do?"}
         crumbs={tab ? <Crumbs items={[{ label: "Sales & Events", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
-      {tab === null && <StockAlert />}
+      {tab === null && <StockAlert where="events" />}
       {tab === null && (
         <ModuleHub
           onPick={setTab}

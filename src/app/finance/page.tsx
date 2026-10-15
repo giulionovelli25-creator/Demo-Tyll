@@ -27,7 +27,7 @@ export default function FinancePage() {
         lead={tab ? undefined : "What do you want to do?"}
         crumbs={tab && tabs.length > 1 ? <Crumbs items={[{ label: "Tyll Finance", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
-      {tab === null && <StockAlert />}
+      {tab === null && <StockAlert where="finance" />}
       {tab === null && (
         <ModuleHub
           onPick={setTab}

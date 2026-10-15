@@ -24,10 +24,11 @@ export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "w
   changes: { label: "Changes requested", tone: "ink" },
 };
 
-type Queue = "purchasing" | "accounting" | "manager" | "approved" | "returned" | "drafts" | "all";
+type Queue = "purchasing" | "accounting" | "manager" | "approved" | "delivery" | "returned" | "drafts" | "all";
 const inQueue = (r: PurchaseRequest, q: Queue, user: User) =>
   q === "all" ? r.status !== "draft" || r.createdBy === user.id
     : q === "approved" ? r.status === "approved" || r.status === "received"
+      : q === "delivery" ? r.status === "approved"
       : q === "returned" ? r.status === "rejected" || r.status === "changes"
         : q === "drafts" ? r.status === "draft" && r.createdBy === user.id
           : r.status === q;
@@ -57,7 +58,8 @@ function RequestList({ base }: { base: string }) {
     { value: "purchasing", label: `Waiting for purchasing (${count("purchasing")})` },
     { value: "accounting", label: `Waiting for accounting (${count("accounting")})` },
     ...(count("manager") || can(user, "purchase.approveManager") ? [{ value: "manager" as Queue, label: `Waiting for manager (${count("manager")})` }] : []),
-    { value: "approved", label: `Approved (${count("approved")})` },
+    { value: "approved", label: `Purchase orders (${count("approved")})` },
+    { value: "delivery", label: `Awaiting delivery (${count("delivery")})` },
     { value: "returned", label: `Rejected or changes requested (${count("returned")})` },
     ...(can(user, "purchase.create") ? [{ value: "drafts" as Queue, label: `My drafts (${count("drafts")})` }] : []),
   ];
@@ -129,6 +131,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
   const [comment, setComment] = useState("");
   const [received, setReceived] = useState<Record<string, number>>({});
   const [busy, setBusy] = useState(false);
+  const sent = useSearchParams().get("sent") === "1";
   if (data === undefined && !error) return <Panel><EmptyState title="Loading the request" /></Panel>;
   if (!data) return <Panel><EmptyState title="This request is not available" action={<Button onClick={() => router.push(base)}>Back to approvals</Button>}>It does not exist, or it is outside your access.</EmptyState></Panel>;
   const r = data.request;
@@ -155,8 +158,8 @@ function RequestView({ id, base }: { id: string; base: string }) {
     setComment("");
     return true;
   };
-  const saveAuthor = (then?: "submit") => run("/api/purchasing", { id: r.id, comment: r.comment, lines: r.lines.map((l) => ({ ...l, qty: lineQty(l.ingredientId, l.qty), supplierId: lineSupplier(l.ingredientId, l.supplierId) })) }, "Changes saved.")
-    .then((ok) => ok && then === "submit" && run(`/api/purchasing/${r.id}`, { action: "submit" }, `${r.id} sent to purchasing.`));
+  const saveAuthor = (then?: "submit") => run("/api/purchasing", { id: r.id, comment: r.comment, lines: r.lines.map((l) => ({ ...l, qty: lineQty(l.ingredientId, l.qty), supplierId: lineSupplier(l.ingredientId, l.supplierId) })) }, "Draft saved.")
+    .then((ok) => ok && then === "submit" && run(`/api/purchasing/${r.id}`, { action: "submit" }, `Request ${r.id} sent to Purchasing.`));
   const decide = (decision: "approve" | "changes" | "reject") => run(`/api/purchasing/${r.id}`, {
     action: stage, decision, comment,
     changes: stage === "purchasing" ? Object.entries(edits).map(([ingredientId, e]) => ({ ingredientId, qty: e.qty, supplierId: e.supplierId, reason: e.reason })) : undefined,
@@ -171,6 +174,12 @@ function RequestView({ id, base }: { id: string; base: string }) {
         title={<span className="flex flex-wrap items-center gap-3"><span className="num">{r.id}</span><Badge tone={STATUS[r.status].tone}>{STATUS[r.status].label}</Badge>{r.poNumber && <Badge>{r.poNumber}</Badge>}</span>}
         description={`${where(r)}, ${propertyById[r.propertyId].name}. For ${fmtDate(r.period.from, true)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, true)}` : ""}. Raised by ${personName(r.createdBy)}.`}
       >
+        {sent && r.status !== "draft" && (
+          <div role="status" className="mb-5 rounded-2xl border border-pos/25 bg-pos-soft px-5 py-4">
+            <p className="text-sm font-medium text-ink">Request sent to Purchasing</p>
+            <p className="mt-1 text-sm text-graphite">{r.id} · {r.lines.map((l) => `${ingredientById[l.ingredientId].name} ${l.qty} ${unitOf(l.ingredientId)}`).slice(0, 4).join(", ")}{r.lines.length > 4 ? ` and ${r.lines.length - 4} more` : ""}. Now with: {STATUS[r.status].label.toLowerCase()}. You will be notified of each decision.</p>
+          </div>
+        )}
         <Progress d={data} />
         {r.comment && <p className="mt-4 text-sm text-graphite"><span className="text-steel">Comment: </span>{r.comment}</p>}
         {r.prepPlanId && <p className="mt-1 text-[13px] text-steel">Raised from prep plan {r.prepPlanId}.</p>}
@@ -224,8 +233,8 @@ function RequestView({ id, base }: { id: string; base: string }) {
               <div className="space-y-3">
                 {r.status === "changes" && <Note>{r.history.slice().reverse().find((h) => h.status === "changes")?.comment}</Note>}
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="primary" disabled={busy} onClick={() => saveAuthor("submit")}>{r.status === "changes" ? "Resubmit to purchasing" : "Submit to purchasing"}</Button>
-                  <Button disabled={busy} onClick={() => saveAuthor()}>Save changes</Button>
+                  <Button variant="primary" disabled={busy} onClick={() => saveAuthor("submit")}>{r.status === "changes" ? "Send to Purchasing again" : "Send to Purchasing"}</Button>
+                  <Button disabled={busy} onClick={() => saveAuthor()}>Save draft</Button>
                 </div>
               </div>
             )}
@@ -245,7 +254,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
               <div className="space-y-3">
                 <p className="text-[13px] text-steel">Enter what actually arrived. Stock rises by these quantities.</p>
                 {r.lines.map((l) => <Field key={l.ingredientId} label={ingredientById[l.ingredientId].name} suffix={unitOf(l.ingredientId)} type="number" min="0" step="any" value={received[l.ingredientId] ?? l.qty} onChange={(e) => setReceived({ ...received, [l.ingredientId]: Number(e.target.value) })} />)}
-                <Button variant="primary" disabled={busy} onClick={() => run(`/api/purchasing/${r.id}`, { action: "receive", received: r.lines.map((l) => ({ ingredientId: l.ingredientId, qty: received[l.ingredientId] ?? l.qty })) }, "Delivery recorded. Stock is updated.")}>Record delivery received</Button>
+                <Button variant="primary" disabled={busy} onClick={() => run(`/api/purchasing/${r.id}`, { action: "receive", received: r.lines.map((l) => ({ ingredientId: l.ingredientId, qty: received[l.ingredientId] ?? l.qty })) }, "Delivery recorded. Stock is updated.")}>Record delivery</Button>
               </div>
             )}
           </Panel>
