@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ClipboardList, Inbox, ShoppingCart, Stamp, Truck } from "lucide-react";
 import { useLiveGet } from "@/lib/guest-hooks";
 import type { PurchaseRequest } from "@/lib/types";
@@ -28,6 +28,7 @@ export default function ForecastPage() {
   ].filter(Boolean) as Tab[]);
   const [tab, setTab] = useSection<Tab>("/forecast", tabs, null);
   const router = useRouter();
+  const fromStock = useSearchParams().get("from") === "stock";
   const purchasing = can(user, "purchase.review");
   const home = purchasing ? "Purchasing" : user.role === "chef" ? "Kitchen planning" : "Tyll Forecast";
   const { data } = useLiveGet<{ requests: PurchaseRequest[] }>(purchasing ? "/api/purchasing" : null);
@@ -38,7 +39,7 @@ export default function ForecastPage() {
       <PageHeader
         title={tab ? LABEL[tab] : home}
         lead={tab ? undefined : "What do you want to do?"}
-        crumbs={tab ? <Crumbs items={[{ label: home, onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
+        crumbs={tab ? <Crumbs items={fromStock && tab === "buy" ? [{ label: "Tyll Stock", onClick: () => router.push("/stock") }, { label: LABEL[tab] }] : [{ label: home, onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert where="forecast" />}
       {tab === null && (

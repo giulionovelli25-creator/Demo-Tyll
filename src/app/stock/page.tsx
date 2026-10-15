@@ -71,7 +71,7 @@ export default function StockPage() {
       {tab === null && <StockAlert where="stock" />}
       {tab === null && (
         <ModuleHub
-          onPick={(v) => (v === "order" ? router.push("/forecast?tab=buy") : setTab(v as Tab))}
+          onPick={(v) => (v === "order" ? router.push("/forecast?tab=buy&from=stock") : setTab(v as Tab))}
           choices={[
             ...(can(user, "purchase.create") ? [{ value: "order" as const, title: "Order stock", detail: "Check what you need and send a request to Purchasing.", icon: ShoppingCart, help: HELP.buy }] : []),
             ...(can(user, "stock.logWaste") ? [{ value: "log" as const, title: "Log waste or breakage", detail: "Quickly record wasted, damaged or broken items.", icon: Trash2, help: HELP.waste }] : []),

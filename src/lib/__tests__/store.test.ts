@@ -241,4 +241,17 @@ describe("stock intelligence actions", () => {
     signIn("u-rm");
     expect(s().logWaste({ outletId: "dxb-terrace", ingredientId: "coke", qty: 1, reason: "waste", date: "2026-09-01" }).ok).toBe(false);
   });
+
+  it("gives each person their own hotel and outlet selection when accounts switch", () => {
+    signIn("u-owner");
+    s().setScope({ propertyId: "dxb", outletId: "dxb-lobby" });
+    signIn("u-rm");
+    expect(s().scope.outletId).toBe("dxb-terrace"); // Sara's only outlet, not the owner's Lobby Lounge
+    signIn("u-rm"); // a session refresh keeps it
+    expect(s().scope.outletId).toBe("dxb-terrace");
+    signIn("u-owner");
+    expect(s().scope).toMatchObject({ propertyId: "dxb", outletId: "dxb-lobby" }); // the owner's own choice comes back
+    signIn("u-fc");
+    expect(s().scope).toMatchObject({ propertyId: "all", outletId: "all" }); // a new person starts from everything they may see
+  });
 });

@@ -30,6 +30,9 @@ export interface PurchaseApproval {
 interface Persisted {
   userId: string | null;
   scope: Scope;
+  /** Whose selection `scope` is, and each person's last selection, so one account never inherits another's. */
+  scopeOwner: string | null;
+  scopes: Record<string, Scope>;
   preset: RangePreset;
   custom: DateRange;
   lang: "en" | "ar";
@@ -108,6 +111,8 @@ export type DemoState = Persisted & Actions;
 const initial = (): Persisted => ({
   userId: null,
   scope: { propertyId: "all", outletId: "all", dept: "all" },
+  scopeOwner: null,
+  scopes: {},
   preset: "week",
   custom: { from: addDays(DEMO_TODAY, -13), to: DEMO_TODAY },
   lang: "en",
@@ -192,7 +197,13 @@ export const useDemo = create<DemoState>()(
         signIn(userId) {
           const user = userById[userId];
           if (!user) return;
-          set((s) => ({ userId, scope: clampScope(user, s.scope) }));
+          set((s) => {
+            if (s.scopeOwner === userId) return { userId, scope: clampScope(user, s.scope) };
+            // A different person: keep the previous person's selection for them, and start from this person's own.
+            const scopes = s.scopeOwner ? { ...s.scopes, [s.scopeOwner]: s.scope } : s.scopes;
+            const fresh: Scope = { propertyId: "all", outletId: "all", dept: "all" };
+            return { userId, scopeOwner: userId, scopes, scope: clampScope(user, scopes[userId] ?? fresh) };
+          });
           log("Signed in", user.name);
         },
         signOut() {
@@ -205,7 +216,8 @@ export const useDemo = create<DemoState>()(
           set((s) => {
             const next = { ...s.scope, ...scope };
             if (scope.propertyId !== undefined && scope.outletId === undefined) next.outletId = "all";
-            return { scope: clampScope(user, next) };
+            const scoped = clampScope(user, next);
+            return { scope: scoped, scopeOwner: user.id, scopes: { ...s.scopes, [user.id]: scoped } };
           });
         },
         setPreset(preset) {
