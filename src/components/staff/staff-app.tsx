@@ -84,7 +84,7 @@ function StaffHome() {
         <p className="text-[15px] text-steel">Good evening</p>
         <h1 className="text-[28px] leading-tight tracking-[-0.02em]">{user.name.split(" ")[0]}</h1>
       </div>
-      <section aria-labelledby="t-tasks">
+      <section data-tour="staff-tasks" aria-labelledby="t-tasks">
         <h2 id="t-tasks" className="mb-2 text-[13px] font-medium text-graphite">Your tasks</h2>
         {tasks.length === 0 ? <p className="rounded-2xl border border-line px-4 py-4 text-[15px] text-steel">Nothing assigned to you right now.</p> : (
           <ul className="divide-y divide-hair overflow-hidden rounded-2xl border border-line bg-paper">
@@ -92,7 +92,7 @@ function StaffHome() {
           </ul>
         )}
       </section>
-      <section aria-labelledby="t-quick">
+      <section data-tour="staff-actions" aria-labelledby="t-quick">
         <h2 id="t-quick" className="mb-2 text-[13px] font-medium text-graphite">Quick actions</h2>
         {actions.length === 0 ? <p className="text-[15px] text-steel">No quick actions for your role.</p> : (
           <ul className="grid grid-cols-2 gap-3">
@@ -100,7 +100,7 @@ function StaffHome() {
           </ul>
         )}
       </section>
-      <section aria-labelledby="t-updates">
+      <section data-tour="staff-updates" aria-labelledby="t-updates">
         <h2 id="t-updates" className="mb-2 text-[13px] font-medium text-graphite">Updates</h2>
         <ul className="space-y-2 text-[15px]">
           {alerts.slice(0, 3).map((a) => <li key={a.id} className="rounded-2xl bg-mist px-4 py-3">{a.text}</li>)}

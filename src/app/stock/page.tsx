@@ -72,8 +72,8 @@ export default function StockPage() {
             ...(canOpen(user, "investigations") ? [{ value: "where" as const, title: "Where did it go?", detail: "Missing stock and use that sales do not explain.", icon: SearchCheck, help: HELP.where }] : []),
             { value: "waste", title: "Waste and breakage", detail: "Record and review waste, breakage and spoilage.", icon: Trash2, help: HELP.waste },
             { value: "counts", title: "Stock counts", detail: "Enter what is actually on the shelf.", icon: ClipboardCheck, help: HELP.counts },
-            { value: "recipes", title: "Recipes and costs", detail: "Ingredient use and the margin of each dish.", icon: ScrollText },
-            { value: "suppliers", title: "Suppliers", detail: "Deliveries, and quantities that did not match.", icon: PackageX },
+            { value: "recipes", title: "Recipes and costs", detail: "Ingredient use and the margin of each dish.", icon: ScrollText, more: true },
+            { value: "suppliers", title: "Suppliers", detail: "Deliveries, and quantities that did not match.", icon: PackageX, more: true },
           ]}
         />
       )}

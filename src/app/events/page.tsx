@@ -4,7 +4,7 @@ import { MyEvents, PlanEvent } from "@/components/events/events";
 import { StaffSupport } from "@/components/events/staff";
 import { ConfirmedBusiness, Opportunities, Proposals } from "@/components/sales/sales";
 import { HELP } from "@/components/help";
-import { ModuleHub, useSection } from "@/components/module-hub";
+import { ModuleHub, useSection, type HubChoice } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
 import { Crumbs, PageHeader, Tabs } from "@/components/ui";
 import { can } from "@/lib/domain/access";
@@ -37,14 +37,14 @@ export default function EventsPage() {
       {tab === null && (
         <ModuleHub
           onPick={setTab}
-          choices={[
+          choices={([
             ...(tabs.includes("opportunities") ? [{ value: "opportunities" as Tab, title: "Opportunities", detail: "Potential business and sales enquiries.", icon: Target, help: HELP.opportunities }] : []),
             ...(tabs.includes("proposals") ? [{ value: "proposals" as Tab, title: "Proposals", detail: "Quotes and offers for customers.", icon: FileSignature, help: HELP.proposals }] : []),
             ...(tabs.includes("confirmed") ? [{ value: "confirmed" as Tab, title: "Confirmed business", detail: "Confirmed deals, their events and sales performance.", icon: BadgeCheck, help: HELP.confirmed }] : []),
             ...(tabs.includes("plan") ? [{ value: "plan" as Tab, title: "Plan an event", detail: "Create an event and work out food, stock and staff.", icon: CalendarPlus, help: HELP.plan }] : []),
             ...(tabs.includes("events") ? [{ value: "events" as Tab, title: "My events", detail: "Open, change and follow up planned events.", icon: CalendarRange }] : []),
             ...(tabs.includes("support") ? [{ value: "support" as Tab, title: "Staff support", detail: "Ask for extra help, or answer other teams' requests.", icon: Users, help: HELP.support }] : []),
-          ]}
+          ] as HubChoice<Tab>[]).map((c) => ({ ...c, more: tabs.length > 4 && (selling && can(user, "events.plan") ? ["opportunities", "proposals", "confirmed"] : ["confirmed"]).includes(c.value) }))}
         />
       )}
       {tab !== null && tabs.length > 1 && <Tabs value={tab} onChange={setTab} tabs={tabs.map((t) => ({ value: t, label: LABEL[t] }))} />}

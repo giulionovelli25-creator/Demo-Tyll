@@ -90,7 +90,7 @@ export function Panel({ title, description, action, children, className, flush }
 
 export function PageHeader({ title, lead, children, crumbs }: { title: ReactNode; lead?: ReactNode; children?: ReactNode; crumbs?: ReactNode }) {
   return (
-    <header className="waves animate-rise overflow-hidden rounded-panel border border-line bg-paper px-6 py-7 shadow-panel sm:px-8 sm:py-9">
+    <header data-tour="page" className="waves animate-rise overflow-hidden rounded-panel border border-line bg-paper px-6 py-7 shadow-panel sm:px-8 sm:py-9">
       {crumbs && <div className="mb-3">{crumbs}</div>}
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div className="min-w-0 max-w-[64ch]">

@@ -1,4 +1,5 @@
 "use client";
+import { MoreDetail } from "@/components/disclosure";
 import { StockAlert } from "./stock-alert";
 // The outlet manager's overview: what to do today, before the bigger picture.
 import Link from "next/link";
@@ -110,14 +111,14 @@ export function ManagerOverview() {
       </PageHeader>
       <StockAlert />
 
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+      <div data-tour="kpis" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <KpiCard label="Revenue today" value={money(today.now.net)} delta={<Delta value={pctChange(today.now.net, today.before.net)} versus="than yesterday at this time" />} sub="so far, to 8:55 PM" onClick={() => setKpi({ key: "revenue", today: true })} />
         <KpiCard label="Gross margin" value={fmtPct(t.gpMargin)} delta={<Delta value={(t.gpMargin - c.before.gpMargin) * 100} kind="pts" />} sub={`${fmtDate(sel.range.from)} – ${fmtDate(sel.range.to)}`} spark={days.map((d) => d.now.gpMargin)} onClick={() => setKpi({ key: "profit", today: false })} />
         <KpiCard label="Open issues" value={String(issues.length)} sub={`${issues.filter((i) => i.priority === "high").length} high priority`} onClick={() => setKpi({ key: "issues", today: false })} />
         <KpiCard label="My tasks" value={String(tasks.length)} sub={tasks.some((x) => x.urgent) ? "some are urgent" : "nothing urgent"} tone={tasks.some((x) => x.urgent) ? "warn" : undefined} onClick={() => document.getElementById("tasks")?.scrollIntoView({ behavior: "smooth", block: "start" })} />
       </div>
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+      <div data-tour="attention" className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         <Panel title={<span id="tasks" className="scroll-mt-24">My tasks and approvals</span>} flush>
           {tasks.length === 0 ? (
             <div className="flex items-center gap-3 px-6 pb-6 text-sm text-graphite"><CheckCircle2 size={18} className="text-pos" /> Nothing waiting for you.</div>
@@ -140,6 +141,7 @@ export function ManagerOverview() {
         <NeedsAttention issues={issues} money={money} title="Problems at this outlet" />
       </div>
 
+      <MoreDetail tour="more" label="Show revenue, stock warnings and service" hideLabel="Hide details">
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.45fr_1fr]">
         <PerformanceChart days={days} money={money} hasOps={hasOps} highlightToday={sel.range.from === sel.range.to} title="Revenue and costs" />
         <div className="space-y-5">
@@ -169,6 +171,8 @@ export function ManagerOverview() {
           )}
         </div>
       </div>
+
+      </MoreDetail>
 
       {kpi && <KpiDrawer kpi={kpi.key} onClose={() => setKpi(null)} c={kpi.today ? today : c} rows={rows} ctx={ctx} sel={kpi.today ? todaySel : sel} investigations={investigations} money={money} onOutlet={() => undefined} />}
     </div>

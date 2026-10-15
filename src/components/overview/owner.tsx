@@ -1,6 +1,7 @@
 "use client";
 import { StockAlert } from "./stock-alert";
 import { HELP } from "@/components/help";
+import { MoreDetail } from "@/components/disclosure";
 import { GuestStrip } from "@/components/guest/service";
 import { BusinessStrip } from "@/components/sales/sales";
 // The owner's control center: five figures, one chart, one comparison list, one list of issues.
@@ -69,7 +70,7 @@ export function OwnerOverview() {
       </PageHeader>
       <StockAlert />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+      <div data-tour="kpis" className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <KpiCard label="Revenue" value={money(t.net, { compact: true })} delta={<Delta value={pctChange(t.net, b.net)} />} sub="net sales" spark={spark((x) => x.net)} onClick={() => setKpi("revenue")} />
         <KpiCard label="Expenses" value={money(expensesOf(t), { compact: true })} delta={<Delta value={pctChange(expensesOf(t), expensesOf(b))} goodWhen="down" />} sub={hasOps ? "incl. estimates" : "F&B cost only"} spark={spark(expensesOf)} sparkGood="down" onClick={() => setKpi("expenses")} />
         <KpiCard label={hasOps ? "Est. operating contribution" : "Gross profit"} help={hasOps ? HELP.opContribution : "Revenue less the cost of food and drink used. It does not include labour or overheads."} value={money(profitOf(t), { compact: true })} delta={<Delta value={pctChange(profitOf(t), profitOf(b))} />} sub={`${fmtPct(marginOf(t))} margin`} spark={spark(profitOf)} onClick={() => setKpi("profit")} />
@@ -77,12 +78,12 @@ export function OwnerOverview() {
         <KpiCard label="Open issues" value={String(issues.length)} sub={`${issues.filter((i) => i.priority === "high").length} high priority`} delta={<span className="text-xs text-steel">{open.length} cases, {issues.length - issues.filter((i) => i.kind === "investigation").length} other</span>} onClick={() => setKpi("issues")} />
       </div>
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.45fr_1fr]">
-        <PerformanceChart days={days} money={money} hasOps={hasOps} highlightToday={sel.range.from === sel.range.to} title={sel.range.from === sel.range.to ? "Performance, last 7 days" : "Performance"} />
-        <NeedsAttention issues={issues} money={money} />
-      </div>
+      <div data-tour="attention"><NeedsAttention issues={issues} money={money} /></div>
 
-      {single ? <MenuSnapshot money={money} /> : <Comparison rows={rows} trend={trend} open={open} money={money} />}
+      <div data-tour="compare">{single ? <MenuSnapshot money={money} /> : <Comparison rows={rows} trend={trend} open={open} money={money} />}</div>
+
+      <MoreDetail tour="more" label="Show trends and results" hideLabel="Hide trends and results">
+      <PerformanceChart days={days} money={money} hasOps={hasOps} highlightToday={sel.range.from === sel.range.to} title={sel.range.from === sel.range.to ? "Performance, last 7 days" : "Performance"} />
 
       <section className="flex flex-wrap items-center gap-x-8 gap-y-2 rounded-panel border border-line bg-paper px-6 py-4 text-sm shadow-panel">
         <span className="text-steel">Results this period</span>
@@ -95,6 +96,7 @@ export function OwnerOverview() {
 
       <GuestStrip />
       <BusinessStrip />
+      </MoreDetail>
 
       <KpiDrawer kpi={kpi} onClose={() => setKpi(null)} c={c} rows={rows} ctx={ctx} sel={sel} investigations={investigations} money={money} onOutlet={(id) => setScope({ outletId: id })} />
     </div>

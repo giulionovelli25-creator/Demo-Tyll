@@ -245,6 +245,7 @@ export function Reports() {
   const [period, setPeriod] = useState<"month" | "week">("month");
   const [dept, setDept] = useState("");
   const [category, setCategory] = useState("");
+  const [filters, setFilters] = useState(false);
   const { data, error } = useLiveGet<ReportData>(`/api/finance/report?propertyId=${propertyId}&period=${period}&dept=${dept}&category=${category}`);
   const money = (n: number) => fmtMoney(n, currency);
   if (!report) {
@@ -266,7 +267,10 @@ export function Reports() {
       <div className="flex flex-wrap items-end gap-3">
         <PropertyPicker value={propertyId} onChange={setPropertyId} props={props} />
         {report !== "summary" && <Segmented label="Period" value={period} onChange={setPeriod} options={[{ value: "month", label: "October to date" }, { value: "week", label: "Last 7 days" }]} />}
-        {["budget", "spending", "commitments"].includes(report) && (
+        {["budget", "spending", "commitments"].includes(report) && !filters && (
+          <Button size="sm" variant="ghost" onClick={() => setFilters(true)}>{dept || category ? "Change filter" : "Filter by department or category"}</Button>
+        )}
+        {["budget", "spending", "commitments"].includes(report) && filters && (
           <>
             <Select label="Department" value={dept} onChange={(e) => setDept(e.target.value)} className="w-56"><option value="">All departments</option>{FIN_DEPTS.map((d) => <option key={d.id} value={d.id}>{d.label}</option>)}</Select>
             <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)} className="w-56"><option value="">All categories</option>{Object.entries(CATEGORY_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select>

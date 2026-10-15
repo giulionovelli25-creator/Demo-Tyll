@@ -386,3 +386,7 @@ All under **Rooms & Guests** (`/rooms`); sections depend on the role (`src/compo
 - **Navigation:** main modules per role with "More"; search and the bell for every role; Tyll Staff has the bell too. Sign-in groups people by department and scrolls to the form.
 - **Explanations:** `?` on module choices and key Overview figures. "Estimated operating profit" is now "Estimated operating contribution" everywhere.
 - Docs: `DEMO_WALKTHROUGH.md`, `.env.example`, README and CLAUDE.md updated.
+
+## UX simplification pass (after Stage 7)
+- Progressive disclosure: `MoreDetail` (`components/disclosure.tsx`). Overview trends and summary strips, manager overview chart and side panels, hub "More tools", Finance report filters.
+- Take a tour: `components/shell/walkthrough.tsx`. Role-specific steps (`TOURS`) open real pages and spotlight `data-tour` targets (`kpis`, `attention`, `compare`, `more`, `hub`, `page`, `nav`, `search`, `bell`, `guide`, `staff-*`). Steps are filtered by access; missing targets are skipped. When you add or rename a key element, keep its `data-tour` attribute.

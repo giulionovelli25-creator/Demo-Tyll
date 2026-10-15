@@ -49,7 +49,7 @@ export function NotificationBell({ attention = [], align = "right" }: { attentio
     void api("/api/notifications", { method: "POST", body: {} }).catch(() => undefined);
   };
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} data-tour="bell" className="relative">
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}
         className={cn("relative flex h-10 w-10 items-center justify-center rounded-full text-graphite transition-colors hover:bg-mist", open && "bg-mist text-ink")}>
         <Bell size={18} strokeWidth={1.7} />

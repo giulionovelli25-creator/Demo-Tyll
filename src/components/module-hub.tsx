@@ -1,6 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronRight, type LucideIcon } from "lucide-react";
+import { MoreDetail } from "./disclosure";
 import { Help } from "./help";
 
 export interface HubChoice<T extends string> {
@@ -11,12 +12,29 @@ export interface HubChoice<T extends string> {
   badge?: string;
   /** A short explanation behind a "?" on the card. */
   help?: string;
+  /** Less common: listed under "More tools" instead of on the first screen. */
+  more?: boolean;
 }
 
 /** A few clearly labelled ways into a module. Each opens one workflow. */
 export function ModuleHub<T extends string>({ choices, onPick }: { choices: HubChoice<T>[]; onPick: (v: T) => void }) {
+  const main = choices.filter((c) => !c.more);
+  const more = choices.filter((c) => c.more);
   return (
-    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="space-y-4">
+      <Cards choices={main} onPick={onPick} tour="hub" />
+      {more.length > 0 && (
+        <MoreDetail tour="hub-more" label={`More tools (${more.length})`} hideLabel="Fewer tools">
+          <Cards choices={more} onPick={onPick} />
+        </MoreDetail>
+      )}
+    </div>
+  );
+}
+
+function Cards<T extends string>({ choices, onPick, tour }: { choices: HubChoice<T>[]; onPick: (v: T) => void; tour?: string }) {
+  return (
+    <ul data-tour={tour} className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {choices.map(({ value, title, detail, icon: Icon, badge, help }) => (
         <li key={value} className="relative">
           {help && <Help text={help} label={`What is ${title}?`} className="absolute bottom-4 right-4 z-10" />}

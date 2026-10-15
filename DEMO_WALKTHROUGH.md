@@ -30,6 +30,10 @@ Open **http://localhost:3210**. (Plain `npm run dev` uses port 3000.) Node.js 20
 | Staff on a phone | Omar Farouk (Steward), Ravi Menon (Commis chef), Maria, Yusuf, Ahmed |
 | Other hotel (permission checks) | Mariam Al Kuwari (Sales, Doha), Elena Petrova (Accountant, Doha) |
 
+## Take a tour
+
+**Take a tour** (sidebar, under the main tools; **Tour** in the staff app's header) walks through your own workspace: it opens each page, highlights the important part and explains it in a sentence. **Back**, **Next**, **Skip**, **Restart** and **×**; arrow keys and Escape work too. **Tour this page** in the profile menu covers only the current module. New people are offered the tour once on first sign-in. The tour never clicks, submits or approves anything, and only shows pages your role can open.
+
 ## Guided demo
 
 Sign in as anyone except frontline staff and choose **Guided demo** at the bottom of the sidebar. Pick a story; a small card at the bottom right gives one instruction at a time, with **Go there**, **Sign in as …**, **Previous**, **Next**, **Reset** and **×** (exit). You perform every action yourself; the card never says something happened. Minimise it with **–**. It stays with you across sign-ins in the same browser.
@@ -46,6 +50,10 @@ Main stories: Where did the Cokes go? · More wine than expected · Forecast to 
 - **Purchasing:** no requests; the first new one is PR-DXB-0001. The F&B budget for October is AED 260,000, with about AED 10,000 left before new orders.
 - **Finance:** 23 Dubai supplier invoices differ from their delivery, such as Gulf Prime Meats MEAT-1011 (22 kg chicken ordered, 18 received, 22 invoiced).
 - **Sales:** five Dubai opportunities, one proposal awaiting the customer (PRP-DXB-0001), one deal already linked to EVT-DXB-0001.
+
+## Where things are
+
+Each module opens on up to four main choices; less common tools are under **More tools** (for example Stock → Recipes and costs, Suppliers). The Overview shows key figures, Needs attention and the outlet comparison; trends, results, guest experience and confirmed business are behind **Show trends and results**. Finance reports keep department and category filters behind **Filter by department or category**.
 
 ## Reset
 

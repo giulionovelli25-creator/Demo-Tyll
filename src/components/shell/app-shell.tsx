@@ -24,6 +24,7 @@ import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type Ran
 import { Login } from "./login";
 import { NotificationBell } from "./notifications";
 import { DemoGuide, DemoPicker } from "./demo-guide";
+import { TakeTourButton, TourOffer, Walkthrough } from "./walkthrough";
 import { SharedStockSync } from "@/lib/shared-stock";
 import { PinScreen } from "./pin";
 import { Tour } from "./tour";
@@ -162,6 +163,7 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
       <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-hair bg-paper/90 px-4 backdrop-blur">
         <Link href="/staff" className="flex items-center gap-2" aria-label="Tyll Staff home"><TyllLogo height={20} /><span className="text-[13px] text-steel">Staff</span></Link>
         <span className="flex items-center gap-1">
+          <TakeTourButton user={user} label="Tour" className="border-0 px-2" />
           <NotificationBell />
           {others.length > 0 && <Link href={MODULE_PATH[others[0]]} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Full Tyll</Link>}
           <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Sign out</button>
@@ -169,6 +171,8 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
       </header>
       <main className="mx-auto w-full max-w-md px-4 pb-24 pt-5">{children}</main>
       <DemoGuide user={user} />
+      <Walkthrough />
+      <TourOffer user={user} />
       <Toaster />
     </div>
   );
@@ -197,6 +201,8 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
       </div>
       <Tour />
       <DemoGuide user={user} />
+      <Walkthrough />
+      <TourOffer user={user} />
       <Toaster />
     </div>
   );
@@ -228,7 +234,7 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
           </Link>
           <button type="button" className="rounded-full p-1.5 text-steel hover:bg-mist md:hidden" onClick={onClose} aria-label="Close menu"><X size={18} /></button>
         </div>
-        <nav aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-3 py-2 md:px-2.5 xl:px-3">
+        <nav data-tour="nav" aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-3 py-2 md:px-2.5 xl:px-3">
           <ul className="space-y-0.5">
             {[...items, ...(showMore ? more : []), "settings" as ModuleId].filter((m) => modules.includes(m)).map((m, idx, list) => {
               const divider = more.length > 0 && m === "settings" ? (
@@ -266,8 +272,9 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
           </ul>
         </nav>
         <div className="space-y-3 border-t border-hair p-4 md:p-2.5 xl:p-4">
+          <TakeTourButton user={user} className="h-10 w-full justify-start gap-3 rounded-xl px-3 text-sm md:justify-center md:px-0 xl:justify-start xl:px-3" label="Take a tour" labelClass="md:hidden xl:inline" />
           {canTour && (
-            <button type="button" onClick={() => { setPicking(true); onClose(); }} title="Guided demo" className="flex h-10 w-full items-center gap-3 rounded-xl border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist md:justify-center md:px-0 xl:justify-start xl:px-3">
+            <button type="button" data-tour="guide" onClick={() => { setPicking(true); onClose(); }} title="Guided demo" className="flex h-10 w-full items-center gap-3 rounded-xl border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist md:justify-center md:px-0 xl:justify-start xl:px-3">
               <PlayCircle size={18} strokeWidth={1.6} aria-hidden />
               <span className="md:hidden xl:inline">Guided demo</span>
             </button>
@@ -336,7 +343,7 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
           <p className="min-w-0 flex-1 truncate text-sm text-steel">{allowedOutlets(user)[0] ? `${outletById[allowedOutlets(user)[0]].name}, ` : ""}{propertyById[props[0]].name}</p>
         )}
         <div className="ml-auto flex items-center gap-1">
-          <IconButton label="Search (Ctrl K)" onClick={() => toggle("search")} active={panel === "search"}><Search size={18} strokeWidth={1.7} /></IconButton>
+          <span data-tour="search"><IconButton label="Search (Ctrl K)" onClick={() => toggle("search")} active={panel === "search"}><Search size={18} strokeWidth={1.7} /></IconButton></span>
           <AlertsButton user={user} />
           <div className="relative">
             <button type="button" onClick={() => toggle("profile")} aria-expanded={panel === "profile"} aria-haspopup="menu" className="ml-1 flex items-center gap-2.5 rounded-full border border-line py-1 pl-1 pr-3 text-left transition-colors duration-300 ease-tyll hover:border-fog">
@@ -431,6 +438,7 @@ function ProfileMenu({ user, onClose }: { user: User; onClose: () => void }) {
         <p className="text-xs text-steel">{user.title}</p>
       </div>
       <div className="border-t border-hair pt-1">
+        <div className="px-1 py-1" onClick={onClose}><TakeTourButton user={user} here label="Tour this page" className="w-full border-0 px-2 py-2 text-sm" /></div>
         <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} strokeWidth={1.7} /> Settings and access</Link>
         {pinRequired && (
           <button role="menuitem" type="button" onClick={lock} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">
