@@ -51,6 +51,12 @@ Main stories: Where did the Cokes go? · More wine than expected · Forecast to 
 - **Finance:** 23 Dubai supplier invoices differ from their delivery, such as Gulf Prime Meats MEAT-1011 (22 kg chicken ordered, 18 received, 22 invoiced).
 - **Sales:** five Dubai opportunities, one proposal awaiting the customer (PRP-DXB-0001), one deal already linked to EVT-DXB-0001.
 
+## Everyday actions
+
+- **Order stock:** Tyll Stock → **Order stock** (or Forecast → Order stock) → choose outlet and period → expected demand → **Calculate what to buy** → review items (open a row for its calculation) → **Send to Purchasing**. The request page then says "Request sent to Purchasing" with its reference. **Save draft** keeps it to yourself.
+- **Purchasing:** signs in to **Purchasing** with **Requests to review**, **Purchase orders** and **Deliveries**, each with a count; the bell shows new requests. **Record delivery** on an approved order raises stock once.
+- **Waste or breakage:** Tyll Stock → **Log waste or breakage**; staff use Tyll Staff → **Log breakage** or **Log waste** → item → quantity → Save.
+
 ## Where things are
 
 Each module opens on up to four main choices; less common tools are under **More tools** (for example Stock → Recipes and costs, Suppliers). The Overview shows key figures, Needs attention and the outlet comparison; trends, results, guest experience and confirmed business are behind **Show trends and results**. Finance reports keep department and category filters behind **Filter by department or category**.
