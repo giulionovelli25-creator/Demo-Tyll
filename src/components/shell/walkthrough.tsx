@@ -145,7 +145,8 @@ export function TourOffer({ user }: { user: User }) {
   const done = () => { try { localStorage.setItem(key, "1"); } catch { /* private window */ } setShow(false); };
   if (!show || running || !tourFor(user).length) return null;
   return (
-    <div role="dialog" aria-label="Take a tour" className="no-print animate-rise fixed bottom-4 left-4 right-4 z-40 rounded-2xl border border-line bg-paper p-4 shadow-float sm:left-auto sm:w-[340px] md:left-[96px] xl:left-[272px]">
+    // In the page flow, above the content, so it never covers cards on small screens.
+    <div role="region" aria-label="Take a tour" className="no-print mb-5 rounded-2xl border border-line bg-paper p-4">
       <p className="text-[15px] text-ink">New to Tyll?</p>
       <p className="mt-1 text-[13px] text-steel">A one-minute tour shows where your main tools are.</p>
       <div className="mt-3 flex gap-2">

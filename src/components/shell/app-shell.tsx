@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Banknote, BedDouble, CalendarDays, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, TrendingUp, UtensilsCrossed, X,
+  Banknote, BedDouble, CalendarDays, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, Sparkles, TrendingUp, UtensilsCrossed, X,
   ChevronDown,
   Landmark,
   Smartphone,
@@ -23,6 +23,7 @@ import type { Dept, User } from "@/lib/types";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
 import { Login } from "./login";
 import { Welcome } from "./welcome";
+import { EarlyAccessBadge, GuidedPath, WhatsNew, startGuidedPath } from "./early-access";
 import { NotificationBell } from "./notifications";
 import { DemoGuide, DemoPicker } from "./demo-guide";
 import { TakeTourButton, TourOffer, Walkthrough } from "./walkthrough";
@@ -67,7 +68,40 @@ const ROLE_NAV: Partial<Record<User["role"], Partial<Record<ModuleId, string>>>>
  * They work with demo data but are marked so nobody mistakes them for finished. Purchasing, Stock and waste, and
  * Reconciliation are the live modules.
  */
-const IN_DEVELOPMENT: ModuleId[] = ["events", "rooms", "reports"];
+const AVAILABLE_NOW: { m: ModuleId; href: string; label: string }[] = [
+  { m: "forecast", href: "/forecast?tab=buy", label: "Purchasing Prediction" },
+  { m: "stock", href: "/stock", label: "Stock Count and Waste" },
+  { m: "finance", href: "/finance?tab=invoices", label: "Reconciliation" },
+];
+const COMING_SOON: { m: ModuleId; href: string; label: string }[] = [
+  { m: "events", href: "/events", label: "Events and Staffing" },
+  { m: "rooms", href: "/rooms", label: "Rooms and Guest Experience" },
+  { m: "reports", href: "/reports", label: "Sales and Performance" },
+];
+const IN_DEVELOPMENT: ModuleId[] = COMING_SOON.map((x) => x.m);
+
+function NavItem({ m, href, label, active, preview, reload, badge, onClose }: { m: ModuleId; href: string; label: string; active: boolean; preview?: boolean; reload?: boolean; badge?: number; onClose: () => void }) {
+  const { icon: Icon } = NAV[m];
+  const className = cn(
+    "group relative flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-sm leading-snug transition-colors duration-300 ease-tyll md:justify-center md:px-0 xl:justify-start xl:px-3",
+    active ? "bg-mist text-ink" : "text-steel hover:bg-cloud hover:text-ink",
+  );
+  const body = (
+    <>
+      {active && <span className="absolute left-0 top-2.5 h-5 w-[3px] rounded-full bg-ink md:-left-2.5 xl:-left-3" aria-hidden />}
+      <Icon size={18} strokeWidth={1.6} aria-hidden />
+      <span className="min-w-0 md:hidden xl:inline">{label}</span>
+      {preview && <span className="ml-auto shrink-0 rounded-full border border-line px-1.5 text-[10px] leading-[16px] text-steel md:hidden xl:inline">Preview</span>}
+      {badge !== undefined && <span className="num ml-auto rounded-full bg-ink px-1.5 text-[11px] leading-[18px] text-paper md:absolute md:right-1.5 md:top-1 xl:static">{badge}</span>}
+    </>
+  );
+  return (
+    <li>
+      {/* A module outside the current role reloads, so the public demo can switch role on the server first. */}
+      {reload ? <a href={href} title={label} className={className}>{body}</a> : <Link href={href} onClick={onClose} aria-current={active ? "page" : undefined} title={label} className={className}>{body}</Link>}
+    </li>
+  );
+}
 
 const ORDER: ModuleId[] = ["staff", "tasks", "overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "finance", "reports", "settings"];
 
@@ -220,10 +254,9 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
           <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">{publicDemo ? "Leave demo" : "Sign out"}</button>
         </span>
       </header>
-      <main className="mx-auto w-full max-w-md px-4 pb-24 pt-5">{children}</main>
+      <main className="mx-auto w-full max-w-md px-4 pb-24 pt-5">{publicDemo ? <GuidedPath /> : <TourOffer user={user} />}{children}</main>
       <DemoGuide user={user} />
       <Walkthrough />
-      <TourOffer user={user} />
       <Toaster />
     </div>
   );
@@ -234,6 +267,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const current = moduleOfPath(pathname);
   const allowed = canOpen(user, current);
+  const publicDemo = useSession((s) => !!s.demoRoles);
   if (current === "staff" && allowed) return <StaffFrame user={user}>{children}</StaffFrame>;
   return (
     <div className="flex min-h-screen">
@@ -241,9 +275,10 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar user={user} onMenu={() => setMenuOpen(true)} />
         <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-24 pt-5 sm:px-6 lg:px-8">
+          {allowed && (publicDemo ? <GuidedPath /> : <TourOffer user={user} />)}
           {allowed && IN_DEVELOPMENT.includes(current) && (
             <p className="mb-5 rounded-2xl border border-line bg-cloud px-4 py-3 text-sm text-graphite">
-              <span className="text-ink">Preview, in development.</span> This module works with demo data and is still being built. Purchasing, stock and waste, and reconciliation are the live modules today.
+              <span className="text-ink">Preview.</span> This module is in development and not yet part of our pilots.
             </p>
           )}
           {allowed ? (
@@ -258,7 +293,6 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
       <Tour />
       <DemoGuide user={user} />
       <Walkthrough />
-      <TourOffer user={user} />
       <Toaster />
     </div>
   );
@@ -271,11 +305,17 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
   // The guided demo switches between many accounts, which the public demo does not offer.
   const canTour = !publicDemo && user.role !== "employee" && user.role !== "storekeeper";
   const [picking, setPicking] = useState(false);
-  const all = ORDER.filter((m) => modules.includes(m) && m !== "settings");
+  // In the public demo every module is open: following a link switches to a role that can see it.
+  const shown = (g: typeof AVAILABLE_NOW) => g.filter((x) => publicDemo || modules.includes(x.m));
+  const live = shown(AVAILABLE_NOW);
+  const soon = shown(COMING_SOON);
+  const grouped = new Set<ModuleId>([...AVAILABLE_NOW, ...COMING_SOON].map((x) => x.m));
+  // Other tools: the role's main ones stay visible (such as the Overview), the rest sit under "More tools".
+  const rest = ORDER.filter((m) => modules.includes(m) && m !== "settings" && !grouped.has(m));
   const first = PRIMARY[user.role];
-  const items = first ? all.filter((m) => first.includes(m)) : all;
-  const more = first ? all.filter((m) => !first.includes(m)) : [];
-  const [showMore, setShowMore] = useState(more.includes(active));
+  const mine = first ? rest.filter((m) => first.includes(m)) : rest;
+  const more = first ? rest.filter((m) => !first.includes(m)) : [];
+  const [showMore, setShowMore] = useState(more.includes(active) || (!publicDemo && live.length + soon.length === 0));
   return (
     <>
       {open && <button type="button" aria-label="Close menu" className="no-print fixed inset-0 z-40 bg-ink/25 md:hidden" onClick={onClose} />}
@@ -287,52 +327,36 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
       >
         <div className="flex h-[68px] items-center justify-between px-6 md:justify-center md:px-0 xl:justify-between xl:px-6">
           <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center">
-            <span className="md:hidden xl:block"><TyllLogo height={26} priority /></span>
+            <span className="flex items-center gap-2.5 md:hidden xl:flex"><TyllLogo height={26} priority /><EarlyAccessBadge /></span>
             <span className="hidden md:block xl:hidden"><TyllMark size={22} /></span>
           </Link>
           <button type="button" className="rounded-full p-1.5 text-steel hover:bg-mist md:hidden" onClick={onClose} aria-label="Close menu"><X size={18} /></button>
         </div>
         <nav data-tour="nav" aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-3 py-2 md:px-2.5 xl:px-3">
-          <ul className="space-y-0.5">
-            {[...items, ...(showMore ? more : []), "settings" as ModuleId].filter((m) => modules.includes(m)).map((m, idx, list) => {
-              const divider = more.length > 0 && m === "settings" ? (
-                <li key="more" className="pt-1">
-                  <button type="button" onClick={() => setShowMore((v) => !v)} aria-expanded={showMore} className="flex h-9 w-full items-center gap-3 rounded-xl px-3 text-[13px] text-steel hover:bg-cloud hover:text-ink md:justify-center md:px-0 xl:justify-start xl:px-3">
-                    <ChevronDown size={16} className={cn("transition-transform", showMore && "rotate-180")} aria-hidden /><span className="md:hidden xl:inline">{showMore ? "Fewer tools" : `More tools (${more.length})`}</span>
-                  </button>
-                </li>
-              ) : null;
-              void idx; void list;
-              const { icon: Icon } = NAV[m];
-              const label = ROLE_NAV[user.role]?.[m] ?? NAV[m].label;
-              const on = active === m;
-              return (
-                <Fragment key={m}>{divider}<li>
-                  <Link
-                    href={MODULE_PATH[m]}
-                    onClick={onClose}
-                    aria-current={on ? "page" : undefined}
-                    title={label}
-                    className={cn(
-                      "group relative flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-colors duration-300 ease-tyll md:justify-center md:px-0 xl:justify-start xl:px-3",
-                      on ? "bg-mist text-ink" : "text-steel hover:bg-cloud hover:text-ink",
-                    )}
-                  >
-                    {on && <span className="absolute left-0 top-2.5 h-5 w-[3px] rounded-full bg-ink md:-left-2.5 xl:-left-3" aria-hidden />}
-                    <Icon size={18} strokeWidth={1.6} aria-hidden />
-                    <span className="md:hidden xl:inline">{label}</span>
-                    {IN_DEVELOPMENT.includes(m) && <span className="ml-auto rounded-full border border-line px-1.5 text-[10px] leading-[16px] text-steel md:hidden xl:inline">Preview</span>}
-                    {m === "investigations" && openCases > 0 && (
-                      <span className="num ml-auto rounded-full bg-ink px-1.5 text-[11px] leading-[18px] text-paper md:absolute md:right-1.5 md:top-1 xl:static">{openCases}</span>
-                    )}
-                  </Link>
-                </li></Fragment>
-              );
-            })}
+          {[{ title: "Available now", list: live }, { title: "Coming soon", list: soon }].map((g) => g.list.length > 0 && (
+            <div key={g.title} className="mb-3">
+              <p className="px-3 pb-1 pt-2 text-xs text-steel md:sr-only xl:not-sr-only">{g.title}</p>
+              <ul className="space-y-0.5">{g.list.map((x) => <NavItem key={x.m} m={x.m} href={x.href} label={x.label} preview={g.list === soon} active={active === x.m} reload={publicDemo} onClose={onClose} badge={undefined} />)}</ul>
+            </div>
+          ))}
+          <ul className="space-y-0.5 border-t border-hair pt-2">
+            {[...mine, ...(showMore ? more : [])].map((m) => <NavItem key={m} m={m} href={MODULE_PATH[m]} label={ROLE_NAV[user.role]?.[m] ?? NAV[m].label} active={active === m} onClose={onClose} badge={m === "investigations" && openCases > 0 ? openCases : undefined} />)}
+            {more.length > 0 && (
+              <li>
+                <button type="button" onClick={() => setShowMore((v) => !v)} aria-expanded={showMore} className="flex h-9 w-full items-center gap-3 rounded-xl px-3 text-[13px] text-steel hover:bg-cloud hover:text-ink md:justify-center md:px-0 xl:justify-start xl:px-3">
+                  <ChevronDown size={16} className={cn("transition-transform", showMore && "rotate-180")} aria-hidden /><span className="md:hidden xl:inline">{showMore ? "Fewer tools" : `More tools (${more.length})`}</span>
+                </button>
+              </li>
+            )}
+            <NavItem m="settings" href={MODULE_PATH.settings} label={NAV.settings.label} active={active === "settings"} onClose={onClose} />
           </ul>
         </nav>
         <div className="space-y-3 border-t border-hair p-4 md:p-2.5 xl:p-4">
-          <TakeTourButton user={user} className="h-10 w-full justify-start gap-3 rounded-xl px-3 text-sm md:justify-center md:px-0 xl:justify-start xl:px-3" label="Take a tour" labelClass="md:hidden xl:inline" />
+          {publicDemo ? (
+            <button type="button" onClick={() => { onClose(); startGuidedPath(); }} className="flex h-10 w-full items-center gap-3 rounded-xl border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist md:justify-center md:px-0 xl:justify-start xl:px-3">
+              <PlayCircle size={18} strokeWidth={1.6} aria-hidden /><span className="md:hidden xl:inline">Guided path</span>
+            </button>
+          ) : <TakeTourButton user={user} className="h-10 w-full justify-start gap-3 rounded-xl px-3 text-sm md:justify-center md:px-0 xl:justify-start xl:px-3" label="Take a tour" labelClass="md:hidden xl:inline" />}
           {canTour && (
             <button type="button" data-tour="guide" onClick={() => { setPicking(true); onClose(); }} title="Guided demo" className="flex h-10 w-full items-center gap-3 rounded-xl border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist md:justify-center md:px-0 xl:justify-start xl:px-3">
               <PlayCircle size={18} strokeWidth={1.6} aria-hidden />
@@ -364,6 +388,7 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
   const props = allowedProperties(user);
   const outlets = allowedOutlets(user).filter((id) => scope.propertyId === "all" || outletById[id].propertyId === scope.propertyId);
   const [panel, setPanel] = useState<null | "search" | "alerts" | "profile" | "dates">(null);
+  const [news, setNews] = useState(false);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Ctrl+K or Cmd+K opens search from anywhere.
   useEffect(() => {
@@ -376,6 +401,7 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
   const showScope = !["employee", "event_manager", "sales", "sales_director", "storekeeper"].includes(user.role) && !user.deptId;
 
   return (
+    <>
     <div className="no-print sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex min-h-[68px] w-full max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 sm:px-6 lg:px-8">
         <button type="button" onClick={onMenu} className="rounded-full p-2 text-graphite hover:bg-mist md:hidden" aria-label="Open menu"><Menu size={20} /></button>
@@ -414,12 +440,15 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
                 <span className="block text-[11px] text-steel">{ROLE_LABEL[user.role]}</span>
               </span>
             </button>
-            {panel === "profile" && <ProfileMenu user={user} onClose={() => setPanel(null)} />}
+            {panel === "profile" && <ProfileMenu user={user} onClose={() => setPanel(null)} onNews={() => setNews(true)} />}
           </div>
         </div>
       </div>
       {panel === "search" && <SearchPanel user={user} onClose={() => setPanel(null)} />}
     </div>
+    {/* Outside the bar: its backdrop blur would otherwise confine the fixed panel. */}
+    <WhatsNew open={news} onClose={() => setNews(false)} />
+    </>
   );
 }
 
@@ -477,7 +506,7 @@ function DatePanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-function ProfileMenu({ user, onClose }: { user: User; onClose: () => void }) {
+function ProfileMenu({ user, onClose, onNews }: { user: User; onClose: () => void; onNews: () => void }) {
   const signOut = useDemo((s) => s.signOut);
   const ref = useDismiss(onClose);
   const pinRequired = useSession((s) => s.pinExpiresAt !== null);
@@ -496,6 +525,7 @@ function ProfileMenu({ user, onClose }: { user: User; onClose: () => void }) {
       </div>
       <div className="border-t border-hair pt-1">
         <div className="px-1 py-1" onClick={onClose}><TakeTourButton user={user} here label="Tour this page" className="w-full border-0 px-2 py-2 text-sm" /></div>
+        <button role="menuitem" type="button" onClick={() => { onClose(); onNews(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist"><Sparkles size={16} strokeWidth={1.7} /> What&apos;s new</button>
         <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} strokeWidth={1.7} /> Settings and access</Link>
         {pinRequired && !publicDemo && (
           <button role="menuitem" type="button" onClick={lock} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">

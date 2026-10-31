@@ -242,6 +242,9 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     // Finance links switch to the role that reconciles invoices.
     const gm = cookieOf(proxy(req("/rooms")))!;
     expect(resolveSession(cookieOf(proxy(req("/finance?tab=invoices", gm)))!)!.user.id).toBe("u-fc");
+    // Purchasing links switch away from a role that only approves.
+    const fc = cookieOf(proxy(req("/finance")))!;
+    expect(resolveSession(cookieOf(proxy(req("/forecast?tab=buy", fc)))!)!.user.id).toBe("u-buy");
     // A signed-in role without the overview goes to its own landing page from "/".
     const buyer = cookieOf(proxy(req("/forecast")))!;
     expect(where(proxy(req("/", buyer)))).toBe("/forecast?tab=buy");

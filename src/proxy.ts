@@ -18,8 +18,9 @@ export function proxy(req: NextRequest) {
     if (pathname === "/welcome") return NextResponse.next();
     if (pathname === "/" && (!view || !canOpen(view.user, "overview"))) return NextResponse.redirect(new URL(view ? homePath(view.user) : "/welcome", req.url));
     const mod = moduleOfPath(pathname);
-    // Finance links are about reconciliation, which only the Financial Controller's role reviews.
-    const fits = (u: Parameters<typeof canOpen>[0]) => canOpen(u, mod) && (mod !== "finance" || can(u, "finance.review"));
+    // A live module needs a role that can do its main job: reconcile invoices, or plan what to buy.
+    const fits = (u: Parameters<typeof canOpen>[0]) =>
+      canOpen(u, mod) && (mod !== "finance" || can(u, "finance.review")) && (mod !== "forecast" || can(u, "purchase.create"));
     if (view && fits(view.user)) return NextResponse.next();
     const userId = demoRoleFor(fits, PREFERRED[mod ?? ""] ?? "u-fnb");
     const started = userId ? startDemoSession(userId, req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local", req.cookies.get(SESSION_COOKIE)?.value) : null;
