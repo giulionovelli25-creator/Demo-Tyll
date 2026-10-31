@@ -172,7 +172,7 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
           <div className="px-5 pb-6 pt-4">
             {step < 4 && (
               <ol className="mb-4 flex gap-1.5" aria-label={`Step ${step} of 3`}>
-                {[1, 2, 3].map((n) => <li key={n} className={cn("h-1.5 flex-1 rounded-full", n <= step ? "bg-ink" : "bg-hair")} />)}
+                {[1, 2, 3].map((n) => <li key={n} className={cn("h-1.5 flex-1 rounded-full", n <= step ? "bg-accent" : "bg-hair")} />)}
               </ol>
             )}
 
@@ -187,7 +187,7 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
                   )}
                 </div>
                 <div className="mt-3 grid grid-cols-3 gap-1 rounded-full border border-line p-1 text-[13px]">
-                  {(["ingredients", "dishes", "glass"] as Group[]).map((g) => <button key={g} type="button" onClick={() => setGroup(g)} className={cn("h-10 rounded-full", group === g ? "bg-ink text-paper" : "text-steel")}>{t[g]}</button>)}
+                  {(["ingredients", "dishes", "glass"] as Group[]).map((g) => <button key={g} type="button" onClick={() => setGroup(g)} className={cn("h-10 rounded-full", group === g ? "bg-accent text-paper" : "text-steel")}>{t[g]}</button>)}
                 </div>
                 <div className="scroll-thin mt-3 grid max-h-[420px] grid-cols-3 gap-2 overflow-y-auto pb-1">
                   {tiles.map((tile) => {
@@ -216,7 +216,7 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
                   <button type="button" onClick={() => bump(unit === "each" ? 1 : 0.25)} aria-label="More" className="h-16 w-16 rounded-full border border-line text-3xl hover:bg-mist">+</button>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2" dir="ltr">
-                  {chips.map((c) => <button key={c} type="button" onClick={() => setQty(String(c))} className={cn("num h-11 min-w-14 rounded-full border px-3 text-sm", Number(qty) === c ? "border-ink bg-ink text-paper" : "border-line hover:bg-mist")}>{c}</button>)}
+                  {chips.map((c) => <button key={c} type="button" onClick={() => setQty(String(c))} className={cn("num h-11 min-w-14 rounded-full border px-3 text-sm", Number(qty) === c ? "border-accent bg-accent text-paper" : "border-line hover:bg-mist")}>{c}</button>)}
                 </div>
                 <div className="mt-6 flex gap-2">
                   <Button size="lg" className="flex-1" onClick={() => setStep(1)}><ChevronLeft size={16} className={lang === "ar" ? "rotate-180" : ""} /> {t.back}</Button>

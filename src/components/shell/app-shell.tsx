@@ -23,6 +23,7 @@ import type { Dept, User } from "@/lib/types";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
 import { Login } from "./login";
 import { Welcome } from "./welcome";
+import { MODULE_THEME, moduleStyle } from "@/components/theme";
 import { EarlyAccessBadge, GuidedPath, WhatsNew, startGuidedPath } from "./early-access";
 import { NotificationBell } from "./notifications";
 import { DemoGuide, DemoPicker } from "./demo-guide";
@@ -83,16 +84,16 @@ const IN_DEVELOPMENT: ModuleId[] = COMING_SOON.map((x) => x.m);
 function NavItem({ m, href, label, active, preview, reload, badge, onClose }: { m: ModuleId; href: string; label: string; active: boolean; preview?: boolean; reload?: boolean; badge?: number; onClose: () => void }) {
   const { icon: Icon } = NAV[m];
   const className = cn(
-    "group relative flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-sm leading-snug transition-colors duration-300 ease-tyll md:justify-center md:px-0 xl:justify-start xl:px-3",
-    active ? "bg-mist text-ink" : "text-steel hover:bg-cloud hover:text-ink",
+    "group relative flex min-h-10 items-center gap-3 rounded-xl px-2 py-1.5 text-sm leading-snug transition-colors duration-300 ease-tyll md:justify-center md:px-0 xl:justify-start xl:px-3",
+    active ? "bg-paper font-medium text-ink shadow-panel ring-1 ring-line" : "text-graphite hover:bg-paper/70 hover:text-ink",
   );
   const body = (
     <>
-      {active && <span className="absolute left-0 top-2.5 h-5 w-[3px] rounded-full bg-ink md:-left-2.5 xl:-left-3" aria-hidden />}
-      <Icon size={18} strokeWidth={1.6} aria-hidden />
+      {active && <span className="absolute left-0 top-2.5 h-5 w-[3px] rounded-full bg-accent md:-left-2.5 xl:-left-3" aria-hidden />}
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ background: MODULE_THEME[m].soft, color: MODULE_THEME[m].color }}><Icon size={16} strokeWidth={1.8} aria-hidden /></span>
       <span className="min-w-0 md:hidden xl:inline">{label}</span>
       {preview && <span className="ml-auto shrink-0 rounded-full border border-line px-1.5 text-[10px] leading-[16px] text-steel md:hidden xl:inline">Preview</span>}
-      {badge !== undefined && <span className="num ml-auto rounded-full bg-ink px-1.5 text-[11px] leading-[18px] text-paper md:absolute md:right-1.5 md:top-1 xl:static">{badge}</span>}
+      {badge !== undefined && <span className="num ml-auto rounded-full bg-accent px-1.5 text-[11px] leading-[18px] text-paper md:absolute md:right-1.5 md:top-1 xl:static">{badge}</span>}
     </>
   );
   return (
@@ -268,9 +269,9 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
   const current = moduleOfPath(pathname);
   const allowed = canOpen(user, current);
   const publicDemo = useSession((s) => !!s.demoRoles);
-  if (current === "staff" && allowed) return <StaffFrame user={user}>{children}</StaffFrame>;
+  if (current === "staff" && allowed) return <div style={moduleStyle("staff")}><StaffFrame user={user}>{children}</StaffFrame></div>;
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen" style={moduleStyle(current)}>
       <Sidebar user={user} active={current} open={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar user={user} onMenu={() => setMenuOpen(true)} />
@@ -321,7 +322,7 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
       {open && <button type="button" aria-label="Close menu" className="no-print fixed inset-0 z-40 bg-ink/25 md:hidden" onClick={onClose} />}
       <aside
         className={cn(
-          "no-print fixed inset-y-0 left-0 z-40 flex w-[248px] flex-col border-r border-line bg-paper transition-transform duration-300 ease-tyll md:sticky md:top-0 md:h-screen md:w-[72px] md:translate-x-0 xl:w-[248px]",
+          "no-print fixed inset-y-0 left-0 z-40 flex w-[248px] flex-col border-r border-line bg-[#f6f6fa] transition-transform duration-300 ease-tyll md:sticky md:top-0 md:h-screen md:w-[72px] md:translate-x-0 xl:w-[248px]",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >

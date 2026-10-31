@@ -3,7 +3,10 @@
 import clsx from "clsx";
 import { ArrowDownRight, ArrowUpRight, ChevronDown, ChevronUp, ChevronsUpDown, Minus, X } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
+import { usePathname } from "next/navigation";
 import { create } from "zustand";
+import { MODULE_ICON } from "@/components/theme";
+import { moduleOfPath } from "@/lib/domain/access";
 
 export const cn = clsx;
 
@@ -19,7 +22,7 @@ export function Button({ variant = "secondary", size = "md", className, type = "
         size === "sm" && "h-8 px-3 text-[13px]",
         size === "md" && "h-10 px-4 text-sm",
         size === "lg" && "h-12 px-6 text-[15px]",
-        variant === "primary" && "bg-ink text-paper hover:bg-graphite",
+        variant === "primary" && "bg-accent text-paper hover:bg-accent-hover",
         variant === "secondary" && "border border-line bg-paper text-ink hover:border-fog hover:bg-cloud",
         variant === "ghost" && "text-graphite hover:bg-mist",
         variant === "danger" && "border border-neg/30 bg-paper text-neg hover:bg-neg-soft",
@@ -31,18 +34,21 @@ export function Button({ variant = "secondary", size = "md", className, type = "
 }
 
 // ---- Status -----------------------------------------------------------------
-export type Tone = "neutral" | "pos" | "warn" | "neg" | "ink";
+export type Tone = "neutral" | "pos" | "warn" | "neg" | "ink" | "accent";
 
 const TONE: Record<Tone, string> = {
   neutral: "bg-mist text-graphite",
   pos: "bg-pos-soft text-pos",
   warn: "bg-warn-soft text-warn",
   neg: "bg-neg-soft text-neg",
-  ink: "bg-ink text-paper",
+  ink: "bg-accent text-paper",
+  accent: "bg-accent-soft text-accent-ink",
 };
 
 export function Badge({ tone = "neutral", children, className }: { tone?: Tone; children: ReactNode; className?: string }) {
-  return <span className={cn("inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium", TONE[tone], className)}>{children}</span>;
+  // Status badges carry a small dot so the colour is never the only signal.
+  const dot = tone === "pos" || tone === "warn" || tone === "neg";
+  return <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium", TONE[tone], className)}>{dot && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" aria-hidden />}{children}</span>;
 }
 
 /** Marks figures that are estimates or come from simulated records. */
@@ -71,6 +77,16 @@ export function Delta({ value, kind = "pct", goodWhen = "up", className, versus 
 }
 
 // ---- Layout -----------------------------------------------------------------
+function Sparkle({ className }: { className?: string }) {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M12 3.5c.6 3.9 2.6 5.9 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5 3.9-.6 5.9-2.6 6.5-6.5Z" fill="currentColor" opacity=".9" />
+      <circle cx="18.5" cy="17.5" r="1.6" fill="currentColor" opacity=".45" />
+      <circle cx="6" cy="18.5" r="1" fill="currentColor" opacity=".35" />
+    </svg>
+  );
+}
+
 export function Panel({ title, description, action, children, className, flush }: { title?: ReactNode; description?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; flush?: boolean }) {
   return (
     <section className={cn("min-w-0 rounded-panel border border-line bg-paper shadow-panel", className)}>
@@ -88,14 +104,20 @@ export function Panel({ title, description, action, children, className, flush }
   );
 }
 
+/** Page title in the module's colour band. Solid, full-contrast text: no entry animation and no texture behind it. */
 export function PageHeader({ title, lead, children, crumbs }: { title: ReactNode; lead?: ReactNode; children?: ReactNode; crumbs?: ReactNode }) {
+  const Icon = MODULE_ICON[moduleOfPath(usePathname() ?? "/")];
   return (
-    <header data-tour="page" className="waves animate-rise overflow-hidden rounded-panel border border-line bg-paper px-6 py-7 shadow-panel sm:px-8 sm:py-9">
+    <header data-tour="page" className="relative overflow-hidden rounded-panel border border-line bg-[linear-gradient(120deg,var(--mod-soft)_0%,#ffffff_62%)] px-6 py-7 shadow-panel sm:px-8 sm:py-8">
+      <span className="absolute inset-y-0 left-0 w-1 bg-[var(--mod)]" aria-hidden />
       {crumbs && <div className="mb-3">{crumbs}</div>}
       <div className="flex flex-wrap items-end justify-between gap-5">
-        <div className="min-w-0 max-w-[64ch]">
-          <h1 className="text-[30px] leading-[1.1] tracking-[-0.03em] text-ink sm:text-[38px]">{title}</h1>
-          {lead && <p className="mt-3 text-[15px] leading-relaxed text-graphite">{lead}</p>}
+        <div className="flex min-w-0 max-w-[64ch] items-start gap-4">
+          <span className="mt-0.5 hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-paper text-[var(--mod)] shadow-panel sm:flex"><Icon size={24} strokeWidth={1.7} aria-hidden /></span>
+          <div className="min-w-0">
+          <h1 className="text-[30px] font-medium leading-[1.1] tracking-[-0.03em] text-ink sm:text-[36px]">{title}</h1>
+          {lead && <p className="mt-2 text-[15px] leading-relaxed text-graphite">{lead}</p>}
+          </div>
         </div>
         {children && <div className="flex flex-wrap items-center gap-2">{children}</div>}
       </div>
@@ -103,10 +125,16 @@ export function PageHeader({ title, lead, children, crumbs }: { title: ReactNode
   );
 }
 
+/** A friendly empty state: a small illustration in the module's colour, what this space is for, and what to do. */
 export function EmptyState({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
   return (
-    <div className="waves waves-full flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-line px-6 py-12 text-center">
-      <p className="text-base text-ink">{title}</p>
+    <div className="flex flex-col items-center justify-center overflow-hidden rounded-panel border border-dashed border-line bg-[radial-gradient(circle_at_50%_0%,var(--mod-soft),#ffffff_70%)] px-6 py-12 text-center">
+      <span className="relative mb-4 flex h-16 w-16 items-center justify-center" aria-hidden>
+        <span className="absolute inset-0 rounded-full bg-[var(--mod-soft)]" />
+        <span className="absolute inset-2 rounded-full bg-paper shadow-panel" />
+        <Sparkle className="relative text-[var(--mod)]" />
+      </span>
+      <p className="text-base font-medium text-ink">{title}</p>
       {children && <p className="mt-1 max-w-[52ch] text-[13px] text-steel">{children}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
@@ -170,7 +198,7 @@ export function Segmented<T extends string>({ value, onChange, options, label, s
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={cn("whitespace-nowrap rounded-full font-medium transition-colors duration-300 ease-tyll", size === "sm" ? "h-7 px-3 text-xs" : "h-9 px-4 text-[13px]", value === o.value ? "bg-ink text-paper" : "text-steel hover:text-ink")}
+          className={cn("whitespace-nowrap rounded-full font-medium transition-colors duration-300 ease-tyll", size === "sm" ? "h-7 px-3 text-xs" : "h-9 px-4 text-[13px]", value === o.value ? "bg-accent text-paper" : "text-steel hover:text-ink")}
         >
           {o.label}
         </button>
@@ -189,7 +217,7 @@ export function Tabs<T extends string>({ value, onChange, tabs }: { value: T; on
           type="button"
           aria-selected={value === t.value}
           onClick={() => onChange(t.value)}
-          className={cn("-mb-px flex items-center gap-2 whitespace-nowrap border-b-2 pb-3 pt-1 text-sm transition-colors duration-300 ease-tyll", value === t.value ? "border-ink text-ink" : "border-transparent text-steel hover:text-ink")}
+          className={cn("-mb-px flex items-center gap-2 whitespace-nowrap border-b-2 pb-3 pt-1 text-sm transition-colors duration-300 ease-tyll", value === t.value ? "border-accent text-accent-ink" : "border-transparent text-steel hover:text-ink")}
         >
           {t.label}
           {t.count !== undefined && <span className="num rounded-full bg-mist px-1.5 text-xs text-graphite">{t.count}</span>}

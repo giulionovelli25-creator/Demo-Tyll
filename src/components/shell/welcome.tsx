@@ -33,9 +33,10 @@ export function Welcome() {
         </div>
       </section>
       <section className="flex min-w-0 flex-col justify-center px-6 py-10 sm:px-12">
-        <div className="animate-rise mx-auto w-full max-w-md">
+        <div className="mx-auto w-full max-w-md">
           <div className="flex items-center gap-4 lg:hidden"><TyllIcon size={48} /><TyllLogo height={26} priority /></div>
-          <h1 className="mt-8 text-[34px] leading-[1.1] tracking-[-0.03em] lg:mt-0">Welcome to the Tyll demo</h1>
+          <span className="mt-8 inline-block rounded-full bg-accent-soft px-2.5 text-xs font-medium leading-[22px] text-accent-ink lg:mt-0">Early access</span>
+          <h1 className="mt-4 text-[34px] font-medium leading-[1.1] tracking-[-0.03em] text-ink">Welcome to the Tyll demo</h1>
           <p className="mt-4 text-[15px] leading-relaxed text-graphite">Explore Tyll with a fictional hotel, Grand Resort Dubai. This is an early version of our product. New features are added regularly.</p>
           <Button type="button" variant="primary" size="lg" className="mt-8 w-full" onClick={enter} disabled={busy}>
             {busy ? "Opening the demo" : "Enter demo"} {!busy && <ArrowRight size={16} aria-hidden />}

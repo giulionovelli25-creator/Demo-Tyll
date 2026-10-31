@@ -89,9 +89,9 @@ export function Login() {
       </section>
 
       <section className="flex min-w-0 flex-col justify-center px-6 py-10 sm:px-12">
-        <div className="animate-rise mx-auto w-full max-w-md">
+        <div className="mx-auto w-full max-w-md">
           <div className="flex items-center gap-4 lg:hidden"><TyllIcon size={48} /><TyllLogo height={26} priority /></div>
-          <h1 ref={top} className="scroll-mt-6 mt-8 text-[34px] leading-[1.1] tracking-[-0.03em] lg:mt-0">Sign in</h1>
+          <h1 ref={top} className="scroll-mt-6 mt-8 text-[34px] font-medium leading-[1.1] tracking-[-0.03em] text-ink lg:mt-0">Sign in</h1>
 
           <form className="mt-7 space-y-4" onSubmit={submit}>
             <Field label="Email" type="email" autoComplete="username" value={email} onChange={(e) => { setEmail(e.target.value); setPicked(null); }} required />

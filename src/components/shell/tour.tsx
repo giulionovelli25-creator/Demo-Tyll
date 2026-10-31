@@ -94,7 +94,7 @@ export function Tour() {
       </div>
       <ol className="mt-3 flex gap-1" aria-hidden>
         {TOUR_STEPS.map((_, i) => (
-          <li key={i} className={cn("h-1 flex-1 rounded-full transition-colors duration-300", i < step ? "bg-pos" : i === step ? "bg-ink" : "bg-hair")} />
+          <li key={i} className={cn("h-1 flex-1 rounded-full transition-colors duration-300", i < step ? "bg-pos" : i === step ? "bg-accent" : "bg-hair")} />
         ))}
       </ol>
       <h2 className="mt-4 text-lg leading-snug">{current.title}</h2>

@@ -198,7 +198,7 @@ function QuickLog({ kind }: { kind: "waste" | "breakage" }) {
       </div>
       <fieldset>
         <legend className="mb-2 text-[13px] text-graphite">Reason</legend>
-        <div className="flex flex-wrap gap-2">{REASONS[kind].map((r) => <button key={r} type="button" aria-pressed={reason === r} onClick={() => setReason(r)} className={cn("h-11 rounded-full border px-4 text-[15px]", reason === r ? "border-ink bg-ink text-paper" : "border-line")}>{REASON_LABEL[r].en}</button>)}</div>
+        <div className="flex flex-wrap gap-2">{REASONS[kind].map((r) => <button key={r} type="button" aria-pressed={reason === r} onClick={() => setReason(r)} className={cn("h-11 rounded-full border px-4 text-[15px]", reason === r ? "border-accent bg-accent text-paper" : "border-line")}>{REASON_LABEL[r].en}</button>)}</div>
       </fieldset>
       <Field label="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} placeholder={kind === "breakage" ? "For example: dropped tray at table 12" : ""} />
       <Big disabled={busy || qty <= 0} onClick={async () => {

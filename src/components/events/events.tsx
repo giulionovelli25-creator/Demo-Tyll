@@ -155,7 +155,7 @@ function FoodStep({ event, editable, onSaved }: { event: EventRecord; editable: 
       <div className="flex flex-wrap gap-2">
         {(Object.keys(SERVICES) as ServiceId[]).map((id) => {
           const on = services.some((s) => s.id === id);
-          return <button key={id} type="button" disabled={!editable} aria-pressed={on} onClick={() => toggle(id)} className={cn("min-h-11 rounded-full border px-5 text-sm transition-colors", on ? "border-ink bg-ink text-paper" : "border-line bg-paper hover:border-fog")}>{SERVICES[id].label}</button>;
+          return <button key={id} type="button" disabled={!editable} aria-pressed={on} onClick={() => toggle(id)} className={cn("min-h-11 rounded-full border px-5 text-sm transition-colors", on ? "border-accent bg-accent text-paper" : "border-line bg-paper hover:border-fog")}>{SERVICES[id].label}</button>;
         })}
       </div>
       <div className="mt-5 space-y-4">

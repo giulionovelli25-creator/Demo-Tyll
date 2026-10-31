@@ -99,7 +99,7 @@ export function GuidedPath() {
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <ol className="mr-auto flex gap-1.5" aria-hidden>
-          {GUIDED_PATH.map((s, i) => <li key={s.href} className={cn("h-1.5 w-6 rounded-full", i <= at ? "bg-ink" : "bg-line")} />)}
+          {GUIDED_PATH.map((s, i) => <li key={s.href} className={cn("h-1.5 w-6 rounded-full", i <= at ? "bg-accent" : "bg-line")} />)}
         </ol>
         {at > 0 && <Button size="sm" variant="ghost" onClick={() => go(at - 1)}><ArrowLeft size={14} aria-hidden /> Back</Button>}
         {last ? <Button size="sm" variant="primary" onClick={close}>Finish</Button> : <Button size="sm" variant="primary" onClick={() => go(at + 1)}>Next: {GUIDED_PATH[at + 1].title} <ArrowRight size={14} aria-hidden /></Button>}
