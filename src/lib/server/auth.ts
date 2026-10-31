@@ -23,7 +23,46 @@ export const SESSION_COOKIE = "tyll_session";
 export const DEMO_MODE = process.env.TYLL_DEMO_MODE !== "off";
 
 /** Everyone except operational staff must unlock management information with a PIN. */
-export const pinRequired = (role: Role) => role !== "employee";
+export const pinRequired = (role: Role) => !publicDemo() && role !== "employee";
+
+/**
+ * Public demo (TYLL_PUBLIC_DEMO=on): visitors enter from a welcome screen with no password or PIN, and switch between a
+ * few fictional roles. Accounts, passwords and PINs stay in place and are used again as soon as the flag is off.
+ * Read at call time, so tests can switch it.
+ */
+export const publicDemo = () => process.env.TYLL_PUBLIC_DEMO === "on";
+
+/** The roles a public visitor can switch between, in order. The first is where the demo starts. */
+export const PUBLIC_DEMO_ROLES = [
+  { userId: "u-buy", label: "Purchasing Manager" },
+  { userId: "u-fnb", label: "F&B Director" },
+  { userId: "u-chef", label: "Head Chef" },
+  { userId: "u-fc", label: "Financial Controller" },
+] as const;
+/** Used only when a deep link opens a page none of the four roles can see. */
+const PUBLIC_DEMO_FALLBACK = ["u-gm", "u-emp"];
+
+/** A demo role that may open a module: the preferred one first, then the others. */
+export function demoRoleFor(canOpen: (user: User) => boolean, preferred?: string): string | null {
+  const order = [...(preferred ? [preferred] : []), ...PUBLIC_DEMO_ROLES.map((r) => r.userId), ...PUBLIC_DEMO_FALLBACK];
+  return order.find((id) => userById[id] && canOpen(userById[id])) ?? null;
+}
+
+/** Starts a session without a password, for the public demo only. Ends the previous session when switching. */
+export function startDemoSession(userId: string, ip: string, previous?: string): { ok: true; token: string; user: User } | Failure {
+  if (!publicDemo()) return { ok: false, status: 403, error: "Not available." };
+  const allowed = [...PUBLIC_DEMO_ROLES.map((r) => r.userId), ...PUBLIC_DEMO_FALLBACK];
+  if (!allowed.includes(userId) || !userById[userId] || !load().accounts[userId]) return { ok: false, status: 403, error: "That role is not part of the demo." };
+  const now = Date.now();
+  const token = randomBytes(32).toString("base64url");
+  mutate((st) => {
+    if (previous) delete st.sessions[tokenKey(previous)];
+    st.sessions[tokenKey(token)] = { userId, createdAt: now, lastSeenAt: now, pinVerifiedAt: null, pinActiveAt: null };
+    for (const [k, v] of Object.entries(st.sessions)) if (expired(v, now)) delete st.sessions[k];
+  });
+  audit(userId, "Public demo session", "", ip);
+  return { ok: true, token, user: userById[userId] };
+}
 
 // ---- Secrets ----------------------------------------------------------------
 const SCRYPT = { N: 16384, r: 8, p: 1, keylen: 32 };

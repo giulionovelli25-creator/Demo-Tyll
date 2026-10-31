@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Boxes, ClipboardCheck, PackageX, ScrollText, SearchCheck, ShoppingCart, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Counts } from "@/components/stock/counts";
+import { QuickCount } from "@/components/stock/quick-count";
 import { Inventory } from "@/components/stock/inventory";
 import { Recipes } from "@/components/stock/recipes";
 import { Suppliers } from "@/components/stock/suppliers";
@@ -55,13 +56,14 @@ export default function StockPage() {
   const inDetail = tab === "where" && params.get("period");
   const router = useRouter();
   const investigations = useInvestigations();
+  const chef = user.role === "chef";
   const openStock = investigations.filter((i) => i.status !== "closed" && (i.type === "usage_variance" || i.type === "stock_shortfall")).length;
 
   return (
     <div className="space-y-5">
       <PageHeader
         title={tab ? label : "Tyll Stock"}
-        lead={tab ? undefined : "What do you want to do?"}
+        lead={tab ? undefined : chef ? "Today's stock for your kitchen, and quick waste logging." : "What do you want to do?"}
         crumbs={tab && !employee ? <Crumbs items={[{ label: "Tyll Stock", onClick: () => setTab(null) }, { label, onClick: inDetail ? () => setTab("where") : undefined }, ...(inDetail ? [{ label: crumbFor(params.get("period")!) }] : [])]} /> : undefined}
       >
         {tab && needsProperty && (propertyId || props.length === 1 ? <Badge>{propertyById[pid].name}</Badge> : (
@@ -69,6 +71,7 @@ export default function StockPage() {
         ))}
       </PageHeader>
       {tab === null && <StockAlert where="stock" />}
+      {tab === null && chef && <QuickCount user={user} propertyId={pid} onFullCount={() => setTab("counts")} />}
       {tab === null && (
         <ModuleHub
           onPick={(v) => (v === "order" ? router.push("/forecast?tab=buy&from=stock") : setTab(v as Tab))}

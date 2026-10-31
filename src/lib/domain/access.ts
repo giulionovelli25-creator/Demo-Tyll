@@ -101,7 +101,7 @@ const PERMISSIONS: Record<Role, Permission[]> = {
   concierge: ["settings.reset", "rooms.view", "fo.desk", "concierge"],
   bell_captain: ["settings.reset", "rooms.view", "bell.dispatch", "bell.task", "staff.request", "staff.lend"],
   event_manager: ["settings.reset", "purchase.create", "events.plan", "staff.request", "staff.lend", "sales.view"],
-  purchasing: ["stock.count", "settings.reset", "purchase.review", "purchase.receive", "stock.review"],
+  purchasing: ["stock.count", "settings.reset", "purchase.create", "purchase.review", "purchase.receive", "stock.review"],
   chef: ["stock.logWaste", "stock.count", "flow.updateOrder", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "stock.review"],
   employee: ["stock.logWaste", "stock.count", "flow.updateOrder", "settings.reset", "prep.complete", "hk.clean", "bell.task"],
   sales: ["settings.reset", "sales.work", "sales.view"],
@@ -117,7 +117,7 @@ export const MODULE_PATH: Record<ModuleId, string> = {
 export const modulesFor = (user: User): ModuleId[] => MODULES[user.role];
 export const canOpen = (user: User, module: ModuleId) => MODULES[user.role].includes(module);
 export const can = (user: User, permission: Permission) => PERMISSIONS[user.role].includes(permission);
-export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/forecast" : user.role === "chef" ? "/forecast?tab=prep" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : "/");
+export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/forecast?tab=buy" : user.role === "chef" ? "/stock" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : user.role === "controller" ? "/finance?tab=invoices" : "/");
 
 /** Which module a URL path belongs to, for route guarding. */
 export function moduleOfPath(path: string): ModuleId {

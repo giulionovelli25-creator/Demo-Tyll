@@ -10,6 +10,8 @@ interface SessionState {
   userId: string | null;
   demoPin?: string;
   pinExpiresAt: number | null;
+  /** Public demo only: the roles a visitor can switch between. */
+  demoRoles?: { userId: string; label: string }[] | null;
   set(patch: Partial<Omit<SessionState, "set">>): void;
 }
 

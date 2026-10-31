@@ -22,6 +22,7 @@ import { currentRange, useDemo } from "@/lib/store";
 import type { Dept, User } from "@/lib/types";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
 import { Login } from "./login";
+import { Welcome } from "./welcome";
 import { NotificationBell } from "./notifications";
 import { DemoGuide, DemoPicker } from "./demo-guide";
 import { TakeTourButton, TourOffer, Walkthrough } from "./walkthrough";
@@ -61,9 +62,53 @@ const ROLE_NAV: Partial<Record<User["role"], Partial<Record<ModuleId, string>>>>
   chef: { forecast: "Kitchen planning", tasks: "Kitchen tasks" },
 };
 
+/**
+ * Modules still being built: Events and Staffing, Rooms and Guest Experience, Sales and Performance.
+ * They work with demo data but are marked so nobody mistakes them for finished. Purchasing, Stock and waste, and
+ * Reconciliation are the live modules.
+ */
+const IN_DEVELOPMENT: ModuleId[] = ["events", "rooms", "reports"];
+
 const ORDER: ModuleId[] = ["staff", "tasks", "overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "finance", "reports", "settings"];
 
 const subscribe = () => () => {};
+
+/** Ends the session. In the public demo, the visitor goes back to the welcome screen. */
+async function leaveTyll(signOut: () => void) {
+  const publicDemo = !!useSession.getState().demoRoles;
+  await api("/api/auth/logout", { method: "POST", body: {} }).catch(() => undefined);
+  signOut();
+  clearDataset();
+  reloadTo(publicDemo ? "/welcome" : "/login");
+}
+
+/** Public demo: switch to another fictional role at once, then open that role's landing page. */
+function RoleSwitcher({ user }: { user: User }) {
+  const roles = useSession((s) => s.demoRoles);
+  const signOut = useDemo((s) => s.signOut);
+  const [busy, setBusy] = useState(false);
+  if (!roles) return null;
+  const switchTo = async (userId: string) => {
+    if (userId === user.id) return;
+    setBusy(true);
+    try {
+      const r = await api<{ home: string }>("/api/auth/demo", { method: "POST", body: { userId } });
+      signOut();
+      clearDataset();
+      reloadTo(r.home);
+    } catch (e) {
+      report({ ok: false, error: e instanceof Error ? e.message : "That role could not open." }, "");
+      setBusy(false);
+    }
+  };
+  const current = roles.some((r) => r.userId === user.id) ? user.id : "";
+  return (
+    <Select label="View the demo as" hideLabel className="w-[170px] sm:w-[190px]" value={current} disabled={busy} onChange={(e) => switchTo(e.target.value)}>
+      {!current && <option value="">{ROLE_LABEL[user.role]}</option>}
+      {roles.map((r) => <option key={r.userId} value={r.userId}>{r.label}</option>)}
+    </Select>
+  );
+}
 const useHydrated = () => useSyncExternalStore(subscribe, () => true, () => false);
 
 interface SessionInfo {
@@ -72,6 +117,7 @@ interface SessionInfo {
   pinUnlocked: boolean;
   pinExpiresAt: number | null;
   demoPin?: string;
+  publicDemo?: { userId: string; label: string }[] | null;
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -79,6 +125,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   if (!hydrated) return <BrandLoader />;
   if (pathname === "/login") return <Login />;
+  if (pathname === "/welcome") return <Welcome />;
   return <Authed>{children}</Authed>;
 }
 
@@ -112,7 +159,7 @@ function Authed({ children }: { children: ReactNode }) {
         return;
       }
     }
-    useSession.getState().set({ status: "ready", userId: info.userId, demoPin: info.demoPin, pinExpiresAt: info.pinExpiresAt });
+    useSession.getState().set({ status: "ready", userId: info.userId, demoPin: info.demoPin, pinExpiresAt: info.pinExpiresAt, demoRoles: info.publicDemo ?? null });
   }, [signIn]);
 
   useEffect(() => {
@@ -160,12 +207,8 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
   // Concierge and bell captains also have a desk view; frontline staff stay in Tyll Staff.
   const frontline = user.role === "employee" || user.role === "storekeeper";
   const others = frontline ? [] : modulesFor(user).filter((m) => !["staff", "tasks", "settings"].includes(m));
-  const leave = async () => {
-    await api("/api/auth/logout", { method: "POST", body: {} }).catch(() => undefined);
-    signOut();
-    clearDataset();
-    reloadTo("/login");
-  };
+  const leave = () => leaveTyll(signOut);
+  const publicDemo = useSession((s) => !!s.demoRoles);
   return (
     <div className="min-h-screen bg-paper">
       <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-hair bg-paper/90 px-4 backdrop-blur">
@@ -174,7 +217,7 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
           <TakeTourButton user={user} label="Tour" className="border-0 px-2" />
           <NotificationBell />
           {others.length > 0 && <Link href={MODULE_PATH[others[0]]} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Full Tyll</Link>}
-          <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Sign out</button>
+          <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">{publicDemo ? "Leave demo" : "Sign out"}</button>
         </span>
       </header>
       <main className="mx-auto w-full max-w-md px-4 pb-24 pt-5">{children}</main>
@@ -198,6 +241,11 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar user={user} onMenu={() => setMenuOpen(true)} />
         <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-24 pt-5 sm:px-6 lg:px-8">
+          {allowed && IN_DEVELOPMENT.includes(current) && (
+            <p className="mb-5 rounded-2xl border border-line bg-cloud px-4 py-3 text-sm text-graphite">
+              <span className="text-ink">Preview, in development.</span> This module works with demo data and is still being built. Purchasing, stock and waste, and reconciliation are the live modules today.
+            </p>
+          )}
           {allowed ? (
             children
           ) : (
@@ -219,7 +267,9 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
 function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId; open: boolean; onClose: () => void }) {
   const modules = modulesFor(user);
   const openCases = useInvestigations().filter((i) => i.status !== "closed").length;
-  const canTour = user.role !== "employee" && user.role !== "storekeeper";
+  const publicDemo = useSession((s) => !!s.demoRoles);
+  // The guided demo switches between many accounts, which the public demo does not offer.
+  const canTour = !publicDemo && user.role !== "employee" && user.role !== "storekeeper";
   const [picking, setPicking] = useState(false);
   const all = ORDER.filter((m) => modules.includes(m) && m !== "settings");
   const first = PRIMARY[user.role];
@@ -271,6 +321,7 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
                     {on && <span className="absolute left-0 top-2.5 h-5 w-[3px] rounded-full bg-ink md:-left-2.5 xl:-left-3" aria-hidden />}
                     <Icon size={18} strokeWidth={1.6} aria-hidden />
                     <span className="md:hidden xl:inline">{label}</span>
+                    {IN_DEVELOPMENT.includes(m) && <span className="ml-auto rounded-full border border-line px-1.5 text-[10px] leading-[16px] text-steel md:hidden xl:inline">Preview</span>}
                     {m === "investigations" && openCases > 0 && (
                       <span className="num ml-auto rounded-full bg-ink px-1.5 text-[11px] leading-[18px] text-paper md:absolute md:right-1.5 md:top-1 xl:static">{openCases}</span>
                     )}
@@ -288,7 +339,7 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
               <span className="md:hidden xl:inline">Guided demo</span>
             </button>
           )}
-          <p className="text-xs leading-relaxed text-steel md:hidden xl:block">Demonstration with simulated data. Business date {fmtDate(DEMO_TODAY, true)}, {fmtTime(DEMO_NOW_MIN)}.</p>
+          <p className="text-xs leading-relaxed text-steel md:hidden xl:block">{publicDemo ? "Early version, growing every few weeks. " : ""}Demonstration with simulated data. Business date {fmtDate(DEMO_TODAY, true)}, {fmtTime(DEMO_NOW_MIN)}.</p>
         </div>
       </aside>
       {picking && <DemoPicker user={user} onClose={() => setPicking(false)} />}
@@ -351,7 +402,8 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
         ) : (
           <p className="min-w-0 flex-1 truncate text-sm text-steel">{allowedOutlets(user)[0] ? `${outletById[allowedOutlets(user)[0]].name}, ` : ""}{propertyById[props[0]].name}</p>
         )}
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex min-w-0 items-center gap-1">
+          <RoleSwitcher user={user} />
           <span data-tour="search"><IconButton label="Search (Ctrl K)" onClick={() => toggle("search")} active={panel === "search"}><Search size={18} strokeWidth={1.7} /></IconButton></span>
           <AlertsButton user={user} />
           <div className="relative">
@@ -429,17 +481,13 @@ function ProfileMenu({ user, onClose }: { user: User; onClose: () => void }) {
   const signOut = useDemo((s) => s.signOut);
   const ref = useDismiss(onClose);
   const pinRequired = useSession((s) => s.pinExpiresAt !== null);
+  const publicDemo = useSession((s) => !!s.demoRoles);
   const lock = async () => {
     onClose();
     await api("/api/auth/lock", { method: "POST", body: {} }).catch(() => undefined);
     lockLocally();
   };
-  const leave = async () => {
-    await api("/api/auth/logout", { method: "POST", body: {} }).catch(() => undefined);
-    signOut();
-    clearDataset();
-    reloadTo("/login");
-  };
+  const leave = () => leaveTyll(signOut);
   return (
     <div ref={ref} role="menu" className="animate-rise absolute right-0 top-12 z-40 w-[280px] rounded-2xl border border-line bg-paper p-2 shadow-float">
       <div className="px-3 py-2.5">
@@ -449,13 +497,13 @@ function ProfileMenu({ user, onClose }: { user: User; onClose: () => void }) {
       <div className="border-t border-hair pt-1">
         <div className="px-1 py-1" onClick={onClose}><TakeTourButton user={user} here label="Tour this page" className="w-full border-0 px-2 py-2 text-sm" /></div>
         <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} strokeWidth={1.7} /> Settings and access</Link>
-        {pinRequired && (
+        {pinRequired && !publicDemo && (
           <button role="menuitem" type="button" onClick={lock} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">
             <LockKeyhole size={16} strokeWidth={1.7} /> Lock now
           </button>
         )}
         <button role="menuitem" type="button" onClick={leave} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">
-          <LogOut size={16} strokeWidth={1.7} /> Sign out
+          <LogOut size={16} strokeWidth={1.7} /> {publicDemo ? "Leave demo" : "Sign out"}
         </button>
       </div>
     </div>

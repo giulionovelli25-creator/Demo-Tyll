@@ -15,6 +15,10 @@ Open **http://localhost:3210**. (Plain `npm run dev` uses port 3000.) Node.js 20
 
 **Switching person** is a real sign-out and sign-in: use **Sign out** in the profile menu, or the **Sign in as …** button on a guided demo step.
 
+## Public demo (demo.tyll.ai)
+
+Set `TYLL_PUBLIC_DEMO=on` (for local use, in `.env.local`) and restart. Visitors then see one welcome screen with **Enter demo**, which opens the Purchasing Manager's *What to buy this week* report. No password or PIN. A role switcher in the top bar changes instantly between **Purchasing Manager**, **F&B Director**, **Head Chef** (stock and one-tap −1 waste) and **Financial Controller** (supplier invoice reconciliation). Any deep link, such as `/forecast?tab=buy`, `/stock` or `/finance?tab=invoices`, opens directly as a role that can see it. Events, Rooms and Reports are marked **Preview** (in development). Guided demo and Lock are hidden; Sign out reads **Leave demo**. With the flag off, everything below applies unchanged.
+
 ## Who to use
 
 | Story | People |

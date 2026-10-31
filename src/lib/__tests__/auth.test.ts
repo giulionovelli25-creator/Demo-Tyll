@@ -189,3 +189,61 @@ describe("page guard", () => {
     expect(where(proxy(req("/investigations", manager)))).toBeNull();
   });
 });
+
+describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
+  const demoRoute = () => import("../../app/api/auth/demo/route");
+  const where = (res: Response) => res.headers.get("location") && new URL(res.headers.get("location")!).pathname + new URL(res.headers.get("location")!).search;
+  const cookieOf = (res: Response) => /tyll_session=([^;]+)/.exec(res.headers.get("set-cookie") ?? "")?.[1];
+  beforeEach(() => vi.stubEnv("TYLL_PUBLIC_DEMO", "on"));
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("is off unless the flag is set: the welcome page and the demo route are closed", async () => {
+    vi.stubEnv("TYLL_PUBLIC_DEMO", "");
+    expect(where(proxy(req("/welcome")))).toBe("/login");
+    const res = await (await demoRoute()).POST(req("/api/auth/demo", undefined, { method: "POST", body: {} }));
+    expect(res.status).toBe(403);
+    expect(where(proxy(req("/forecast?tab=buy")))).toBe("/login?next=%2Fforecast%3Ftab%3Dbuy");
+  });
+
+  it("sends new visitors to the welcome screen instead of sign-in", () => {
+    expect(where(proxy(req("/")))).toBe("/welcome");
+    expect(where(proxy(req("/login")))).toBe("/welcome");
+    expect(where(proxy(req("/welcome")))).toBeNull();
+  });
+
+  it("enters as the Purchasing Manager with no PIN, and switches only between allowed roles", async () => {
+    const { POST } = await demoRoute();
+    const res = await POST(req("/api/auth/demo", undefined, { method: "POST", body: {} }));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ user: { id: "u-buy" }, home: "/forecast?tab=buy" });
+    const token = cookieOf(res)!;
+    const view = resolveSession(token)!;
+    expect(view.user.id).toBe("u-buy");
+    expect(view.pinRequired).toBe(false);
+
+    const chef = await POST(req("/api/auth/demo", token, { method: "POST", body: { userId: "u-chef" } }));
+    expect((await chef.json()).home).toBe("/stock");
+    expect(resolveSession(token)).toBeNull(); // the previous session ends on a switch
+    expect(resolveSession(cookieOf(chef)!)!.user.id).toBe("u-chef");
+
+    expect((await POST(req("/api/auth/demo", undefined, { method: "POST", body: { userId: "u-owner" } }))).status).toBe(403);
+    expect((await POST(req("/api/auth/demo", undefined, { method: "POST", body: {}, origin: "https://evil.example" }))).status).toBe(403);
+  });
+
+  it("opens deep links directly, as a role that may see the page", () => {
+    const first = proxy(req("/forecast?tab=buy"));
+    expect(where(first)).toBe("/forecast?tab=buy");
+    expect(resolveSession(cookieOf(first)!)!.user.id).toBe("u-buy");
+    const cases: [string, string][] = [["/stock", "u-chef"], ["/money", "u-fc"], ["/finance?tab=invoices", "u-fc"], ["/events", "u-fnb"], ["/rooms", "u-gm"], ["/staff", "u-emp"], ["/investigations", "u-fnb"]];
+    for (const [url, id] of cases) expect(resolveSession(cookieOf(proxy(req(url)))!)!.user.id).toBe(id);
+    // A role that may already open the page keeps its session.
+    const fnb = cookieOf(proxy(req("/events")))!;
+    expect(where(proxy(req("/stock", fnb)))).toBeNull();
+    // Finance links switch to the role that reconciles invoices.
+    const gm = cookieOf(proxy(req("/rooms")))!;
+    expect(resolveSession(cookieOf(proxy(req("/finance?tab=invoices", gm)))!)!.user.id).toBe("u-fc");
+    // A signed-in role without the overview goes to its own landing page from "/".
+    const buyer = cookieOf(proxy(req("/forecast")))!;
+    expect(where(proxy(req("/", buyer)))).toBe("/forecast?tab=buy");
+  });
+});

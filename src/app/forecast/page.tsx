@@ -5,6 +5,7 @@ import { useLiveGet } from "@/lib/guest-hooks";
 import type { PurchaseRequest } from "@/lib/types";
 import { Approvals } from "@/components/forecast/approvals";
 import { WhatToBuy } from "@/components/forecast/buy";
+import { BuyWeekReport } from "@/components/forecast/week-report";
 import { WhatToPrep } from "@/components/forecast/prep";
 import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
@@ -32,13 +33,16 @@ export default function ForecastPage() {
   const purchasing = can(user, "purchase.review");
   const home = purchasing ? "Purchasing" : user.role === "chef" ? "Kitchen planning" : "Tyll Forecast";
   const { data } = useLiveGet<{ requests: PurchaseRequest[] }>(purchasing ? "/api/purchasing" : null);
+  const waiting = (data?.requests ?? []).filter((r) => r.status === "purchasing").length;
+  const due = (data?.requests ?? []).filter((r) => r.status === "approved").length;
+  const summary = data ? `${waiting ? `${waiting} request${waiting === 1 ? "" : "s"} waiting for you` : "No requests waiting"}, ${due ? `${due} order${due === 1 ? "" : "s"} still to be delivered` : "no deliveries outstanding"}.` : "Requests, orders and deliveries.";
   const count = (f: (r: PurchaseRequest) => boolean) => { const n = (data?.requests ?? []).filter(f).length; return n ? String(n) : undefined; };
 
   return (
     <div className="space-y-5">
       <PageHeader
         title={tab ? LABEL[tab] : home}
-        lead={tab ? undefined : "What do you want to do?"}
+        lead={tab ? (tab === "buy" && purchasing ? "This week's report first. To send an order, use the steps below it." : undefined) : purchasing ? summary : "What do you want to do?"}
         crumbs={tab ? <Crumbs items={fromStock && tab === "buy" ? [{ label: "Tyll Stock", onClick: () => router.push("/stock") }, { label: LABEL[tab] }] : [{ label: home, onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert where="forecast" />}
@@ -57,6 +61,8 @@ export default function ForecastPage() {
         />
       )}
       {tab !== null && tabs.length > 1 && <Tabs value={tab} onChange={setTab} tabs={tabs.map((t) => ({ value: t, label: LABEL[t] }))} />}
+      {tab === "buy" && purchasing && <BuyWeekReport user={user} />}
+      {tab === "buy" && purchasing && <h2 className="pt-4 text-xl tracking-[-0.02em] text-ink">Order step by step</h2>}
       {tab === "buy" && <WhatToBuy />}
       {tab === "prep" && <WhatToPrep />}
       {tab === "approvals" && <Approvals />}
