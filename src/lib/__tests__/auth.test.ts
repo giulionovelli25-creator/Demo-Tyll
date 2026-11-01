@@ -250,3 +250,20 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     expect(where(proxy(req("/", buyer)))).toBe("/forecast?tab=buy");
   });
 });
+
+describe("public demo freshness", () => {
+  afterEach(() => vi.unstubAllEnvs());
+  it("returns shared records to the start at most once an hour", async () => {
+    vi.stubEnv("TYLL_PUBLIC_DEMO", "on");
+    const { freshenPublicDemo } = await import("../server/demo");
+    const { loadStore, mutateStore } = await import("../server/purchasing-store");
+    const t = 10_000_000_000_000;
+    freshenPublicDemo(t);
+    const clean = loadStore().stockLog.waste.length;
+    mutateStore((x) => { x.stockLog.waste.push({ ...x.stockLog.waste[0], id: "W-TEST" }); });
+    freshenPublicDemo(t + 30 * 60 * 1000);
+    expect(loadStore().stockLog.waste.length).toBe(clean + 1);
+    freshenPublicDemo(t + 61 * 60 * 1000);
+    expect(loadStore().stockLog.waste.length).toBe(clean);
+  });
+});

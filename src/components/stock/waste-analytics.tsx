@@ -50,7 +50,7 @@ export function WasteAnalytics() {
         </Panel>
         <Panel title="By reason">
           <BarList format={(n) => money(n)} rows={byReason.map((r) => ({ key: r.k, label: REASON_LABEL[r.k as WasteReason].en, sub: fmtPct(t.waste ? r.value / t.waste : 0, 0), value: r.value }))} />
-          <Note className="mt-3">Spoilage points to over-ordering, which Tyll Forecast addresses. Waste points to preparation and portioning.</Note>
+          <Note className="mt-3">Spoilage points to over-ordering, which Purchasing Prediction addresses. Waste points to preparation and portioning.</Note>
         </Panel>
         <Panel title="By outlet">
           <BarList format={(n) => money(n)} rows={byOutlet.map((r) => ({ key: r.k, label: outletLabel(r.k), value: r.value }))} />

@@ -268,7 +268,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
               <div className="flex justify-between"><dt className="text-steel">Other approved Tyll orders</dt><dd className="num">{money(data.budget.committed)}</dd></div>
               <div className="flex justify-between border-t border-hair pt-2"><dt className="text-ink">Left after this request</dt><dd className={cn("num", afterBudget < 0 ? "text-neg" : "text-ink")}>{money(afterBudget)}</dd></div>
             </dl>
-            <Note className="mt-3">The same figures as Tyll Finance. Budgets are demo planning figures, not balances from an accounting system. Approving a request creates a commitment, not a recorded expense.</Note>
+            <Note className="mt-3">The same figures as Reconciliation. Budgets are demo planning figures, not balances from an accounting system. Approving a request creates a commitment, not a recorded expense.</Note>
             <p className="mt-3 text-[13px] text-graphite">At {propertyById[r.propertyId].name}: purchasing reviews every request; accounting approves requests {data.policy.accountingAbove > 0 ? `over ${money(data.policy.accountingAbove)}` : "of any size"}; the {data.policy.managerLabel.toLowerCase()} also approves requests over {money(data.policy.managerAbove)}.</p>
           </Panel>
         )}

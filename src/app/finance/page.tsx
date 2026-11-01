@@ -10,7 +10,7 @@ import { can } from "@/lib/domain/access";
 import { useView } from "@/lib/hooks";
 
 type Tab = "approvals" | "invoices" | "reports";
-const LABEL: Record<Tab, string> = { approvals: "Approvals", invoices: "Invoices & Expenses", reports: "Budgets & Reports" };
+const LABEL: Record<Tab, string> = { approvals: "Approvals", invoices: "Invoice reconciliation", reports: "Budgets & Reports" };
 
 /** Three choices. The owner and general manager see budgets and reports; accounting also reviews and approves. */
 export default function FinancePage() {
@@ -19,13 +19,13 @@ export default function FinancePage() {
   const [tab, setTab] = useSection<Tab>("/finance", tabs, tabs.length === 1 ? "reports" : null);
   const { propertyId } = useFinanceProperty();
   const { data } = useFinanceHome(propertyId);
-  const n = (k: number, one: string, many: string) => (k === 0 ? "Nothing waiting." : `${k} ${k === 1 ? one : many}`);
+  const n = (k: number, one: string, many: string) => (k === 0 ? "Nothing waiting" : `${k} ${k === 1 ? one : many}`);
   return (
     <div className="space-y-5">
       <PageHeader
-        title={tab ? LABEL[tab] : "Tyll Finance"}
-        lead={tab ? undefined : "What do you want to do?"}
-        crumbs={tab && tabs.length > 1 ? <Crumbs items={[{ label: "Tyll Finance", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
+        title={tab ? LABEL[tab] : "Reconciliation"}
+        lead={tab ? undefined : data ? `${n(data.invoices, "supplier invoice to check", "supplier invoices to check")}${data.overBudget.length ? `. Over budget: ${data.overBudget.join(", ")}.` : "."}` : "Supplier invoices checked against orders and deliveries."}
+        crumbs={tab && tabs.length > 1 ? <Crumbs items={[{ label: "Reconciliation", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert where="finance" />}
       {tab === null && (
@@ -33,8 +33,8 @@ export default function FinancePage() {
           onPick={setTab}
           choices={tabs.map((t) => ({
             value: t, title: LABEL[t], help: t === "approvals" ? HELP.approvals : t === "invoices" ? HELP.invoices : HELP.budgets, icon: t === "approvals" ? Stamp : t === "invoices" ? ReceiptText : BarChart3,
-            detail: t === "approvals" ? (data ? n(data.approvals, "request needs your review.", "requests need your review.") : "Requests waiting for financial review.")
-              : t === "invoices" ? (data ? n(data.invoices, "supplier invoice needs checking.", "supplier invoices need checking.") : "Supplier invoices, expenses and differences.")
+            detail: t === "approvals" ? (data ? `${n(data.approvals, "request needs your review", "requests need your review")}.` : "Requests waiting for financial review.")
+              : t === "invoices" ? (data ? `${n(data.invoices, "supplier invoice needs checking", "supplier invoices need checking")}.` : "Supplier invoices, expenses and differences.")
               : data?.overBudget.length ? `${data.overBudget.join(", ")}: over budget once open items are recorded.` : "Review this month's spending.",
           }))}
         />

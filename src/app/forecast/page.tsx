@@ -31,7 +31,7 @@ export default function ForecastPage() {
   const router = useRouter();
   const fromStock = useSearchParams().get("from") === "stock";
   const purchasing = can(user, "purchase.review");
-  const home = purchasing ? "Purchasing" : user.role === "chef" ? "Kitchen planning" : "Tyll Forecast";
+  const home = "Purchasing Prediction";
   const { data } = useLiveGet<{ requests: PurchaseRequest[] }>(purchasing ? "/api/purchasing" : null);
   const waiting = (data?.requests ?? []).filter((r) => r.status === "purchasing").length;
   const due = (data?.requests ?? []).filter((r) => r.status === "approved").length;
@@ -41,9 +41,9 @@ export default function ForecastPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title={tab ? LABEL[tab] : home}
-        lead={tab ? (tab === "buy" && purchasing ? "This week's report first. To send an order, use the steps below it." : undefined) : purchasing ? summary : "What do you want to do?"}
-        crumbs={tab ? <Crumbs items={fromStock && tab === "buy" ? [{ label: "Tyll Stock", onClick: () => router.push("/stock") }, { label: LABEL[tab] }] : [{ label: home, onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
+        title={tab === "buy" && purchasing ? "What to buy" : tab ? LABEL[tab] : home}
+        lead={tab ? (tab === "buy" && purchasing ? "This week's report first. To send an order, use the steps below it." : undefined) : purchasing ? summary : "What to buy, what to prepare, and where each request stands."}
+        crumbs={tab ? <Crumbs items={fromStock && tab === "buy" ? [{ label: "Stock Count and Waste", onClick: () => router.push("/stock") }, { label: LABEL[tab] }] : [{ label: home, onClick: () => setTab(null) }, { label: tab === "buy" && purchasing ? "What to buy" : LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert where="forecast" />}
       {tab === null && (
@@ -62,7 +62,7 @@ export default function ForecastPage() {
       )}
       {tab !== null && tabs.length > 1 && <Tabs value={tab} onChange={setTab} tabs={tabs.map((t) => ({ value: t, label: LABEL[t] }))} />}
       {tab === "buy" && purchasing && <BuyWeekReport user={user} />}
-      {tab === "buy" && purchasing && <h2 className="pt-4 text-xl tracking-[-0.02em] text-ink">Order step by step</h2>}
+      {tab === "buy" && purchasing && <h2 id="order-steps" className="scroll-mt-24 pt-4 text-xl tracking-[-0.02em] text-ink">Order step by step</h2>}
       {tab === "buy" && <WhatToBuy />}
       {tab === "prep" && <WhatToPrep />}
       {tab === "approvals" && <Approvals />}

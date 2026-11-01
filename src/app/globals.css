@@ -80,7 +80,7 @@ h1, h2, h3 {
   border-radius: 6px;
 }
 
-/* The flowing silver layers from the Tyll banner, used behind headers and empty states only. */
+/* Soft colour fields behind brand panels. Drawn in CSS, so they stay sharp at any size. */
 .waves {
   position: relative;
   isolation: isolate;
@@ -90,17 +90,27 @@ h1, h2, h3 {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: url("/brand/tyll-waves.webp") right 38% / max(100%, 880px) auto no-repeat;
-  filter: grayscale(0.55) contrast(1.28) brightness(0.985);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 45%, #000 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 45%, #000 100%);
+  background:
+    radial-gradient(60% 50% at 85% 10%, rgba(59, 63, 156, 0.2), transparent 70%),
+    radial-gradient(55% 45% at 10% 95%, rgba(15, 111, 116, 0.16), transparent 70%),
+    radial-gradient(45% 40% at 70% 85%, rgba(178, 74, 42, 0.1), transparent 70%),
+    linear-gradient(160deg, #f7f7fd, #eef1fa);
   pointer-events: none;
 }
-.waves-full::before {
-  -webkit-mask-image: none;
-  mask-image: none;
-  background-size: cover;
-  background-position: center;
+
+/* One line weight for every icon. */
+.lucide {
+  stroke-width: 1.75;
+  shape-rendering: geometricPrecision;
+}
+
+/* Wide tables show a soft edge where there is more to scroll to. */
+.scroll-hint {
+  background:
+    linear-gradient(90deg, #fff 30%, transparent) left / 32px 100% no-repeat local,
+    linear-gradient(270deg, #fff 30%, transparent) right / 32px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgba(30, 32, 70, 0.14), transparent) left / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgba(30, 32, 70, 0.14), transparent) right / 12px 100% no-repeat scroll;
 }
 
 /* Scroll containers are positioned so that visually hidden text inside them is clipped with the rest. */
@@ -122,12 +132,20 @@ h1, h2, h3 {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+/*
+  Page content settles in once, one block after another. The header stays still so titles are never faded.
+  "backwards" only: a finished animation must not hold a transform, which would trap fixed drawers.
+*/
+main > .space-y-5 > :not(header, :has(h1)) { animation: rise 0.45s var(--ease-tyll) backwards; }
+main > .space-y-5 > :nth-child(3) { animation-delay: 50ms; }
+main > .space-y-5 > :nth-child(4) { animation-delay: 100ms; }
+main > .space-y-5 > :nth-child(n + 5) { animation-delay: 150ms; }
 .animate-rise { animation: rise 0.6s var(--ease-tyll) both; }
 .animate-slide-in { animation: slide-in 0.35s var(--ease-tyll) both; }
 .animate-fade { animation: fade 0.25s ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise, .animate-slide-in, .animate-fade { animation: none; }
+  .animate-rise, .animate-slide-in, .animate-fade, main > .space-y-5 > :not(header, :has(h1)) { animation: none; }
   * { transition-duration: 0.01ms !important; }
 }
 

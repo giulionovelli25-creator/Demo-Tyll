@@ -29,9 +29,9 @@ export default function EventsPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title={tab ? LABEL[tab] : "Sales & Events"}
-        lead={tab ? undefined : "What do you want to do?"}
-        crumbs={tab ? <Crumbs items={[{ label: "Sales & Events", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
+        title={tab ? LABEL[tab] : "Events and Staffing"}
+        lead={tab ? undefined : "Upcoming events, the staff they need, and who can help."}
+        crumbs={tab ? <Crumbs items={[{ label: "Events and Staffing", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert where="events" />}
       {tab === null && (

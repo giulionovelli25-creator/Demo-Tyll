@@ -4,6 +4,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { can, canOpen, homePath, moduleOfPath } from "./lib/domain/access";
 import { SESSION_COOKIE, demoRoleFor, publicDemo, resolveSession, startDemoSession } from "./lib/server/auth";
+import { freshenPublicDemo } from "./lib/server/demo";
 import { sessionCookie } from "./lib/server/guard";
 
 /** The role a deep link opens as, when the visitor has none yet. */
@@ -25,6 +26,7 @@ export function proxy(req: NextRequest) {
     const userId = demoRoleFor(fits, PREFERRED[mod ?? ""] ?? "u-fnb");
     const started = userId ? startDemoSession(userId, req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local", req.cookies.get(SESSION_COOKIE)?.value) : null;
     if (!started?.ok) return NextResponse.redirect(new URL("/welcome", req.url));
+    freshenPublicDemo();
     // Redirect to the same address so the page renders with the new cookie.
     const res = NextResponse.redirect(new URL(pathname + search, req.url));
     res.cookies.set(sessionCookie(started.token));

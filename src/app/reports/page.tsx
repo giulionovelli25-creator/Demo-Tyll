@@ -94,7 +94,7 @@ export default function ReportsPage() {
   return (
     <div className="space-y-5">
       <div className="no-print">
-        <PageHeader title="Reports" lead="A management report for the selection in the top bar. Print it, save it as a PDF, or export the underlying tables.">
+        <PageHeader title="Sales and Performance" lead="A management report for the selection in the top bar. Print it, save it as a PDF, or export the underlying tables.">
           <Segmented label="Report period" value={preset} onChange={(v: RangePreset) => setPreset(v)} options={[{ value: "today", label: "Daily" }, { value: "week", label: "Weekly" }, { value: "month", label: "Monthly" }, ...(preset === "custom" ? [{ value: "custom" as const, label: "Custom" }] : [])]} />
           <Button variant="primary" onClick={() => window.print()}><Printer size={15} /> Print or save as PDF</Button>
         </PageHeader>

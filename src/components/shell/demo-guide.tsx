@@ -46,7 +46,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "forecast", main: true, scope: "purchasing", title: "Predict a shortage and order what we need", summary: "One purchase request travels from the restaurant to purchasing, accounting and the storeroom.",
     steps: [
-      { as: "u-rm", href: "/forecast?tab=buy", text: "Sara opens Order stock (from Tyll Stock or Forecast). Change the expected guests and watch the quantities recalculate." },
+      { as: "u-rm", href: "/forecast?tab=buy", text: "Sara opens Order stock (from Stock Count and Waste or Forecast). Change the expected guests and watch the quantities recalculate." },
       { text: "Open a line's explanation: requirement + safety stock − usable stock − deliveries already coming." },
       { text: "Choose Calculate what to buy, review the items, then Send to Purchasing." },
       { as: "u-buy", href: "/forecast?tab=approvals", text: "Nadia (Purchasing) has a notification in the bell. Open the same request, review quantities and supplier, and approve." },

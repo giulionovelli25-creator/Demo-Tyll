@@ -4,12 +4,14 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Banknote, BedDouble, CalendarDays, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, Sparkles, TrendingUp, UtensilsCrossed, X,
   ChevronDown,
+  SlidersHorizontal,
+  Eye,
   Landmark,
   Smartphone,
 } from "lucide-react";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { BrandLoader, TyllLogo, TyllMark } from "@/components/brand";
-import { Badge, Button, EmptyState, Field, Segmented, Select, Toaster, cn, report } from "@/components/ui";
+import { Badge, Button, EmptyState, Field, Segmented, Select, Toaster, cn, report, toast } from "@/components/ui";
 import { MENU_ITEMS, PROPERTIES, ROLE_LABEL, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { clearDataset, getDataset, hasDataset, hydrateDataset } from "@/lib/data/dataset";
 import { api, goToLogin, lockLocally, reloadTo, useSession } from "@/lib/api";
@@ -37,13 +39,13 @@ const NAV: Record<ModuleId, { label: string; icon: typeof Banknote }> = {
   tasks: { label: "My tasks", icon: ClipboardList },
   overview: { label: "Tyll Overview", icon: LayoutDashboard },
   money: { label: "Tyll Money", icon: Banknote },
-  stock: { label: "Tyll Stock", icon: Package },
-  forecast: { label: "Tyll Forecast", icon: TrendingUp },
-  events: { label: "Sales & Events", icon: CalendarDays },
+  stock: { label: "Stock Count and Waste", icon: Package },
+  forecast: { label: "Purchasing Prediction", icon: TrendingUp },
+  events: { label: "Events and Staffing", icon: CalendarDays },
   flow: { label: "Tyll Flow", icon: UtensilsCrossed },
-  rooms: { label: "Rooms & Guests", icon: BedDouble },
+  rooms: { label: "Rooms and Guest Experience", icon: BedDouble },
   investigations: { label: "Investigations", icon: FileSearch },
-  finance: { label: "Tyll Finance", icon: Landmark },
+  finance: { label: "Reconciliation", icon: Landmark },
   reports: { label: "Reports", icon: FileText },
   settings: { label: "Settings", icon: Settings },
 };
@@ -269,6 +271,15 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
   const current = moduleOfPath(pathname);
   const allowed = canOpen(user, current);
   const publicDemo = useSession((s) => !!s.demoRoles);
+  // Following a module link can change role in the public demo, so say so.
+  useEffect(() => {
+    if (!publicDemo) return;
+    try {
+      const last = sessionStorage.getItem("tyll-demo-role");
+      sessionStorage.setItem("tyll-demo-role", user.id);
+      if (last && last !== user.id) toast.done(`Now viewing the demo as ${ROLE_LABEL[user.role]}.`);
+    } catch { /* private window */ }
+  }, [publicDemo, user.id, user.role]);
   if (current === "staff" && allowed) return <div style={moduleStyle("staff")}><StaffFrame user={user}>{children}</StaffFrame></div>;
   return (
     <div className="flex min-h-screen" style={moduleStyle(current)}>
@@ -278,8 +289,8 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
         <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-24 pt-5 sm:px-6 lg:px-8">
           {allowed && (publicDemo ? <GuidedPath /> : <TourOffer user={user} />)}
           {allowed && IN_DEVELOPMENT.includes(current) && (
-            <p className="mb-5 rounded-2xl border border-line bg-cloud px-4 py-3 text-sm text-graphite">
-              <span className="text-ink">Preview.</span> This module is in development and not yet part of our pilots.
+            <p className="mb-5 flex items-start gap-2.5 rounded-2xl bg-accent-soft px-4 py-3 text-sm text-accent-ink">
+              <Eye size={18} className="mt-px shrink-0" aria-hidden /><span><span className="font-medium">Preview.</span> This module is in development and not yet part of our pilots.</span>
             </p>
           )}
           {allowed ? (
@@ -390,6 +401,8 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
   const outlets = allowedOutlets(user).filter((id) => scope.propertyId === "all" || outletById[id].propertyId === scope.propertyId);
   const [panel, setPanel] = useState<null | "search" | "alerts" | "profile" | "dates">(null);
   const [news, setNews] = useState(false);
+  // On phones the hotel and date filters fold away, so the page itself comes first.
+  const [filters, setFilters] = useState(false);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Ctrl+K or Cmd+K opens search from anywhere.
   useEffect(() => {
@@ -407,7 +420,7 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
       <div className="mx-auto flex min-h-[68px] w-full max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 sm:px-6 lg:px-8">
         <button type="button" onClick={onMenu} className="rounded-full p-2 text-graphite hover:bg-mist md:hidden" aria-label="Open menu"><Menu size={20} /></button>
         {showScope ? (
-          <div className="order-last flex min-w-0 basis-full flex-wrap items-center gap-2 md:order-none md:basis-auto md:flex-1">
+          <div className={cn("order-last min-w-0 basis-full flex-wrap items-center gap-2 md:order-none md:flex md:basis-auto md:flex-1", filters ? "flex" : "hidden")}>
             <Select label="Property" hideLabel className="w-[calc(50%-4px)] sm:w-[190px]" value={scope.propertyId} onChange={(e) => setScope({ propertyId: e.target.value })} disabled={props.length === 1}>
               {props.length > 1 && <option value="all">All properties</option>}
               {props.map((id) => <option key={id} value={id}>{propertyById[id].name}</option>)}
@@ -431,6 +444,7 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
         )}
         <div className="ml-auto flex min-w-0 items-center gap-1">
           <RoleSwitcher user={user} />
+          {showScope && <span className="md:hidden"><IconButton label={filters ? "Hide filters" : "Show filters"} onClick={() => setFilters((v) => !v)} active={filters}><SlidersHorizontal size={18} /></IconButton></span>}
           <span data-tour="search"><IconButton label="Search (Ctrl K)" onClick={() => toggle("search")} active={panel === "search"}><Search size={18} strokeWidth={1.7} /></IconButton></span>
           <AlertsButton user={user} />
           <div className="relative">

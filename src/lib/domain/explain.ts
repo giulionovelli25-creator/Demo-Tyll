@@ -161,7 +161,7 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
     base.recommended = [
       `Ask the ${station} team on shift whether the item was ${station === "bar" ? "poured" : "prepared"} and where it went.`,
       "Check whether a supervisor approved the removal verbally.",
-      "If it was wasted, log it in Tyll Stock so the count matches. If it was served, record the loss or the amount recovered.",
+      "If it was wasted, log it in Stock Count and Waste so the count matches. If it was served, record the loss or the amount recovered.",
     ];
     base.message = `The ${item.name === "Coca-Cola" ? "Coke" : what} was removed from the customer's bill ${wait === 6 ? "six" : wait} minutes after the preparation ticket was sent to the ${station}. The final bill does not include the ${item.dept === "beverage" ? "drink" : "item"}. Please verify whether the item was prepared or served and whether the cancellation was authorized.`;
     return base;

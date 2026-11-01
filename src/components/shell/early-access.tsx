@@ -76,7 +76,7 @@ export function GuidedPath() {
     return (
       <div className="no-print mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-paper px-4 py-3">
         <Compass size={18} strokeWidth={1.6} className="shrink-0 text-graphite" aria-hidden />
-        <p className="min-w-0 flex-1 text-sm text-graphite"><span className="text-ink">New here?</span> Follow a 4-step guided path through what Tyll does today.</p>
+        <p className="min-w-[200px] flex-1 text-sm text-graphite"><span className="text-ink">New here?</span> Follow a 4-step guided path through what Tyll does today.</p>
         <span className="flex items-center gap-1">
           <Button size="sm" variant="primary" onClick={() => go(0)}>Start guided path</Button>
           <button type="button" onClick={close} aria-label="Close the guided path offer" className="rounded-full p-2 text-steel hover:bg-mist hover:text-ink"><X size={16} /></button>

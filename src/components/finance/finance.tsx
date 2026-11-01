@@ -1,5 +1,5 @@
 "use client";
-// Tyll Finance: invoices checked three ways, spending by stage, budgets and a few clear reports.
+// Reconciliation: invoices checked three ways, spending by stage, budgets and a few clear reports.
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Download } from "lucide-react";
 import { useMemo, useState } from "react";

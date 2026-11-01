@@ -27,7 +27,7 @@ export default function MoneyPage() {
     <div className="space-y-5">
       <PageHeader
         title={tab ? label[tab] : "Tyll Money"}
-        lead={tab ? undefined : "What do you want to look at?"}
+        lead={tab ? undefined : "Bill changes, room charges and tips that are worth a second look."}
         crumbs={tab ? <Crumbs items={[{ label: "Tyll Money", onClick: () => setTab(null) }, { label: label[tab] }]} /> : undefined}
       >
         <Badge>{fmtRange(sel.range)}</Badge>

@@ -1,5 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
+import { ArrowDown, CalendarClock, ListChecks, TriangleAlert, Wallet } from "lucide-react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Badge, Panel, Stat, TableWrap, Td, Th, rowClass } from "@/components/ui";
 import { RISK } from "@/components/forecast/parts";
 import { ingredientById, outletById, propertyById, supplierById } from "@/lib/data/catalog";
@@ -9,6 +10,17 @@ import type { User } from "@/lib/types";
 import { fmtDate, fmtMoney, fmtQty } from "@/lib/util";
 
 const RANK = { high: 0, medium: 1, low: 2, none: 3 } as const;
+
+const TILE = { accent: "bg-accent-soft text-accent", pos: "bg-pos-soft text-pos", warn: "bg-warn-soft text-warn", neg: "bg-neg-soft text-neg" };
+
+function Tile({ icon, tone = "accent", children }: { icon: ReactNode; tone?: keyof typeof TILE; children: ReactNode }) {
+  return (
+    <div className="flex items-start gap-3 rounded-panel border border-line bg-paper p-4 shadow-panel">
+      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${TILE[tone]}`}>{icon}</span>
+      <div className="min-w-0">{children}</div>
+    </div>
+  );
+}
 
 /**
  * "What to buy this week": the purchasing report that opens first. A read-only seven-day plan for every outlet the
@@ -39,17 +51,26 @@ export function BuyWeekReport({ user }: { user: User }) {
         <p className="text-sm text-steel">{loading ? "Calculating this week's needs…" : ""}</p>
       ) : (
         <>
-          <Panel><div className="grid grid-cols-2 gap-x-4 gap-y-3 lg:grid-cols-4">
-            <Stat label="Items to order" value={lines.length} />
-            <Stat label="Estimated cost" value={fmtMoney(cost, currency)} sub="Before supplier confirmation" />
-            <Stat label="Run short before next delivery" value={short.length} tone={short.length ? "neg" : undefined} />
-            <Stat label="Earliest order-by date" value={lines[0] ? fmtDate(lines[0].orderBy) : "None"} />
-          </div></Panel>
+          <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 xl:grid-cols-4">
+            <Tile icon={<ListChecks size={18} aria-hidden />}><Stat label="Items to order" value={lines.length} /></Tile>
+            <Tile icon={<Wallet size={18} aria-hidden />}><Stat label="Estimated cost" value={fmtMoney(cost, currency)} sub="Before supplier confirmation" /></Tile>
+            <Tile tone={short.length ? "neg" : "pos"} icon={<TriangleAlert size={18} aria-hidden />}><Stat label="Run short before next delivery" value={short.length} tone={short.length ? "neg" : "pos"} /></Tile>
+            <Tile tone={lines[0] ? "warn" : "pos"} icon={<CalendarClock size={18} aria-hidden />}><Stat label="Earliest order-by date" value={lines[0] ? fmtDate(lines[0].orderBy) : "None"} /></Tile>
+          </div>
+          <a href="#order-steps" className="inline-flex h-10 items-center gap-2 rounded-full bg-accent px-4 text-sm font-medium text-paper transition-colors duration-300 ease-tyll hover:bg-accent-hover"><ArrowDown size={16} aria-hidden /> Start this order</a>
           {lines.length === 0 ? (
             <p className="text-sm text-steel">Stock covers the next 7 days. Nothing needs ordering.</p>
           ) : (
             <Panel flush>
-              <TableWrap>
+              <ul className="sm:hidden">
+                {shown.map((l) => (
+                  <li key={l.ingredientId} className="border-t border-hair px-4 py-3 first:border-t-0">
+                    <div className="flex items-baseline justify-between gap-3"><span className="min-w-0 text-sm text-ink">{ingredientById[l.ingredientId]?.name ?? l.ingredientId}</span><span className="num shrink-0 text-sm font-medium text-ink">{fmtQty(l.suggested, l.unit)}</span></div>
+                    <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2"><span className="text-xs text-steel">Order by {fmtDate(l.orderBy)}</span><Badge tone={RISK[l.risk].tone}>{l.risk === "high" && l.shortageDay ? `Runs short ${fmtDate(l.shortageDay)}` : RISK[l.risk].label}</Badge></div>
+                  </li>
+                ))}
+              </ul>
+              <TableWrap className="hidden sm:block">
                 <table className="w-full min-w-[560px] text-sm">
                   <thead><tr><Th>Item</Th><Th align="right">Suggested</Th><Th>Order by</Th><Th>Status</Th></tr></thead>
                   <tbody>

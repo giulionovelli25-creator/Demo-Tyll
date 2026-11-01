@@ -77,19 +77,9 @@ export function Delta({ value, kind = "pct", goodWhen = "up", className, versus 
 }
 
 // ---- Layout -----------------------------------------------------------------
-function Sparkle({ className }: { className?: string }) {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M12 3.5c.6 3.9 2.6 5.9 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5 3.9-.6 5.9-2.6 6.5-6.5Z" fill="currentColor" opacity=".9" />
-      <circle cx="18.5" cy="17.5" r="1.6" fill="currentColor" opacity=".45" />
-      <circle cx="6" cy="18.5" r="1" fill="currentColor" opacity=".35" />
-    </svg>
-  );
-}
-
 export function Panel({ title, description, action, children, className, flush }: { title?: ReactNode; description?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; flush?: boolean }) {
   return (
-    <section className={cn("min-w-0 rounded-panel border border-line bg-paper shadow-panel", className)}>
+    <section className={cn("min-w-0 rounded-panel border border-line bg-paper shadow-panel transition-shadow duration-300 ease-tyll", className)}>
       {(title || action) && (
         <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-5 pt-5 sm:px-6">
           <div className="min-w-0">
@@ -127,12 +117,13 @@ export function PageHeader({ title, lead, children, crumbs }: { title: ReactNode
 
 /** A friendly empty state: a small illustration in the module's colour, what this space is for, and what to do. */
 export function EmptyState({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
+  const Icon = MODULE_ICON[moduleOfPath(usePathname() ?? "/")];
   return (
     <div className="flex flex-col items-center justify-center overflow-hidden rounded-panel border border-dashed border-line bg-[radial-gradient(circle_at_50%_0%,var(--mod-soft),#ffffff_70%)] px-6 py-12 text-center">
       <span className="relative mb-4 flex h-16 w-16 items-center justify-center" aria-hidden>
         <span className="absolute inset-0 rounded-full bg-[var(--mod-soft)]" />
         <span className="absolute inset-2 rounded-full bg-paper shadow-panel" />
-        <Sparkle className="relative text-[var(--mod)]" />
+        <span className="relative text-[var(--mod)]"><Icon size={24} aria-hidden /></span>
       </span>
       <p className="text-base font-medium text-ink">{title}</p>
       {children && <p className="mt-1 max-w-[52ch] text-[13px] text-steel">{children}</p>}
@@ -261,7 +252,7 @@ export function Td({ children, align = "left", className }: { children: ReactNod
 }
 
 export function TableWrap({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("scroll-thin relative overflow-x-auto", className)}>{children}</div>;
+  return <div className={cn("scroll-thin scroll-hint relative overflow-x-auto", className)}>{children}</div>;
 }
 
 export const rowClass = "border-t border-hair transition-colors duration-200 hover:bg-cloud";

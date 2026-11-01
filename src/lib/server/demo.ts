@@ -1,13 +1,14 @@
 // Demo reset: puts the seeded demonstration records for one scenario back to their starting state, so a story can be
 // shown again. Only in demo mode, only for the owner or general manager, and only the demo store is touched:
 // accounts, sessions, the audit log and every file outside the store stay as they are.
+import { userById } from "../data/catalog";
 import type { User } from "../types";
 import { emptyNotify } from "./notify";
 import { seedOps } from "./ops-seed";
 import { seedGuest } from "./guest-seed";
 import { mutateStore } from "./purchasing-store";
 import { seedStage6 } from "./stage6-seed";
-import { DEMO_MODE, audit } from "./auth";
+import { DEMO_MODE, audit, publicDemo } from "./auth";
 
 export type ResetScope = "stock" | "purchasing" | "events" | "guest" | "sales" | "all";
 const SCOPES: ResetScope[] = ["stock", "purchasing", "events", "guest", "sales", "all"];
@@ -33,4 +34,13 @@ export function resetDemo(user: User, raw: unknown): { ok: true; scope: ResetSco
   });
   audit(user.id, "Demo data reset", `Scope: ${scope}`, "");
   return { ok: true, scope };
+}
+
+/** Public demo: visitors share one set of records, so they return to the start at most once an hour, when someone enters. */
+const FRESHEN_MS = 60 * 60 * 1000;
+let freshened = 0;
+export function freshenPublicDemo(now = Date.now()) {
+  if (!publicDemo() || now - freshened < FRESHEN_MS) return;
+  freshened = now;
+  resetDemo(userById["u-gm"], "all");
 }

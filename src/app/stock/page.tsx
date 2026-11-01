@@ -52,7 +52,7 @@ export default function StockPage() {
   const pid = propertyId ?? picked;
   const needsProperty = tab !== "recipes" && tab !== "waste";
   const shown: Tab | null = !employee && tab === "log" ? "waste" : tab;
-  const label = tabs.find((t) => t.value === shown)?.label ?? "Tyll Stock";
+  const label = tabs.find((t) => t.value === shown)?.label ?? "Stock Count and Waste";
   const inDetail = tab === "where" && params.get("period");
   const router = useRouter();
   const investigations = useInvestigations();
@@ -62,9 +62,9 @@ export default function StockPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title={tab ? label : "Tyll Stock"}
-        lead={tab ? undefined : chef ? "Today's stock for your kitchen, and quick waste logging." : "What do you want to do?"}
-        crumbs={tab && !employee ? <Crumbs items={[{ label: "Tyll Stock", onClick: () => setTab(null) }, { label, onClick: inDetail ? () => setTab("where") : undefined }, ...(inDetail ? [{ label: crumbFor(params.get("period")!) }] : [])]} /> : undefined}
+        title={tab ? label : "Stock Count and Waste"}
+        lead={tab ? undefined : chef ? "Today's stock for your kitchen, and quick waste logging." : "What is on hand, what was wasted, and where stock differs from records."}
+        crumbs={tab && !employee ? <Crumbs items={[{ label: "Stock Count and Waste", onClick: () => setTab(null) }, { label, onClick: inDetail ? () => setTab("where") : undefined }, ...(inDetail ? [{ label: crumbFor(params.get("period")!) }] : [])]} /> : undefined}
       >
         {tab && needsProperty && (propertyId || props.length === 1 ? <Badge>{propertyById[pid].name}</Badge> : (
           <Segmented label="Hotel" value={picked} onChange={setPicked} options={props.map((p) => ({ value: p, label: propertyById[p].name }))} />

@@ -22,7 +22,7 @@ export const TOUR_STEPS: Step[] = [
   { as: "u-owner", title: "Read what Tyll found", body: "Tyll lays out the original order, the final bill, the tickets and the stock count, then lists what to check. It states facts and does not assign blame.", cta: "Show the evidence" },
   { as: "u-rm", title: "The manager records the result", body: "Sara Haddad, the restaurant manager, reviews the case. Choose an outcome, enter the amount and close it.", cta: "Sign in as Sara Haddad" },
   { as: "u-owner", title: "Back to the owner", body: "The overview now shows one fewer open case at The Terrace, and the amount moved from potential loss to confirmed loss or recovered.", cta: "Return to the overview" },
-  { as: "u-owner", title: "Plan the week ahead", body: "Tyll Forecast turns expected occupancy, bookings and Thursday's event into purchase suggestions. Move the occupancy slider and watch the quantities change.", cta: "Open Forecast" },
+  { as: "u-owner", title: "Plan the week ahead", body: "Purchasing Prediction turns expected occupancy, bookings and Thursday's event into purchase suggestions. Move the occupancy slider and watch the quantities change.", cta: "Open Forecast" },
 ];
 
 export function Tour() {
