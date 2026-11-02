@@ -62,10 +62,11 @@ export function previousRange(range: DateRange): DateRange {
   return { from: addDays(range.from, -len), to: addDays(range.to, -len) };
 }
 
-export type RangePreset = "today" | "week" | "month" | "custom";
+export type RangePreset = "today" | "yesterday" | "week" | "month" | "custom";
 
 export function presetRange(preset: Exclude<RangePreset, "custom">): DateRange {
   if (preset === "today") return { from: DEMO_TODAY, to: DEMO_TODAY };
+  if (preset === "yesterday") return { from: addDays(DEMO_TODAY, -1), to: addDays(DEMO_TODAY, -1) };
   if (preset === "week") return { from: addDays(DEMO_TODAY, -6), to: DEMO_TODAY };
   return { from: addDays(DEMO_TODAY, -29), to: DEMO_TODAY };
 }
@@ -80,7 +81,7 @@ export function fmtDate(iso: string, withDay = false): string {
 }
 
 export function fmtRange(range: DateRange): string {
-  return range.from === range.to ? fmtDate(range.from, true) : `${fmtDate(range.from)} – ${fmtDate(range.to)}`;
+  return range.from === range.to ? fmtDate(range.from, true) : `${fmtDate(range.from)} to ${fmtDate(range.to)}`;
 }
 
 export function fmtTime(min: number): string {

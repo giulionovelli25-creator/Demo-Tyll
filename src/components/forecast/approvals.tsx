@@ -113,7 +113,7 @@ function Progress({ d }: { d: RequestDetail }) {
       {items.map((s, i) => (
         <li key={s.key} className="flex items-center gap-2">
           {i > 0 && <span className={cn("h-px w-6", s.done ? "bg-accent" : "bg-line")} aria-hidden />}
-          <span className={cn("flex h-6 w-6 items-center justify-center rounded-full border", s.done ? "border-accent bg-accent text-paper" : "border-line text-fog")}>{s.done ? <Check size={13} /> : i + 1}</span>
+          <span className={cn("flex h-6 w-6 items-center justify-center rounded-full border", s.done ? "border-accent bg-accent text-on-accent" : "border-line text-fog")}>{s.done ? <Check size={13} /> : i + 1}</span>
           <span><span className={s.done ? "text-ink" : "text-steel"}>{s.label}</span>{s.at && <span className="block text-xs text-steel">{time(s.at)}</span>}</span>
         </li>
       ))}

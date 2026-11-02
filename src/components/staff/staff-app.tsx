@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, BedDouble, Check, ChefHat, ClipboardCheck, ConciergeBell, GlassWater, Luggage, Minus, PackageCheck, Plus, Trash2, type LucideIcon } from "lucide-react";
+import { BreakageFlow } from "@/components/shell/breakage";
 import { useMemo, useState, type ReactNode } from "react";
 import { BellTaskView } from "@/components/guest/bell";
 import { RoomDetail } from "@/components/guest/rooms";
@@ -50,7 +51,7 @@ function Screen({ title, back = "/staff", children }: { title: string; back?: st
 }
 
 const Big = ({ children, className, ...p }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <button type="button" {...p} className={cn("flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-ink px-5 text-[17px] font-medium text-paper transition-transform duration-300 ease-tyll active:scale-[0.98] disabled:opacity-40", className)}>{children}</button>
+  <button type="button" {...p} className={cn("flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-ink px-5 text-[17px] font-medium text-paper transition-transform duration-200 ease-tyll active:scale-[0.98] disabled:opacity-40", className)}>{children}</button>
 );
 
 export function StaffApp() {
@@ -59,7 +60,8 @@ export function StaffApp() {
   const what = params.get("do") as Do | null;
   const allowed = staffActions(user).map((a) => a.id);
   if (what && !allowed.includes(what)) return <Screen title="Not available"><EmptyState title="This action is not part of your job in Tyll." /></Screen>;
-  if (what === "waste" || what === "breakage") return <QuickLog kind={what} />;
+  if (what === "breakage") return <Screen title="Log breakage"><BreakageFlow onDone={() => undefined} /></Screen>;
+  if (what === "waste") return <QuickLog kind={what} />;
   if (what === "prep") return <PrepTasks />;
   if (what === "rooms") return params.get("room") ? <RoomDetail roomId={params.get("room")!} back="/staff?do=rooms" /> : <MyRoomsMobile />;
   if (what === "bell") return params.get("task") ? <BellTaskView id={params.get("task")!} back="/staff?do=bell" /> : <BellMobile />;
@@ -198,7 +200,7 @@ function QuickLog({ kind }: { kind: "waste" | "breakage" }) {
       </div>
       <fieldset>
         <legend className="mb-2 text-[13px] text-graphite">Reason</legend>
-        <div className="flex flex-wrap gap-2">{REASONS[kind].map((r) => <button key={r} type="button" aria-pressed={reason === r} onClick={() => setReason(r)} className={cn("h-11 rounded-full border px-4 text-[15px]", reason === r ? "border-accent bg-accent text-paper" : "border-line")}>{REASON_LABEL[r].en}</button>)}</div>
+        <div className="flex flex-wrap gap-2">{REASONS[kind].map((r) => <button key={r} type="button" aria-pressed={reason === r} onClick={() => setReason(r)} className={cn("h-11 rounded-full border px-4 text-[15px]", reason === r ? "border-accent bg-accent text-on-accent" : "border-line")}>{REASON_LABEL[r].en}</button>)}</div>
       </fieldset>
       <Field label="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} placeholder={kind === "breakage" ? "For example: dropped tray at table 12" : ""} />
       <Big disabled={busy || qty <= 0} onClick={async () => {

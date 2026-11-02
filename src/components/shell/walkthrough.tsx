@@ -249,9 +249,9 @@ export function Walkthrough() {
   return (
     <div className="no-print">
       {rect ? (
-        <div aria-hidden className="pointer-events-none fixed z-[60] rounded-2xl ring-2 ring-paper transition-all duration-300 ease-tyll"
-          style={{ top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2, boxShadow: "0 0 0 9999px rgba(20,22,26,0.42)" }} />
-      ) : <div aria-hidden className="pointer-events-none fixed inset-0 z-[60] bg-ink/20" />}
+        <div aria-hidden className="pointer-events-none fixed z-[60] rounded-2xl ring-2 ring-paper transition-all duration-200 ease-tyll"
+          style={{ top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2, boxShadow: "0 0 0 9999px var(--color-spotlight)" }} />
+      ) : <div aria-hidden className="pointer-events-none fixed inset-0 z-[60] bg-scrim" />}
       <div ref={box} tabIndex={-1} role="dialog" aria-modal="false" aria-label={`Tour, step ${at + 1} of ${steps.length}: ${step.title}`} aria-live="polite"
         className={cn("fixed z-[61] w-auto rounded-2xl border border-line bg-paper p-4 shadow-float outline-none sm:w-[360px]", narrow || !rect ? "inset-x-3 bottom-3 sm:inset-x-auto sm:right-4" : "")}
         style={cardStyle}>

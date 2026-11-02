@@ -192,7 +192,7 @@ export function UsageRecords({ p, v }: { p: UsagePeriod; v: Variance }) {
               <tr key={itemId} className="num border-t border-hair">
                 <td className="py-1.5"><Link href={`/menu/${itemId}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{itemById[itemId].name}</Link></td>
                 <td className="py-1.5 text-right">{x.units}</td>
-                <td className="py-1.5 text-right">{x.comped || "–"}</td>
+                <td className="py-1.5 text-right">{x.comped || "None"}</td>
                 <td className="py-1.5 text-right">{q(x.qty)}</td>
               </tr>
             ))}

@@ -17,7 +17,21 @@ Open **http://localhost:3210**. (Plain `npm run dev` uses port 3000.) Node.js 20
 
 ## Public demo (demo.tyll.ai)
 
-Set `TYLL_PUBLIC_DEMO=on` (for local use, in `.env.local`) and restart. Visitors then see one welcome screen with **Enter demo**, which opens the Purchasing Manager's *What to buy this week* report. No password or PIN. A role switcher in the top bar changes instantly between **Purchasing Manager**, **F&B Director**, **Head Chef** (stock and one-tap −1 waste) and **Financial Controller** (supplier invoice reconciliation). Any deep link, such as `/forecast?tab=buy`, `/stock` or `/finance?tab=invoices`, opens directly as a role that can see it. The sidebar groups modules under **Available now** (Purchasing Prediction, Stock Count and Waste, Reconciliation) and **Coming soon** (Events and Staffing, Rooms and Guest Experience, Sales and Performance, which is Reports). Coming soon modules carry a **Preview** badge and a banner. An **Early access** badge sits by the logo, and **What's new** (profile menu) reads its entries from `config/whats-new.json`. A 4-step **Guided path** (offered at the top of the page, restartable from the sidebar) visits the purchasing report, stock and waste, reconciliation and a coming soon preview, each as the right role; it sits in the page, never over it, and closes with ×. Shared records return to their starting state at most once an hour, when someone enters. Guided demo and Lock are hidden; Sign out reads **Leave demo**. With the flag off, everything below applies unchanged.
+Set `TYLL_PUBLIC_DEMO=on` (for local use, in `.env.local`) and restart. Visitors see one welcome screen with **Enter demo**, which opens the **Overview** as the F&B Director. No password or PIN. A role switcher in the top bar changes instantly between Purchasing Manager, F&B Director, Head Chef and Financial Controller. Any deep link, such as `/stock`, `/money?tab=pour` or `/forecast?tab=buy`, opens directly as a role that can see it. Shared records return to their starting state at most once an hour, when someone enters.
+
+The sidebar is **Overview, Stock, Orders, Money, Waste and Breakage, Reports**. The profile menu holds More tools, All alerts, What's new, light or dark mode, and Settings. **More tools** separates Available now from Coming soon (Events and Staffing, Rooms and Guest Experience, Sales and Performance), which carry a Preview badge and a banner. A 4 step **Guided path**, offered on More tools and restartable from the sidebar, sits in the page and closes with ×.
+
+### The two selling points
+
+- **Stock prediction:** Stock → *Order recommendation*. Predicted use to month end from forecast covers and events, a safe buffer, the cost, and **Build order**, which makes one draft grouped by supplier. *Monthly view* shows stock against predicted use for each category, with the reorder date marked. *What the prediction uses* shows the inputs.
+- **Pour Control:** Money → *Pour Control*. Per wine: bottles opened, glasses sold, expected per bottle, actual yield and the gap. *Where and when* breaks it down by outlet and shift, with no names. Spirits are the second tab. **Bottles opened are simulated in this demo**, and the one house wine is shared across four labels.
+
+### The two fast flows
+
+- **Log breakage:** the floating button on a phone, or the top bar on a desktop. Tap the item, tap the number. Undo is in the toast.
+- **Stock count:** Stock → *Count stock*, or `/count`. By location, in walking order, with the expected quantity filled in. Pause and pick up later. Blind count is an option for audits.
+
+**Cmd K** (Ctrl K on Windows) opens search and actions from anywhere.
 
 ## Who to use
 
@@ -40,7 +54,7 @@ Set `TYLL_PUBLIC_DEMO=on` (for local use, in `.env.local`) and restart. Visitors
 
 ## Guided demo
 
-Sign in as anyone except frontline staff and choose **Guided demo** at the bottom of the sidebar. Pick a story; a small card at the bottom right gives one instruction at a time, with **Go there**, **Sign in as …**, **Previous**, **Next**, **Reset** and **×** (exit). You perform every action yourself; the card never says something happened. Minimise it with **–**. It stays with you across sign-ins in the same browser.
+Sign in as anyone except frontline staff and choose **Guided demo** at the bottom of the sidebar (public demo off). Pick a story; a small card at the bottom right gives one instruction at a time, with **Go there**, **Sign in as …**, **Previous**, **Next**, **Reset** and **×** (exit). You perform every action yourself; the card never says something happened. Minimise it with **–**. It stays with you across sign-ins in the same browser.
 
 Main stories: Where did the Cokes go? · More wine than expected · Forecast to purchasing · Conference without staffing problems · Dinner for a guest · Late room to ready room. **More short demos** has sales to event, staff waste on a phone and an invoice difference. The original **Five-minute owner tour** is also in the list.
 
@@ -63,7 +77,7 @@ Main stories: Where did the Cokes go? · More wine than expected · Forecast to 
 
 ## Where things are
 
-Each module opens on up to four main choices; less common tools are under **More tools** (for example Stock → Recipes and costs, Suppliers). The Overview shows key figures, Needs attention and the outlet comparison; trends, results, guest experience and confirmed business are behind **Show trends and results**. Finance reports keep department and category filters behind **Filter by department or category**.
+Stock and Waste and Breakage each switch between **Food, Drinks and Inventory** (glassware, china and hotel supplies). Stock is one full page, with older detail screens linked at its foot. Money opens on its flagged bills, with Pour Control, profit by outlet and transactions as tabs. The Overview shows five cards; the outlet comparison, trends, results, guest experience and confirmed business are on `/performance` (linked from the bottom of the Overview and from More tools). Finance reports keep department and category filters behind **Filter by department or category**.
 
 ## Reset
 
@@ -84,7 +98,7 @@ Only the owner or general manager can reset shared records. Other people see **S
 
 ### Longer version
 
-Add the conference story (Find staff, approval by the lending manager), Guest Connect (dinner for two accepted by The Terrace), the late room (front desk, housekeeping, a phone, inspection), and a phone waste entry that the manager sees straight away. **Ctrl+K** (or the search icon) finds records such as *Coca-Cola*, *PR-DXB-0001*, *1211* or *Guest Connect*.
+Add the conference story (Find staff, approval by the lending manager), Guest Connect (dinner for two accepted by The Terrace), the late room (front desk, housekeeping, a phone, inspection), and a phone waste entry that the manager sees straight away. **Cmd K or Ctrl K** (or the search icon) finds actions, outlets and records such as *Coca-Cola*, *PR-DXB-0001*, *1211* or *Guest Connect*.
 
 ## Known limitations
 

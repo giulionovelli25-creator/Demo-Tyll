@@ -40,12 +40,12 @@ export function matches(text: string, query: string): boolean {
 
 /** Screens people look for by name. Each needs the module or permission its screen needs. */
 const FEATURES: { label: string; detail: string; href: string; module?: ModuleId; perm?: Permission; also?: string }[] = [
-  { label: "What to buy", detail: "Forecast ingredients and create a purchase request", href: "/forecast?tab=buy", perm: "purchase.create", also: "order purchase shortage" },
+  { label: "What to order", detail: "Prediction to month end, and Build order", href: "/stock#order", perm: "purchase.create", also: "order purchase shortage" },
   { label: "What to prep", detail: "Portions the kitchen should prepare", href: "/forecast?tab=prep", perm: "prep.plan", also: "kitchen preparation" },
   { label: "Purchase approvals", detail: "Requests waiting for a decision", href: "/forecast?tab=approvals", module: "forecast", also: "approve purchase order po" },
   { label: "Where did it go?", detail: "Stock used that sales do not explain", href: "/stock?tab=where", module: "investigations", also: "missing variance stock" },
-  { label: "Log waste or breakage", detail: "Record waste, breakage or spoilage", href: "/stock?tab=log", perm: "stock.logWaste", also: "waste breakage spoilage" },
-  { label: "Stock count", detail: "Enter what is on the shelf", href: "/stock?tab=counts", perm: "stock.count", also: "count inventory" },
+  { label: "Waste and breakage", detail: "Log it, and see what was lost", href: "/waste", perm: "stock.logWaste", also: "waste breakage spoilage" },
+  { label: "Stock count", detail: "Count by location, in walking order", href: "/count", perm: "stock.count", also: "count inventory" },
   { label: "Plan an event", detail: "Food, stock and staff for an event", href: "/events?tab=plan", perm: "events.plan", also: "conference wedding banquet" },
   { label: "Staff support", detail: "Ask another department for help", href: "/events?tab=support", perm: "staff.request", also: "borrow staff shortage" },
   { label: "Opportunities", detail: "Sales enquiries and potential business", href: "/events?tab=opportunities", perm: "sales.work", also: "sales lead" },

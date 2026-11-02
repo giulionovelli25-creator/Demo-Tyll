@@ -6,15 +6,17 @@ import { APPROVAL_POLICY, approvalSteps, quotesFor } from "../data/purchasing-ru
 import { budgetForRequest, deptOfRequest } from "./finance";
 import { allowedOutlets, allowedProperties, can, hasWholeProperty } from "../domain/access";
 import {
-  baselineFor, buyLines, demandFor, ingredientsFor, mealShares, needByDay, periodOf,
-  type Assumptions, type Baseline, type BuyLine, type Meal, type Period, type PeriodKind, type Source,
+  baselineFor, buyLines, confidenceOf, demandFor, ingredientsFor, mealShares, needByDay, periodOf, weekdaySwing,
+  type Assumptions, type Baseline, type BuyLine, type ConfidenceLevel, type Meal, type Period, type PeriodKind, type Source,
 } from "../domain/planning";
 import { eventPortions, eventStoreNeed, isCommitted } from "../domain/events";
 import type { EventRecord, PrepPlan, PrepTask, PurchaseRequest, RequestLine, RequestStatus, User } from "../types";
-import { DEMO_TODAY, addDays, eachDay, sum } from "../util";
+import { DEMO_TODAY, addDays, diffDays, eachDay, sum } from "../util";
 import { loadStore, mutateStore, type Shape } from "./purchasing-store";
 import { notify, peopleWith, resolve } from "./notify";
 import { deptById } from "../data/workforce";
+import { CATEGORIES, categoryOf, type CategoryId } from "../data/locations";
+import { orderPack } from "../domain/inventory";
 import { stockFor, type SessionEntries } from "./stock";
 
 export type Result<T = object> = ({ ok: true } & T) | { ok: false; status: number; error: string };
@@ -181,6 +183,258 @@ function computeBuyPlan(user: User, body: Record<string, unknown>, entries: Sess
       sharedNote: reservedFor ? `Shared stock is first reserved for the forecast use of ${reservedFor} at this hotel. Their sales are not shown.` : undefined,
     },
   };
+}
+
+// ---- Outlook ---------------------------------------------------------------------------------------------------------
+
+
+export interface OutletOutlook { outletId: string; reservations: number; walkIns: number; eventGuests: number; guests: number; usual: number }
+
+export interface OutlookOut {
+  propertyId: string;
+  period: Period;
+  guests: { total: number; reservations: number; walkIns: number; eventGuests: number; usual: number };
+  occupancy: number;
+  events: { name: string; date: string; attendance: number }[];
+  outlets: OutletOutlook[];
+  /** Portions of food to prepare, largest first, summed across the outlets. */
+  prep: { itemId: string; portions: number }[];
+  /** Everything worth ordering, with the same figures as What to buy. */
+  lines: BuyLine[];
+  confidence: { level: ConfidenceLevel; bookedShare: number; swing: number };
+}
+
+/**
+ * Read only: expected guests, the prep list and the order list for a period, built from the same calculations as
+ * What to buy and What to prep. Confidence comes from confidenceOf.
+ */
+export function outlookFor(user: User, body: Record<string, unknown>, entries: SessionEntries): Result<{ outlook: OutlookOut }> {
+  const buy = computeBuyPlan(user, body, entries);
+  if (!buy.ok) return buy;
+  const { plan } = buy;
+  const data = planningData();
+  const outlets = plan.outletIds.map((outletId) => {
+    const base = baselineFor(data, [outletId], plan.period);
+    const g = demandFor(data, [outletId], plan.period, base.values, base).guests;
+    return { outletId, reservations: Math.round(g.reservations), walkIns: Math.round(g.walkIns), eventGuests: Math.round(g.eventGuests), guests: Math.round(g.reservations + g.walkIns + g.eventGuests), usual: base.historyGuests };
+  });
+  const prepTotals = new Map<string, number>();
+  for (const id of plan.outletIds) for (const [itemId, units] of Object.entries(prepForecast(id, plan.period, "all").totals)) prepTotals.set(itemId, (prepTotals.get(itemId) ?? 0) + units);
+  const total = sum(outlets, (o) => o.guests);
+  const booked = sum(outlets, (o) => o.reservations + o.eventGuests);
+  const bookedShare = total > 0 ? booked / total : 0;
+  const swing = weekdaySwing(data, plan.outletIds, plan.period);
+  return {
+    ok: true,
+    outlook: {
+      propertyId: plan.propertyId,
+      period: plan.period,
+      guests: { total, reservations: sum(outlets, (o) => o.reservations), walkIns: sum(outlets, (o) => o.walkIns), eventGuests: sum(outlets, (o) => o.eventGuests), usual: sum(outlets, (o) => o.usual) },
+      occupancy: plan.baseline.values.occupancy,
+      events: plan.baseline.events,
+      outlets,
+      prep: [...prepTotals].map(([itemId, u]) => ({ itemId, portions: Math.ceil(u - 1e-6) })).sort((a, b) => b.portions - a.portions),
+      lines: plan.lines,
+      confidence: { level: confidenceOf(bookedShare, swing), bookedShare, swing },
+    },
+  };
+}
+
+// ---- Month plan: what to order to reach month end with a safe buffer --------------------------------------------------
+
+export type StockHealth = "fine" | "low" | "critical";
+
+/** Days of average use kept back at month end, so the month does not finish on an empty shelf. */
+export const MONTH_BUFFER_DAYS = 2;
+
+export interface PlanItem {
+  ingredientId: string;
+  unit: string;
+  onHand: number;
+  par: number;
+  health: StockHealth;
+  /** Whole days until it runs out on the prediction. Null when it lasts past month end or is not used. */
+  daysUntilOut: number | null;
+  runOutDate: string | null;
+  /** Predicted use from tomorrow to month end, from forecast covers and events. */
+  predicted: number;
+  lastFourWeeks: number;
+  incoming: number;
+  buffer: number;
+  /** Total to order to finish the month with the buffer, in whole packs. */
+  orderQty: number;
+  cost: number;
+  /** Fresh items keep only a few days: this is the next delivery, and how many it takes to reach month end. */
+  nextQty: number;
+  nextCost: number;
+  deliveries: number;
+  orderBy: string | null;
+  supplierId: string;
+  unitPrice: number;
+  leadDays: number;
+  shelfLifeDays: number;
+  category: CategoryId | null;
+}
+
+export interface PlanCategory {
+  id: CategoryId;
+  name: string;
+  reorderDate: string | null;
+  /** One point a day, both in money so they share one axis: stock plus confirmed deliveries, and predicted use so far. Where use passes stock, the shelf is empty. */
+  points: { date: string; stock: number; used: number }[];
+}
+
+export interface MonthPlanOut {
+  propertyId: string;
+  period: Period;
+  items: PlanItem[];
+  categories: PlanCategory[];
+  inputs: {
+    covers: number;
+    usualCovers: number;
+    bookings: number;
+    walkIns: number;
+    eventGuests: number;
+    events: { name: string; date: string; attendance: number }[];
+    lastFourWeeksValue: number;
+    predictedValue: number;
+    bookedShare: number;
+    swing: number;
+    confidence: ConfidenceLevel;
+  };
+}
+
+const monthEnd = (iso: string) => {
+  const d = new Date(`${iso}T00:00:00Z`);
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).toISOString().slice(0, 10);
+};
+
+export function monthPlanFor(user: User, propertyId: string, entries: SessionEntries): Result<{ plan: MonthPlanOut }> {
+  if (!allowedProperties(user).includes(propertyId)) return fail(403, "This hotel is outside your access.");
+  const data = planningData();
+  const period: Period = { from: addDays(DEMO_TODAY, 1), to: monthEnd(DEMO_TODAY) };
+  const days = eachDay(period);
+  // The storeroom serves the whole hotel, so its plan covers every outlet whoever is looking. Only totals are shown.
+  const outlets = outletsOfProperty(propertyId).map((o) => o.id);
+  const base = baselineFor(data, outlets, period);
+  const demand = demandFor(data, outlets, period, base.values, base, { usualBookingsWhenUnknown: true });
+  const need = needByDay(demand, outlets, entries.recipes);
+  for (const [g, row] of eventNeedByDay(loadStore().events.filter((e) => isCommitted(e) && e.propertyId === propertyId), period, entries)) {
+    const cur = need.get(g) ?? days.map(() => 0);
+    need.set(g, cur.map((v, i) => v + row[i]));
+  }
+  const arrivals = arrivalsFor(propertyId, period);
+  const requested = openRequested(propertyId, outlets);
+  const stock = stockFor(user, propertyId, entries).filter((r) => ingredientById[r.ingredientId].dept !== "supplies");
+
+  // What sales actually used over the last four weeks, by ingredient.
+  const from = addDays(DEMO_TODAY, -28);
+  const hotel = new Set(outlets);
+  const past = new Map<string, number>();
+  for (const r of getDataset().dayItems) {
+    if (r.date < from || r.date >= DEMO_TODAY || !hotel.has(r.outletId)) continue;
+    for (const l of itemById[r.itemId].recipe ?? []) past.set(l.ingredientId, (past.get(l.ingredientId) ?? 0) + l.qty * r.units);
+  }
+
+  const items = stock.map((row): PlanItem => {
+    const g = ingredientById[row.ingredientId];
+    const use = need.get(g.id) ?? days.map(() => 0);
+    const predicted = sum(use, (x) => x);
+    const coming = arrivals.get(g.id);
+    const onHand = Math.max(0, row.estimated);
+    let level = onHand + (requested.get(g.id) ?? 0);
+    let runOutDate: string | null = null;
+    for (let i = 0; i < days.length; i++) {
+      level += (coming?.get(days[i]) ?? 0) - use[i];
+      if (level < -1e-9 && !runOutDate) runOutDate = days[i];
+    }
+    const incoming = sum(days, (d) => coming?.get(d) ?? 0) + (requested.get(g.id) ?? 0);
+    const daily = predicted / days.length;
+    const buffer = daily * MONTH_BUFFER_DAYS;
+    const pack = orderPack(g);
+    const raw = predicted + buffer - onHand - incoming;
+    const orderQty = g.dept !== "glassware" && raw > 1e-9 ? Math.round(Math.ceil(raw / pack - 1e-9) * pack * 1000) / 1000 : 0;
+    // Fresh food cannot all come at once: the next delivery covers what will keep.
+    const keeps = Math.max(1, Math.min(days.length, g.shelfLifeDays));
+    const window = sum(use.slice(0, keeps), (x) => x) + daily * Math.min(MONTH_BUFFER_DAYS, keeps);
+    const windowIncoming = sum(days.slice(0, keeps), (d) => coming?.get(d) ?? 0) + (requested.get(g.id) ?? 0);
+    const rawNext = keeps < days.length ? window - onHand - windowIncoming : raw;
+    const nextQty = orderQty > 0 ? Math.min(orderQty, rawNext > 1e-9 ? Math.round(Math.ceil(rawNext / pack - 1e-9) * pack * 1000) / 1000 : 0) : 0;
+    const deliveries = orderQty > 0 ? Math.max(1, Math.ceil(days.length / keeps)) : 0;
+    const quote = quotesFor(g.id, propertyId, DEMO_TODAY)[0];
+    const lead = g.leadDays;
+    const latest = runOutDate ? addDays(runOutDate, -lead) : addDays(period.to, -lead);
+    const orderBy = orderQty > 0 ? (latest < DEMO_TODAY ? DEMO_TODAY : latest) : null;
+    const daysUntilOut = runOutDate ? Math.max(0, diffDays(runOutDate, DEMO_TODAY)) : null;
+    const usedAtAll = predicted > 1e-9 || row.avgDaily > 0;
+    // Critical: an order placed today would arrive too late. Low: the order has to go by tomorrow, or under half of par is left.
+    const soon = runOutDate !== null && runOutDate <= addDays(DEMO_TODAY, lead);
+    const nearly = runOutDate !== null && runOutDate <= addDays(DEMO_TODAY, lead + 1);
+    const health: StockHealth = usedAtAll && (onHand <= 0 || soon) ? "critical" : usedAtAll && (nearly || onHand < row.par * 0.5) ? "low" : "fine";
+    return {
+      ingredientId: g.id, unit: g.unit, onHand, par: row.par, health, daysUntilOut, runOutDate, predicted,
+      lastFourWeeks: past.get(g.id) ?? 0, incoming, buffer, orderQty, cost: Math.round(orderQty * quote.unitPrice * 100) / 100,
+      nextQty, nextCost: Math.round(nextQty * quote.unitPrice * 100) / 100, deliveries, orderBy, supplierId: quote.supplierId, unitPrice: quote.unitPrice,
+      leadDays: lead, shelfLifeDays: g.shelfLifeDays, category: categoryOf(g.id),
+    };
+  });
+
+  const categories: PlanCategory[] = CATEGORIES.map((c) => {
+    const mine = items.filter((i) => i.category === c.id);
+    const dates = [DEMO_TODAY, ...days];
+    let used = 0;
+    let stockValue = sum(mine, (m) => (m.onHand + (requested.get(m.ingredientId) ?? 0)) * m.unitPrice);
+    const points = dates.map((date, i) => {
+      if (i > 0) {
+        used += sum(mine, (m) => (need.get(m.ingredientId)?.[i - 1] ?? 0) * m.unitPrice);
+        stockValue += sum(mine, (m) => (arrivals.get(m.ingredientId)?.get(date) ?? 0) * m.unitPrice);
+      }
+      return { date, stock: Math.round(stockValue), used: Math.round(used) };
+    });
+    const due = mine.map((m) => m.orderBy).filter((d): d is string => !!d).sort();
+    return { id: c.id, name: c.name, reorderDate: due[0] ?? null, points };
+  });
+
+  const covers = Math.round(demand.guests.reservations + demand.guests.walkIns + demand.guests.eventGuests);
+  // Only bookings actually in the book count as booked. The usual bookings assumed for later days do not.
+  const bookedShare = covers > 0 ? (base.values.reservations + demand.guests.eventGuests) / covers : 0;
+  const swing = weekdaySwing(data, outlets, period);
+  return {
+    ok: true,
+    plan: {
+      propertyId, period, items, categories,
+      inputs: {
+        covers, usualCovers: base.historyGuests, bookings: Math.round(demand.guests.reservations), walkIns: Math.round(demand.guests.walkIns), eventGuests: Math.round(demand.guests.eventGuests),
+        events: base.events,
+        lastFourWeeksValue: Math.round(sum(items, (i) => i.lastFourWeeks * i.unitPrice)),
+        predictedValue: Math.round(sum(items, (i) => i.predicted * i.unitPrice)),
+        bookedShare, swing, confidence: confidenceOf(bookedShare, swing),
+      },
+    },
+  };
+}
+
+const BUILT_NOTE = "Built from the Stock page: the next delivery of each item, to reach month end with a safe buffer.";
+
+/** Build order: one draft purchase order, its lines grouped by supplier when shown. Building again updates the same draft. */
+export function buildMonthOrder(user: User, propertyId: string, entries: SessionEntries): Result<{ request: PurchaseRequest; lines: number; total: number }> {
+  if (!can(user, "purchase.create")) return fail(403, "Your role cannot create purchase requests.");
+  const res = monthPlanFor(user, propertyId, entries);
+  if (!res.ok) return res;
+  const picked = res.plan.items.filter((i) => i.nextQty > 0);
+  if (!picked.length) return fail(409, "Nothing needs ordering right now.");
+  const draft = loadStore().requests.find((r) => r.createdBy === user.id && r.status === "draft" && r.comment === BUILT_NOTE && r.propertyId === propertyId);
+  const saved = saveRequest(user, {
+    id: draft?.id, propertyId, period: "custom", from: res.plan.period.from, to: res.plan.period.to, comment: BUILT_NOTE,
+    lines: picked.map((i) => ({ ingredientId: i.ingredientId, qty: i.nextQty, suggested: i.nextQty, requirement: i.predicted, available: i.onHand, incoming: i.incoming, safety: i.buffer, supplierId: i.supplierId })),
+  });
+  if (!saved.ok) return saved;
+  const request = mutateStore((s) => {
+    const r = s.requests.find((x) => x.id === saved.request.id)!;
+    r.period = res.plan.period;
+    return r;
+  });
+  return { ok: true, request, lines: picked.length, total: Math.round(sum(picked, (i) => i.nextCost) * 100) / 100 };
 }
 
 /** Lines to buy for one event. Empty when the user cannot see the event's purchasing. */

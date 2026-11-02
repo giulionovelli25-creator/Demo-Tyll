@@ -6,7 +6,7 @@ import { persist } from "zustand/middleware";
 import { api } from "./api";
 import type { Assumptions, Meal, PeriodKind } from "./domain/planning";
 import { usePost, useSessionEntries } from "./hooks";
-import type { BuyPlanOut, PlanAlert, PrepOut } from "./server/purchasing";
+import type { BuyPlanOut, MonthPlanOut, OutlookOut, PlanAlert, PrepOut } from "./server/purchasing";
 import type { PrepPlan, PurchaseRequest } from "./types";
 
 export interface PlanScope {
@@ -117,4 +117,18 @@ export function useMutate() {
       return { ok: false, error: e instanceof Error ? e.message : "Something went wrong." };
     }
   }, [bump]);
+}
+
+/** Expected guests, prep list and order list. Read only. */
+export function useOutlook(propertyId: string | null, outletIds: readonly string[], period: "tomorrow" | "7") {
+  const entries = useSessionEntries();
+  const version = usePlanDrafts((s) => s.version);
+  return usePost<{ outlook: OutlookOut }>("/api/plan/outlook", propertyId && outletIds.length ? { propertyId, outletIds, period, version, ...entries } : null);
+}
+
+/** The Stock page's plan to month end, for one hotel. */
+export function useMonthPlan(propertyId: string | null) {
+  const entries = useSessionEntries();
+  const version = usePlanDrafts((s) => s.version);
+  return usePost<{ plan: MonthPlanOut }>("/api/plan/month", propertyId ? { propertyId, version, ...entries } : null);
 }

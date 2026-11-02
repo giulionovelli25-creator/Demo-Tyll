@@ -306,7 +306,7 @@ function ProposalForm({ o, base, id, limit, onDone }: { o: OppView; base?: OppVi
         <fieldset>
           <legend className="mb-2 text-[13px] font-medium text-graphite">Food and drink packages</legend>
           <div className="flex flex-wrap gap-2">
-            {(Object.keys(SERVICES) as ServiceId[]).map((s) => <button key={s} type="button" aria-pressed={f.services.includes(s)} onClick={() => toggle(s)} className={cn("rounded-full border px-3 py-1.5 text-sm", f.services.includes(s) ? "border-accent bg-accent text-paper" : "border-line text-graphite hover:bg-cloud")}>{SERVICES[s].label}</button>)}
+            {(Object.keys(SERVICES) as ServiceId[]).map((s) => <button key={s} type="button" aria-pressed={f.services.includes(s)} onClick={() => toggle(s)} className={cn("rounded-full border px-3 py-1.5 text-sm", f.services.includes(s) ? "border-accent bg-accent text-on-accent" : "border-line text-graphite hover:bg-cloud")}>{SERVICES[s].label}</button>)}
           </div>
         </fieldset>
         <TextArea label="Notes" value={f.notes} onChange={set("notes")} />

@@ -232,7 +232,7 @@ const REPORTS: { id: Report; title: string; detail: string }[] = [
   { id: "spending", title: "Department spending", detail: "Where the money went, by department and category." },
   { id: "commitments", title: "Purchasing commitments", detail: "Approved or delivered, not yet a recorded expense." },
   { id: "summary", title: "Sales & operational summary", detail: "Revenue, direct costs and estimated contribution." },
-  { id: "exceptions", title: "Cost exceptions", detail: "Invoice differences and unresolved stock variances." },
+  { id: "exceptions", title: "Cost exceptions", detail: "Invoice differences and unresolved stock differences." },
 ];
 
 type ReportData = { propertyId: string; currency: Currency; period: string; month: string; budgets: BudgetRow[]; entries: SpendEntry[]; exceptions: { id: string; date: string; supplier: string; poNumber: string; amount: number; status: InvoiceStatus; issues: string[] }[]; events: { id: string; name: string; date: string; guests: number; food: number; drink: number; labour: number; total: number; revenue: number | null }[] };
@@ -253,7 +253,7 @@ export function Reports() {
       <div className="space-y-5">
         <ul className="grid gap-3 sm:grid-cols-2">
           {REPORTS.map((r) => (
-            <li key={r.id}><button type="button" onClick={() => router.push(`/finance?tab=reports&report=${r.id}&propertyId=${propertyId}`)} className="w-full rounded-panel border border-line bg-paper p-5 text-left shadow-panel transition-colors duration-300 ease-tyll hover:border-fog"><span className="block text-[17px] text-ink">{r.title}</span><span className="mt-1 block text-[13px] text-steel">{r.detail}</span></button></li>
+            <li key={r.id}><button type="button" onClick={() => router.push(`/finance?tab=reports&report=${r.id}&propertyId=${propertyId}`)} className="w-full rounded-panel border border-line bg-paper p-5 text-left shadow-panel transition-colors duration-200 ease-tyll hover:border-fog"><span className="block text-[17px] text-ink">{r.title}</span><span className="mt-1 block text-[13px] text-steel">{r.detail}</span></button></li>
           ))}
         </ul>
         <Note>Budgets and the non-F&amp;B spending history are simulated planning figures. F&amp;B spending comes from the dataset&rsquo;s supplier invoices and Tyll&rsquo;s own orders. Each hotel is shown in its own currency.</Note>

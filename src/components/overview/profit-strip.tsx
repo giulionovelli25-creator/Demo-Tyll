@@ -57,7 +57,7 @@ export function ProfitStrip({ c, money, onOpen, partialDay }: { c: Compared; mon
           const estimate = m.key === "operatingProfit" || m.key === "labor" || m.key === "opex";
           return (
             <li key={m.key} className={cn("min-w-0", m.key === "operatingProfit" && "col-span-2 2xl:col-span-1")}>
-              <button type="button" disabled={!available || !onOpen} onClick={() => onOpen?.(m.key)} title={m.help} className="group -m-2 block w-[calc(100%+1rem)] rounded-xl p-2 text-left transition-colors duration-300 ease-tyll enabled:hover:bg-mist">
+              <button type="button" disabled={!available || !onOpen} onClick={() => onOpen?.(m.key)} title={m.help} className="group -m-2 block w-[calc(100%+1rem)] rounded-xl p-2 text-left transition-colors duration-200 ease-tyll enabled:hover:bg-mist">
                 <span className="flex items-center gap-1.5 text-[13px] text-steel">
                   {m.kind === "deduction" && <span aria-hidden>−</span>}
                   {m.label}
@@ -78,7 +78,7 @@ export function ProfitStrip({ c, money, onOpen, partialDay }: { c: Compared; mon
                     />
                   )}
                 </span>
-                <span className="mt-2 flex items-center gap-0.5 text-xs text-fog opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                <span className="mt-2 flex items-center gap-0.5 text-xs text-fog opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
                   {available && onOpen && <>Break down <ChevronRight size={12} /></>}
                 </span>
               </button>
@@ -124,7 +124,7 @@ export function MetricDrawer({ metric, onClose, c, rows, items, money, onOutlet 
           <h3 className="text-[15px]">What the cost is made of</h3>
           <dl className="mt-3 divide-y divide-hair border-y border-hair text-sm">
             <div className="flex justify-between py-2.5"><dt className="text-graphite">Recipe cost of items sold</dt><dd className="num">{money(t.theoCost)}</dd></div>
-            <div className="flex justify-between py-2.5"><dt className="text-graphite"><Link href="/stock?tab=waste" className="underline decoration-line underline-offset-4 hover:decoration-ink">Recorded waste</Link></dt><dd className="num">{money(t.waste)}</dd></div>
+            <div className="flex justify-between py-2.5"><dt className="text-graphite"><Link href="/waste" className="underline decoration-line underline-offset-4 hover:decoration-ink">Recorded waste</Link></dt><dd className="num">{money(t.waste)}</dd></div>
             <div className="flex justify-between py-2.5"><dt className="text-graphite"><Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock missing at count</Link></dt><dd className="num">{money(t.variance)}</dd></div>
           </dl>
           <Note className="mt-2">Stock variance is shared between outlets by how much of each ingredient their recipes used.</Note>

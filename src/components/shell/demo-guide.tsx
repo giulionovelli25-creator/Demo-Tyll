@@ -100,7 +100,7 @@ export const SCENARIOS: Scenario[] = [
     id: "waste", scope: "stock", title: "Staff log waste on a phone", summary: "A steward logs breakage; the manager sees it and stock changes once.",
     steps: [
       { as: "u-emp", href: "/staff?do=breakage", text: "Omar taps Log breakage, Wine glasses, 3, Save." },
-      { as: "u-rm", href: "/stock?tab=log", text: "Sara sees the entry under Recent entries at your outlets, and stock is 3 lower." },
+      { as: "u-rm", href: "/waste?log=1", text: "Sara sees the entry under Recent entries at your outlets, and stock is 3 lower." },
     ],
   },
   {
@@ -145,7 +145,7 @@ export function DemoPicker({ user, onClose }: { user: User; onClose: () => void 
   const start = (sc: Scenario) => { set({ scenario: sc.id, step: 0, min: false }); onClose(); };
   const list = SCENARIOS.filter((s) => (more ? !s.main : s.main));
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 p-0 sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Guided demo" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-scrim p-0 sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Guided demo" onClick={onClose}>
       <div className="animate-rise max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-t-3xl border border-line bg-paper p-5 shadow-float sm:rounded-3xl sm:p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -193,13 +193,13 @@ export function DemoGuide({ user }: { user: User }) {
   const canReset = user.role === "owner" || user.role === "gm";
   if (min) {
     return (
-      <button type="button" onClick={() => set({ min: false })} className="no-print fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2.5 text-sm shadow-float">
+      <button type="button" onClick={() => set({ min: false })} className="no-print fixed bottom-20 right-4 md:bottom-4 z-40 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2.5 text-sm shadow-float">
         <PlayCircle size={16} aria-hidden /> {sc.title} · step {at + 1} of {sc.steps.length}
       </button>
     );
   }
   return (
-    <section aria-label="Guided demo" className="no-print fixed inset-x-3 bottom-3 z-40 rounded-2xl border border-line bg-paper p-4 shadow-float sm:inset-x-auto sm:right-4 sm:w-[380px]">
+    <section aria-label="Guided demo" className="no-print fixed inset-x-3 bottom-20 md:bottom-3 z-40 rounded-2xl border border-line bg-paper p-4 shadow-float sm:inset-x-auto sm:right-4 sm:w-[380px]">
       <div className="flex items-start justify-between gap-2">
         <p className="text-[12px] text-steel">{sc.title} · Step {at + 1} of {sc.steps.length}</p>
         <span className="flex">
@@ -207,7 +207,7 @@ export function DemoGuide({ user }: { user: User }) {
           <button type="button" onClick={() => set({ scenario: null, step: 0 })} aria-label="Exit guided demo" className="rounded-full p-1 text-steel hover:bg-mist"><X size={15} /></button>
         </span>
       </div>
-      <div className="mt-1 h-1 rounded-full bg-mist"><div className="h-1 rounded-full bg-ink transition-[width] duration-500 ease-tyll" style={{ width: `${((at + 1) / sc.steps.length) * 100}%` }} /></div>
+      <div className="mt-1 h-1 rounded-full bg-mist"><div className="h-1 rounded-full bg-ink transition-[width] duration-200 ease-tyll" style={{ width: `${((at + 1) / sc.steps.length) * 100}%` }} /></div>
       <p className="mt-3 text-[15px] leading-snug text-ink">{cur.text}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         {wrongPerson ? (

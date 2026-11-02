@@ -6,6 +6,10 @@ Last updated 14 October 2026. Repository: https://github.com/giulionovelli25-cre
 
 ---
 
+**Latest:** the interface is light by default, with one token file (`src/app/tokens.css`), six sidebar items, a full Stock page with month end prediction, Pour Control in Money, and fast breakage and count flows. Read `CLAUDE.md` for the rules.
+
+---
+
 ## 1. What this is
 
 An interactive demo of Tyll.ai, a hospitality financial and operational intelligence platform. It covers a fictional two-hotel group (Grand Resort Dubai and Grand Resort Doha, nine outlets). Modules:

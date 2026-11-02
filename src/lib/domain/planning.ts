@@ -42,6 +42,31 @@ export interface Assumptions {
 
 export type Source = "records" | "tyll" | "manual";
 
+/** How far the same weekdays moved over the last four weeks, on average, as a share of their usual guests. */
+export function weekdaySwing(data: Dataset, outletIds: readonly string[], period: Period): number {
+  const ix = indexOf(data);
+  let usualTotal = 0, swingTotal = 0;
+  for (const d of eachDay(period)) {
+    const past = sameWeekdays(d);
+    const totals = past.map((p) => sum(outletIds, (o) => ix.covers.get(`${o}|${p}`) ?? 0));
+    const mean = avg(totals);
+    usualTotal += mean;
+    swingTotal += avg(totals.map((t) => Math.abs(t - mean)));
+  }
+  return usualTotal > 0 ? swingTotal / usualTotal : 0;
+}
+
+export type ConfidenceLevel = "high" | "medium" | "low";
+
+/**
+ * Confidence is a plain rule, not a statistical measure. A forecast is high confidence when half or more of its guests
+ * are already booked or the same weekdays have held within 10%, and medium at a quarter or more, or within 20%.
+ */
+export function confidenceOf(bookedShare: number, swing: number): ConfidenceLevel {
+  if (bookedShare >= 0.5 || swing <= 0.1) return "high";
+  return bookedShare >= 0.25 || swing <= 0.2 ? "medium" : "low";
+}
+
 export interface Baseline {
   values: Assumptions;
   sources: Record<keyof Assumptions, Source>;
@@ -116,7 +141,7 @@ export interface Demand {
   guests: { reservations: number; walkIns: number; eventGuests: number };
 }
 
-export function demandFor(data: Dataset, outletIds: string[], period: Period, a: Assumptions, base: Baseline): Demand {
+export function demandFor(data: Dataset, outletIds: string[], period: Period, a: Assumptions, base: Baseline, opts: { usualBookingsWhenUnknown?: boolean } = {}): Demand {
   const ix = indexOf(data);
   const days = eachDay(period);
   const propertyId = outletById[outletIds[0]].propertyId;
@@ -155,7 +180,9 @@ export function demandFor(data: Dataset, outletIds: string[], period: Period, a:
     const outlet = outletById[o];
     for (const d of days) {
       const u = usual(ix, o, d);
-      const booked = outlet.reservable ? (ix.booked.get(`${o}|${d}`) ?? 0) * resScale : 0;
+      // Further ahead than the reservation book reaches, a long plan expects the usual bookings for that weekday.
+      const known = ix.booked.get(`${o}|${d}`);
+      const booked = outlet.reservable ? (known ?? (opts.usualBookingsWhenUnknown ? u.booked : 0)) * resScale : 0;
       const walk = (tyllWalk.get(`${o}|${d}`) ?? 0) * walkScale;
       const event = sum(data.events.filter((e) => e.propertyId === propertyId && e.date === d), (e) => e.attendance) * eventScale * EVENT_SPILLOVER * shareOf(o, d);
       const guests = booked + walk + event;

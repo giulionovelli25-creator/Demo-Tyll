@@ -15,9 +15,9 @@ export function Choice<T extends string>({ label, value, options, onChange }: { 
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button key={o.value} type="button" aria-pressed={value === o.value} onClick={() => onChange(o.value)}
-            className={cn("min-h-11 rounded-full border px-5 py-2 text-left text-sm transition-colors duration-200", value === o.value ? "border-accent bg-accent text-paper" : "border-line bg-paper text-ink hover:border-fog")}>
+            className={cn("min-h-11 rounded-full border px-5 py-2 text-left text-sm transition-colors duration-200", value === o.value ? "border-accent bg-accent text-on-accent" : "border-line bg-paper text-ink hover:border-fog")}>
             {o.label}
-            {o.sub && <span className={cn("block text-xs", value === o.value ? "text-paper/70" : "text-steel")}>{o.sub}</span>}
+            {o.sub && <span className={cn("block text-xs", value === o.value ? "text-on-accent" : "text-steel")}>{o.sub}</span>}
           </button>
         ))}
       </div>
@@ -36,7 +36,7 @@ export function Steps({ steps, current, onGo, reachable }: { steps: string[]; cu
           <li key={s} className="flex items-center gap-2">
             {i > 0 && <span className="h-px w-5 bg-line" aria-hidden />}
             <button type="button" disabled={n > (reachable ?? current)} onClick={() => onGo(n)} aria-current={n === current ? "step" : undefined}
-              className={cn("flex items-center gap-2 rounded-full px-3 py-1.5", n === current ? "bg-accent text-paper" : done ? "text-ink hover:bg-cloud" : n <= (reachable ?? current) ? "text-graphite hover:bg-cloud" : "text-fog")}>
+              className={cn("flex items-center gap-2 rounded-full px-3 py-1.5", n === current ? "bg-accent text-on-accent" : done ? "text-ink hover:bg-cloud" : n <= (reachable ?? current) ? "text-graphite hover:bg-cloud" : "text-fog")}>
               <span className={cn("num flex h-5 w-5 items-center justify-center rounded-full text-xs", n === current ? "bg-paper text-ink" : done ? "bg-mist" : "border border-line")}>{n}</span>
               {s}
             </button>

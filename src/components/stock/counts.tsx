@@ -130,7 +130,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1fr_1.4fr]">
         <Panel title="Missing stock, week by week" description="Value of priority items missing at each weekly count, at the cost on the day.">
           <div className="mb-4 grid grid-cols-2 gap-4">
-            <Stat label={`Missing on ${lastFull ? fmtDate(lastFull) : "–"}`} tone="warn" value={money(byWeek[byWeek.length - 1]?.value ?? 0)} />
+            <Stat label={`Missing on ${lastFull ? fmtDate(lastFull) : "None"}`} tone="warn" value={money(byWeek[byWeek.length - 1]?.value ?? 0)} />
             <Stat label="Four weeks earlier" value={money(byWeek[byWeek.length - 5]?.value ?? 0)} />
           </div>
           <ColumnChart data={byWeek} format={(n) => fmtMoney(n, property.currency)} axisFormat={fmtShort} name="Missing at count" summary="Value of priority stock missing at each weekly count." highlight={(i) => i === byWeek.length - 1} />
@@ -150,8 +150,8 @@ export function Counts({ propertyId }: { propertyId: string }) {
                           <Td className="text-ink">{g.name}</Td>
                           <Td align="right">{fmtQty(c.expected, g.unit)}</Td>
                           <Td align="right">{fmtQty(c.counted, g.unit)}</Td>
-                          <Td align="right" className={cn(v < -0.005 && "text-warn")}>{Math.abs(v) < 0.005 ? "–" : `${v < 0 ? "−" : "+"}${fmtQty(Math.abs(v), g.unit)}`}</Td>
-                          <Td align="right" className={cn(value < -0.5 && "text-warn")}>{Math.abs(value) < 0.5 ? "–" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
+                          <Td align="right" className={cn(v < -0.005 && "text-warn")}>{Math.abs(v) < 0.005 ? "None" : `${v < 0 ? "−" : "+"}${fmtQty(Math.abs(v), g.unit)}`}</Td>
+                          <Td align="right" className={cn(value < -0.5 && "text-warn")}>{Math.abs(value) < 0.5 ? "None" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
                           {mayOpen && <Td align="right">{value < -0.5 && <OpenStockCase count={c} />}</Td>}
                         </tr>
                       );
@@ -179,7 +179,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
                       <Td className="text-ink">{g.name}</Td>
                       <Td align="right">{fmtQty(c.expected, g.unit)}</Td>
                       <Td align="right">{fmtQty(c.counted, g.unit)}</Td>
-                      <Td align="right" className={cn(value < -0.5 && "text-warn")}>{Math.abs(value) < 0.005 ? "–" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
+                      <Td align="right" className={cn(value < -0.5 && "text-warn")}>{Math.abs(value) < 0.005 ? "None" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
                       <Td>{personName(c.by)}</Td>
                       {mayOpen && <Td align="right">{value < -0.5 && <OpenStockCase count={c} />}</Td>}
                     </tr>

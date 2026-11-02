@@ -183,7 +183,7 @@ function BuyRow({ x, money, open, onOpen, onPick }: {
   return (
     <li className={cn("px-5 py-4 sm:px-6", open && "bg-cloud/60")}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <input type="checkbox" className="h-5 w-5 accent-ink" aria-label={`Include ${g.name}`} checked={x.selected} onChange={(e) => onPick({ selected: e.target.checked })} />
+        <input type="checkbox" className="h-5 w-5 accent-[var(--color-accent)]" aria-label={`Include ${g.name}`} checked={x.selected} onChange={(e) => onPick({ selected: e.target.checked })} />
         <button type="button" aria-expanded={open} onClick={onOpen} className="flex min-w-[180px] flex-1 items-center gap-2 text-left">
           <ChevronDown size={15} className={cn("shrink-0 text-steel transition-transform duration-200", open && "rotate-180")} aria-hidden />
           <span>
@@ -219,7 +219,7 @@ function BuyRow({ x, money, open, onOpen, onPick }: {
             <div className="mt-2 space-y-2">
               {x.quotes.map((s) => (
                 <label key={s.supplierId} className={cn("flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-sm", x.quote.supplierId === s.supplierId ? "border-ink bg-paper" : "border-line hover:border-fog")}>
-                  <input type="radio" name={`sup-${l.ingredientId}`} className="accent-ink" checked={x.quote.supplierId === s.supplierId} onChange={() => onPick({ supplierId: s.supplierId })} />
+                  <input type="radio" name={`sup-${l.ingredientId}`} className="accent-[var(--color-accent)]" checked={x.quote.supplierId === s.supplierId} onChange={() => onPick({ supplierId: s.supplierId })} />
                   <span className="flex-1">{s.name}{s.usual && <span className="ml-1 text-xs text-steel">usual</span>}<span className="block text-xs text-steel">{s.leadDays} day{s.leadDays === 1 ? "" : "s"} lead time</span></span>
                   <span className="num">{money(s.unitPrice)} / {l.unit === "units" ? "unit" : l.unit}</span>
                 </label>

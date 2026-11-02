@@ -125,7 +125,7 @@ export default function InvestigationPage() {
               <div><dt className="text-[13px] text-steel">{stockCase ? "Count date" : usage ? "Counted" : "Date and time"}</dt><dd className="num">{fmtDate(inv.date, true)}{stockCase ? "" : `, ${fmtTime(inv.min)}`}</dd></div>
               <div>
                 <dt className="text-[13px] text-steel">Transaction</dt>
-                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : usage ? <Link href={`/stock?tab=where&period=${usage.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{ingredientById[usage.ingredientId].name} stock period</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : <span className="num">{charge?.id ?? "–"}</span>}</dd>
+                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : usage ? <Link href={`/stock?tab=where&period=${usage.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{ingredientById[usage.ingredientId].name} stock period</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : <span className="num">{charge?.id ?? "None"}</span>}</dd>
               </div>
               {order && <div><dt className="text-[13px] text-steel">Table or room</dt><dd>{order.table}</dd></div>}
               {inv.staffId && (
@@ -274,7 +274,7 @@ export default function InvestigationPage() {
                       <div className="space-y-2">
                         {(Object.keys(OUTCOME_LABEL) as Outcome[]).map((o) => (
                           <label key={o} className={cn("flex cursor-pointer gap-3 rounded-xl border px-3.5 py-3 transition-colors duration-200", outcome === o ? "border-ink bg-cloud" : "border-line hover:border-fog")}>
-                            <input type="radio" name="outcome" value={o} checked={outcome === o} onChange={() => { setOutcome(o); setFormError(""); }} className="mt-1 accent-ink" />
+                            <input type="radio" name="outcome" value={o} checked={outcome === o} onChange={() => { setOutcome(o); setFormError(""); }} className="mt-1 accent-[var(--color-accent)]" />
                             <span><span className="block text-sm text-ink">{OUTCOME_LABEL[o]}</span><span className="block text-xs text-steel">{(stockCase ? STOCK_OUTCOME_HELP : OUTCOME_HELP)[o]}</span></span>
                           </label>
                         ))}

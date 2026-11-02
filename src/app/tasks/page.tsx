@@ -83,7 +83,7 @@ function OutletTasks() {
   const open = ctx.data.liveOrders.filter((o) => o.outletId === outletId && ACTIVE_STATUSES.includes(flowStatus[o.id] ?? o.status)).length;
 
   const tasks = [
-    { href: "/stock?tab=log", icon: Trash2, title: "Log waste", detail: "Three taps: the item, how much, and why.", status: myWaste.length ? `${myWaste.length} logged this session` : "Nothing logged yet" },
+    { href: "/waste?log=1", icon: Trash2, title: "Log waste", detail: "Three taps: the item, how much, and why.", status: myWaste.length ? `${myWaste.length} logged this session` : "Nothing logged yet" },
     { href: "/stock?tab=counts", icon: ClipboardCheck, title: "Today's spot checks", detail: "Count five priority items.", status: `${Math.min(5, myCounts.length)} of 5 counted` },
     { href: "/flow", icon: UtensilsCrossed, title: "Order board", detail: "Move tickets along as they are prepared and served.", status: `${open} tickets in progress` },
   ];
@@ -93,13 +93,13 @@ function OutletTasks() {
       <PageHeader title={`Good evening, ${user.name.split(" ")[0]}`} lead={`${outlet.name}, ${propertyById[outlet.propertyId].name}. ${fmtDate(DEMO_TODAY, true)}. Here is what needs doing on this shift.`} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {tasks.map(({ href, icon: Icon, title, detail, status }) => (
-          <Link key={href} href={href} className="group flex min-h-[176px] flex-col justify-between rounded-panel border border-line bg-paper p-6 shadow-panel transition-colors duration-300 ease-tyll hover:border-fog">
+          <Link key={href} href={href} className="group flex min-h-[176px] flex-col justify-between rounded-panel border border-line bg-paper p-6 shadow-panel transition-colors duration-200 ease-tyll hover:border-fog">
             <span>
               <Icon size={26} strokeWidth={1.5} aria-hidden />
               <span className="mt-4 block text-xl tracking-[-0.02em]">{title}</span>
               <span className="mt-1 block text-sm text-steel">{detail}</span>
             </span>
-            <span className="mt-5 flex items-center justify-between text-[13px] text-graphite">{status}<ArrowRight size={16} className="text-fog transition-transform duration-300 ease-tyll group-hover:translate-x-1 group-hover:text-ink" aria-hidden /></span>
+            <span className="mt-5 flex items-center justify-between text-[13px] text-graphite">{status}<ArrowRight size={16} className="text-fog transition-transform duration-200 ease-tyll group-hover:translate-x-1 group-hover:text-ink" aria-hidden /></span>
           </Link>
         ))}
       </div>

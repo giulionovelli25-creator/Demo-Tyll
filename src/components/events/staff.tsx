@@ -57,7 +57,7 @@ export function StaffFinder({ propertyId, skill, date, start, end, toDeptId, nee
             return (
               <li key={c.employeeId} className={cn("px-4 py-3", on && "bg-cloud")}>
                 <div className="flex flex-wrap items-center gap-3">
-                  <input type="checkbox" className="h-5 w-5 accent-ink" aria-label={`Ask for ${c.name}`} checked={on} disabled={!on && picked.length >= need}
+                  <input type="checkbox" className="h-5 w-5 accent-[var(--color-accent)]" aria-label={`Ask for ${c.name}`} checked={on} disabled={!on && picked.length >= need}
                     onChange={() => setPicked(on ? picked.filter((x) => x !== c.employeeId) : [...picked, c.employeeId])} />
                   <button type="button" aria-expanded={open === c.employeeId} onClick={() => setOpen(open === c.employeeId ? null : c.employeeId)} className="flex flex-1 items-center gap-2 text-left">
                     <ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open === c.employeeId && "rotate-180")} aria-hidden />

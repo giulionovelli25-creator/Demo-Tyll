@@ -9,8 +9,8 @@ import { useDemo } from "@/lib/store";
 import { fmtDate } from "@/lib/util";
 
 /** Small marker beside the logo: this is an early version that keeps growing. */
-export function EarlyAccessBadge({ className }: { className?: string }) {
-  return <span className={cn("rounded-full border border-line bg-cloud px-2 text-[11px] leading-[20px] text-graphite", className)}>Early access</span>;
+export function EarlyAccessBadge() {
+  return <span className="whitespace-nowrap rounded-full border border-line bg-paper px-2 text-[11px] leading-[20px] text-graphite">Early access</span>;
 }
 
 /** The changelog, read from config/whats-new.json so it can be edited without touching code. */
@@ -32,10 +32,10 @@ export function WhatsNew({ open, onClose }: { open: boolean; onClose: () => void
 
 /** The four stops of the public demo, each seen as the role it is built for. */
 export const GUIDED_PATH = [
-  { href: "/forecast?tab=buy", userId: "u-buy", title: "Purchasing report", text: "What to buy this week: quantities, order-by dates and what runs short before the next delivery." },
-  { href: "/stock", userId: "u-chef", title: "Stock and waste", text: "The Head Chef's stock at a glance. Tap −1 to log waste, and Undo if it was a mistake." },
-  { href: "/finance?tab=invoices", userId: "u-fc", title: "Reconciliation", text: "Supplier invoices checked against orders and deliveries, with each difference listed." },
-  { href: "/events", userId: "u-fnb", title: "Coming soon preview", text: "Events and staffing is in development. Have a look at where Tyll is heading." },
+  { href: "/stock", userId: "u-buy", title: "Stock prediction", text: "What you have, when it runs out, and what to order to reach month end. Try Build order." },
+  { href: "/waste", userId: "u-chef", title: "Waste and breakage", text: "Tap Log breakage, tap the item, tap the number. Done in three taps, with Undo." },
+  { href: "/money?tab=pour", userId: "u-fnb", title: "Pour Control", text: "How many glasses each bottle really gave, by outlet and shift, and what the gap is worth." },
+  { href: "/more", userId: "u-fnb", title: "Coming soon", text: "Events, rooms and sales are in development. Have a look at where Tyll is heading." },
 ] as const;
 
 const KEY = "tyll-guided-path";
@@ -64,7 +64,7 @@ async function openStep(step: number) {
  * An optional guided path, shown as a strip in the page flow (never on top of content). Before it starts it is a
  * one-line offer; while running it shows the step, Back, Next and Close. Closing remembers the choice in this browser.
  */
-export function GuidedPath() {
+export function GuidedPath({ offer = false }: { offer?: boolean }) {
   const raw = useSyncExternalStore((l) => { listeners.add(l); return () => listeners.delete(l); }, read, () => "off");
   const [, force] = useState(0);
   const state = parse(raw);
@@ -73,10 +73,12 @@ export function GuidedPath() {
   const close = () => { write("off"); force((n) => n + 1); };
 
   if (state === null) {
+    // The offer lives on the More page, so it never pushes the priority cards down.
+    if (!offer) return null;
     return (
       <div className="no-print mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-paper px-4 py-3">
         <Compass size={18} strokeWidth={1.6} className="shrink-0 text-graphite" aria-hidden />
-        <p className="min-w-[200px] flex-1 text-sm text-graphite"><span className="text-ink">New here?</span> Follow a 4-step guided path through what Tyll does today.</p>
+        <p className="min-w-[200px] flex-1 text-sm text-graphite"><span className="text-ink">New here?</span> Follow a 4 step guided path through what Tyll does today.</p>
         <span className="flex items-center gap-1">
           <Button size="sm" variant="primary" onClick={() => go(0)}>Start guided path</Button>
           <button type="button" onClick={close} aria-label="Close the guided path offer" className="rounded-full p-2 text-steel hover:bg-mist hover:text-ink"><X size={16} /></button>

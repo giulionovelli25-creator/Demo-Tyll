@@ -185,7 +185,7 @@ describe("page guard", () => {
     expect(where(proxy(req("/rooms", manager)))).toBeNull();
     expect(where(proxy(req("/money", signIn("u-maid"))))).toBe("/staff");
     expect(where(proxy(req("/finance", manager)))).toBe("/");
-    expect(where(proxy(req("/finance", signIn("u-buy"))))).toBe("/forecast");
+    expect(where(proxy(req("/finance", signIn("u-buy"))))).toBe("/stock");
     expect(where(proxy(req("/investigations", manager)))).toBeNull();
   });
 });
@@ -215,7 +215,7 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     const { POST } = await demoRoute();
     const res = await POST(req("/api/auth/demo", undefined, { method: "POST", body: {} }));
     expect(res.status).toBe(200);
-    expect(await res.json()).toMatchObject({ user: { id: "u-buy" }, home: "/forecast?tab=buy" });
+    expect(await res.json()).toMatchObject({ user: { id: "u-buy" }, home: "/stock" });
     const token = cookieOf(res)!;
     const view = resolveSession(token)!;
     expect(view.user.id).toBe("u-buy");
@@ -245,9 +245,9 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     // Purchasing links switch away from a role that only approves.
     const fc = cookieOf(proxy(req("/finance")))!;
     expect(resolveSession(cookieOf(proxy(req("/forecast?tab=buy", fc)))!)!.user.id).toBe("u-buy");
-    // A signed-in role without the overview goes to its own landing page from "/".
+    // Home changes to a role that may see it, because Home is one click from anywhere.
     const buyer = cookieOf(proxy(req("/forecast")))!;
-    expect(where(proxy(req("/", buyer)))).toBe("/forecast?tab=buy");
+    expect(resolveSession(cookieOf(proxy(req("/", buyer)))!)!.user.id).toBe("u-fnb");
   });
 });
 

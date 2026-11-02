@@ -3,10 +3,10 @@
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { cn } from "./ui";
 
-const INK = "#14161a";
-const FOG = "#b4bac3";
-const LINE = "#e2e5e9";
-const STEEL = "#666c75";
+const INK = "var(--chart-a)";
+const FOG = "var(--color-fog)";
+const LINE = "var(--chart-grid)";
+const STEEL = "var(--chart-axis)";
 
 const axis = { stroke: LINE, tick: { fill: STEEL, fontSize: 11 }, tickLine: false as const };
 
@@ -24,7 +24,7 @@ function Tip({ active, payload, label, format }: { active?: boolean; payload?: r
       {payload.map((p, i) => (
         <p key={i} className="num flex items-center justify-between gap-4 text-ink">
           <span className="flex items-center gap-1.5 text-graphite"><span className="h-2 w-2 rounded-full" style={{ background: p.color }} aria-hidden />{p.name}</span>
-          {typeof p.value === "number" ? format(p.value) : "–"}
+          {typeof p.value === "number" ? format(p.value) : "None"}
         </p>
       ))}
     </div>
@@ -54,7 +54,7 @@ export function TrendChart({ data, format, axisFormat, nowLabel = "This period",
         </ResponsiveContainer>
       </div>
       <div className="mt-2 flex items-center gap-4 text-xs text-steel" aria-hidden>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-ink" />{nowLabel}</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-accent" />{nowLabel}</span>
         {data.some((d) => d.before != null) && <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 border-t-2 border-dashed border-fog" />{beforeLabel}</span>}
       </div>
     </figure>
@@ -68,17 +68,11 @@ export function AreaTrend({ data, format, axisFormat, height = 200, summary, nam
       <div style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-            <defs>
-              <linearGradient id="ink-fade" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={INK} stopOpacity={0.14} />
-                <stop offset="100%" stopColor={INK} stopOpacity={0} />
-              </linearGradient>
-            </defs>
             <CartesianGrid stroke={LINE} strokeDasharray="2 4" vertical={false} />
             <XAxis dataKey="label" {...axis} minTickGap={24} />
             <YAxis {...axis} axisLine={false} width={52} tickFormatter={axisFormat ?? format} />
             <Tooltip content={(p) => <Tip {...(p as object)} format={format} />} cursor={{ stroke: FOG, strokeDasharray: "3 3" }} />
-            <Area type="monotone" dataKey="value" name={name} stroke={INK} strokeWidth={2} fill="url(#ink-fade)" isAnimationActive={false} />
+            <Area type="monotone" dataKey="value" name={name} stroke={INK} strokeWidth={2} fill={INK} fillOpacity={0.12} isAnimationActive={false} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -96,7 +90,7 @@ export function ColumnChart({ data, format, axisFormat, height = 220, summary, n
             <CartesianGrid stroke={LINE} strokeDasharray="2 4" vertical={false} />
             <XAxis dataKey="label" {...axis} interval={0} />
             <YAxis {...axis} axisLine={false} width={52} tickFormatter={axisFormat ?? format} />
-            <Tooltip content={(p) => <Tip {...(p as object)} format={format} />} cursor={{ fill: "#f4f5f7" }} />
+            <Tooltip content={(p) => <Tip {...(p as object)} format={format} />} cursor={{ fill: "var(--color-hair)" }} />
             {reference !== undefined && <ReferenceLine y={reference} stroke={FOG} strokeDasharray="4 4" />}
             <Bar dataKey="value" name={name} radius={[5, 5, 0, 0]} maxBarSize={38} isAnimationActive={false}>
               {data.map((_, i) => <Cell key={i} fill={highlight?.(i) ? INK : FOG} />)}
@@ -121,7 +115,7 @@ export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; l
               <span className="num shrink-0 text-sm text-ink">{format(r.value)}</span>
             </div>
             <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-hair">
-              <div className={cn("h-full rounded-full", tone === "warn" ? "bg-warn" : "bg-ink")} style={{ width: `${(Math.abs(r.value) / max) * 100}%` }} />
+              <div className={cn("h-full rounded-full", tone === "warn" ? "bg-warn" : "bg-accent")} style={{ width: `${(Math.abs(r.value) / max) * 100}%` }} />
             </div>
           </>
         );
@@ -147,7 +141,7 @@ export function Spark({ values, width = 84, height = 26, goodWhen = "up" }: { va
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`Trend ${rising ? "rising" : "falling"}`}>
       <polyline points={pts.join(" ")} fill="none" stroke={INK} strokeWidth={1.4} strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={lx} cy={ly} r={2.4} fill={good ? "#1b7a50" : "#b0352b"} />
+      <circle cx={lx} cy={ly} r={2.4} fill={good ? "var(--color-pos)" : "var(--color-neg)"} />
     </svg>
   );
 }

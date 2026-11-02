@@ -48,7 +48,7 @@ export function Suppliers({ propertyId }: { propertyId: string }) {
 
       <Panel
         title="Deliveries"
-        action={<label className="flex cursor-pointer items-center gap-2 text-[13px] text-graphite"><input type="checkbox" className="accent-ink" checked={onlyIssues} onChange={(e) => setOnlyIssues(e.target.checked)} /> Only deliveries with a difference</label>}
+        action={<label className="flex cursor-pointer items-center gap-2 text-[13px] text-graphite"><input type="checkbox" className="accent-[var(--color-accent)]" checked={onlyIssues} onChange={(e) => setOnlyIssues(e.target.checked)} /> Only deliveries with a difference</label>}
         flush
       >
         {visible.length === 0 ? <div className="px-6 pb-6"><EmptyState title="Every delivery matched its order and invoice" /></div> : (
@@ -63,13 +63,13 @@ export function Suppliers({ propertyId }: { propertyId: string }) {
                     <tr key={d.id} className={cn(rowClass, "cursor-pointer", isOpen && "bg-cloud")} onClick={() => setOpen(isOpen ? null : d.id)}>
                       <Td>
                         <button type="button" aria-expanded={isOpen} className="num flex items-center gap-2 text-ink" onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : d.id); }}>
-                          <ChevronDown size={15} className={cn("text-steel transition-transform duration-300 ease-tyll", isOpen && "rotate-180")} aria-hidden />{d.id}
+                          <ChevronDown size={15} className={cn("text-steel transition-transform duration-200 ease-tyll", isOpen && "rotate-180")} aria-hidden />{d.id}
                         </button>
                       </Td>
                       <Td>{supplierById[d.supplierId].name}</Td>
                       <Td className="num text-graphite">{fmtDate(d.date, true)}</Td>
                       <Td>{issues.length === 0 ? <Badge tone="pos">Matched</Badge> : <span className="flex flex-wrap gap-1">{issues.map((i) => <Badge key={i} tone="warn">{ISSUE_LABEL[i]}</Badge>)}</span>}</Td>
-                      <Td align="right" className={cn(over > 0 && "text-warn")}>{over > 0 ? money(over) : "–"}</Td>
+                      <Td align="right" className={cn(over > 0 && "text-warn")}>{over > 0 ? money(over) : "None"}</Td>
                     </tr>,
                     isOpen && (
                       <tr key={`${d.id}-lines`} className="border-t border-hair bg-cloud">

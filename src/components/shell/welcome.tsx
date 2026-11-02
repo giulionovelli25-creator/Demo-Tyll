@@ -6,7 +6,7 @@ import { Button } from "@/components/ui";
 import { ApiError, api, reloadTo } from "@/lib/api";
 import { useDemo } from "@/lib/store";
 
-/** Public demo entry: one button, no accounts or PIN. Starts as the Purchasing Manager on the purchasing report. */
+/** Public demo entry: one button, no accounts or PIN. Starts as the F&B Director on the Overview. */
 export function Welcome() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -15,9 +15,9 @@ export function Welcome() {
     setBusy(true);
     setError("");
     try {
-      await api("/api/auth/demo", { method: "POST", body: {} });
+      await api("/api/auth/demo", { method: "POST", body: { userId: "u-fnb" } });
       signOut();
-      reloadTo("/forecast?tab=buy");
+      reloadTo("/");
     } catch (e) {
       setError(e instanceof ApiError && e.status === 403 ? "The public demo is not switched on for this server." : "The demo could not start. Try again.");
       setBusy(false);
@@ -42,7 +42,7 @@ export function Welcome() {
             {busy ? "Opening the demo" : "Enter demo"} {!busy && <ArrowRight size={16} aria-hidden />}
           </Button>
           {error && <p role="alert" className="mt-3 text-sm text-neg">{error}</p>}
-          <p className="mt-6 text-xs leading-relaxed text-steel">All names, figures and orders are simulated. You start as the Purchasing Manager and can switch role from the top bar.</p>
+          <p className="mt-6 text-xs leading-relaxed text-steel">All names, figures and orders are simulated. You start as the F&B Director and can switch role from the top bar.</p>
         </div>
       </section>
     </div>

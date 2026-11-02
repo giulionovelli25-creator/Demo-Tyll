@@ -1,61 +1,14 @@
 @import "tailwindcss";
 
-/*
-  Tyll design tokens.
-  Type, pill controls and easing follow tyll.ai (Inter at regular weight with tight tracking,
-  999px buttons, cubic-bezier(.22,1,.36,1)). The palette is the cool white and silver of the
-  Tyll icon and banner artwork.
-*/
-@theme {
-  --color-ink: #14161a;
-  --color-graphite: #343840;
-  --color-steel: #666c75;
-  --color-fog: #9299a3;
-  --color-line: #e2e5e9;
-  --color-hair: #eceef1;
-  --color-mist: #f4f5f7;
-  --color-cloud: #fafbfc;
-  --color-paper: #ffffff;
-  /* Signature accent: indigo ink. Primary actions, selection and highlights. */
-  --color-accent: #3b3f9c;
-  --color-accent-hover: #2f3383;
-  --color-accent-ink: #2c2f78;
-  --color-accent-soft: #ececf8;
-
-  /* Status: green on track, amber needs attention, red urgent. Text on soft fills is AA or better. */
-  --color-pos: #1e7a3c;
-  --color-pos-soft: #e6f4ea;
-  --color-warn: #8a5300;
-  --color-warn-soft: #fdf1dc;
-  --color-neg: #b0261b;
-  --color-neg-soft: #fce8e6;
-
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-arabic: var(--font-arabic), var(--font-inter), system-ui, sans-serif;
-
-  --ease-tyll: cubic-bezier(0.22, 1, 0.36, 1);
-  --radius-panel: 20px;
-  --shadow-panel: 0 1px 2px rgba(30, 32, 70, 0.04), 0 10px 30px -18px rgba(30, 32, 70, 0.16);
-  --shadow-lift: 0 2px 4px rgba(30, 32, 70, 0.05), 0 18px 40px -20px rgba(30, 32, 70, 0.24);
-  --shadow-float: 0 24px 60px -20px rgba(20, 22, 26, 0.28), 0 2px 6px rgba(20, 22, 26, 0.06);
-}
+@import "./tokens.css";
 
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Module colour, set on the page frame per module (components/theme.ts). Defaults to the accent. */
-:root {
-  --mod: var(--color-accent);
-  --mod-soft: var(--color-accent-soft);
-}
-
 body {
-  background:
-    radial-gradient(900px 360px at 85% -120px, rgba(59, 63, 156, 0.07), transparent 70%),
-    var(--color-mist);
-  background-attachment: fixed;
+  background: var(--color-mist);
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -75,7 +28,7 @@ h1, h2, h3 {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-accent-ink);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -91,12 +44,14 @@ h1, h2, h3 {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(60% 50% at 85% 10%, rgba(59, 63, 156, 0.2), transparent 70%),
-    radial-gradient(55% 45% at 10% 95%, rgba(15, 111, 116, 0.16), transparent 70%),
-    radial-gradient(45% 40% at 70% 85%, rgba(178, 74, 42, 0.1), transparent 70%),
-    linear-gradient(160deg, #f7f7fd, #eef1fa);
+    radial-gradient(60% 50% at 85% 10%, var(--color-accent-soft), transparent 70%),
+    radial-gradient(50% 45% at 10% 95%, var(--color-money-soft), transparent 70%),
+    var(--color-nav);
   pointer-events: none;
 }
+
+/* The supplied black logo turns white on dark surfaces. The artwork itself is untouched. */
+.brand-ink { filter: var(--brand-filter); }
 
 /* One line weight for every icon. */
 .lucide {
@@ -107,10 +62,22 @@ h1, h2, h3 {
 /* Wide tables show a soft edge where there is more to scroll to. */
 .scroll-hint {
   background:
-    linear-gradient(90deg, #fff 30%, transparent) left / 32px 100% no-repeat local,
-    linear-gradient(270deg, #fff 30%, transparent) right / 32px 100% no-repeat local,
-    radial-gradient(farthest-side at 0 50%, rgba(30, 32, 70, 0.14), transparent) left / 12px 100% no-repeat scroll,
-    radial-gradient(farthest-side at 100% 50%, rgba(30, 32, 70, 0.14), transparent) right / 12px 100% no-repeat scroll;
+    linear-gradient(90deg, var(--color-paper) 30%, transparent) left / 32px 100% no-repeat local,
+    linear-gradient(270deg, var(--color-paper) 30%, transparent) right / 32px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--color-edge), transparent) left / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--color-edge), transparent) right / 12px 100% no-repeat scroll;
+}
+
+/* Loading placeholder: the same size as what replaces it, so nothing jumps. */
+.skeleton {
+  border-radius: var(--radius-control);
+  background: linear-gradient(90deg, var(--color-hair) 25%, var(--color-line) 50%, var(--color-hair) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
 }
 
 /* Scroll containers are positioned so that visually hidden text inside them is clipped with the rest. */
@@ -121,37 +88,29 @@ h1, h2, h3 {
 }
 
 @keyframes rise {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: none; }
 }
 @keyframes slide-in {
-  from { transform: translateX(24px); opacity: 0; }
+  from { transform: translateX(16px); opacity: 0; }
   to { transform: none; opacity: 1; }
 }
 @keyframes fade {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-/*
-  Page content settles in once, one block after another. The header stays still so titles are never faded.
-  "backwards" only: a finished animation must not hold a transform, which would trap fixed drawers.
-*/
-main > .space-y-5 > :not(header, :has(h1)) { animation: rise 0.45s var(--ease-tyll) backwards; }
-main > .space-y-5 > :nth-child(3) { animation-delay: 50ms; }
-main > .space-y-5 > :nth-child(4) { animation-delay: 100ms; }
-main > .space-y-5 > :nth-child(n + 5) { animation-delay: 150ms; }
-.animate-rise { animation: rise 0.6s var(--ease-tyll) both; }
-.animate-slide-in { animation: slide-in 0.35s var(--ease-tyll) both; }
-.animate-fade { animation: fade 0.25s ease-out both; }
+.animate-rise { animation: rise 0.2s var(--ease-tyll) both; }
+.animate-slide-in { animation: slide-in 0.2s var(--ease-tyll) both; }
+.animate-fade { animation: fade 0.18s ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise, .animate-slide-in, .animate-fade, main > .space-y-5 > :not(header, :has(h1)) { animation: none; }
+  .animate-rise, .animate-slide-in, .animate-fade, .skeleton { animation: none; }
   * { transition-duration: 0.01ms !important; }
 }
 
 @media print {
   .no-print { display: none !important; }
-  body { background: #fff; }
+  body { background: var(--color-paper); }
   main { padding: 0 !important; }
 }
 

@@ -202,7 +202,7 @@ export function Checklist({ plan, assignees, onBack, eventNames = {} }: { plan: 
       <ul className="divide-y divide-hair rounded-2xl border border-line">
         {plan.tasks.slice().sort((a, b) => Number(a.done) - Number(b.done) || b.portions - a.portions).map((t) => (
           <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-            <input type="checkbox" className="h-5 w-5 accent-ink" aria-label={`Done: ${itemById[t.itemId].name}`} checked={t.done} disabled={!can(user, "prep.complete")} onChange={(e) => act(t.id, { op: "complete", done: e.target.checked })} />
+            <input type="checkbox" className="h-5 w-5 accent-[var(--color-accent)]" aria-label={`Done: ${itemById[t.itemId].name}`} checked={t.done} disabled={!can(user, "prep.complete")} onChange={(e) => act(t.id, { op: "complete", done: e.target.checked })} />
             <span className={cn("flex-1 text-[15px]", t.done ? "text-steel line-through" : "text-ink")}>Prepare {t.portions} {itemById[t.itemId].name.toLowerCase()} portion{t.portions === 1 ? "" : "s"}{t.eventId && <span className="ml-2 text-[13px] text-steel">for {eventNames[t.eventId] ?? "an event"}</span>}
               {(t.done || t.startedAt || t.issue) && <span className="block text-xs text-steel no-underline">{t.done && t.doneBy ? `Done by ${personName(t.doneBy)}${t.doneAt ? ` at ${t.doneAt.slice(11, 16)}` : ""}` : t.startedAt ? `Started at ${t.startedAt.slice(11, 16)}` : ""}{t.issue ? ` · Problem reported by ${personName(t.issue.by)}: ${t.issue.note}` : ""}</span>}</span>
             {can(user, "prep.plan") ? (

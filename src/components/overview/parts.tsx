@@ -15,10 +15,10 @@ import { DEMO_TODAY, fmtDate, fmtShort } from "@/lib/util";
 
 export function KpiCard({ label, value, sub, delta, spark, sparkGood = "up", onClick, tone, help }: { label: string; value: string; sub?: string; delta?: React.ReactNode; spark?: number[]; sparkGood?: "up" | "down"; onClick: () => void; tone?: "warn"; help?: string }) {
   const card = (
-    <button type="button" onClick={onClick} className="group flex min-w-0 flex-col justify-between rounded-panel border border-line bg-paper p-4 text-left sm:p-5 shadow-panel transition-colors duration-300 ease-tyll hover:border-fog">
+    <button type="button" onClick={onClick} className="group flex min-w-0 flex-col justify-between rounded-panel border border-line bg-paper p-4 text-left sm:p-5 shadow-panel transition-colors duration-200 ease-tyll hover:border-fog">
       <span className="flex items-center justify-between gap-2 text-[13px] text-steel">
         {label}
-        <ChevronRight size={15} className="text-fog transition-transform duration-300 ease-tyll group-hover:translate-x-0.5 group-hover:text-ink" aria-hidden />
+        <ChevronRight size={15} className="text-fog transition-transform duration-200 ease-tyll group-hover:translate-x-0.5 group-hover:text-ink" aria-hidden />
       </span>
       <span className={cn("num mt-2 block whitespace-nowrap text-[21px] leading-tight sm:text-[26px] tracking-[-0.03em]", tone === "warn" ? "text-warn" : "text-ink")}>{value}</span>
       <span className="mt-2 flex items-end justify-between gap-2">
@@ -71,7 +71,7 @@ export function IssueRow({ issue, money, onOutlet }: { issue: Issue; money: (n: 
           <span className="mt-0.5 block truncate text-xs text-steel">{issue.location} · {KIND_LABEL[issue.kind]} · {issue.assignee ? personName(issue.assignee) : "Unassigned"}</span>
         </span>
         <span className="flex flex-col items-end gap-1">
-          <span className="num text-sm text-ink">{issue.impact === null ? "–" : money(issue.impact, { decimals: issue.impact < 100 })}</span>
+          <span className="num text-sm text-ink">{issue.impact === null ? "None" : money(issue.impact, { decimals: issue.impact < 100 })}</span>
           <span className="flex gap-1">
             <Badge tone={PRIORITY_TONE[issue.priority]} className="!py-0">{PRIORITY_LABEL[issue.priority]}</Badge>
             <Badge className="!py-0">{issue.status}</Badge>

@@ -69,7 +69,7 @@ export function Inventory({ propertyId }: { propertyId: string }) {
 
       <Panel title="Items" flush>
         <div className="flex flex-wrap items-center gap-2 px-5 pb-4 sm:px-6">
-          <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm"><input type="checkbox" className="accent-ink" checked={priority} onChange={(e) => setPriority(e.target.checked)} /> Priority items only</label>
+          <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm"><input type="checkbox" className="accent-[var(--color-accent)]" checked={priority} onChange={(e) => setPriority(e.target.checked)} /> Priority items only</label>
           <div className="relative ml-auto w-full sm:w-[240px]">
             <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find an item" aria-label="Find an item" className="h-10 w-full rounded-full border border-line bg-paper pl-9 pr-3 text-sm placeholder:text-fog hover:border-fog" />
@@ -101,12 +101,12 @@ export function Inventory({ propertyId }: { propertyId: string }) {
                     <tr id={`item-${r.ingredientId}`} className={cn(rowClass, "cursor-pointer scroll-mt-40")} onClick={() => setOpen(open === r.ingredientId ? null : r.ingredientId)}>
                       <Td><button type="button" aria-expanded={open === r.ingredientId} className="inline-flex items-center gap-1.5 text-left text-ink" onClick={(e) => { e.stopPropagation(); setOpen(open === r.ingredientId ? null : r.ingredientId); }}><ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open === r.ingredientId && "rotate-180")} aria-hidden />{g.name}</button>{g.priority && <Badge className="ml-2 !py-0">priority</Badge>}{r.store && <Badge className="ml-2 !py-0">{outletById[r.store].name} store</Badge>}<span className="block text-xs text-steel">{supplierById[g.supplierId].name}</span></Td>
                       <Td align="right">{fmtQty(r.baselineQty, g.unit)}<span className="block text-xs text-steel">{fmtDate(r.baselineDate)}</span></Td>
-                      <Td align="right">{r.received ? `+${fmtQty(r.received, g.unit)}` : "–"}</Td>
-                      <Td align="right">{r.usage ? `−${fmtQty(r.usage, g.unit)}` : "–"}</Td>
-                      <Td align="right">{r.waste + r.breakage ? `−${fmtQty(r.waste + r.breakage, g.unit)}` : "–"}</Td>
-                      <Td align="right">{net ? `${net > 0 ? "+" : "−"}${fmtQty(Math.abs(net), g.unit)}` : "–"}</Td>
+                      <Td align="right">{r.received ? `+${fmtQty(r.received, g.unit)}` : "None"}</Td>
+                      <Td align="right">{r.usage ? `−${fmtQty(r.usage, g.unit)}` : "None"}</Td>
+                      <Td align="right">{r.waste + r.breakage ? `−${fmtQty(r.waste + r.breakage, g.unit)}` : "None"}</Td>
+                      <Td align="right">{net ? `${net > 0 ? "+" : "−"}${fmtQty(Math.abs(net), g.unit)}` : "None"}</Td>
                       <Td align="right" className={cn("text-ink", r.estimated < 0 && "text-neg")}>{fmtQty(r.estimated, g.unit)}</Td>
-                      <Td align="right">{r.daysCover === null ? "–" : <span className={cn(low && "text-warn")}>{fmtNum(Math.max(0, r.daysCover), 1)}{low && <Badge tone="warn" className="ml-2 !py-0">low</Badge>}</span>}</Td>
+                      <Td align="right">{r.daysCover === null ? "None" : <span className={cn(low && "text-warn")}>{fmtNum(Math.max(0, r.daysCover), 1)}{low && <Badge tone="warn" className="ml-2 !py-0">low</Badge>}</span>}</Td>
                       <Td align="right">{money(r.value)}</Td>
                     </tr>
                     {open === r.ingredientId && (
@@ -194,7 +194,7 @@ function ItemDetail({ row, propertyId, money, cases, mayCount, mayLog }: {
         {(mayCount || mayLog) && (
           <div className="flex flex-wrap gap-2">
             {mayCount && <Link href={`/stock?tab=counts&item=${row.ingredientId}`} className="inline-flex h-9 items-center rounded-full border border-line bg-paper px-4 text-[13px] hover:border-fog">Count this item</Link>}
-            {mayLog && <Link href="/stock?tab=log" className="inline-flex h-9 items-center rounded-full border border-line bg-paper px-4 text-[13px] hover:border-fog">Log waste or breakage</Link>}
+            {mayLog && <Link href="/waste?log=1" className="inline-flex h-9 items-center rounded-full border border-line bg-paper px-4 text-[13px] hover:border-fog">Log waste or breakage</Link>}
           </div>
         )}
       </div>

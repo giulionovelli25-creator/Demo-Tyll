@@ -106,10 +106,10 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
                         <Td align="right"><Amount p={p} n={v.expected} /></Td>
                         <Td align="right"><Amount p={p} n={v.actual} /></Td>
                         <Td align="right" className={cn(v.significant && v.unexplained > 0 && "text-warn")}>
-                          {Math.abs(v.unexplained) < 1e-6 ? "–" : <>{v.unexplained < 0 ? "−" : ""}{qtyWords(v.unexplained, p.ingredientId)}</>}
+                          {Math.abs(v.unexplained) < 1e-6 ? "None" : <>{v.unexplained < 0 ? "−" : ""}{qtyWords(v.unexplained, p.ingredientId)}</>}
                           {v.expected > 0 && Math.abs(v.unexplained) > 1e-6 && <span className="block text-xs text-steel">{Math.round(v.share * 100)}% of expected</span>}
                         </Td>
-                        <Td align="right">{v.unexplained > 0 ? money(v.value) : "–"}</Td>
+                        <Td align="right">{v.unexplained > 0 ? money(v.value) : "None"}</Td>
                         <Td>{c ? <Badge tone={c.status === "closed" ? "neutral" : c.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[c.status]}</Badge> : <span className="text-xs text-steel">{v.significant && v.unexplained > 0 ? "Not investigated" : "Within normal range"}</span>}</Td>
                       </tr>
                     ))}

@@ -113,7 +113,7 @@ export function ManagerOverview() {
 
       <div data-tour="kpis" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <KpiCard label="Revenue today" value={money(today.now.net)} delta={<Delta value={pctChange(today.now.net, today.before.net)} versus="than yesterday at this time" />} sub="so far, to 8:55 PM" onClick={() => setKpi({ key: "revenue", today: true })} />
-        <KpiCard label="Gross margin" value={fmtPct(t.gpMargin)} delta={<Delta value={(t.gpMargin - c.before.gpMargin) * 100} kind="pts" />} sub={`${fmtDate(sel.range.from)} – ${fmtDate(sel.range.to)}`} spark={days.map((d) => d.now.gpMargin)} onClick={() => setKpi({ key: "profit", today: false })} />
+        <KpiCard label="Gross margin" value={fmtPct(t.gpMargin)} delta={<Delta value={(t.gpMargin - c.before.gpMargin) * 100} kind="pts" />} sub={`${fmtDate(sel.range.from)} to ${fmtDate(sel.range.to)}`} spark={days.map((d) => d.now.gpMargin)} onClick={() => setKpi({ key: "profit", today: false })} />
         <KpiCard label="Open issues" value={String(issues.length)} sub={`${issues.filter((i) => i.priority === "high").length} high priority`} onClick={() => setKpi({ key: "issues", today: false })} />
         <KpiCard label="My tasks" value={String(tasks.length)} sub={tasks.some((x) => x.urgent) ? "some are urgent" : "nothing urgent"} tone={tasks.some((x) => x.urgent) ? "warn" : undefined} onClick={() => document.getElementById("tasks")?.scrollIntoView({ behavior: "smooth", block: "start" })} />
       </div>

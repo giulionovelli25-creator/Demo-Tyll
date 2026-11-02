@@ -38,12 +38,12 @@ function Cards<T extends string>({ choices, onPick, tour }: { choices: HubChoice
       {choices.map(({ value, title, detail, icon: Icon, badge, help }) => (
         <li key={value} className="relative">
           {help && <Help text={help} label={`What is ${title}?`} className="absolute bottom-4 right-4 z-10" />}
-          <button type="button" onClick={() => onPick(value)} className="group flex h-full w-full flex-col justify-between rounded-panel border border-line bg-paper p-5 text-left shadow-panel transition-[box-shadow,border-color,transform] duration-300 ease-tyll hover:-translate-y-0.5 hover:border-[var(--mod)]/30 hover:shadow-lift">
+          <button type="button" onClick={() => onPick(value)} className="group flex h-full w-full flex-col justify-between rounded-panel border border-line bg-paper p-5 text-left shadow-panel transition-[box-shadow,border-color,transform] duration-200 ease-tyll hover:-translate-y-0.5 hover:shadow-lift">
             <span className="flex items-center justify-between">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--mod-soft)] text-[var(--mod)]"><Icon size={22} strokeWidth={1.7} aria-hidden /></span>
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-soft text-accent-ink"><Icon size={22} strokeWidth={1.7} aria-hidden /></span>
               <span className="flex items-center gap-2">
                 {badge && <span className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent-ink">{badge}</span>}
-                <ChevronRight size={16} className="text-fog transition-transform duration-300 ease-tyll group-hover:translate-x-0.5 group-hover:text-ink" aria-hidden />
+                <ChevronRight size={16} className="text-fog transition-transform duration-200 ease-tyll group-hover:translate-x-0.5 group-hover:text-ink" aria-hidden />
               </span>
             </span>
             <span className="mt-5 block">

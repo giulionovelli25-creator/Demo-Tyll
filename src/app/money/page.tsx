@@ -1,50 +1,55 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, ArrowRight, BedDouble, Coins, Receipt, Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { BarList } from "@/components/charts";
-import { ModuleHub, useSection } from "@/components/module-hub";
-import { Badge, Button, Crumbs, EmptyState, Field, Note, PageHeader, Panel, Select, Stat, TableWrap, Tabs, Td, Th, cn, rowClass } from "@/components/ui";
+import { OutletFinance } from "@/components/finance/outlets";
+import { PourControl } from "@/components/money/pour-control";
+import { useAlertFeed } from "@/lib/alert-feed";
+import { useSection } from "@/components/module-hub";
+import { Badge, Button, EmptyState, KeyNumber, KeyNumbers, linkButton, Field, Note, PageHeader, Panel, Select, Stat, TableWrap, Tabs, Td, Th, cn, rowClass } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
-import { canSeeOutlet } from "@/lib/domain/access";
+import { can, canSeeOutlet } from "@/lib/domain/access";
 import { POLICY, ROOM_TYPES, TYPE_LABEL, detectOrderException } from "@/lib/domain/detect";
-import { adjustmentRate, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
+import { adjustmentRate, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/hooks";
 import { SOURCE_LABEL, STATUS_LABEL } from "@/lib/labels";
 import type { ChargeSource, ExceptionType, Order } from "@/lib/types";
 import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtTime, fxRate, sum } from "@/lib/util";
 
-type Tab = "mistakes" | "orders" | "rooms" | "tips";
+type Tab = "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips";
 
 export default function MoneyPage() {
-  const [tab, setTab] = useSection<Tab>("/money", ["mistakes", "orders", "rooms", "tips"]);
-  const label = { mistakes: "Restaurant mistakes", orders: "Order history", rooms: "Room charges", tips: "Tips (preview)" };
-  const { sel } = useView();
+  const [tab, setTab] = useSection<Tab>("/money", ["mistakes", "pour", "outlets", "orders", "rooms", "tips"], "mistakes");
+  const label: Record<Tab, string> = { mistakes: "Flagged bills", pour: "Pour Control", outlets: "Profit by outlet", orders: "Transactions", rooms: "Room charges", tips: "Tips (preview)" };
+  const { sel, user, money } = useView();
+  const ctx = useCtx();
+  const investigations = useInvestigations();
+  const { pour } = useAlertFeed();
+  const t = useMemo(() => computeTotals(ctx, sel), [ctx, sel]);
+  const flags = useMemo(() => investigations.filter((i) => i.status !== "closed" && exceptionInSel(i, sel)), [investigations, sel]);
+  const flagValue = sum(flags, (i) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency));
+  const rate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
+  const pourWeek = pour ? (pour.wine.totals.week.gapValue + pour.spirits.totals.week.gapValue) * rate : 0;
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title={tab ? label[tab] : "Tyll Money"}
-        lead={tab ? undefined : "Bill changes, room charges and tips that are worth a second look."}
-        crumbs={tab ? <Crumbs items={[{ label: "Tyll Money", onClick: () => setTab(null) }, { label: label[tab] }]} /> : undefined}
-      >
-        <Badge>{fmtRange(sel.range)}</Badge>
+    <div className="space-y-6">
+      <PageHeader title="Money" question="Where is money going missing, and how much?" lead={`${flags.length} open flags and ${money(pourWeek)} of over pouring this week. ${fmtRange(sel.range)}.`}>
+        {can(user, "finance.view") && <Link href="/finance?tab=invoices" className={linkButton()}>Reconciliation</Link>}
+        <Link href="/investigations" className={linkButton("primary")}>Review {flags.length} flags</Link>
       </PageHeader>
-      {tab === null && (
-        <ModuleHub
-          onPick={setTab}
-          choices={[
-            { value: "mistakes", title: "Restaurant mistakes", detail: "Deleted items, discounts, refunds and free items that need a look.", icon: AlertTriangle },
-            { value: "orders", title: "Order history", detail: "Every order from first item to final bill.", icon: Receipt },
-            { value: "rooms", title: "Room charges", detail: "Charges that did not reach the guest bill.", icon: BedDouble },
-            { value: "tips", title: "Tips", detail: "Share tips by hours worked. Preview.", icon: Coins, badge: "Preview" },
-          ]}
-        />
-      )}
-      {tab && <Tabs value={tab} onChange={setTab} tabs={[{ value: "mistakes", label: "Restaurant mistakes" }, { value: "orders", label: "Order history" }, { value: "rooms", label: "Room charges" }, { value: "tips", label: "Tips (preview)" }]} />}
+      <KeyNumbers>
+        <KeyNumber label="Money at risk" value={money(flagValue + pourWeek)} tone="money" note="Flags and over pouring" />
+        <KeyNumber label="Open flags" value={flags.length} tone={flags.length ? "warn" : "pos"} note={money(flagValue)} />
+        <KeyNumber label="Over pouring, this week" value={money(pourWeek)} tone={pourWeek > 0 ? "money" : undefined} note="Wine and spirits" />
+        <KeyNumber label="Recovered, this period" value={money(t.recovered)} tone="pos" note={`${money(t.confirmedLoss)} confirmed lost`} />
+      </KeyNumbers>
+      {tab && <Tabs value={tab} onChange={setTab} tabs={(Object.keys(label) as Tab[]).map((value) => ({ value, label: label[value] }))} />}
       {tab === "mistakes" && <Mistakes />}
+      {tab === "pour" && <PourControl />}
+      {tab === "outlets" && <OutletFinance />}
       {tab === "orders" && <Orders />}
       {tab === "rooms" && <RoomCharges />}
       {tab === "tips" && <Tips />}
@@ -149,7 +154,7 @@ function Mistakes() {
                 {inPeriod.slice(0, 8).map((i) => (
                   <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
                     <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}</span></Td>
-                    <Td>{i.outletId ? outletLabel(i.outletId) : "–"}</Td>
+                    <Td>{i.outletId ? outletLabel(i.outletId) : "None"}</Td>
                     <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
                     <Td align="right">{money(toDisplay(i.propertyId, i.exposure), { decimals: true })}</Td>
                     <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
@@ -189,7 +194,7 @@ function Orders() {
           {days.map((d) => <option key={d} value={d}>{fmtDate(d, true)}{d === DEMO_TODAY ? " (today)" : ""}</option>)}
         </Select>
         <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm">
-          <input type="checkbox" className="accent-ink" checked={onlyChanged} onChange={(e) => setOnlyChanged(e.target.checked)} /> Only orders whose bill differs from the order
+          <input type="checkbox" className="accent-[var(--color-accent)]" checked={onlyChanged} onChange={(e) => setOnlyChanged(e.target.checked)} /> Only orders whose bill differs from the order
         </label>
         <div className="relative ml-auto w-full sm:w-[260px]">
           <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
@@ -210,7 +215,7 @@ function Orders() {
                     <Td className="text-graphite">{staffById[o.staffId]?.name ?? o.staffId}</Td>
                     <Td align="right">{fmtNum(t.original)}</Td>
                     <Td align="right">{fmtNum(t.net, t.net % 1 ? 2 : 0)}</Td>
-                    <Td align="right" className={cn(t.original - t.net > 0.005 && "text-warn")}>{t.original - t.net > 0.005 ? fmtNum(t.original - t.net, (t.original - t.net) % 1 ? 2 : 0) : "–"}</Td>
+                    <Td align="right" className={cn(t.original - t.net > 0.005 && "text-warn")}>{t.original - t.net > 0.005 ? fmtNum(t.original - t.net, (t.original - t.net) % 1 ? 2 : 0) : "None"}</Td>
                     <Td>
                       <span className="flex flex-wrap gap-1">
                         {o.voided && <Badge>voided</Badge>}
@@ -339,7 +344,7 @@ function Tips() {
   return (
     <div className="space-y-5">
       <Panel title="Tip distribution" description="A preview of a planned feature. You can try the calculation here, but nothing on this tab is saved or sent to payroll." action={<Badge>Planned</Badge>}>
-        <div className="grid gap-6 lg:grid-cols-[1fr_1.6fr]">
+        <div className="grid gap-6 lg:grid-cols-[1fr_1.6fr] [&>*]:min-w-0">
           <div className="space-y-4">
             <p className="text-sm text-graphite">Example for {outletLabel(outletId)}, week to {fmtDate(DEMO_TODAY)}.</p>
             <Field label="Tips collected" suffix={currency} type="number" min="0" value={pool} onChange={(e) => { setPool(e.target.value); setApproved(false); }} hint="Shared by hours worked under the agreed rule." />

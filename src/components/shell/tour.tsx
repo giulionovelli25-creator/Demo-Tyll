@@ -15,7 +15,7 @@ interface Step {
 }
 
 export const TOUR_STEPS: Step[] = [
-  { as: "u-owner", title: "See the whole group", body: "The owner opens Tyll Overview. Sales, costs, margin and money at risk for both hotels are on one screen, with the change against the previous week.", cta: "Open the group overview" },
+  { as: "u-owner", title: "See the whole group", body: "The owner opens Home. Sales, costs, margin and money at risk for both hotels are on one screen, with the change against the previous week.", cta: "Open the group overview" },
   { as: "u-owner", title: "Notice The Terrace", body: "The briefing and the outlet list both point to The Terrace: the lowest margin in the group, falling, and the most open issues.", cta: "Show the outlet list" },
   { as: "u-owner", title: "Open The Terrace", body: "Clicking the outlet narrows every figure to that restaurant: its costs, sales, menu profitability and open cases.", cta: "Narrow to The Terrace" },
   { as: "u-owner", title: "Open the unusual transaction", body: "Tonight at 8:49 PM a Coke was removed from a bill, six minutes after its ticket went to the bar.", cta: "Open the investigation" },
@@ -94,7 +94,7 @@ export function Tour() {
       </div>
       <ol className="mt-3 flex gap-1" aria-hidden>
         {TOUR_STEPS.map((_, i) => (
-          <li key={i} className={cn("h-1 flex-1 rounded-full transition-colors duration-300", i < step ? "bg-pos" : i === step ? "bg-accent" : "bg-hair")} />
+          <li key={i} className={cn("h-1 flex-1 rounded-full transition-colors duration-200", i < step ? "bg-pos" : i === step ? "bg-accent" : "bg-hair")} />
         ))}
       </ol>
       <h2 className="mt-4 text-lg leading-snug">{current.title}</h2>

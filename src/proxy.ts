@@ -17,7 +17,7 @@ export function proxy(req: NextRequest) {
   if (publicDemo()) {
     if (pathname === "/login") return NextResponse.redirect(new URL(view ? homePath(view.user) : "/welcome", req.url));
     if (pathname === "/welcome") return NextResponse.next();
-    if (pathname === "/" && (!view || !canOpen(view.user, "overview"))) return NextResponse.redirect(new URL(view ? homePath(view.user) : "/welcome", req.url));
+    if (pathname === "/" && !view) return NextResponse.redirect(new URL("/welcome", req.url));
     const mod = moduleOfPath(pathname);
     // A live module needs a role that can do its main job: reconcile invoices, or plan what to buy.
     const fits = (u: Parameters<typeof canOpen>[0]) =>

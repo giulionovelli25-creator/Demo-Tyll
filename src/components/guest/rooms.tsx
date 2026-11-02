@@ -140,7 +140,7 @@ export function RoomDetail({ roomId, back = "/rooms?tab=readiness" }: { roomId: 
             {(mine || manager) && (
               <form className="flex flex-wrap items-end gap-2" onSubmit={(e) => { e.preventDefault(); const supply = (new FormData(e.currentTarget).get("supply") as string) === "on"; void act({ action: "issue", note: issue, supply }, "Reported. Housekeeping can see it.").then((ok) => ok && setIssue("")); }}>
                 <Field label="Report a problem or missing supply" className="min-w-[220px] flex-1" value={issue} onChange={(e) => setIssue(e.target.value)} placeholder="For example: no bath towels on the trolley" />
-                <label className="flex h-11 items-center gap-2 text-sm"><input type="checkbox" name="supply" className="accent-ink" /> Missing supply</label>
+                <label className="flex h-11 items-center gap-2 text-sm"><input type="checkbox" name="supply" className="accent-[var(--color-accent)]" /> Missing supply</label>
                 <Button type="submit">Report</Button>
               </form>
             )}

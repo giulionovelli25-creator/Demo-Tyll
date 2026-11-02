@@ -72,7 +72,7 @@ export function buildIssues(
         out.push({
           id: `waste-${r.outletId}`, kind: "waste", title: `Food waste up ${fmtPct(rise / r.before.waste, 0)} on the previous period`,
           location: where(r.outletId, outletById[r.outletId].propertyId), outletId: r.outletId, impact: rise,
-          priority: rise >= 1000 * aed ? "high" : "medium", status: "Open", href: "/stock?tab=waste",
+          priority: rise >= 1000 * aed ? "high" : "medium", status: "Open", href: "/waste",
         });
       }
     }

@@ -18,11 +18,11 @@ export function Button({ variant = "secondary", size = "md", className, type = "
     <button
       type={type}
       className={cn(
-        "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium tracking-[-0.01em] transition-[background,color,border-color,transform] duration-300 ease-tyll active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45",
+        "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium tracking-[-0.01em] transition-[background,color,border-color,transform] duration-200 ease-tyll active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60",
         size === "sm" && "h-8 px-3 text-[13px]",
         size === "md" && "h-10 px-4 text-sm",
         size === "lg" && "h-12 px-6 text-[15px]",
-        variant === "primary" && "bg-accent text-paper hover:bg-accent-hover",
+        variant === "primary" && "bg-accent text-on-accent hover:bg-accent-hover",
         variant === "secondary" && "border border-line bg-paper text-ink hover:border-fog hover:bg-cloud",
         variant === "ghost" && "text-graphite hover:bg-mist",
         variant === "danger" && "border border-neg/30 bg-paper text-neg hover:bg-neg-soft",
@@ -41,7 +41,7 @@ const TONE: Record<Tone, string> = {
   pos: "bg-pos-soft text-pos",
   warn: "bg-warn-soft text-warn",
   neg: "bg-neg-soft text-neg",
-  ink: "bg-accent text-paper",
+  ink: "bg-accent text-on-accent",
   accent: "bg-accent-soft text-accent-ink",
 };
 
@@ -79,7 +79,7 @@ export function Delta({ value, kind = "pct", goodWhen = "up", className, versus 
 // ---- Layout -----------------------------------------------------------------
 export function Panel({ title, description, action, children, className, flush }: { title?: ReactNode; description?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; flush?: boolean }) {
   return (
-    <section className={cn("min-w-0 rounded-panel border border-line bg-paper shadow-panel transition-shadow duration-300 ease-tyll", className)}>
+    <section className={cn("min-w-0 rounded-panel border border-line bg-paper shadow-panel transition-shadow duration-200 ease-tyll", className)}>
       {(title || action) && (
         <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-5 pt-5 sm:px-6">
           <div className="min-w-0">
@@ -94,42 +94,83 @@ export function Panel({ title, description, action, children, className, flush }
   );
 }
 
-/** Page title in the module's colour band. Solid, full-contrast text: no entry animation and no texture behind it. */
-export function PageHeader({ title, lead, children, crumbs }: { title: ReactNode; lead?: ReactNode; children?: ReactNode; crumbs?: ReactNode }) {
-  const Icon = MODULE_ICON[moduleOfPath(usePathname() ?? "/")];
+/**
+ * Every page starts the same way: title, the one question the page answers, a one line summary, the primary action top right.
+ * Key numbers and detail follow.
+ */
+export function PageHeader({ title, question, lead, children, crumbs }: { title: ReactNode; question?: ReactNode; lead?: ReactNode; children?: ReactNode; crumbs?: ReactNode }) {
   return (
-    <header data-tour="page" className="relative overflow-hidden rounded-panel border border-line bg-[linear-gradient(120deg,var(--mod-soft)_0%,#ffffff_62%)] px-6 py-7 shadow-panel sm:px-8 sm:py-8">
-      <span className="absolute inset-y-0 left-0 w-1 bg-[var(--mod)]" aria-hidden />
-      {crumbs && <div className="mb-3">{crumbs}</div>}
-      <div className="flex flex-wrap items-end justify-between gap-5">
-        <div className="flex min-w-0 max-w-[64ch] items-start gap-4">
-          <span className="mt-0.5 hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-paper text-[var(--mod)] shadow-panel sm:flex"><Icon size={24} strokeWidth={1.7} aria-hidden /></span>
-          <div className="min-w-0">
-          <h1 className="text-[30px] font-medium leading-[1.1] tracking-[-0.03em] text-ink sm:text-[36px]">{title}</h1>
-          {lead && <p className="mt-2 text-[15px] leading-relaxed text-graphite">{lead}</p>}
-          </div>
-        </div>
-        {children && <div className="flex flex-wrap items-center gap-2">{children}</div>}
+    <header data-tour="page" className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 border-b border-line pb-4">
+      <div className="min-w-0 max-w-[72ch] flex-1 basis-[280px]">
+        {crumbs && <div className="mb-2">{crumbs}</div>}
+        <h1 className="text-title font-medium tracking-[-0.02em] text-ink">{title}</h1>
+        {question && <p className="mt-1 text-[15px] text-graphite">{question}</p>}
+        {lead && <p className="mt-1 text-[13px] leading-relaxed text-steel">{lead}</p>}
       </div>
+      {children && <div className="flex flex-wrap items-center gap-2 sm:pt-1">{children}</div>}
     </header>
   );
 }
+
+/** The key numbers under a page header. Always a row of the same quiet cards. */
+export function KeyNumbers({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("grid grid-cols-2 gap-3 lg:grid-cols-4", className)}>{children}</div>;
+}
+
+export function KeyNumber({ label, value, tone, note, delta }: { label: string; value: ReactNode; tone?: "pos" | "warn" | "neg" | "money"; note?: ReactNode; delta?: ReactNode }) {
+  return (
+    <div className="min-w-0 rounded-panel border border-line bg-paper p-4 shadow-panel">
+      <p className="text-[13px] text-steel">{label}</p>
+      <p className={cn("num mt-1 text-[22px] font-medium leading-tight tracking-[-0.02em]", tone === "pos" ? "text-pos" : tone === "warn" ? "text-warn" : tone === "neg" ? "text-neg" : tone === "money" ? "text-money" : "text-ink")}>{value}</p>
+      {(note || delta) && <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-steel">{delta}{note}</p>}
+    </div>
+  );
+}
+
+/** A link styled as a button, so a page's primary action looks the same everywhere. */
+export const linkButton = (variant: "primary" | "secondary" | "quiet" = "secondary") => cn(
+  "inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 text-sm font-medium transition-colors duration-200 ease-tyll",
+  variant === "primary" ? "bg-accent text-on-accent hover:bg-accent-hover" : variant === "quiet" ? "bg-accent-soft text-accent-ink hover:bg-line" : "border border-line bg-paper text-ink hover:bg-cloud",
+);
 
 /** A friendly empty state: a small illustration in the module's colour, what this space is for, and what to do. */
 export function EmptyState({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
   const Icon = MODULE_ICON[moduleOfPath(usePathname() ?? "/")];
   return (
-    <div className="flex flex-col items-center justify-center overflow-hidden rounded-panel border border-dashed border-line bg-[radial-gradient(circle_at_50%_0%,var(--mod-soft),#ffffff_70%)] px-6 py-12 text-center">
+    <div className="flex flex-col items-center justify-center overflow-hidden rounded-panel border border-dashed border-line bg-paper px-6 py-12 text-center">
       <span className="relative mb-4 flex h-16 w-16 items-center justify-center" aria-hidden>
-        <span className="absolute inset-0 rounded-full bg-[var(--mod-soft)]" />
+        <span className="absolute inset-0 rounded-full bg-accent-soft" />
         <span className="absolute inset-2 rounded-full bg-paper shadow-panel" />
-        <span className="relative text-[var(--mod)]"><Icon size={24} aria-hidden /></span>
+        <span className="relative text-accent-ink"><Icon size={24} aria-hidden /></span>
       </span>
       <p className="text-base font-medium text-ink">{title}</p>
       {children && <p className="mt-1 max-w-[52ch] text-[13px] text-steel">{children}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );
+}
+
+// ---- Widget states and status ---------------------------------------------------
+/** A loading placeholder, the same size as what replaces it. */
+export function Skeleton({ className }: { className?: string }) {
+  return <span className={cn("skeleton block", className)} aria-hidden />;
+}
+
+/** Says a widget's data did not load and offers the way back. Never a blank space. */
+export function WidgetError({ children, onRetry }: { children?: ReactNode; onRetry?: () => void }) {
+  return (
+    <div role="alert" className="rounded-[var(--radius-control)] bg-neg-soft px-4 py-3 text-sm text-neg">
+      {children ?? "This could not load."} {onRetry ? <button type="button" onClick={onRetry} className="font-medium underline underline-offset-2">Try again</button> : "Reload the page to try again."}
+    </div>
+  );
+}
+
+export type Rag = "red" | "amber" | "green";
+const RAG: Record<Rag, { tone: Tone; label: string }> = { red: { tone: "neg", label: "Act today" }, amber: { tone: "warn", label: "Watch" }, green: { tone: "pos", label: "On track" } };
+
+/** Red means act today. The words go with the colour, so colour is never the only signal. */
+export function StatusPill({ rag, children, className }: { rag: Rag; children?: ReactNode; className?: string }) {
+  return <Badge tone={RAG[rag].tone} className={className}>{children ?? RAG[rag].label}</Badge>;
 }
 
 // ---- Form controls ----------------------------------------------------------
@@ -139,7 +180,7 @@ export function Select({ label, className, children, hideLabel, ...props }: Sele
     <div className={cn("relative min-w-0", className)}>
       <label htmlFor={id} className={hideLabel ? "sr-only" : "mb-1.5 block text-[13px] font-medium text-graphite"}>{label}</label>
       <div className="relative">
-        <select id={id} className="h-10 w-full appearance-none truncate rounded-full border border-line bg-paper pl-4 pr-9 text-sm text-ink transition-colors duration-300 ease-tyll hover:border-fog" {...props}>
+        <select id={id} className="h-10 w-full appearance-none truncate rounded-full border border-line bg-paper pl-4 pr-9 text-sm text-ink transition-colors duration-200 ease-tyll hover:border-fog" {...props}>
           {children}
         </select>
         <ChevronDown size={15} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
@@ -158,7 +199,7 @@ export function Field({ label, hint, error, className, suffix, ...props }: Input
           id={id}
           aria-invalid={!!error}
           aria-describedby={error || hint ? `${id}-help` : undefined}
-          className={cn("num h-10 w-full rounded-xl border bg-paper px-3 text-sm text-ink transition-colors duration-300 ease-tyll placeholder:text-fog", error ? "border-neg" : "border-line hover:border-fog", suffix && "pr-12")}
+          className={cn("num h-10 w-full rounded-xl border bg-paper px-3 text-sm text-ink transition-colors duration-200 ease-tyll placeholder:text-fog", error ? "border-neg" : "border-line hover:border-fog", suffix && "pr-12")}
           {...props}
         />
         {suffix && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-steel">{suffix}</span>}
@@ -181,7 +222,7 @@ export function TextArea({ label, error, className, ...props }: React.TextareaHT
 
 export function Segmented<T extends string>({ value, onChange, options, label, size = "md" }: { value: T; onChange: (v: T) => void; options: { value: T; label: ReactNode }[]; label: string; size?: "sm" | "md" }) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border border-line bg-paper p-0.5">
+    <div role="radiogroup" aria-label={label} className="inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border border-line bg-paper p-0.5 [scrollbar-width:none]">
       {options.map((o) => (
         <button
           key={o.value}
@@ -189,7 +230,7 @@ export function Segmented<T extends string>({ value, onChange, options, label, s
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={cn("whitespace-nowrap rounded-full font-medium transition-colors duration-300 ease-tyll", size === "sm" ? "h-7 px-3 text-xs" : "h-9 px-4 text-[13px]", value === o.value ? "bg-accent text-paper" : "text-steel hover:text-ink")}
+          className={cn("whitespace-nowrap rounded-full font-medium transition-colors duration-200 ease-tyll", size === "sm" ? "h-7 px-2 text-xs sm:px-3" : "h-9 px-4 text-[13px]", value === o.value ? "bg-accent text-on-accent" : "text-steel hover:text-ink")}
         >
           {o.label}
         </button>
@@ -208,7 +249,7 @@ export function Tabs<T extends string>({ value, onChange, tabs }: { value: T; on
           type="button"
           aria-selected={value === t.value}
           onClick={() => onChange(t.value)}
-          className={cn("-mb-px flex items-center gap-2 whitespace-nowrap border-b-2 pb-3 pt-1 text-sm transition-colors duration-300 ease-tyll", value === t.value ? "border-accent text-accent-ink" : "border-transparent text-steel hover:text-ink")}
+          className={cn("-mb-px flex items-center gap-2 whitespace-nowrap border-b-2 pb-3 pt-1 text-sm transition-colors duration-200 ease-tyll", value === t.value ? "border-accent text-accent-ink" : "border-transparent text-steel hover:text-ink")}
         >
           {t.label}
           {t.count !== undefined && <span className="num rounded-full bg-mist px-1.5 text-xs text-graphite">{t.count}</span>}
@@ -226,7 +267,8 @@ export interface SortState<K extends string> {
 
 export function useSort<K extends string>(initial: SortState<K>) {
   const [sort, setSort] = useState(initial);
-  const toggle = (key: K) => setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "desc" }));
+  // Names and other "smallest first" columns can ask to start ascending.
+  const toggle = (key: K, firstDir: "asc" | "desc" = "desc") => setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: firstDir }));
   return { sort, toggle };
 }
 
@@ -276,7 +318,7 @@ export function Drawer({ open, onClose, title, description, children, wide }: { 
   if (!open) return null;
   return (
     <div className="no-print fixed inset-0 z-50 flex justify-end">
-      <button type="button" aria-label="Close panel" className="animate-fade absolute inset-0 bg-ink/25 backdrop-blur-[2px]" onClick={onClose} />
+      <button type="button" aria-label="Close panel" className="animate-fade absolute inset-0 bg-scrim backdrop-blur-[2px]" onClick={onClose} />
       <div ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-label={typeof title === "string" ? title : undefined} className={cn("animate-slide-in relative flex h-full w-full flex-col bg-paper shadow-float outline-none", wide ? "max-w-3xl" : "max-w-xl")}>
         <header className="flex items-start justify-between gap-4 border-b border-line px-6 py-5">
           <div className="min-w-0">
@@ -296,20 +338,22 @@ interface Toast {
   id: number;
   text: string;
   tone: "pos" | "neg";
+  action?: { label: string; run: () => void };
 }
 
-const useToasts = create<{ toasts: Toast[]; push: (text: string, tone: Toast["tone"]) => void; drop: (id: number) => void }>((set) => ({
+const useToasts = create<{ toasts: Toast[]; push: (text: string, tone: Toast["tone"], action?: Toast["action"]) => void; drop: (id: number) => void }>((set) => ({
   toasts: [],
-  push: (text, tone) => {
+  push: (text, tone, action) => {
     const id = Date.now() + Math.random();
-    set((s) => ({ toasts: [...s.toasts, { id, text, tone }] }));
-    setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 4500);
+    set((s) => ({ toasts: [...s.toasts, { id, text, tone, action }] }));
+    // Longer when there is something to undo.
+    setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), action ? 7000 : 4500);
   },
   drop: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }));
 
 export const toast = {
-  done: (text: string) => useToasts.getState().push(text, "pos"),
+  done: (text: string, action?: { label: string; run: () => void }) => useToasts.getState().push(text, "pos", action),
   error: (text: string) => useToasts.getState().push(text, "neg"),
 };
 
@@ -323,13 +367,14 @@ export function report(result: { ok: true } | { ok: false; error: string }, succ
 export function Toaster() {
   const { toasts, drop } = useToasts();
   return (
-    <div className="no-print pointer-events-none fixed bottom-5 left-1/2 z-[70] flex w-[min(92vw,26rem)] -translate-x-1/2 flex-col gap-2" role="status" aria-live="polite">
+    <div className="no-print pointer-events-none fixed bottom-20 left-1/2 z-[70] md:bottom-5 flex w-[min(92vw,26rem)] -translate-x-1/2 flex-col gap-2" role="status" aria-live="polite">
       {toasts.map((t) => (
         <div key={t.id} className={cn("animate-rise pointer-events-auto flex items-start justify-between gap-3 rounded-2xl border bg-paper px-4 py-3 text-sm shadow-float", t.tone === "pos" ? "border-pos/25" : "border-neg/30")}>
           <span className="flex items-start gap-2.5">
             <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", t.tone === "pos" ? "bg-pos" : "bg-neg")} aria-hidden />
             {t.text}
           </span>
+          {t.action && <button type="button" onClick={() => { t.action!.run(); drop(t.id); }} className="shrink-0 font-medium text-accent-ink underline underline-offset-2">{t.action.label}</button>}
           <button type="button" onClick={() => drop(t.id)} aria-label="Dismiss" className="text-steel hover:text-ink"><X size={15} /></button>
         </div>
       ))}
@@ -347,7 +392,7 @@ export function Stat({ label, value, delta, sub, onClick, tone }: { label: strin
     </>
   );
   return onClick ? (
-    <button type="button" onClick={onClick} className="group -m-2 block rounded-xl p-2 text-left transition-colors duration-300 ease-tyll hover:bg-mist">{body}</button>
+    <button type="button" onClick={onClick} className="group -m-2 block rounded-xl p-2 text-left transition-colors duration-200 ease-tyll hover:bg-mist">{body}</button>
   ) : (
     <div>{body}</div>
   );
@@ -357,7 +402,7 @@ export function Meter({ value, max, tone = "ink", label }: { value: number; max:
   const pct = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
   return (
     <div className="h-1.5 w-full overflow-hidden rounded-full bg-hair" role="img" aria-label={label ?? `${Math.round(pct)}%`}>
-      <div className={cn("h-full rounded-full transition-[width] duration-500 ease-tyll", { ink: "bg-ink", pos: "bg-pos", warn: "bg-warn", neg: "bg-neg", fog: "bg-fog" }[tone])} style={{ width: `${pct}%` }} />
+      <div className={cn("h-full rounded-full transition-[width] duration-200 ease-tyll", { ink: "bg-ink", pos: "bg-pos", warn: "bg-warn", neg: "bg-neg", fog: "bg-fog" }[tone])} style={{ width: `${pct}%` }} />
     </div>
   );
 }

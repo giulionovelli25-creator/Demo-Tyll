@@ -17,7 +17,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${arabic.variable} h-full`}>
+    <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${arabic.variable} h-full`}>
+      <head>
+        {/* Applies a saved dark theme before first paint, so the page never flashes the wrong colours. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("tyll-theme-v2")==="dark")document.documentElement.dataset.theme="dark"}catch(e){}` }} />
+      </head>
       <body className="min-h-full">
         <Suspense fallback={<BrandLoader />}>
           <AppShell>{children}</AppShell>

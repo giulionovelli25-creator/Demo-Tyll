@@ -106,7 +106,7 @@ export default function SettingsPage() {
         </TableWrap>
       </Panel>
 
-      <Panel title="Detection thresholds" description="The rules behind Tyll Money's flags. A hotel agrees these during onboarding. They are fixed in this demo.">
+      <Panel title="Detection thresholds" description="The rules behind Finance's flags. A hotel agrees these during onboarding. They are fixed in this demo.">
         <dl className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm md:grid-cols-4">
           <div><dt className="text-[13px] text-steel">Discount limit</dt><dd className="num text-lg">{POLICY.discountMaxPct}%</dd></div>
           <div><dt className="text-[13px] text-steel">Complimentary limit per order</dt><dd className="num text-lg">{POLICY.compMaxValue}</dd></div>

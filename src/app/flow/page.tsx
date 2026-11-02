@@ -24,7 +24,7 @@ function Range({ label, value, onChange, max = 20 }: { label: string; value: num
   return (
     <div>
       <div className="flex items-baseline justify-between"><label htmlFor={id} className="text-[13px] font-medium text-graphite">{label}</label><span className="num text-lg">+{value}</span></div>
-      <input id={id} type="range" min={0} max={max} step={1} value={value} onChange={(e) => onChange(Number(e.target.value))} className="mt-2 h-2 w-full cursor-pointer appearance-none rounded-full bg-hair accent-ink" />
+      <input id={id} type="range" min={0} max={max} step={1} value={value} onChange={(e) => onChange(Number(e.target.value))} className="mt-2 h-2 w-full cursor-pointer appearance-none rounded-full bg-hair accent-[var(--color-accent)]" />
     </div>
   );
 }

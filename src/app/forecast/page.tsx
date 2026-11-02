@@ -1,71 +1,67 @@
 "use client";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ClipboardList, Inbox, ShoppingCart, Stamp, Truck } from "lucide-react";
-import { useLiveGet } from "@/lib/guest-hooks";
-import type { PurchaseRequest } from "@/lib/types";
 import { Approvals } from "@/components/forecast/approvals";
 import { WhatToBuy } from "@/components/forecast/buy";
-import { BuyWeekReport } from "@/components/forecast/week-report";
 import { WhatToPrep } from "@/components/forecast/prep";
-import { HELP } from "@/components/help";
-import { ModuleHub, useSection } from "@/components/module-hub";
-import { StockAlert } from "@/components/overview/stock-alert";
-import { Crumbs, PageHeader, Tabs } from "@/components/ui";
-import { can } from "@/lib/domain/access";
+import { useSection } from "@/components/module-hub";
+import { Outlook } from "@/components/prediction/outlook";
+import { Crumbs, KeyNumber, KeyNumbers, PageHeader, Tabs, linkButton } from "@/components/ui";
+import { propertyById } from "@/lib/data/catalog";
+import { allowedProperties, can } from "@/lib/domain/access";
+import { useLiveGet } from "@/lib/guest-hooks";
 import { useView } from "@/lib/hooks";
+import type { PurchaseRequest } from "@/lib/types";
+import { fmtMoney, sum } from "@/lib/util";
 
-type Tab = "buy" | "prep" | "approvals";
+type Tab = "approvals" | "buy" | "prep" | "outlook";
 
-const LABEL: Record<Tab, string> = { buy: "Order stock", prep: "What to prep", approvals: "Purchase requests" };
+const LABEL: Record<Tab, string> = { approvals: "Orders", buy: "Order by hand", prep: "Plan the prep", outlook: "Tomorrow and next 7 days" };
+const WAITING: PurchaseRequest["status"][] = ["purchasing", "accounting", "manager"];
 
-/** Three questions: what do we need to buy, what do we need to prepare, and who needs to approve it. */
+/** Orders: what is on order, and what still needs a decision. The order recommendation itself lives on Stock. */
 export default function ForecastPage() {
   const { user } = useView();
+  const hasOutlets = user.outletIds === "all" || user.outletIds.length > 0;
   const tabs = ([
-    // What to buy plans for outlets; departments raise their requests from their own screens.
-    can(user, "purchase.create") && (user.outletIds === "all" || user.outletIds.length > 0 || can(user, "events.plan")) && "buy",
-    (can(user, "prep.plan") || can(user, "prep.complete")) && "prep",
     "approvals",
+    can(user, "purchase.create") && (hasOutlets || can(user, "events.plan")) && "buy",
+    (can(user, "prep.plan") || can(user, "prep.complete")) && "prep",
+    hasOutlets && "outlook",
   ].filter(Boolean) as Tab[]);
-  const [tab, setTab] = useSection<Tab>("/forecast", tabs, null);
+  const [tab, setTab] = useSection<Tab>("/forecast", tabs, "approvals");
   const router = useRouter();
   const fromStock = useSearchParams().get("from") === "stock";
-  const purchasing = can(user, "purchase.review");
-  const home = "Purchasing Prediction";
-  const { data } = useLiveGet<{ requests: PurchaseRequest[] }>(purchasing ? "/api/purchasing" : null);
-  const waiting = (data?.requests ?? []).filter((r) => r.status === "purchasing").length;
-  const due = (data?.requests ?? []).filter((r) => r.status === "approved").length;
-  const summary = data ? `${waiting ? `${waiting} request${waiting === 1 ? "" : "s"} waiting for you` : "No requests waiting"}, ${due ? `${due} order${due === 1 ? "" : "s"} still to be delivered` : "no deliveries outstanding"}.` : "Requests, orders and deliveries.";
-  const count = (f: (r: PurchaseRequest) => boolean) => { const n = (data?.requests ?? []).filter(f).length; return n ? String(n) : undefined; };
+  const { data } = useLiveGet<{ requests: PurchaseRequest[] }>("/api/purchasing");
+  const requests = data?.requests ?? [];
+  const value = (rs: PurchaseRequest[]) => sum(rs, (r) => sum(r.lines, (l) => l.qty * l.unitPrice));
+  const drafts = requests.filter((r) => r.status === "draft" && r.createdBy === user.id);
+  const waiting = requests.filter((r) => WAITING.includes(r.status));
+  const onTheWay = requests.filter((r) => r.status === "approved");
+  const currency = allowedProperties(user)[0] ? propertyById[allowedProperties(user)[0]].currency : "AED";
+  const money = (n: number) => fmtMoney(n, currency);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
-        title={tab === "buy" && purchasing ? "What to buy" : tab ? LABEL[tab] : home}
-        lead={tab ? (tab === "buy" && purchasing ? "This week's report first. To send an order, use the steps below it." : undefined) : purchasing ? summary : "What to buy, what to prepare, and where each request stands."}
-        crumbs={tab ? <Crumbs items={fromStock && tab === "buy" ? [{ label: "Stock Count and Waste", onClick: () => router.push("/stock") }, { label: LABEL[tab] }] : [{ label: home, onClick: () => setTab(null) }, { label: tab === "buy" && purchasing ? "What to buy" : LABEL[tab] }]} /> : undefined}
-      />
-      {tab === null && <StockAlert where="forecast" />}
-      {tab === null && (
-        <ModuleHub
-          onPick={(v) => (v.startsWith("q:") ? router.push(`/forecast?tab=approvals&queue=${v.slice(2)}`) : setTab(v as Tab))}
-          choices={purchasing ? [
-            { value: "q:purchasing", title: "Requests to review", detail: "Purchase requests from departments waiting for you.", icon: Inbox, badge: count((r) => r.status === "purchasing"), help: HELP.approvals },
-            { value: "q:approved", title: "Purchase orders", detail: "Approved orders and where each one is.", icon: Stamp, badge: count((r) => r.status === "approved" || r.status === "received") },
-            { value: "q:delivery", title: "Deliveries", detail: "Orders waiting to be delivered and received.", icon: Truck, badge: count((r) => r.status === "approved") },
-          ] : [
-            ...(tabs.includes("buy") ? [{ value: "buy", title: "Order stock", detail: "Check what you need and send a request to Purchasing.", icon: ShoppingCart, help: HELP.buy }] : []),
-            ...(tabs.includes("prep") ? [{ value: "prep", title: "What to prep", detail: "How many portions the kitchen should prepare.", icon: ClipboardList, help: HELP.prep }] : []),
-            { value: "approvals", title: can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveManager") ? "Approvals" : "My requests", detail: can(user, "purchase.approveManager") || can(user, "purchase.approveFinance") ? "Review and approve purchase requests." : "Track requests you sent to Purchasing.", icon: Stamp, help: HELP.approvals },
-          ]}
-        />
-      )}
+        title="Orders"
+        question="What is on order, and what still needs a decision?"
+        lead={data ? `${waiting.length} waiting for approval, ${onTheWay.length} on the way, ${drafts.length} ${drafts.length === 1 ? "draft" : "drafts"} of yours.` : "Loading orders."}
+        crumbs={fromStock && tab === "buy" ? <Crumbs items={[{ label: "Stock", onClick: () => router.push("/stock") }, { label: LABEL.buy }]} /> : undefined}
+      >
+        {can(user, "purchase.create") && <Link href="/stock#order" className={linkButton("primary")}>Build order from Stock</Link>}
+      </PageHeader>
+      <KeyNumbers>
+        <KeyNumber label="Your drafts" value={drafts.length} note={drafts.length ? money(value(drafts)) : "Nothing started"} />
+        <KeyNumber label="Waiting for approval" value={waiting.length} tone={waiting.length ? "warn" : undefined} note={waiting.length ? money(value(waiting)) : "Nothing waiting"} />
+        <KeyNumber label="On the way" value={onTheWay.length} note={onTheWay.length ? money(value(onTheWay)) : "No open orders"} />
+        <KeyNumber label="All orders" value={requests.length} note="That you can see" />
+      </KeyNumbers>
       {tab !== null && tabs.length > 1 && <Tabs value={tab} onChange={setTab} tabs={tabs.map((t) => ({ value: t, label: LABEL[t] }))} />}
-      {tab === "buy" && purchasing && <BuyWeekReport user={user} />}
-      {tab === "buy" && purchasing && <h2 id="order-steps" className="scroll-mt-24 pt-4 text-xl tracking-[-0.02em] text-ink">Order step by step</h2>}
+      {tab === "approvals" && <Approvals />}
       {tab === "buy" && <WhatToBuy />}
       {tab === "prep" && <WhatToPrep />}
-      {tab === "approvals" && <Approvals />}
+      {tab === "outlook" && <Outlook />}
     </div>
   );
 }

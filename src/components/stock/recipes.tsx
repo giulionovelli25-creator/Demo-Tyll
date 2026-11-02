@@ -39,7 +39,7 @@ export function Recipes() {
                   <tr key={item.id} className={cn(rowClass, "cursor-pointer", isOpen && "bg-cloud")} onClick={() => setOpen(isOpen ? null : item.id)}>
                     <Td>
                       <button type="button" aria-expanded={isOpen} className="flex items-center gap-2 text-left text-ink" onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : item.id); }}>
-                        <ChevronDown size={15} className={cn("shrink-0 text-steel transition-transform duration-300 ease-tyll", isOpen && "rotate-180")} aria-hidden />
+                        <ChevronDown size={15} className={cn("shrink-0 text-steel transition-transform duration-200 ease-tyll", isOpen && "rotate-180")} aria-hidden />
                         {item.name}
                       </button>
                     </Td>

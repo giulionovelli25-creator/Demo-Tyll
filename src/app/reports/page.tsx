@@ -85,16 +85,16 @@ export default function ReportsPage() {
     <tr className={cn(rowClass, l.kind === "total" && "border-t-line")}>
       <Td className={cn(l.kind === "total" ? "text-ink" : "!pl-10 text-graphite")}>{l.label}{l.note && <span className="ml-2 text-xs text-steel">{l.note}</span>}</Td>
       <Td align="right" className={cn(l.kind === "total" && "text-ink")}>{l.now === null ? "not split by department" : money(l.now)}</Td>
-      <Td align="right">{l.before === null ? "–" : money(l.before)}</Td>
-      <Td align="right">{l.now === null || l.before === null ? "–" : <Delta value={pctChange(l.now, l.before)} goodWhen={l.goodWhen ?? "none"} />}</Td>
-      <Td align="right">{l.now === null || t.net <= 0 ? "–" : fmtPct(Math.abs(l.now) / t.net)}</Td>
+      <Td align="right">{l.before === null ? "None" : money(l.before)}</Td>
+      <Td align="right">{l.now === null || l.before === null ? "None" : <Delta value={pctChange(l.now, l.before)} goodWhen={l.goodWhen ?? "none"} />}</Td>
+      <Td align="right">{l.now === null || t.net <= 0 ? "None" : fmtPct(Math.abs(l.now) / t.net)}</Td>
     </tr>
   );
 
   return (
     <div className="space-y-5">
       <div className="no-print">
-        <PageHeader title="Sales and Performance" lead="A management report for the selection in the top bar. Print it, save it as a PDF, or export the underlying tables.">
+        <PageHeader title="Reports" question="How did we do, and what do I send to the owner?" lead="A management report for the selection in the top bar. Print it, save it as a PDF, or export the tables.">
           <Segmented label="Report period" value={preset} onChange={(v: RangePreset) => setPreset(v)} options={[{ value: "today", label: "Daily" }, { value: "week", label: "Weekly" }, { value: "month", label: "Monthly" }, ...(preset === "custom" ? [{ value: "custom" as const, label: "Custom" }] : [])]} />
           <Button variant="primary" onClick={() => window.print()}><Printer size={15} /> Print or save as PDF</Button>
         </PageHeader>
@@ -142,7 +142,7 @@ export default function ReportsPage() {
                     <Td className="text-ink">{outletLabel(r.outletId)}</Td>
                     <Td align="right">{money(r.now.net)}</Td>
                     <Td align="right">{fmtPct(r.now.gpMargin)} <Delta value={(r.now.gpMargin - r.before.gpMargin) * 100} kind="pts" className="ml-1" /></Td>
-                    <Td align="right">{r.now.operatingProfit === null ? "–" : money(r.now.operatingProfit)}</Td>
+                    <Td align="right">{r.now.operatingProfit === null ? "None" : money(r.now.operatingProfit)}</Td>
                     <Td align="right">{r.now.adjustments}</Td>
                     <Td align="right">{r.now.openCases}</Td>
                     <Td align="right">{money(r.now.waste)}</Td>

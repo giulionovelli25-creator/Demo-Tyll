@@ -1,31 +1,30 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
-  Banknote, BedDouble, CalendarDays, ClipboardList, FileSearch, FileText, LayoutDashboard, LockKeyhole, LogOut, Menu, Package, PlayCircle, Search, Settings, Sparkles, TrendingUp, UtensilsCrossed, X,
-  ChevronDown,
-  SlidersHorizontal,
-  Eye,
-  Landmark,
-  Smartphone,
+  Banknote, Bell, BedDouble, CalendarDays, ChevronDown, ClipboardList, Eye, FileSearch, FileText, GlassWater, Landmark, LayoutDashboard, LayoutGrid, LockKeyhole, LogOut, Moon, Package, PlayCircle, Search, Settings, ShoppingCart, Smartphone, Sparkles, Sun, Trash2, UtensilsCrossed, type LucideIcon,
 } from "lucide-react";
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { BrandLoader, TyllLogo, TyllMark } from "@/components/brand";
 import { Badge, Button, EmptyState, Field, Segmented, Select, Toaster, cn, report, toast } from "@/components/ui";
-import { MENU_ITEMS, PROPERTIES, ROLE_LABEL, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
+import { ROLE_LABEL, outletById, propertyById } from "@/lib/data/catalog";
 import { clearDataset, getDataset, hasDataset, hydrateDataset } from "@/lib/data/dataset";
 import { api, goToLogin, lockLocally, reloadTo, useSession } from "@/lib/api";
+import { AlertFeedProvider } from "@/lib/alert-feed";
 import type { Snapshot } from "@/lib/server/snapshot";
 import { MODULE_PATH, allowedOutlets, allowedProperties, canOpen, clampScope, hasWholeProperty, homePath, moduleOfPath, modulesFor, type ModuleId } from "@/lib/domain/access";
 import { deliveryOvercharge } from "@/lib/domain/inventory";
 import { assessArrival } from "@/lib/domain/operations";
 import { useInvestigations, useUser } from "@/lib/hooks";
 import { currentRange, useDemo } from "@/lib/store";
+import { useTheme } from "@/lib/theme";
 import type { Dept, User } from "@/lib/types";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
+import { BreakageFab, BreakageSheet, mayLogBreakage, useBreakageSheet } from "./breakage";
+import { CommandPalette } from "./command-palette";
+import { CountFlow } from "@/components/stock/count-flow";
 import { Login } from "./login";
 import { Welcome } from "./welcome";
-import { MODULE_THEME, moduleStyle } from "@/components/theme";
 import { EarlyAccessBadge, GuidedPath, WhatsNew, startGuidedPath } from "./early-access";
 import { NotificationBell } from "./notifications";
 import { DemoGuide, DemoPicker } from "./demo-guide";
@@ -34,79 +33,64 @@ import { SharedStockSync } from "@/lib/shared-stock";
 import { PinScreen } from "./pin";
 import { Tour } from "./tour";
 
-const NAV: Record<ModuleId, { label: string; icon: typeof Banknote }> = {
+const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }> = {
+  overview: { label: "Overview", icon: LayoutDashboard },
+  stock: { label: "Stock", icon: Package },
+  forecast: { label: "Orders", icon: ShoppingCart },
+  money: { label: "Money", icon: Banknote },
+  waste: { label: "Waste and Breakage", short: "Waste", icon: Trash2 },
+  reports: { label: "Reports", icon: FileText },
+  alerts: { label: "All alerts", icon: Bell },
+  more: { label: "More tools", icon: LayoutGrid },
+  settings: { label: "Settings", icon: Settings },
   staff: { label: "Tyll Staff", icon: Smartphone },
   tasks: { label: "My tasks", icon: ClipboardList },
-  overview: { label: "Tyll Overview", icon: LayoutDashboard },
-  money: { label: "Tyll Money", icon: Banknote },
-  stock: { label: "Stock Count and Waste", icon: Package },
-  forecast: { label: "Purchasing Prediction", icon: TrendingUp },
   events: { label: "Events and Staffing", icon: CalendarDays },
   flow: { label: "Tyll Flow", icon: UtensilsCrossed },
   rooms: { label: "Rooms and Guest Experience", icon: BedDouble },
-  investigations: { label: "Investigations", icon: FileSearch },
+  investigations: { label: "Money Back List", icon: FileSearch },
   finance: { label: "Reconciliation", icon: Landmark },
-  reports: { label: "Reports", icon: FileText },
-  settings: { label: "Settings", icon: Settings },
-};
-/** What each role sees first. Everything else the role may open sits under "More", and search finds it too. */
-const PRIMARY: Partial<Record<User["role"], ModuleId[]>> = {
-  owner: ["overview", "investigations", "finance", "reports"],
-  gm: ["overview", "rooms", "events", "forecast", "finance", "investigations"],
-  controller: ["finance", "overview", "investigations", "reports"],
-  fnb_director: ["overview", "stock", "forecast", "events", "investigations", "money"],
-  restaurant_manager: ["overview", "stock", "forecast", "events", "investigations", "money"],
-  chef: ["forecast", "tasks", "stock"],
-  purchasing: ["forecast", "stock"],
 };
 
-/** The same module named for what this role does there. Routes do not change. */
-const ROLE_NAV: Partial<Record<User["role"], Partial<Record<ModuleId, string>>>> = {
-  purchasing: { forecast: "Purchasing", stock: "Stock and suppliers" },
-  chef: { forecast: "Kitchen planning", tasks: "Kitchen tasks" },
-};
+/** The sidebar, in the order a GM's day goes. Never more than six. Everything else is one click away under the profile menu. */
+const PRIMARY: ModuleId[] = ["overview", "stock", "forecast", "money", "waste", "reports"];
+/** Which sidebar item lights up on each screen. */
+const NAV_HOME: Partial<Record<ModuleId, ModuleId>> = { investigations: "money", finance: "money", alerts: "overview" };
 
-/**
- * Modules still being built: Events and Staffing, Rooms and Guest Experience, Sales and Performance.
- * They work with demo data but are marked so nobody mistakes them for finished. Purchasing, Stock and waste, and
- * Reconciliation are the live modules.
- */
-const AVAILABLE_NOW: { m: ModuleId; href: string; label: string }[] = [
-  { m: "forecast", href: "/forecast?tab=buy", label: "Purchasing Prediction" },
-  { m: "stock", href: "/stock", label: "Stock Count and Waste" },
-  { m: "finance", href: "/finance?tab=invoices", label: "Reconciliation" },
-];
-const COMING_SOON: { m: ModuleId; href: string; label: string }[] = [
-  { m: "events", href: "/events", label: "Events and Staffing" },
-  { m: "rooms", href: "/rooms", label: "Rooms and Guest Experience" },
-  { m: "reports", href: "/reports", label: "Sales and Performance" },
-];
-const IN_DEVELOPMENT: ModuleId[] = COMING_SOON.map((x) => x.m);
+/** Modules still being built. They work with demo data but are marked so nobody mistakes them for finished. */
+const IN_DEVELOPMENT: ModuleId[] = ["events", "rooms"];
 
-function NavItem({ m, href, label, active, preview, reload, badge, onClose }: { m: ModuleId; href: string; label: string; active: boolean; preview?: boolean; reload?: boolean; badge?: number; onClose: () => void }) {
-  const { icon: Icon } = NAV[m];
+const PAGES = Object.fromEntries(Object.entries(NAV).map(([m, n]) => [m, n.label])) as Record<ModuleId, string>;
+
+/** The items this person gets, in order. In the public demo every area is open: the link changes role when it must. */
+function navFor(user: User, publicDemo: boolean): ModuleId[] {
+  const modules = modulesFor(user);
+  const home = moduleOfPath(homePath(user).split("?")[0]);
+  const lead = PRIMARY.includes(home) ? [] : [home];
+  return [...lead, ...PRIMARY.filter((m) => publicDemo || modules.includes(m))].slice(0, 6);
+}
+
+function SideItem({ m, active, reload }: { m: ModuleId; active: boolean; reload: boolean }) {
+  const { icon: Icon, label, short } = NAV[m];
   const className = cn(
-    "group relative flex min-h-10 items-center gap-3 rounded-xl px-2 py-1.5 text-sm leading-snug transition-colors duration-300 ease-tyll md:justify-center md:px-0 xl:justify-start xl:px-3",
-    active ? "bg-paper font-medium text-ink shadow-panel ring-1 ring-line" : "text-graphite hover:bg-paper/70 hover:text-ink",
+    "relative flex items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink",
+    "flex-col gap-1 px-1 py-2 text-center text-[11px] leading-tight xl:flex-row xl:gap-3 xl:px-3 xl:py-2.5 xl:text-left xl:text-sm",
+    active && "bg-nav-active font-medium text-nav-ink shadow-panel hover:bg-nav-active",
   );
   const body = (
     <>
-      {active && <span className="absolute left-0 top-2.5 h-5 w-[3px] rounded-full bg-accent md:-left-2.5 xl:-left-3" aria-hidden />}
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg" style={{ background: MODULE_THEME[m].soft, color: MODULE_THEME[m].color }}><Icon size={16} strokeWidth={1.8} aria-hidden /></span>
-      <span className="min-w-0 md:hidden xl:inline">{label}</span>
-      {preview && <span className="ml-auto shrink-0 rounded-full border border-line px-1.5 text-[10px] leading-[16px] text-steel md:hidden xl:inline">Preview</span>}
-      {badge !== undefined && <span className="num ml-auto rounded-full bg-accent px-1.5 text-[11px] leading-[18px] text-paper md:absolute md:right-1.5 md:top-1 xl:static">{badge}</span>}
+      <Icon size={18} className={active ? "text-accent-ink" : undefined} aria-hidden />
+      <span className="min-w-0 xl:hidden">{short ?? label}</span>
+      <span className="hidden min-w-0 xl:inline">{label}</span>
     </>
   );
   return (
     <li>
-      {/* A module outside the current role reloads, so the public demo can switch role on the server first. */}
-      {reload ? <a href={href} title={label} className={className}>{body}</a> : <Link href={href} onClick={onClose} aria-current={active ? "page" : undefined} title={label} className={className}>{body}</Link>}
+      {/* A full load lets the public demo change role on the server first. */}
+      {reload ? <a href={MODULE_PATH[m]} aria-current={active ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={active ? "page" : undefined} className={className}>{body}</Link>}
     </li>
   );
 }
-
-const ORDER: ModuleId[] = ["staff", "tasks", "overview", "money", "stock", "forecast", "events", "flow", "rooms", "investigations", "finance", "reports", "settings"];
 
 const subscribe = () => () => {};
 
@@ -140,7 +124,7 @@ function RoleSwitcher({ user }: { user: User }) {
   };
   const current = roles.some((r) => r.userId === user.id) ? user.id : "";
   return (
-    <Select label="View the demo as" hideLabel className="w-[170px] sm:w-[190px]" value={current} disabled={busy} onChange={(e) => switchTo(e.target.value)}>
+    <Select label="View the demo as" hideLabel className="w-[132px] sm:w-[176px]" value={current} disabled={busy} onChange={(e) => switchTo(e.target.value)}>
       {!current && <option value="">{ROLE_LABEL[user.role]}</option>}
       {roles.map((r) => <option key={r.userId} value={r.userId}>{r.label}</option>)}
     </Select>
@@ -243,7 +227,7 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
   const signOut = useDemo((s) => s.signOut);
   // Concierge and bell captains also have a desk view; frontline staff stay in Tyll Staff.
   const frontline = user.role === "employee" || user.role === "storekeeper";
-  const others = frontline ? [] : modulesFor(user).filter((m) => !["staff", "tasks", "settings"].includes(m));
+  const others = frontline ? [] : modulesFor(user).filter((m) => !["staff", "tasks", "settings", "alerts", "more"].includes(m));
   const leave = () => leaveTyll(signOut);
   const publicDemo = useSession((s) => !!s.demoRoles);
   return (
@@ -260,6 +244,7 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
       <main className="mx-auto w-full max-w-md px-4 pb-24 pt-5">{publicDemo ? <GuidedPath /> : <TourOffer user={user} />}{children}</main>
       <DemoGuide user={user} />
       <Walkthrough />
+      {mayLogBreakage(user) && <><BreakageFab /><BreakageSheet /></>}
       <Toaster />
     </div>
   );
@@ -267,7 +252,6 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
 
 function Signed({ user, children }: { user: User; children: ReactNode }) {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
   const current = moduleOfPath(pathname);
   const allowed = canOpen(user, current);
   const publicDemo = useSession((s) => !!s.demoRoles);
@@ -280,16 +264,22 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
       if (last && last !== user.id) toast.done(`Now viewing the demo as ${ROLE_LABEL[user.role]}.`);
     } catch { /* private window */ }
   }, [publicDemo, user.id, user.role]);
-  if (current === "staff" && allowed) return <div style={moduleStyle("staff")}><StaffFrame user={user}>{children}</StaffFrame></div>;
+  if (current === "staff" && allowed) return <StaffFrame user={user}>{children}</StaffFrame>;
+  // The count is a full screen flow: nothing else competes for a thumb.
+  if (pathname === "/count" && allowed) return <><CountFlow /><Toaster /></>;
+  const preview = IN_DEVELOPMENT.includes(current) || pathname === "/performance";
+  const canBreak = mayLogBreakage(user);
   return (
-    <div className="flex min-h-screen" style={moduleStyle(current)}>
-      <Sidebar user={user} active={current} open={menuOpen} onClose={() => setMenuOpen(false)} />
+    <AlertFeedProvider>
+    <div className="flex min-h-screen">
+      <a href="#main" className="no-print sr-only rounded-full bg-accent px-4 py-2 text-sm font-medium text-on-accent focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80]">Skip to content</a>
+      <Sidebar user={user} active={current} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar user={user} onMenu={() => setMenuOpen(true)} />
-        <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 pb-24 pt-5 sm:px-6 lg:px-8">
-          {allowed && (publicDemo ? <GuidedPath /> : <TourOffer user={user} />)}
-          {allowed && IN_DEVELOPMENT.includes(current) && (
-            <p className="mb-5 flex items-start gap-2.5 rounded-2xl bg-accent-soft px-4 py-3 text-sm text-accent-ink">
+        <Topbar user={user} />
+        <main id="main" tabIndex={-1} className={cn("mx-auto w-full max-w-[1500px] flex-1 px-4 pb-24 pt-6 outline-none sm:px-6 md:pb-10 lg:px-8", canBreak && "pb-40")}>
+          {allowed && (publicDemo ? <GuidedPath offer={pathname === "/more"} /> : pathname === "/more" && <TourOffer user={user} />)}
+          {allowed && preview && (
+            <p className="mb-4 flex items-start gap-2 rounded-[var(--radius-control)] bg-accent-soft px-4 py-3 text-sm text-accent-ink">
               <Eye size={18} className="mt-px shrink-0" aria-hidden /><span><span className="font-medium">Preview.</span> This module is in development and not yet part of our pilots.</span>
             </p>
           )}
@@ -302,80 +292,52 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
           )}
         </main>
       </div>
+      <PhoneBar user={user} active={current} />
+      {canBreak && <><BreakageFab raised /><BreakageSheet /></>}
       <Tour />
       <DemoGuide user={user} />
       <Walkthrough />
       <Toaster />
     </div>
+    </AlertFeedProvider>
   );
 }
 
-function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId; open: boolean; onClose: () => void }) {
-  const modules = modulesFor(user);
-  const openCases = useInvestigations().filter((i) => i.status !== "closed").length;
+function Sidebar({ user, active }: { user: User; active: ModuleId }) {
   const publicDemo = useSession((s) => !!s.demoRoles);
   // The guided demo switches between many accounts, which the public demo does not offer.
   const canTour = !publicDemo && user.role !== "employee" && user.role !== "storekeeper";
   const [picking, setPicking] = useState(false);
-  // In the public demo every module is open: following a link switches to a role that can see it.
-  const shown = (g: typeof AVAILABLE_NOW) => g.filter((x) => publicDemo || modules.includes(x.m));
-  const live = shown(AVAILABLE_NOW);
-  const soon = shown(COMING_SOON);
-  const grouped = new Set<ModuleId>([...AVAILABLE_NOW, ...COMING_SOON].map((x) => x.m));
-  // Other tools: the role's main ones stay visible (such as the Overview), the rest sit under "More tools".
-  const rest = ORDER.filter((m) => modules.includes(m) && m !== "settings" && !grouped.has(m));
-  const first = PRIMARY[user.role];
-  const mine = first ? rest.filter((m) => first.includes(m)) : rest;
-  const more = first ? rest.filter((m) => !first.includes(m)) : [];
-  const [showMore, setShowMore] = useState(more.includes(active) || (!publicDemo && live.length + soon.length === 0));
+  const lit = NAV_HOME[active] ?? active;
+  const items = navFor(user, publicDemo);
+  const footButton = "flex w-full items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink flex-col gap-1 px-1 py-2 text-[11px] xl:h-10 xl:flex-row xl:gap-3 xl:px-3 xl:py-0 xl:text-sm";
   return (
     <>
-      {open && <button type="button" aria-label="Close menu" className="no-print fixed inset-0 z-40 bg-ink/25 md:hidden" onClick={onClose} />}
-      <aside
-        className={cn(
-          "no-print fixed inset-y-0 left-0 z-40 flex w-[248px] flex-col border-r border-line bg-[#f6f6fa] transition-transform duration-300 ease-tyll md:sticky md:top-0 md:h-screen md:w-[72px] md:translate-x-0 xl:w-[248px]",
-          open ? "translate-x-0" : "-translate-x-full",
-        )}
-      >
-        <div className="flex h-[68px] items-center justify-between px-6 md:justify-center md:px-0 xl:justify-between xl:px-6">
-          <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center">
-            <span className="flex items-center gap-2.5 md:hidden xl:flex"><TyllLogo height={26} priority /><EarlyAccessBadge /></span>
-            <span className="hidden md:block xl:hidden"><TyllMark size={22} /></span>
+      <aside className="no-print sticky top-0 z-30 hidden h-screen w-[88px] shrink-0 flex-col border-r border-nav-line bg-nav md:flex xl:w-[232px]">
+        <div className="flex h-16 items-center justify-center gap-2 px-2 xl:justify-start xl:px-5">
+          <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center rounded-md">
+            <span className="hidden xl:block"><TyllLogo height={24} priority /></span>
+            <span className="xl:hidden"><TyllMark size={22} /></span>
           </Link>
-          <button type="button" className="rounded-full p-1.5 text-steel hover:bg-mist md:hidden" onClick={onClose} aria-label="Close menu"><X size={18} /></button>
+          <span className="hidden xl:inline"><EarlyAccessBadge /></span>
         </div>
-        <nav data-tour="nav" aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-3 py-2 md:px-2.5 xl:px-3">
-          {[{ title: "Available now", list: live }, { title: "Coming soon", list: soon }].map((g) => g.list.length > 0 && (
-            <div key={g.title} className="mb-3">
-              <p className="px-3 pb-1 pt-2 text-xs text-steel md:sr-only xl:not-sr-only">{g.title}</p>
-              <ul className="space-y-0.5">{g.list.map((x) => <NavItem key={x.m} m={x.m} href={x.href} label={x.label} preview={g.list === soon} active={active === x.m} reload={publicDemo} onClose={onClose} badge={undefined} />)}</ul>
-            </div>
-          ))}
-          <ul className="space-y-0.5 border-t border-hair pt-2">
-            {[...mine, ...(showMore ? more : [])].map((m) => <NavItem key={m} m={m} href={MODULE_PATH[m]} label={ROLE_NAV[user.role]?.[m] ?? NAV[m].label} active={active === m} onClose={onClose} badge={m === "investigations" && openCases > 0 ? openCases : undefined} />)}
-            {more.length > 0 && (
-              <li>
-                <button type="button" onClick={() => setShowMore((v) => !v)} aria-expanded={showMore} className="flex h-9 w-full items-center gap-3 rounded-xl px-3 text-[13px] text-steel hover:bg-cloud hover:text-ink md:justify-center md:px-0 xl:justify-start xl:px-3">
-                  <ChevronDown size={16} className={cn("transition-transform", showMore && "rotate-180")} aria-hidden /><span className="md:hidden xl:inline">{showMore ? "Fewer tools" : `More tools (${more.length})`}</span>
-                </button>
-              </li>
-            )}
-            <NavItem m="settings" href={MODULE_PATH.settings} label={NAV.settings.label} active={active === "settings"} onClose={onClose} />
+        <nav data-tour="nav" aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-2 py-2 xl:px-3">
+          <ul className="space-y-1">
+            {items.map((m) => <SideItem key={m} m={m} active={lit === m} reload={publicDemo} />)}
           </ul>
         </nav>
-        <div className="space-y-3 border-t border-hair p-4 md:p-2.5 xl:p-4">
+        <div className="space-y-1 border-t border-nav-line p-2 xl:p-3">
           {publicDemo ? (
-            <button type="button" onClick={() => { onClose(); startGuidedPath(); }} className="flex h-10 w-full items-center gap-3 rounded-xl border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist md:justify-center md:px-0 xl:justify-start xl:px-3">
-              <PlayCircle size={18} strokeWidth={1.6} aria-hidden /><span className="md:hidden xl:inline">Guided path</span>
+            <button type="button" onClick={() => startGuidedPath()} className={footButton}>
+              <PlayCircle size={18} aria-hidden /><span>Guided path</span>
             </button>
-          ) : <TakeTourButton user={user} className="h-10 w-full justify-start gap-3 rounded-xl px-3 text-sm md:justify-center md:px-0 xl:justify-start xl:px-3" label="Take a tour" labelClass="md:hidden xl:inline" />}
+          ) : <TakeTourButton user={user} className={cn(footButton, "!rounded-[var(--radius-control)] !border-0 !text-nav-quiet")} label="Take a tour" />}
           {canTour && (
-            <button type="button" data-tour="guide" onClick={() => { setPicking(true); onClose(); }} title="Guided demo" className="flex h-10 w-full items-center gap-3 rounded-xl border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist md:justify-center md:px-0 xl:justify-start xl:px-3">
-              <PlayCircle size={18} strokeWidth={1.6} aria-hidden />
-              <span className="md:hidden xl:inline">Guided demo</span>
+            <button type="button" data-tour="guide" onClick={() => setPicking(true)} title="Guided demo" className={footButton}>
+              <PlayCircle size={18} aria-hidden /><span>Guided demo</span>
             </button>
           )}
-          <p className="text-xs leading-relaxed text-steel md:hidden xl:block">{publicDemo ? "Early version, growing every few weeks. " : ""}Demonstration with simulated data. Business date {fmtDate(DEMO_TODAY, true)}, {fmtTime(DEMO_NOW_MIN)}.</p>
+          <p className="hidden px-3 pt-1 text-xs leading-relaxed text-nav-quiet xl:block">Simulated data. Business date {fmtDate(DEMO_TODAY, true)}, {fmtTime(DEMO_NOW_MIN)}.</p>
         </div>
       </aside>
       {picking && <DemoPicker user={user} onClose={() => setPicking(false)} />}
@@ -383,30 +345,99 @@ function Sidebar({ user, active, open, onClose }: { user: User; active: ModuleId
   );
 }
 
-const PRESETS: { value: RangePreset; label: string }[] = [
+/** On a phone the same places sit at the bottom, within reach of a thumb. */
+function PhoneBar({ user, active }: { user: User; active: ModuleId }) {
+  const publicDemo = useSession((s) => !!s.demoRoles);
+  const lit = NAV_HOME[active] ?? active;
+  const items = navFor(user, publicDemo);
+  return (
+    <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)] md:hidden">
+      <ul className="flex">
+        {items.map((m) => {
+          const { icon: Icon, label, short } = NAV[m];
+          const className = cn("relative flex h-16 flex-col items-center justify-center gap-1 text-[11px] text-steel transition-colors duration-150", lit === m && "font-medium text-accent-ink");
+          const body = (
+            <>
+              <span className={cn("flex h-7 w-10 items-center justify-center rounded-full", lit === m && "bg-accent-soft")}><Icon size={18} aria-hidden /></span>
+              <span className="max-w-full truncate px-0.5">{short ?? label}</span>
+            </>
+          );
+          return (
+            <li key={m} className="min-w-0 flex-1">
+              {publicDemo ? <a href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</Link>}
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
+const PRESETS: { value: RangePreset; label: ReactNode }[] = [
   { value: "today", label: "Today" },
-  { value: "week", label: "7 days" },
-  { value: "month", label: "30 days" },
+  { value: "yesterday", label: <><span className="sm:hidden">Yest.</span><span className="hidden sm:inline">Yesterday</span></> },
+  { value: "week", label: "7d" },
+  { value: "month", label: "30d" },
   { value: "custom", label: "Custom" },
 ];
 
-function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
+/** Hotel, outlet and department in one control. The button always says what is selected. */
+function ScopeControl({ user }: { user: User }) {
   const rawScope = useDemo((s) => s.scope);
   const setScope = useDemo((s) => s.setScope);
-  const preset = useDemo((s) => s.preset);
-  const custom = useDemo((s) => s.custom);
-  const setPreset = useDemo((s) => s.setPreset);
   const scope = clampScope(user, rawScope);
   const props = allowedProperties(user);
   const outlets = allowedOutlets(user).filter((id) => scope.propertyId === "all" || outletById[id].propertyId === scope.propertyId);
-  const [panel, setPanel] = useState<null | "search" | "alerts" | "profile" | "dates">(null);
+  const [open, setOpen] = useState(false);
+  const close = useCallback(() => setOpen(false), []);
+  const label = [scope.outletId !== "all" ? outletById[scope.outletId].name : scope.propertyId !== "all" && props.length > 1 ? propertyById[scope.propertyId].name : "All outlets", scope.dept === "food" ? "Kitchen" : scope.dept === "beverage" ? "Bar" : null].filter(Boolean).join(", ");
+  return (
+    <div className="relative min-w-0">
+      <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="dialog" className="flex h-9 max-w-[148px] items-center gap-2 rounded-full border border-line bg-paper px-3 text-[13px] text-ink transition-colors duration-200 hover:bg-cloud sm:max-w-[220px]">
+        <span className="min-w-0 truncate">{label}</span>
+        <ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open && "rotate-180")} aria-hidden />
+      </button>
+      {open && <ScopePanel onClose={close}>
+        {props.length > 1 && (
+          <Select label="Hotel" value={scope.propertyId} onChange={(e) => setScope({ propertyId: e.target.value })}>
+            <option value="all">All hotels</option>
+            {props.map((id) => <option key={id} value={id}>{propertyById[id].name}</option>)}
+          </Select>
+        )}
+        <Select label="Outlet" value={scope.outletId} onChange={(e) => setScope({ outletId: e.target.value })} disabled={outlets.length === 1}>
+          {outlets.length > 1 && <option value="all">All outlets</option>}
+          {outlets.map((id) => <option key={id} value={id}>{outletById[id].name}</option>)}
+        </Select>
+        <Select label="Department" value={scope.dept} onChange={(e) => setScope({ dept: e.target.value as "all" | Dept })}>
+          <option value="all">All departments</option>
+          <option value="food">Kitchen (food)</option>
+          <option value="beverage">Bar (beverage)</option>
+        </Select>
+      </ScopePanel>}
+    </div>
+  );
+}
+
+function ScopePanel({ onClose, children }: { onClose: () => void; children: ReactNode }) {
+  const ref = useDismiss(onClose);
+  return <div ref={ref} role="dialog" aria-label="Choose outlet and department" className="animate-rise absolute left-0 top-11 z-40 w-[280px] space-y-3 rounded-panel border border-line bg-paper p-4 shadow-float">{children}</div>;
+}
+
+function Topbar({ user }: { user: User }) {
+  const preset = useDemo((s) => s.preset);
+  const custom = useDemo((s) => s.custom);
+  const setPreset = useDemo((s) => s.setPreset);
+  const props = allowedProperties(user);
+  const [panel, setPanel] = useState<null | "profile" | "dates">(null);
+  const [palette, setPalette] = useState(false);
   const [news, setNews] = useState(false);
-  // On phones the hotel and date filters fold away, so the page itself comes first.
-  const [filters, setFilters] = useState(false);
+  const [theme, toggleTheme] = useTheme();
+  const openBreakage = useBreakageSheet((b) => b.set);
+  const pathname = usePathname();
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Ctrl+K or Cmd+K opens search from anywhere.
   useEffect(() => {
-    const key = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPanel((cur) => (cur === "search" ? null : "search")); } };
+    const key = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalette((v) => !v); } };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
   }, []);
@@ -416,62 +447,42 @@ function Topbar({ user, onMenu }: { user: User; onMenu: () => void }) {
 
   return (
     <>
-    <div className="no-print sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
-      <div className="mx-auto flex min-h-[68px] w-full max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 sm:px-6 lg:px-8">
-        <button type="button" onClick={onMenu} className="rounded-full p-2 text-graphite hover:bg-mist md:hidden" aria-label="Open menu"><Menu size={20} /></button>
+    <div className="no-print sticky top-0 z-20 border-b border-line bg-paper">
+      <div className="mx-auto flex min-h-16 w-full max-w-[1760px] flex-wrap items-center gap-x-2 gap-y-2 px-4 py-2 sm:px-6 lg:gap-x-4 lg:px-8">
+        <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center gap-2 rounded-md md:hidden">
+          <TyllLogo height={20} priority />
+        </Link>
+        <span className="hidden min-[440px]:inline md:hidden"><EarlyAccessBadge /></span>
         {showScope ? (
-          <div className={cn("order-last min-w-0 basis-full flex-wrap items-center gap-2 md:order-none md:flex md:basis-auto md:flex-1", filters ? "flex" : "hidden")}>
-            <Select label="Property" hideLabel className="w-[calc(50%-4px)] sm:w-[190px]" value={scope.propertyId} onChange={(e) => setScope({ propertyId: e.target.value })} disabled={props.length === 1}>
-              {props.length > 1 && <option value="all">All properties</option>}
-              {props.map((id) => <option key={id} value={id}>{propertyById[id].name}</option>)}
-            </Select>
-            <Select label="Outlet" hideLabel className="w-[calc(50%-4px)] sm:w-[170px]" value={scope.outletId} onChange={(e) => setScope({ outletId: e.target.value })} disabled={outlets.length === 1}>
-              {outlets.length > 1 && <option value="all">All outlets</option>}
-              {outlets.map((id) => <option key={id} value={id}>{scope.propertyId === "all" ? outletLabel(id) : outletById[id].name}</option>)}
-            </Select>
-            <Select label="Department" hideLabel className="w-[calc(50%-4px)] sm:w-[150px]" value={scope.dept} onChange={(e) => setScope({ dept: e.target.value as "all" | Dept })}>
-              <option value="all">All departments</option>
-              <option value="food">Kitchen (food)</option>
-              <option value="beverage">Bar (beverage)</option>
-            </Select>
-            <div className="relative min-w-0 max-w-full">
-              <Segmented label="Period" value={preset} onChange={(v) => (v === "custom" ? setPanel("dates") : (setPreset(v), setPanel(null)))} options={PRESETS.map((p) => (p.value === "custom" && preset === "custom" ? { ...p, label: fmtRange(custom) } : p))} />
+          <div className="order-last flex min-w-0 basis-full items-center gap-2 lg:order-none lg:basis-auto">
+            <ScopeControl user={user} />
+            <div className="relative min-w-0">
+              <Segmented size="sm" label="Date range" value={preset} onChange={(v) => (v === "custom" ? setPanel("dates") : (setPreset(v), setPanel(null)))} options={PRESETS.map((p) => (p.value === "custom" && preset === "custom" ? { ...p, label: fmtRange(custom) } : p))} />
               {panel === "dates" && <DatePanel onClose={() => setPanel(null)} />}
             </div>
           </div>
         ) : (
-          <p className="min-w-0 flex-1 truncate text-sm text-steel">{allowedOutlets(user)[0] ? `${outletById[allowedOutlets(user)[0]].name}, ` : ""}{propertyById[props[0]].name}</p>
+          <p className="hidden min-w-0 truncate text-sm text-steel sm:block">{allowedOutlets(user)[0] ? `${outletById[allowedOutlets(user)[0]].name}, ` : ""}{propertyById[props[0]].name}</p>
         )}
         <div className="ml-auto flex min-w-0 items-center gap-1">
-          <RoleSwitcher user={user} />
-          {showScope && <span className="md:hidden"><IconButton label={filters ? "Hide filters" : "Show filters"} onClick={() => setFilters((v) => !v)} active={filters}><SlidersHorizontal size={18} /></IconButton></span>}
-          <span data-tour="search"><IconButton label="Search (Ctrl K)" onClick={() => toggle("search")} active={panel === "search"}><Search size={18} strokeWidth={1.7} /></IconButton></span>
+          <button type="button" data-tour="search" onClick={() => setPalette(true)} aria-label="Search items, outlets and actions" className="flex h-10 items-center gap-2 rounded-full px-3 text-[13px] text-graphite transition-colors duration-200 hover:bg-mist min-[90rem]:border min-[90rem]:border-line">
+            <Search size={17} aria-hidden /><span className="hidden min-[90rem]:inline">Search</span><kbd className="hidden rounded-md border border-line px-1.5 text-[11px] text-steel min-[90rem]:inline">{/Mac|iPhone|iPad/.test(navigator.userAgent) ? "Cmd K" : "Ctrl K"}</kbd>
+          </button>
           <AlertsButton user={user} />
-          <div className="relative">
-            <button type="button" onClick={() => toggle("profile")} aria-expanded={panel === "profile"} aria-haspopup="menu" className="ml-1 flex items-center gap-2.5 rounded-full border border-line py-1 pl-1 pr-3 text-left transition-colors duration-300 ease-tyll hover:border-fog">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-xs font-medium text-paper" aria-hidden>{user.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
-              <span className="hidden leading-tight sm:block">
-                <span className="block text-[13px] text-ink">{user.name}</span>
-                <span className="block text-[11px] text-steel">{ROLE_LABEL[user.role]}</span>
-              </span>
+          {mayLogBreakage(user) && pathname !== "/waste" && <button type="button" onClick={() => openBreakage(true)} className="hidden h-9 items-center gap-2 rounded-full border border-line bg-paper px-3 text-[13px] font-medium text-ink transition-colors duration-150 hover:bg-cloud md:flex"><GlassWater size={15} aria-hidden /> Log breakage</button>}
+          <RoleSwitcher user={user} />
+          <div className="relative shrink-0">
+            <button type="button" onClick={() => toggle("profile")} aria-label="Your profile and settings" aria-expanded={panel === "profile"} aria-haspopup="menu" className="ml-1 flex items-center rounded-full transition-opacity duration-200 hover:opacity-85">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-xs font-medium text-paper" aria-hidden>{user.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
             </button>
-            {panel === "profile" && <ProfileMenu user={user} onClose={() => setPanel(null)} onNews={() => setNews(true)} />}
+            {panel === "profile" && <ProfileMenu user={user} onClose={() => setPanel(null)} onNews={() => setNews(true)} theme={theme} onTheme={toggleTheme} />}
           </div>
         </div>
       </div>
-      {panel === "search" && <SearchPanel user={user} onClose={() => setPanel(null)} />}
     </div>
-    {/* Outside the bar: its backdrop blur would otherwise confine the fixed panel. */}
+    {palette && <CommandPalette user={user} pages={PAGES} onClose={() => setPalette(false)} />}
     <WhatsNew open={news} onClose={() => setNews(false)} />
     </>
-  );
-}
-
-function IconButton({ label, onClick, active, children }: { label: string; onClick: () => void; active?: boolean; children: ReactNode }) {
-  return (
-    <button type="button" aria-label={label} title={label} onClick={onClick} className={cn("relative rounded-full p-2.5 text-graphite transition-colors duration-300 ease-tyll hover:bg-mist", active && "bg-mist text-ink")}>
-      {children}
-    </button>
   );
 }
 
@@ -521,7 +532,7 @@ function DatePanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-function ProfileMenu({ user, onClose, onNews }: { user: User; onClose: () => void; onNews: () => void }) {
+function ProfileMenu({ user, onClose, onNews, theme, onTheme }: { user: User; onClose: () => void; onNews: () => void; theme: "dark" | "light"; onTheme: () => void }) {
   const signOut = useDemo((s) => s.signOut);
   const ref = useDismiss(onClose);
   const pinRequired = useSession((s) => s.pinExpiresAt !== null);
@@ -541,7 +552,10 @@ function ProfileMenu({ user, onClose, onNews }: { user: User; onClose: () => voi
       <div className="border-t border-hair pt-1">
         <div className="px-1 py-1" onClick={onClose}><TakeTourButton user={user} here label="Tour this page" className="w-full border-0 px-2 py-2 text-sm" /></div>
         <button role="menuitem" type="button" onClick={() => { onClose(); onNews(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist"><Sparkles size={16} strokeWidth={1.7} /> What&apos;s new</button>
-        <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} strokeWidth={1.7} /> Settings and access</Link>
+        <button role="menuitem" type="button" onClick={onTheme} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />} {theme === "dark" ? "Light mode" : "Dark mode"}</button>
+        <Link role="menuitem" href="/more" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><LayoutGrid size={16} /> More tools</Link>
+        <Link role="menuitem" href="/alerts" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Bell size={16} /> All alerts</Link>
+        <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} /> Settings</Link>
         {pinRequired && !publicDemo && (
           <button role="menuitem" type="button" onClick={lock} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">
             <LockKeyhole size={16} strokeWidth={1.7} /> Lock now
@@ -581,7 +595,7 @@ function useAlerts(user: User): Alert[] {
       const issues = data.deliveries.filter((d) => props.includes(d.propertyId) && d.status === "delivered" && d.date >= addDays(DEMO_TODAY, -1) && deliveryOvercharge(d) > 0);
       if (issues.length) out.push({ id: "suppliers", text: `${issues.length} supplier invoice${issues.length === 1 ? "" : "s"} differ from what was delivered`, detail: "Since yesterday. See Stock, Suppliers.", href: "/stock?tab=suppliers", tone: "warn" });
       const pending = wasteLogs.filter((w) => !w.synced).length;
-      if (pending) out.push({ id: "offline", text: `${pending} waste entr${pending === 1 ? "y" : "ies"} waiting to synchronise`, detail: "Recorded offline on this device.", href: "/stock?tab=log", tone: "neutral" });
+      if (pending) out.push({ id: "offline", text: `${pending} waste entr${pending === 1 ? "y" : "ies"} waiting to synchronise`, detail: "Recorded offline on this device.", href: "/waste?log=1", tone: "neutral" });
     }
     if (canOpen(user, "rooms")) {
       const risky = data.arrivals.filter((a) => hasWholeProperty(user, a.propertyId) && (arrivalState[a.id] ?? a.status) !== "checked_in").filter((a) => {
@@ -598,121 +612,6 @@ function useAlerts(user: User): Alert[] {
 function AlertsButton({ user }: { user: User }) {
   const alerts = useAlerts(user);
   return <NotificationBell attention={alerts} />;
-}
-
-interface Hit {
-  group: string;
-  label: string;
-  detail: string;
-  href?: string;
-  run?: () => void;
-}
-
-function SearchPanel({ user, onClose }: { user: User; onClose: () => void }) {
-  const [q, setQ] = useState("");
-  const router = useRouter();
-  const setScope = useDemo((s) => s.setScope);
-  const investigations = useInvestigations();
-  const ref = useDismiss(onClose);
-  // Orders are searched on the server, which only returns orders from outlets this user may see.
-  const [orderHits, setOrderHits] = useState<{ q: string; hits: { id: string; outletId: string; date: string; openMin: number }[] }>({ q: "", hits: [] });
-  useEffect(() => {
-    const term = q.trim();
-    if (term.length < 3 || !canOpen(user, "money")) return;
-    const t = setTimeout(() => {
-      api<{ hits: { id: string; outletId: string; date: string; openMin: number }[] }>(`/api/orders?q=${encodeURIComponent(term)}`).then((r) => setOrderHits({ q: term, hits: r.hits })).catch(() => setOrderHits({ q: term, hits: [] }));
-    }, 250);
-    return () => clearTimeout(t);
-  }, [q, user]);
-  // Saved records (requests, events, rooms, invoices and more) come from the server, already limited to this person.
-  const [recordHits, setRecordHits] = useState<{ q: string; hits: { group: string; label: string; detail: string; href: string }[] }>({ q: "", hits: [] });
-  useEffect(() => {
-    const term = q.trim();
-    if (term.length < 2) return;
-    const t = setTimeout(() => {
-      api<{ hits: { group: string; label: string; detail: string; href: string }[] }>(`/api/search?q=${encodeURIComponent(term)}`).then((r) => setRecordHits({ q: term, hits: r.hits })).catch(() => setRecordHits({ q: term, hits: [] }));
-    }, 200);
-    return () => clearTimeout(t);
-  }, [q]);
-  const [recent, setRecent] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem("tyll-recent-search") ?? "[]") as string[]; } catch { return []; } });
-  const remember = (term: string) => {
-    const next = [term, ...recent.filter((r) => r !== term)].slice(0, 5);
-    setRecent(next);
-    try { localStorage.setItem("tyll-recent-search", JSON.stringify(next)); } catch { /* private window */ }
-  };
-  const hits = useMemo<Hit[]>(() => {
-    const term = q.trim().toLowerCase();
-    if (term.length < 2) return [];
-    const outlets = allowedOutlets(user);
-    const out: Hit[] = [];
-    for (const m of modulesFor(user)) if (NAV[m].label.toLowerCase().includes(term)) out.push({ group: "Pages", label: NAV[m].label, detail: "Open", href: MODULE_PATH[m] });
-    for (const p of PROPERTIES) if (allowedProperties(user).includes(p.id) && p.name.toLowerCase().includes(term)) out.push({ group: "Properties", label: p.name, detail: "Show this hotel", run: () => setScope({ propertyId: p.id }) });
-    for (const id of outlets) {
-      const o = outletById[id];
-      if (`${o.name} ${o.kind}`.toLowerCase().includes(term)) out.push({ group: "Outlets", label: outletLabel(id), detail: o.kind, run: () => { setScope({ outletId: id }); router.push("/"); } });
-    }
-    if (canOpen(user, "overview")) {
-      for (const it of MENU_ITEMS) {
-        if (it.name.toLowerCase().includes(term) && outlets.some((id) => outletById[id].menu.some((m) => m.itemId === it.id))) out.push({ group: "Menu items", label: it.name, detail: it.category, href: `/menu/${it.id}` });
-      }
-    }
-    if (canOpen(user, "investigations")) {
-      for (const i of investigations.filter((x) => `${x.id} ${x.headline}`.toLowerCase().includes(term)).slice(0, 5)) out.push({ group: "Investigations", label: i.headline, detail: `${i.id.replace("EX-", "")} · ${fmtDate(i.date)}`, href: `/investigations/${i.id}` });
-    }
-    if (term.length >= 3 && orderHits.q.toLowerCase() === term) {
-      for (const o of orderHits.hits) out.push({ group: "Orders", label: o.id, detail: `${outletById[o.outletId].name} · ${fmtDate(o.date)} ${fmtTime(o.openMin)}`, href: `/money/orders/${o.id}` });
-    }
-    if (recordHits.q.toLowerCase() === term) for (const h of recordHits.hits) if (!(h.group === "Features" && out.some((o) => o.href === h.href))) out.push(h);
-    // Records first, then screens and places.
-    const rank = (g: string) => (g === "Features" ? 1 : ["Pages", "Properties", "Outlets"].includes(g) ? 2 : 0);
-    return out.sort((a, b) => rank(a.group) - rank(b.group)).slice(0, 40);
-  }, [q, user, investigations, router, setScope, orderHits, recordHits]);
-  const groups = [...new Set(hits.map((h) => h.group))];
-  return (
-    <div className="border-t border-line bg-paper">
-      <div ref={ref} className="mx-auto w-full max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
-        <div className="relative">
-          <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
-          <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search records and screens: Coca-Cola, PR-DXB-0001, room 1211, Guest Connect" aria-label="Search" className="h-12 w-full rounded-full border border-line bg-cloud pl-11 pr-4 text-[15px] placeholder:text-fog" />
-        </div>
-        {q.trim().length < 2 && recent.length > 0 && (
-          <div className="mt-3 flex flex-wrap items-center gap-2 px-1 text-sm">
-            <span className="text-xs text-steel">Recent</span>
-            {recent.map((r) => <button key={r} type="button" onClick={() => setQ(r)} className="rounded-full border border-line px-3 py-1 text-graphite hover:bg-mist">{r}</button>)}
-          </div>
-        )}
-        {q.trim().length >= 2 && (
-          <div className="scroll-thin mt-3 max-h-[50vh] overflow-y-auto">
-            {hits.length === 0 && <p className="px-2 py-3 text-sm text-steel">{recordHits.q !== q.trim() ? "Searching" : <>Nothing you can open matches &ldquo;{q}&rdquo;. Try an item such as Coca-Cola, a reference such as PR-DXB-0001, a room number or a screen such as What to buy.</>}</p>}
-            {groups.map((g) => (
-              <div key={g} className="mb-2">
-                <p className="px-2 py-1 text-xs text-steel">{g}</p>
-                <ul>
-                  {hits.filter((h) => h.group === g).map((h, i) => (
-                    <li key={i}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          remember(q.trim());
-                          h.run?.();
-                          if (h.href) router.push(h.href);
-                          onClose();
-                        }}
-                        className="flex w-full items-center justify-between gap-4 rounded-xl px-3 py-2 text-left text-sm hover:bg-mist"
-                      >
-                        <span className="truncate text-ink">{h.label}</span>
-                        <span className="shrink-0 text-xs text-steel">{h.detail}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
 }
 
 /** Small banner pages use to say their figures come from simulated records. */

@@ -30,6 +30,8 @@ export interface Shape {
   stockLog: StockLogShape;
   /** Notifications and the email log (Stage 7). */
   notify: NotifyShape;
+  /** The walking order for stock counts, per hotel. Absent until a manager sets one. */
+  countRoutes?: Record<string, string[]>;
 }
 
 const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify() });

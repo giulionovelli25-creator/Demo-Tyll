@@ -145,7 +145,7 @@ export default function MoneyBackListPage() {
               <table className="w-full min-w-[1080px] text-sm">
                 <thead>
                   <tr>
-                    {mayAssign && <Th><input type="checkbox" aria-label="Select all open cases shown" className="accent-ink" checked={allPicked} onChange={() => setPicked(allPicked ? picked.filter((id) => !pageRows.some((i) => i.id === id)) : [...new Set([...picked, ...pageRows.map((i) => i.id)])])} /></Th>}
+                    {mayAssign && <Th><input type="checkbox" aria-label="Select all open cases shown" className="accent-[var(--color-accent)]" checked={allPicked} onChange={() => setPicked(allPicked ? picked.filter((id) => !pageRows.some((i) => i.id === id)) : [...new Set([...picked, ...pageRows.map((i) => i.id)])])} /></Th>}
                     <Th>Issue</Th>
                     <Th sortKey="outlet" sort={sort} onSort={toggle}>Outlet</Th>
                     <Th sortKey="when" sort={sort} onSort={toggle}>When</Th>
@@ -161,7 +161,7 @@ export default function MoneyBackListPage() {
                     const late = i.status !== "closed" && i.deadline && i.deadline < DEMO_TODAY;
                     return (
                       <tr key={i.id} className={cn(rowClass, "cursor-pointer", picked.includes(i.id) && "bg-cloud")} onClick={() => router.push(`/investigations/${i.id}`)}>
-                        {mayAssign && <Td className="w-10">{i.status !== "closed" && <input type="checkbox" aria-label={`Select ${i.headline}`} className="accent-ink" checked={picked.includes(i.id)} onClick={(e) => e.stopPropagation()} onChange={() => togglePick(i.id)} />}</Td>}
+                        {mayAssign && <Td className="w-10">{i.status !== "closed" && <input type="checkbox" aria-label={`Select ${i.headline}`} className="accent-[var(--color-accent)]" checked={picked.includes(i.id)} onClick={(e) => e.stopPropagation()} onChange={() => togglePick(i.id)} />}</Td>}
                         <Td className="max-w-[360px]">
                           <button type="button" className="text-left text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/investigations/${i.id}`); }}>{i.headline}</button>
                           <span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]} · {i.id.replace("EX-", "")}</span>

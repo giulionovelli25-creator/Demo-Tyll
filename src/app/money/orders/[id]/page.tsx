@@ -37,7 +37,7 @@ export default function OrderPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        crumbs={<Crumbs items={[{ label: "Tyll Money", onClick: () => router.push("/money") }, { label: "Order history", onClick: () => router.push("/money?tab=orders") }, { label: order.id }]} />}
+        crumbs={<Crumbs items={[{ label: "Finance", onClick: () => router.push("/money") }, { label: "Order history", onClick: () => router.push("/money?tab=orders") }, { label: order.id }]} />}
         title={`Order ${order.id}`}
         lead={`${outlet.name}, ${property.name}. ${fmtDate(order.date, true)}, opened ${fmtTime(order.openMin)} on ${order.table.toLowerCase()} under the POS login of ${staffById[order.staffId]?.name ?? order.staffId}.`}
       >
@@ -46,7 +46,7 @@ export default function OrderPage() {
       </PageHeader>
 
       {cases.map((c) => (
-        <Link key={c.id} href={`/investigations/${c.id}`} className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-warn/30 bg-warn-soft px-6 py-4 transition-colors duration-300 ease-tyll hover:border-warn/60">
+        <Link key={c.id} href={`/investigations/${c.id}`} className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-warn/30 bg-warn-soft px-6 py-4 transition-colors duration-200 ease-tyll hover:border-warn/60">
           <span className="min-w-0">
             <span className="block text-[15px] text-ink">{c.headline}</span>
             <span className="text-[13px] text-graphite">Investigation {STATUS_LABEL[c.status].toLowerCase()} · {money(c.exposure)} involved</span>

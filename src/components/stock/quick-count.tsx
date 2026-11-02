@@ -55,9 +55,9 @@ export function QuickCount({ user, propertyId, onFullCount }: { user: User; prop
 
   return (
     <Panel
-      title={`Stock at ${outletById[outletId].name}`}
-      description="Items this kitchen uses. Estimated on hand: last count plus deliveries, minus sales and waste. Tap −1 when something is wasted."
-      action={<Button size="sm" onClick={onFullCount}>Start a full count</Button>}
+      title={`Tap to log waste, ${outletById[outletId].name}`}
+      description="Tap −1 when something is wasted. Undo is right there. Items this kitchen uses."
+      action={<Button size="sm" onClick={onFullCount}>Count stock</Button>}
       flush
     >
       {!data ? (
@@ -90,7 +90,7 @@ export function QuickCount({ user, propertyId, onFullCount }: { user: User; prop
                       onClick={() => minus(r.ingredientId)}
                       disabled={busy === r.ingredientId || left < 1}
                       aria-label={`Log ${one(g.unit)} of ${g.name} as waste`}
-                      className="flex h-10 min-w-[64px] items-center justify-center gap-1 rounded-full border border-line px-3 text-sm text-ink transition-colors duration-300 ease-tyll hover:bg-mist disabled:opacity-40"
+                      className="flex h-10 min-w-[64px] items-center justify-center gap-1 rounded-full border border-line px-3 text-sm text-ink transition-colors duration-200 ease-tyll hover:bg-mist disabled:opacity-40"
                     >
                       <Minus size={14} aria-hidden /> 1
                     </button>

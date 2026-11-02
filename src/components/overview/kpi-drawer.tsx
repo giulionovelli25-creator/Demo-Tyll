@@ -106,7 +106,7 @@ export function KpiDrawer({ kpi, onClose, c, rows, ctx, sel, investigations, mon
             money={money}
             rows={[
               ["Recipe cost of items sold", t.theoCost],
-              ["Recorded waste", t.waste, "/stock?tab=waste"],
+              ["Recorded waste", t.waste, "/waste"],
               ["Stock missing at count", t.variance, "/stock?tab=counts"],
               ...(hasOps ? ([["Labor (estimated from rosters)", t.labor!], ["Other operating costs (allocated)", t.opex!]] as [string, number][]) : []),
             ]}
@@ -163,7 +163,7 @@ export function KpiDrawer({ kpi, onClose, c, rows, ctx, sel, investigations, mon
           <H>Recorded outcomes in this period</H>
           <Lines money={money} rows={[["Confirmed losses", t.confirmedLoss, "/investigations?status=closed&outcome=confirmed_loss"], ["Revenue recovered", t.recovered, "/investigations?status=closed&outcome=recovered"]]} />
           <H>Other money lost from stock</H>
-          <Lines money={money} rows={[["Recorded waste", t.waste, "/stock?tab=waste"], ["Stock missing at count", t.variance, "/stock?tab=counts"], ["Breakage, glass and plates", t.breakage, "/stock?tab=waste"]]} />
+          <Lines money={money} rows={[["Recorded waste", t.waste, "/waste"], ["Stock missing at count", t.variance, "/stock?tab=counts"], ["Breakage, glass and plates", t.breakage, "/waste"]]} />
           {byOutlet((r) => open.filter((i) => i.outletId === r.outletId).reduce((s, i) => s + i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency), 0), (r) => `${open.filter((i) => i.outletId === r.outletId).length} open`)}
         </>
       )}

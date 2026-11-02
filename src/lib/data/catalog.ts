@@ -92,6 +92,16 @@ export const INGREDIENTS: Ingredient[] = [
   ing("amenity", "Guest amenity kits", "أطقم ضيافة", "each", 12, "hk", 730, 2, 50, false, "supplies"),
   ing("towel", "Bath towels", "مناشف حمام", "each", 28, "hk", 3650, 3, 20, false, "supplies"),
   ing("chem", "Cleaning chemicals", "مواد تنظيف", "l", 22, "hk", 365, 2, 5, false, "supplies"),
+  // More breakable items, so staff can tap the right one when logging a breakage.
+  ing("rocks", "Rocks glasses", "كؤوس قصيرة", "each", 11, "ware", 3650, 5, 24, false, "glassware"),
+  ing("flute", "Champagne flutes", "كؤوس شمبانيا", "each", 16, "ware", 3650, 5, 24, false, "glassware"),
+  ing("beerglass", "Beer glasses", "كؤوس بيرة", "each", 10, "ware", 3650, 5, 24, false, "glassware"),
+  ing("waterglass", "Water glasses", "كؤوس ماء", "each", 8, "ware", 3650, 5, 24, false, "glassware"),
+  ing("sideplate", "Side plates", "أطباق جانبية", "each", 19, "ware", 3650, 5, 12, false, "glassware"),
+  ing("soupbowl", "Soup bowls", "أوعية حساء", "each", 22, "ware", 3650, 5, 12, false, "glassware"),
+  ing("coffeecup", "Coffee cups", "فناجين قهوة", "each", 14, "ware", 3650, 5, 12, false, "glassware"),
+  ing("saucer", "Saucers", "صحون فناجين", "each", 9, "ware", 3650, 5, 12, false, "glassware"),
+  ing("jug", "Water jugs", "أباريق ماء", "each", 42, "ware", 3650, 5, 6, false, "glassware"),
 ];
 
 type R = [string, number][];

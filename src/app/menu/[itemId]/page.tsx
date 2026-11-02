@@ -56,7 +56,7 @@ export default function MenuItemPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        crumbs={<Crumbs items={[{ label: "Tyll Overview", onClick: () => router.push("/") }, { label: "Menu performance", onClick: () => router.push("/menu") }, { label: item.name }]} />}
+        crumbs={<Crumbs items={[{ label: "Home", onClick: () => router.push("/") }, { label: "Menu performance", onClick: () => router.push("/menu") }, { label: item.name }]} />}
         title={item.name}
         lead={`${item.category}, ${item.dept === "food" ? "kitchen" : "bar"}. Sold at ${selling.length} outlet${selling.length === 1 ? "" : "s"} in this selection.`}
       >
@@ -138,7 +138,7 @@ export default function MenuItemPage() {
       <Panel
         title="Orders containing this item"
         description="The individual orders behind the figures above. Choose one to see its full history."
-        action={<label className="flex cursor-pointer items-center gap-2 text-[13px] text-graphite"><input type="checkbox" className="accent-ink" checked={onlyChanged} onChange={(e) => { setOnlyChanged(e.target.checked); setShown(25); }} /> Only where it was removed, voided or given free</label>}
+        action={<label className="flex cursor-pointer items-center gap-2 text-[13px] text-graphite"><input type="checkbox" className="accent-[var(--color-accent)]" checked={onlyChanged} onChange={(e) => { setOnlyChanged(e.target.checked); setShown(25); }} /> Only where it was removed, voided or given free</label>}
         flush
       >
         {fetched === undefined ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Loading orders" /></div> : orders.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No orders match" /></div> : (
