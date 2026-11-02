@@ -1,7 +1,7 @@
 "use client";
 // Pour Control: how many glasses each bottle really gave. By wine, then where and when. Never by person.
 import { useState } from "react";
-import { EmptyState, KeyNumber, KeyNumbers, Note, Panel, Segmented, Skeleton, StatusPill, TableWrap, Td, Th, WidgetError, cn, rowClass } from "@/components/ui";
+import { EmptyState, KeyNumber, KeyNumbers, Note, Panel, Segmented, Skeleton, StatusPill, TableWrap, Td, Th, WidgetError, cn, rowClass, OutletDot } from "@/components/ui";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { outletById } from "@/lib/data/catalog";
 import { SHIFTS, type PourFigures } from "@/lib/domain/pour";
@@ -85,7 +85,7 @@ export function PourControl() {
                   <tbody>
                     {data.outlets.map((o) => (
                       <tr key={o.outletId} className={rowClass}>
-                        <Td><span className="text-ink">{outletById[o.outletId].name}</span></Td>
+                        <Td><span className="text-ink"><OutletDot id={o.outletId} />{outletById[o.outletId].name}</span></Td>
                         {SHIFTS.map((s) => {
                           const f = o.shifts[s.id][period];
                           return <Td key={s.id} align="right"><span className={cn("inline-block min-w-10 rounded-md px-1.5 py-0.5", f.flagged && "bg-neg-soft")}><YieldCell f={f} /></span>{f.opened > 0 && <span className="block text-xs text-steel">{fmtBottles(f.opened)} bottles</span>}</Td>;

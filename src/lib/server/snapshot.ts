@@ -1,12 +1,14 @@
 // What each user is allowed to receive. Records outside a user's outlets never leave the server,
 // and operational staff receive quantities only, with no sales or cost figures.
 import { outletById, storeOwner } from "../data/catalog";
+import { demoCases } from "../data/demo-cases";
 import { getDataset, type Dataset } from "../data/generate";
 import { allowedOutlets, allowedProperties, hasWholeProperty } from "../domain/access";
 import { detectOrderException } from "../domain/detect";
 import { historicalPrepRatio } from "../domain/operations";
 import { orderTotals } from "../domain/orders";
 import type { Order, User } from "../types";
+import { publicDemo } from "./auth";
 
 /** The dataset as sent to the browser: no orders (fetched one by one) and no lookup maps. */
 export type Snapshot = Omit<Dataset, "orders" | "ordersById" | "chargesById"> & { prepRatios: Record<string, number> };
@@ -14,7 +16,7 @@ export type Snapshot = Omit<Dataset, "orders" | "ordersById" | "chargesById"> & 
 const cache = new Map<string, Snapshot>();
 
 export function snapshotFor(user: User): Snapshot {
-  const key = `${user.role}|${JSON.stringify(user.propertyIds)}|${JSON.stringify(user.outletIds)}`;
+  const key = `${publicDemo()}|${user.role}|${JSON.stringify(user.propertyIds)}|${JSON.stringify(user.outletIds)}`;
   const hit = cache.get(key);
   if (hit) return hit;
   const d = getDataset();
@@ -26,7 +28,8 @@ export function snapshotFor(user: User): Snapshot {
   // Purchasing and the hotel departments get no outlet sales.
   const procurement = user.role === "purchasing" || !!user.deptId;
   const byOutlet = <T extends { outletId: string }>(rows: T[]) => rows.filter((r) => outlets.has(r.outletId));
-  const exceptions = staff || user.role === "purchasing" ? [] : d.exceptions.filter((e) => (e.outletId ? outlets.has(e.outletId) : whole.has(e.propertyId)));
+  const cases = publicDemo() ? demoCases(d.exceptions, d.seedInvestigations) : d.exceptions;
+  const exceptions = staff || user.role === "purchasing" ? [] : cases.filter((e) => (e.outletId ? outlets.has(e.outletId) : whole.has(e.propertyId)));
   const seedInvestigations = Object.fromEntries(exceptions.map((e) => [e.id, d.seedInvestigations[e.id]]));
 
   const snap: Snapshot = {

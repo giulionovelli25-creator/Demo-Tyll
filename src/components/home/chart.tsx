@@ -1,5 +1,5 @@
 "use client";
-// The revenue and profit chart. Loaded on its own so the five cards appear first. One axis, a legend, and labels only on the points that matter.
+// The revenue and profit chart. Loaded on its own so the cards appear first. One axis, a legend, and labels only on the points that matter.
 import { memo } from "react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -27,7 +27,7 @@ function Tip({ active, payload, label, format }: { active?: boolean; payload?: {
   );
 }
 
-export const RevenueProfitChart = memo(function RevenueProfitChart({ points, format, axisFormat, profitName, summary }: { points: ChartPoint[]; format: (n: number) => string; axisFormat: (n: number) => string; profitName: string; summary: string }) {
+export const RevenueProfitChart = memo(function RevenueProfitChart({ points, format, axisFormat, profitName, summary, small }: { small?: boolean; points: ChartPoint[]; format: (n: number) => string; axisFormat: (n: number) => string; profitName: string; summary: string }) {
   return (
     <figure>
       <figcaption className="sr-only">{summary}</figcaption>
@@ -35,7 +35,7 @@ export const RevenueProfitChart = memo(function RevenueProfitChart({ points, for
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-[var(--chart-a)]" />Revenue</span>
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-[var(--chart-b)]" />{profitName}</span>
       </div>
-      <div className="h-[240px]">
+      <div className={small ? "h-[150px]" : "h-[240px]"}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={points} margin={{ top: 20, right: 12, bottom: 0, left: 0 }}>
             <CartesianGrid stroke="var(--chart-grid)" vertical={false} />

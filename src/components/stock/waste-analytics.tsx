@@ -8,14 +8,16 @@ import { isBreakage, wasteCost } from "@/lib/domain/inventory";
 import { compare, prevSel } from "@/lib/domain/metrics";
 import { useCtx, useView } from "@/lib/hooks";
 import { REASON_LABEL } from "@/lib/labels";
-import type { WasteLog, WasteReason } from "@/lib/types";
+import type { DateRange, WasteLog, WasteReason } from "@/lib/types";
 import { eachDay, fmtDate, fmtPct, fmtRange, fmtShort, fxRate, pctChange } from "@/lib/util";
 
 const isDrink = (w: WasteLog) => (w.ingredientId ? stockAreaOf(w.ingredientId) === "drinks" : !!w.itemId && itemById[w.itemId].dept === "beverage");
 
 /** Waste for one area. Glass and china breakage has its own view, under Inventory. */
-export function WasteAnalytics({ area }: { area: "food" | "drinks" }) {
-  const { sel, money, currency } = useView();
+export function WasteAnalytics({ area, range }: { area: "food" | "drinks"; range?: DateRange }) {
+  const view = useView();
+  const { money, currency } = view;
+  const sel = useMemo(() => (range ? { ...view.sel, range } : view.sel), [view.sel, range]);
   const ctx = useCtx();
   const word = area === "drinks" ? "drinks" : "food";
   const inArea = useCallback((w: WasteLog) => w.synced && sel.outletIds.includes(w.outletId) && !isBreakage(w) && !(w.ingredientId && stockAreaOf(w.ingredientId) === "inventory") && isDrink(w) === (area === "drinks"), [sel.outletIds, area]);
@@ -60,7 +62,7 @@ export function WasteAnalytics({ area }: { area: "food" | "drinks" }) {
           <Note className="mt-3">Spoilage points to over-ordering, which Purchasing Prediction addresses. Waste points to preparation and portioning.</Note>
         </Panel>
         <Panel title="By outlet">
-          <BarList format={(n) => money(n)} rows={byOutlet.map((r) => ({ key: r.k, label: outletLabel(r.k), value: r.value }))} />
+          <BarList format={(n) => money(n)} rows={byOutlet.map((r) => ({ key: r.k, label: outletLabel(r.k), value: r.value, outletId: r.k }))} />
         </Panel>
       </div>
 

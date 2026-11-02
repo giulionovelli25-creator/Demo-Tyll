@@ -40,7 +40,7 @@ export function matches(text: string, query: string): boolean {
 
 /** Screens people look for by name. Each needs the module or permission its screen needs. */
 const FEATURES: { label: string; detail: string; href: string; module?: ModuleId; perm?: Permission; also?: string }[] = [
-  { label: "What to order", detail: "Prediction to month end, and Build order", href: "/stock#order", perm: "purchase.create", also: "order purchase shortage" },
+  { label: "What to order", detail: "Prediction to month end, and Build order", href: "/forecast", perm: "purchase.create", also: "order purchase shortage" },
   { label: "What to prep", detail: "Portions the kitchen should prepare", href: "/forecast?tab=prep", perm: "prep.plan", also: "kitchen preparation" },
   { label: "Purchase approvals", detail: "Requests waiting for a decision", href: "/forecast?tab=approvals", module: "forecast", also: "approve purchase order po" },
   { label: "Where did it go?", detail: "Stock used that sales do not explain", href: "/stock?tab=where", module: "investigations", also: "missing variance stock" },

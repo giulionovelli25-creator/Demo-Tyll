@@ -43,7 +43,7 @@ export type CategoryId = (typeof CATEGORIES)[number]["id"];
 export const categoryOf = (ingredientId: string): CategoryId | null =>
   CATEGORIES.find((c) => (c.suppliers as readonly string[]).includes(ingredientById[ingredientId].supplierId))?.id ?? null;
 
-/** The three parts of Stock and of Waste and Breakage. Food and drinks are used up. Inventory is reused until it breaks. */
+/** The three parts of Stock and of Log waste. Food and drinks are used up. Inventory is reused until it breaks. */
 export const STOCK_AREAS = [
   { id: "food", name: "Food" },
   { id: "drinks", name: "Drinks" },

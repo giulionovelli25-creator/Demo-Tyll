@@ -2,15 +2,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Banknote, Bell, BedDouble, CalendarDays, ChevronDown, ClipboardList, Eye, FileSearch, FileText, GlassWater, Landmark, LayoutDashboard, LayoutGrid, LockKeyhole, LogOut, Moon, Package, PlayCircle, Search, Settings, ShoppingCart, Smartphone, Sparkles, Sun, Trash2, UtensilsCrossed, type LucideIcon,
+  Banknote, Bell, BedDouble, CalendarDays, ChevronDown, ClipboardList, Eye, FileSearch, FileText, Landmark, LayoutDashboard, LayoutGrid, LockKeyhole, LogOut, Moon, Package, Palette, PlayCircle, Search, Settings, ShoppingCart, Smartphone, Sparkles, Sun, Trash2, UtensilsCrossed, type LucideIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, Fragment } from "react";
 import { BrandLoader, TyllLogo, TyllMark } from "@/components/brand";
 import { Badge, Button, EmptyState, Field, Segmented, Select, Toaster, cn, report, toast } from "@/components/ui";
 import { ROLE_LABEL, outletById, propertyById } from "@/lib/data/catalog";
 import { clearDataset, getDataset, hasDataset, hydrateDataset } from "@/lib/data/dataset";
 import { api, goToLogin, lockLocally, reloadTo, useSession } from "@/lib/api";
-import { AlertFeedProvider } from "@/lib/alert-feed";
+import { MODULE_TONE, OUTLET_TONE } from "@/components/theme";
+import { useLook } from "@/lib/look";
+import { LookPicker } from "./look-picker";
+import { AlertFeedProvider, useAlertFeed } from "@/lib/alert-feed";
 import type { Snapshot } from "@/lib/server/snapshot";
 import { MODULE_PATH, allowedOutlets, allowedProperties, canOpen, clampScope, hasWholeProperty, homePath, moduleOfPath, modulesFor, type ModuleId } from "@/lib/domain/access";
 import { deliveryOvercharge } from "@/lib/domain/inventory";
@@ -36,11 +39,11 @@ import { Tour } from "./tour";
 const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }> = {
   overview: { label: "Overview", icon: LayoutDashboard },
   stock: { label: "Stock", icon: Package },
-  forecast: { label: "Orders", icon: ShoppingCart },
-  money: { label: "Money", icon: Banknote },
-  waste: { label: "Waste and Breakage", short: "Waste", icon: Trash2 },
-  reports: { label: "Reports", icon: FileText },
-  alerts: { label: "All alerts", icon: Bell },
+  forecast: { label: "Predictions", icon: ShoppingCart },
+  money: { label: "Revenue", icon: Banknote },
+  waste: { label: "Log waste", icon: Trash2 },
+  reports: { label: "Reports and settings", short: "Reports", icon: FileText },
+  alerts: { label: "Alerts", icon: Bell },
   more: { label: "More tools", icon: LayoutGrid },
   settings: { label: "Settings", icon: Settings },
   staff: { label: "Tyll Staff", icon: Smartphone },
@@ -52,10 +55,10 @@ const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }>
   finance: { label: "Reconciliation", icon: Landmark },
 };
 
-/** The sidebar, in the order a GM's day goes. Never more than six. Everything else is one click away under the profile menu. */
-const PRIMARY: ModuleId[] = ["overview", "stock", "forecast", "money", "waste", "reports"];
+/** The four main features first, then Alerts, then Reports and settings. Never more than six. The logo opens the Overview. */
+const PRIMARY: ModuleId[] = ["waste", "stock", "forecast", "money", "alerts", "reports"];
 /** Which sidebar item lights up on each screen. */
-const NAV_HOME: Partial<Record<ModuleId, ModuleId>> = { investigations: "money", finance: "money", alerts: "overview" };
+const NAV_HOME: Partial<Record<ModuleId, ModuleId>> = { investigations: "money", finance: "money", settings: "reports", more: "reports" };
 
 /** Modules still being built. They work with demo data but are marked so nobody mistakes them for finished. */
 const IN_DEVELOPMENT: ModuleId[] = ["events", "rooms"];
@@ -66,11 +69,21 @@ const PAGES = Object.fromEntries(Object.entries(NAV).map(([m, n]) => [m, n.label
 function navFor(user: User, publicDemo: boolean): ModuleId[] {
   const modules = modulesFor(user);
   const home = moduleOfPath(homePath(user).split("?")[0]);
-  const lead = PRIMARY.includes(home) ? [] : [home];
-  return [...lead, ...PRIMARY.filter((m) => publicDemo || modules.includes(m))].slice(0, 6);
+  const lead = PRIMARY.includes(home) || home === "overview" ? [] : [home];
+  const main = PRIMARY.filter((m) => publicDemo || modules.includes(m));
+  // Roles without reports still need one way to their settings.
+  return [...lead, ...main, ...(main.includes("reports") ? [] : ["settings" as const])].slice(0, 6);
 }
 
-function SideItem({ m, active, reload }: { m: ModuleId; active: boolean; reload: boolean }) {
+/** How many things are waiting behind a sidebar item. */
+function useNavCounts(): Partial<Record<ModuleId, { n: number; label: string }>> {
+  const { plan, open } = useAlertFeed();
+  const critical = plan?.items.filter((i) => i.health === "critical").length ?? 0;
+  const red = open.filter((a) => a.rag === "red").length;
+  return { ...(critical ? { stock: { n: critical, label: `${critical} critical` } } : {}), ...(red ? { alerts: { n: red, label: `${red} to act on today` } } : {}) };
+}
+
+function SideItem({ m, active, reload, count }: { m: ModuleId; active: boolean; reload: boolean; count?: { n: number; label: string } }) {
   const { icon: Icon, label, short } = NAV[m];
   const className = cn(
     "relative flex items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink",
@@ -82,10 +95,11 @@ function SideItem({ m, active, reload }: { m: ModuleId; active: boolean; reload:
       <Icon size={18} className={active ? "text-accent-ink" : undefined} aria-hidden />
       <span className="min-w-0 xl:hidden">{short ?? label}</span>
       <span className="hidden min-w-0 xl:inline">{label}</span>
+      {count && <span className="num absolute right-1 top-1 min-w-[18px] rounded-full bg-neg-soft px-1 text-center text-[11px] font-medium leading-[18px] text-neg xl:static xl:ml-auto"><span aria-hidden>{count.n}</span><span className="sr-only">{count.label}</span></span>}
     </>
   );
   return (
-    <li>
+    <li data-mod={MODULE_TONE[m]}>
       {/* A full load lets the public demo change role on the server first. */}
       {reload ? <a href={MODULE_PATH[m]} aria-current={active ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={active ? "page" : undefined} className={className}>{body}</Link>}
     </li>
@@ -124,7 +138,7 @@ function RoleSwitcher({ user }: { user: User }) {
   };
   const current = roles.some((r) => r.userId === user.id) ? user.id : "";
   return (
-    <Select label="View the demo as" hideLabel className="w-[132px] sm:w-[176px]" value={current} disabled={busy} onChange={(e) => switchTo(e.target.value)}>
+    <Select label="View the demo as" hideLabel className="w-[170px] sm:w-[176px]" value={current} disabled={busy} onChange={(e) => switchTo(e.target.value)}>
       {!current && <option value="">{ROLE_LABEL[user.role]}</option>}
       {roles.map((r) => <option key={r.userId} value={r.userId}>{r.label}</option>)}
     </Select>
@@ -250,7 +264,29 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
   );
 }
 
+/** Puts the chosen look on <html>, where tokens.css reads it. In the By outlet look the accent follows the outlet picked in the top bar. */
+function useLookSync(user: User) {
+  const colour = useLook((s) => s.colour);
+  const waves = useLook((s) => s.waves);
+  const rawScope = useDemo((s) => s.scope);
+  const outletId = clampScope(user, rawScope).outletId;
+  useEffect(() => {
+    const root = document.documentElement.dataset;
+    root.waves = waves;
+    if (colour === "sections") { delete root.look; delete root.tone; delete root.outlets; return; }
+    root.look = "one";
+    if (colour === "outlets") {
+      root.outlets = "on";
+      root.tone = OUTLET_TONE[outletId]?.tone ?? "indigo";
+    } else {
+      delete root.outlets;
+      root.tone = colour;
+    }
+  }, [colour, waves, outletId]);
+}
+
 function Signed({ user, children }: { user: User; children: ReactNode }) {
+  useLookSync(user);
   const pathname = usePathname();
   const current = moduleOfPath(pathname);
   const allowed = canOpen(user, current);
@@ -264,9 +300,11 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
       if (last && last !== user.id) toast.done(`Now viewing the demo as ${ROLE_LABEL[user.role]}.`);
     } catch { /* private window */ }
   }, [publicDemo, user.id, user.role]);
+  // The tab says where you are.
+  useEffect(() => { document.title = `${NAV[current].label}, Tyll demo`; }, [current]);
   if (current === "staff" && allowed) return <StaffFrame user={user}>{children}</StaffFrame>;
   // The count is a full screen flow: nothing else competes for a thumb.
-  if (pathname === "/count" && allowed) return <><CountFlow /><Toaster /></>;
+  if (pathname === "/count" && allowed) return <div data-mod={MODULE_TONE.stock}><CountFlow /><Toaster /></div>;
   const preview = IN_DEVELOPMENT.includes(current) || pathname === "/performance";
   const canBreak = mayLogBreakage(user);
   return (
@@ -276,7 +314,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
       <Sidebar user={user} active={current} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar user={user} />
-        <main id="main" tabIndex={-1} className={cn("mx-auto w-full max-w-[1500px] flex-1 px-4 pb-24 pt-6 outline-none sm:px-6 md:pb-10 lg:px-8", canBreak && "pb-40")}>
+        <main id="main" data-mod={MODULE_TONE[current]} tabIndex={-1} className={cn("mx-auto w-full max-w-[1500px] flex-1 px-4 pb-24 pt-6 outline-none sm:px-6 md:pb-10 lg:px-8", canBreak && "md:pb-24")}>
           {allowed && (publicDemo ? <GuidedPath offer={pathname === "/more"} /> : pathname === "/more" && <TourOffer user={user} />)}
           {allowed && preview && (
             <p className="mb-4 flex items-start gap-2 rounded-[var(--radius-control)] bg-accent-soft px-4 py-3 text-sm text-accent-ink">
@@ -293,7 +331,8 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
         </main>
       </div>
       <PhoneBar user={user} active={current} />
-      {canBreak && <><BreakageFab raised /><BreakageSheet /></>}
+      {canBreak && <>{pathname !== "/waste" && <BreakageFab desktopOnly />}<BreakageSheet /></>}
+      <LookPicker user={user} />
       <Tour />
       <DemoGuide user={user} />
       <Walkthrough />
@@ -310,10 +349,14 @@ function Sidebar({ user, active }: { user: User; active: ModuleId }) {
   const [picking, setPicking] = useState(false);
   const lit = NAV_HOME[active] ?? active;
   const items = navFor(user, publicDemo);
+  const counts = useNavCounts();
+  const pathname = usePathname();
+  const lookOpen = useLook((l) => l.open);
+  const openLook = useLook((l) => l.setOpen);
   const footButton = "flex w-full items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink flex-col gap-1 px-1 py-2 text-[11px] xl:h-10 xl:flex-row xl:gap-3 xl:px-3 xl:py-0 xl:text-sm";
   return (
     <>
-      <aside className="no-print sticky top-0 z-30 hidden h-screen w-[88px] shrink-0 flex-col border-r border-nav-line bg-nav md:flex xl:w-[232px]">
+      <aside className="no-print sticky top-0 z-30 hidden h-screen w-[88px] shrink-0 flex-col border-r border-nav-line bg-nav backdrop-blur-xl md:flex xl:w-[232px]">
         <div className="flex h-16 items-center justify-center gap-2 px-2 xl:justify-start xl:px-5">
           <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center rounded-md">
             <span className="hidden xl:block"><TyllLogo height={24} priority /></span>
@@ -322,11 +365,17 @@ function Sidebar({ user, active }: { user: User; active: ModuleId }) {
           <span className="hidden xl:inline"><EarlyAccessBadge /></span>
         </div>
         <nav data-tour="nav" aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-2 py-2 xl:px-3">
+          {(publicDemo || modulesFor(user).includes("overview")) && (
+            <ul className="mb-2 border-b border-nav-line pb-2"><SideItem m="overview" active={lit === "overview" && pathname === "/"} reload={publicDemo} /></ul>
+          )}
           <ul className="space-y-1">
-            {items.map((m) => <SideItem key={m} m={m} active={lit === m} reload={publicDemo} />)}
+            {items.map((m) => <Fragment key={m}>{m === "alerts" && <li aria-hidden className="!my-2 border-t border-nav-line" />}<SideItem m={m} active={lit === m} reload={publicDemo} count={counts[m]} /></Fragment>)}
           </ul>
         </nav>
         <div className="space-y-1 border-t border-nav-line p-2 xl:p-3">
+          <button type="button" onClick={() => openLook(!lookOpen)} aria-expanded={lookOpen} className={footButton}>
+            <Palette size={18} aria-hidden /><span>Try a look</span>
+          </button>
           {publicDemo ? (
             <button type="button" onClick={() => startGuidedPath()} className={footButton}>
               <PlayCircle size={18} aria-hidden /><span>Guided path</span>
@@ -350,21 +399,27 @@ function PhoneBar({ user, active }: { user: User; active: ModuleId }) {
   const publicDemo = useSession((s) => !!s.demoRoles);
   const lit = NAV_HOME[active] ?? active;
   const items = navFor(user, publicDemo);
+  const logs = mayLogBreakage(user);
+  const openLog = useBreakageSheet((b) => b.set);
+  const counts = useNavCounts();
   return (
     <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)] md:hidden">
       <ul className="flex">
         {items.map((m) => {
           const { icon: Icon, label, short } = NAV[m];
-          const className = cn("relative flex h-16 flex-col items-center justify-center gap-1 text-[11px] text-steel transition-colors duration-150", lit === m && "font-medium text-accent-ink");
+          const className = cn("relative flex h-16 w-full flex-col items-center justify-center gap-1 text-[11px] text-steel transition-colors duration-150", lit === m && "font-medium text-accent-ink");
           const body = (
             <>
-              <span className={cn("flex h-7 w-10 items-center justify-center rounded-full", lit === m && "bg-accent-soft")}><Icon size={18} aria-hidden /></span>
+              <span className={cn("flex h-7 w-10 items-center justify-center rounded-full", m === "waste" && logs ? "bg-accent text-on-accent" : lit === m && "bg-accent-soft")}><Icon size={18} aria-hidden /></span>
+              {counts[m] && <span className="num absolute right-[calc(50%-22px)] top-1.5 min-w-[16px] rounded-full bg-neg-soft px-1 text-center text-[10px] font-medium leading-4 text-neg"><span aria-hidden>{counts[m].n}</span><span className="sr-only">{counts[m].label}</span></span>}
               <span className="max-w-full truncate px-0.5">{short ?? label}</span>
             </>
           );
           return (
-            <li key={m} className="min-w-0 flex-1">
-              {publicDemo ? <a href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</Link>}
+            <li key={m} data-mod={MODULE_TONE[m]} className="min-w-0 flex-1">
+              {/* Log waste opens where you stand: staff use it mid shift. */}
+              {m === "waste" && logs && lit !== "waste" ? <button type="button" onClick={() => openLog(true)} className={className}>{body}</button>
+                : publicDemo ? <a href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</Link>}
             </li>
           );
         })}
@@ -393,7 +448,7 @@ function ScopeControl({ user }: { user: User }) {
   const label = [scope.outletId !== "all" ? outletById[scope.outletId].name : scope.propertyId !== "all" && props.length > 1 ? propertyById[scope.propertyId].name : "All outlets", scope.dept === "food" ? "Kitchen" : scope.dept === "beverage" ? "Bar" : null].filter(Boolean).join(", ");
   return (
     <div className="relative min-w-0">
-      <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="dialog" className="flex h-9 max-w-[148px] items-center gap-2 rounded-full border border-line bg-paper px-3 text-[13px] text-ink transition-colors duration-200 hover:bg-cloud sm:max-w-[220px]">
+      <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="dialog" className="flex h-10 max-w-[148px] items-center gap-2 rounded-full border border-line bg-paper px-3 text-[13px] text-ink transition-colors duration-200 hover:bg-cloud sm:max-w-[220px]">
         <span className="min-w-0 truncate">{label}</span>
         <ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open && "rotate-180")} aria-hidden />
       </button>
@@ -432,8 +487,9 @@ function Topbar({ user }: { user: User }) {
   const [palette, setPalette] = useState(false);
   const [news, setNews] = useState(false);
   const [theme, toggleTheme] = useTheme();
-  const openBreakage = useBreakageSheet((b) => b.set);
   const pathname = usePathname();
+  // Main pages show fixed periods, and the sections that follow a date choice carry their own switch.
+  const dated = !["/", "/waste", "/stock", "/forecast", "/alerts", "/money", "/reports"].includes(pathname);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Ctrl+K or Cmd+K opens search from anywhere.
   useEffect(() => {
@@ -447,16 +503,17 @@ function Topbar({ user }: { user: User }) {
 
   return (
     <>
-    <div className="no-print sticky top-0 z-20 border-b border-line bg-paper">
+    <div className="no-print sticky top-0 z-20 border-b border-nav-line bg-paper/80 backdrop-blur-xl">
       <div className="mx-auto flex min-h-16 w-full max-w-[1760px] flex-wrap items-center gap-x-2 gap-y-2 px-4 py-2 sm:px-6 lg:gap-x-4 lg:px-8">
-        <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center gap-2 rounded-md md:hidden">
+        <Link href={homePath(user)} aria-label="Tyll home" className="-my-2.5 flex items-center gap-2 rounded-md py-2.5 md:hidden">
           <TyllLogo height={20} priority />
         </Link>
-        <span className="hidden min-[440px]:inline md:hidden"><EarlyAccessBadge /></span>
+        <span className="md:hidden"><EarlyAccessBadge /></span>
         {showScope ? (
           <div className="order-last flex min-w-0 basis-full items-center gap-2 lg:order-none lg:basis-auto">
             <ScopeControl user={user} />
-            <div className="relative min-w-0">
+            <span className="ml-auto lg:hidden"><RoleSwitcher user={user} /></span>
+            <div className={cn("relative min-w-0", !dated && "hidden")}>
               <Segmented size="sm" label="Date range" value={preset} onChange={(v) => (v === "custom" ? setPanel("dates") : (setPreset(v), setPanel(null)))} options={PRESETS.map((p) => (p.value === "custom" && preset === "custom" ? { ...p, label: fmtRange(custom) } : p))} />
               {panel === "dates" && <DatePanel onClose={() => setPanel(null)} />}
             </div>
@@ -469,11 +526,10 @@ function Topbar({ user }: { user: User }) {
             <Search size={17} aria-hidden /><span className="hidden min-[90rem]:inline">Search</span><kbd className="hidden rounded-md border border-line px-1.5 text-[11px] text-steel min-[90rem]:inline">{/Mac|iPhone|iPad/.test(navigator.userAgent) ? "Cmd K" : "Ctrl K"}</kbd>
           </button>
           <AlertsButton user={user} />
-          {mayLogBreakage(user) && pathname !== "/waste" && <button type="button" onClick={() => openBreakage(true)} className="hidden h-9 items-center gap-2 rounded-full border border-line bg-paper px-3 text-[13px] font-medium text-ink transition-colors duration-150 hover:bg-cloud md:flex"><GlassWater size={15} aria-hidden /> Log breakage</button>}
-          <RoleSwitcher user={user} />
+          <span className={showScope ? "hidden lg:block" : undefined}><RoleSwitcher user={user} /></span>
           <div className="relative shrink-0">
             <button type="button" onClick={() => toggle("profile")} aria-label="Your profile and settings" aria-expanded={panel === "profile"} aria-haspopup="menu" className="ml-1 flex items-center rounded-full transition-opacity duration-200 hover:opacity-85">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-xs font-medium text-paper" aria-hidden>{user.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-xs font-medium text-paper" aria-hidden>{user.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
             </button>
             {panel === "profile" && <ProfileMenu user={user} onClose={() => setPanel(null)} onNews={() => setNews(true)} theme={theme} onTheme={toggleTheme} />}
           </div>
@@ -537,6 +593,7 @@ function ProfileMenu({ user, onClose, onNews, theme, onTheme }: { user: User; on
   const ref = useDismiss(onClose);
   const pinRequired = useSession((s) => s.pinExpiresAt !== null);
   const publicDemo = useSession((s) => !!s.demoRoles);
+  const openLook = useLook((l) => l.setOpen);
   const lock = async () => {
     onClose();
     await api("/api/auth/lock", { method: "POST", body: {} }).catch(() => undefined);
@@ -553,8 +610,8 @@ function ProfileMenu({ user, onClose, onNews, theme, onTheme }: { user: User; on
         <div className="px-1 py-1" onClick={onClose}><TakeTourButton user={user} here label="Tour this page" className="w-full border-0 px-2 py-2 text-sm" /></div>
         <button role="menuitem" type="button" onClick={() => { onClose(); onNews(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist"><Sparkles size={16} strokeWidth={1.7} /> What&apos;s new</button>
         <button role="menuitem" type="button" onClick={onTheme} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />} {theme === "dark" ? "Light mode" : "Dark mode"}</button>
+        <button role="menuitem" type="button" onClick={() => { onClose(); openLook(true); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist"><Palette size={16} /> Try a look</button>
         <Link role="menuitem" href="/more" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><LayoutGrid size={16} /> More tools</Link>
-        <Link role="menuitem" href="/alerts" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Bell size={16} /> All alerts</Link>
         <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} /> Settings</Link>
         {pinRequired && !publicDemo && (
           <button role="menuitem" type="button" onClick={lock} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">

@@ -13,7 +13,7 @@ import { useApi, useCtx, useInvestigations, usePatterns, useView } from "./hooks
 import { useMonthPlan } from "./plan-hooks";
 import type { PourOut } from "./server/pour";
 import type { MonthPlanOut } from "./server/purchasing";
-import { fmtDate, fmtQty, fxRate } from "./util";
+import { fmtDate, fxRate } from "./util";
 
 export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier";
 export type AlertState = "open" | "snoozed" | "resolved";
@@ -25,8 +25,11 @@ export interface FeedAlert {
   what: string;
   why: string;
   where: string;
-  /** Money at risk, in the selection's currency. */
+  outletId?: string;
+  /** Money involved, in the selection's currency. */
   amount: number | null;
+  /** What that money is: at risk, to order, not billed. An order is not a loss. */
+  amountWord: string;
   next: { label: string; href: string };
   /** A money case closes on its own page, so its outcome is recorded. */
   caseHref?: string;
@@ -88,33 +91,51 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Feed>(() => {
     const out: FeedAlert[] = [];
     const issues = canOpen(user, "alerts") ? buildIssues(ctx, sel, investigations, patterns, { includeStock: canOpen(user, "stock") }) : [];
+    const suppliers: Issue[] = [];
     for (const i of issues) {
       const m = i.impact === null ? null : money(i.impact);
       const rag = RAG_OF[i.priority];
-      if (i.kind === "investigation") out.push({ id: i.id, kind: "money", rag, what: i.title, why: `${m} at risk until someone checks it.`, where: i.location, amount: i.impact, next: { label: "Review case", href: i.href }, caseHref: i.href });
-      else if (i.kind === "waste") out.push({ id: i.id, kind: "waste", rag, what: i.title.replace("Food waste up", "Food waste is up"), why: `${m} more waste than the period before.`, where: i.location, amount: i.impact, next: { label: "See waste", href: i.href } });
-      else if (i.kind === "supplier") out.push({ id: i.id, kind: "supplier", rag, what: i.title, why: `${m} more on the invoice than was delivered or agreed.`, where: i.location, amount: i.impact, next: { label: "Check delivery", href: i.href } });
-      else if (canOpen(user, "overview")) out.push({ id: i.id, kind: "margin", rag, what: i.title.replace(" pts", " points"), why: `About ${m} less profit in this period.`, where: i.location, amount: i.impact, next: { label: "See dish", href: i.href } });
+      if (i.kind === "investigation") out.push({ id: i.id, kind: "money", rag, what: i.title, why: `${m} at risk until someone checks it.`, where: i.location, outletId: i.outletId, amount: i.impact, amountWord: "at risk", next: { label: "Review case", href: i.href }, caseHref: i.href });
+      else if (i.kind === "waste") out.push({ id: i.id, kind: "waste", rag, what: i.title.replace("Food waste up", "Food waste is up"), why: `${m} more waste than the period before.`, where: i.location, outletId: i.outletId, amount: i.impact, amountWord: "more waste", next: { label: "See waste", href: i.href } });
+      else if (i.kind === "supplier") suppliers.push(i);
+      else if (canOpen(user, "overview")) out.push({ id: i.id, kind: "margin", rag, what: i.title.replace(" pts", " points"), why: `About ${m} less profit in this period.`, where: i.location, amount: i.impact, amountWord: "less profit", next: { label: "See dish", href: i.href } });
+    }
+    if (suppliers.length) {
+      const over = suppliers.reduce((n, i) => n + (i.impact ?? 0), 0);
+      out.push({
+        id: "supplier-invoices", kind: "supplier", rag: suppliers.some((i) => i.priority === "high") ? "red" : suppliers.some((i) => i.priority === "medium") ? "amber" : "green",
+        what: `Check ${suppliers.length} supplier ${suppliers.length === 1 ? "invoice" : "invoices"} against what was delivered`, why: `${money(over)} more on the ${suppliers.length === 1 ? "invoice" : "invoices"} than was delivered or agreed.`,
+        where: suppliers[0].location, amount: over, amountWord: "over invoiced", next: { label: "Check deliveries", href: suppliers[0].href },
+      });
     }
     if (plan) {
       const rate = fxRate(propertyById[plan.propertyId].currency, sel.currency);
-      for (const l of plan.items) {
-        if (l.health === "fine" || l.nextQty <= 0 || !l.orderBy) continue;
-        const g = ingredientById[l.ingredientId];
-        const cost = l.nextCost * rate;
+      const where = propertyById[plan.propertyId].name;
+      // The Stock page lists each item. Ordering them is one job, so it is one alert.
+      const critical = plan.items.filter((l) => l.health === "critical" && l.nextQty > 0 && l.orderBy).sort((a, b) => (a.daysUntilOut ?? 99) - (b.daysUntilOut ?? 99));
+      if (critical.length) {
+        const cost = critical.reduce((n, l) => n + l.nextCost, 0) * rate;
+        const first = critical[0];
         out.push({
-          id: `stock-${l.ingredientId}`, kind: "stock", rag: l.health === "critical" ? "red" : "amber",
-          what: l.runOutDate ? `${g.name} is expected to run out ${fmtDate(l.runOutDate, true)}` : `${g.name} is running low`,
-          why: `Order ${fmtQty(l.nextQty, l.unit)} by ${fmtDate(l.orderBy, true)}. It costs about ${money(cost)}, and dishes come off the menu without it.`,
-          where: propertyById[plan.propertyId].name, amount: cost, next: { label: "Review order", href: "/stock#order" },
+          id: "stock-critical", kind: "stock", rag: "red", what: `Order ${critical.length} critical ${critical.length === 1 ? "item" : "items"} today`,
+          why: `${ingredientById[first.ingredientId].name} runs out first${first.runOutDate ? `, ${fmtDate(first.runOutDate, true)}` : ""}. An order placed later arrives too late.`,
+          where, amount: cost, amountWord: "to order", next: { label: "See what to order", href: "/forecast" },
+        });
+      }
+      const low = plan.items.filter((l) => l.health === "low" && l.nextQty > 0 && l.orderBy);
+      if (low.length) {
+        out.push({
+          id: "stock-low", kind: "stock", rag: "amber", what: `Order ${low.length} low ${low.length === 1 ? "item" : "items"} soon`,
+          why: `${ingredientById[low[0].ingredientId].name} and others need an order in the next few days.`,
+          where, amount: low.reduce((n, l) => n + l.nextCost, 0) * rate, amountWord: "to order", next: { label: "See what to order", href: "/forecast" },
         });
       }
     }
     if (pour) {
       const rate = fxRate(propertyById[pour.propertyId].currency, sel.currency);
-      // The three largest wine patterns, so the list stays readable. The rest are on Pour Control.
-      for (const f of pour.wine.flags.slice(0, 3)) {
-        out.push({ id: f.id, kind: "pour", rag: "amber", what: `Over pouring at ${outletById[f.outletId].name}`, why: f.text, where: outletById[f.outletId].name, amount: f.figures.gapValue * rate, next: { label: "See Pour Control", href: "/money?tab=pour" } });
+      // The two largest wine patterns, so the list stays readable. The rest are on Pour Control.
+      for (const f of pour.wine.flags.slice(0, 2)) {
+        out.push({ id: f.id, kind: "pour", rag: "amber", what: `Check pouring at ${outletById[f.outletId].name}`, why: f.text, where: outletById[f.outletId].name, outletId: f.outletId, amount: f.figures.gapValue * rate, amountWord: "not billed", next: { label: "See Pour Control", href: "/money?tab=pour" } });
       }
     }
     out.sort((a, b) => (b.amount ?? -1) - (a.amount ?? -1));

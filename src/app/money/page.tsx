@@ -1,58 +1,131 @@
 "use client";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { BarList } from "@/components/charts";
+import { Section, SectionLink } from "@/components/disclosure";
 import { OutletFinance } from "@/components/finance/outlets";
+import type { ChartPoint } from "@/components/home/chart";
 import { PourControl } from "@/components/money/pour-control";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
-import { Badge, Button, EmptyState, KeyNumber, KeyNumbers, linkButton, Field, Note, PageHeader, Panel, Select, Stat, TableWrap, Tabs, Td, Th, cn, rowClass } from "@/components/ui";
+import { Badge, Button, Crumbs, Delta, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, Tabs, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
 import { can, canSeeOutlet } from "@/lib/domain/access";
 import { POLICY, ROOM_TYPES, TYPE_LABEL, detectOrderException } from "@/lib/domain/detect";
-import { adjustmentRate, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
+import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet, type Compared } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/hooks";
 import { SOURCE_LABEL, STATUS_LABEL } from "@/lib/labels";
+import { useDemo } from "@/lib/store";
 import type { ChargeSource, ExceptionType, Order } from "@/lib/types";
-import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtTime, fxRate, sum } from "@/lib/util";
+import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
 
-type Tab = "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips";
+type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips";
 
+const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charges", tips: "Tips (preview)" };
+const RevenueProfitChart = dynamic(() => import("@/components/home/chart").then((m) => m.RevenueProfitChart), { ssr: false, loading: () => <div className="h-[264px] animate-pulse rounded-[var(--radius-control)] bg-mist" /> });
+
+/** One period: revenue with its change, and the profit next to it. */
+function periodItem(label: string, c: Compared, money: (n: number, o?: { compact?: boolean }) => string) {
+  const change = pctChange(c.now.net, c.before.net);
+  const profit = c.now.operatingProfit ?? c.now.grossProfit;
+  return {
+    label,
+    value: money(c.now.net, { compact: true }),
+    note: <><Delta value={change} /> <span className="block sm:inline">{money(profit, { compact: true })} {c.now.operatingProfit !== null ? "profit, estimate" : "gross profit"}</span></>,
+  };
+}
+
+/** The period for the detail below it. The top of the page always shows today, 7 days and 30 days. */
+function Period() {
+  const preset = useDemo((s) => s.preset);
+  const setPreset = useDemo((s) => s.setPreset);
+  return <Segmented size="sm" label="Period" value={preset} onChange={setPreset} options={[{ value: "today", label: "Today" }, { value: "yesterday", label: "Yesterday" }, { value: "week", label: "7 days" }, { value: "month", label: "30 days" }]} />;
+}
+
+/** Revenue: today, this week and this month first. Flags, outlets and transactions are one click away. */
 export default function MoneyPage() {
-  const [tab, setTab] = useSection<Tab>("/money", ["mistakes", "pour", "outlets", "orders", "rooms", "tips"], "mistakes");
-  const label: Record<Tab, string> = { mistakes: "Flagged bills", pour: "Pour Control", outlets: "Profit by outlet", orders: "Transactions", rooms: "Room charges", tips: "Tips (preview)" };
-  const { sel, user, money } = useView();
+  const [tab, setTab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips"], null);
+  const { sel, user, money, currency } = useView();
   const ctx = useCtx();
+  const router = useRouter();
   const investigations = useInvestigations();
   const { pour } = useAlertFeed();
   const t = useMemo(() => computeTotals(ctx, sel), [ctx, sel]);
+  const dayC = useMemo(() => compare(ctx, { ...sel, range: presetRange("today") }), [ctx, sel]);
+  const weekC = useMemo(() => compare(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
+  const monthC = useMemo(() => compare(ctx, { ...sel, range: presetRange("month") }), [ctx, sel]);
+  const days = useMemo(() => eachDay(presetRange("month")).slice(-14), []);
+  const points = useMemo<ChartPoint[]>(() => days.map((date) => {
+    const d = computeTotals(ctx, { ...sel, range: { from: date, to: date } });
+    return { label: fmtDate(date), revenue: d.net, profit: d.operatingProfit ?? d.grossProfit, partial: date === DEMO_TODAY };
+  }), [ctx, sel, days]);
+  const outlets = useMemo(() => [...totalsByOutlet(ctx, sel)].sort((a, b) => b.now.net - a.now.net), [ctx, sel]);
   const flags = useMemo(() => investigations.filter((i) => i.status !== "closed" && exceptionInSel(i, sel)), [investigations, sel]);
   const flagValue = sum(flags, (i) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency));
   const rate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
+  const wineWeek = pour ? pour.wine.totals.week.gapValue * rate : 0;
   const pourWeek = pour ? (pour.wine.totals.week.gapValue + pour.spirits.totals.week.gapValue) * rate : 0;
+  const onFlags = tab === "flags" || tab === "mistakes" || tab === "pour";
+  const profitName = monthC.now.operatingProfit !== null ? "Net profit" : "Gross profit";
+
+  const sub = tab ? SUB_PAGE[tab] : undefined;
+  if (sub) {
+    return (
+      <div className="space-y-5">
+        <PageHeader title={sub} crumbs={<Crumbs items={[{ label: "Revenue", onClick: () => router.push("/money") }, { label: sub }]} />} />
+        {tab === "orders" && <><Period /><Orders /></>}
+        {tab === "rooms" && <RoomCharges />}
+        {tab === "tips" && <Tips />}
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      <PageHeader title="Money" question="Where is money going missing, and how much?" lead={`${flags.length} open flags and ${money(pourWeek)} of over pouring this week. ${fmtRange(sel.range)}.`}>
-        {can(user, "finance.view") && <Link href="/finance?tab=invoices" className={linkButton()}>Reconciliation</Link>}
-        <Link href="/investigations" className={linkButton("primary")}>Review {flags.length} flags</Link>
-      </PageHeader>
-      <KeyNumbers>
-        <KeyNumber label="Money at risk" value={money(flagValue + pourWeek)} tone="money" note="Flags and over pouring" />
-        <KeyNumber label="Open flags" value={flags.length} tone={flags.length ? "warn" : "pos"} note={money(flagValue)} />
-        <KeyNumber label="Over pouring, this week" value={money(pourWeek)} tone={pourWeek > 0 ? "money" : undefined} note="Wine and spirits" />
-        <KeyNumber label="Recovered, this period" value={money(t.recovered)} tone="pos" note={`${money(t.confirmedLoss)} confirmed lost`} />
-      </KeyNumbers>
-      {tab && <Tabs value={tab} onChange={setTab} tabs={(Object.keys(label) as Tab[]).map((value) => ({ value, label: label[value] }))} />}
-      {tab === "mistakes" && <Mistakes />}
-      {tab === "pour" && <PourControl />}
-      {tab === "outlets" && <OutletFinance />}
-      {tab === "orders" && <Orders />}
-      {tab === "rooms" && <RoomCharges />}
-      {tab === "tips" && <Tips />}
+    <div className="space-y-4">
+      <PageHeader title="Revenue" question={onFlags ? "Where is money going missing?" : "How much did we make?"} lead="Simulated data." />
+      {onFlags ? (
+        <SummaryBar
+          items={[
+            { label: "Money at risk", value: money(flagValue + pourWeek, { compact: true }), tone: "money" },
+            { label: "Open flags", value: flags.length, tone: flags.length ? "warn" : "pos" },
+            { label: "Recovered", value: money(t.recovered, { compact: true }), tone: "pos" },
+          ]}
+          action={<Link href="/investigations" className={linkButton("primary")}>Review {flags.length} flags</Link>}
+        />
+      ) : (
+        <SummaryBar
+          items={[periodItem("Today so far", dayC, money), periodItem("Last 7 days", weekC, money), periodItem("Last 30 days", monthC, money)]}
+          action={<Link href="/money?tab=orders" className={linkButton("primary")}>See transactions</Link>}
+        />
+      )}
+      <Tabs value={onFlags ? "flags" : "revenue"} onChange={(v) => setTab(v === "flags" ? "flags" : null)} tabs={[{ value: "revenue", label: "Revenue" }, { value: "flags", label: "Flags and Pour Control", count: flags.length }]} />
+      {onFlags ? (
+        <>
+          <Section id="revenue.pour" defaultOpen forceOpen={tab === "pour"} title="Pour Control" summary={pour ? `${pour.wine.totals.week.gap} glasses of wine not billed this week, ${money(wineWeek)}. ${money(pourWeek - wineWeek)} more on spirits.` : "Wine and spirits, by outlet and shift"}>
+            <PourControl />
+          </Section>
+          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds and removed items" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
+            <Mistakes />
+          </Section>
+        </>
+      ) : (
+        <>
+          <Panel title={`Revenue and ${monthC.now.operatingProfit !== null ? "estimated profit" : "gross profit"}, last ${days.length} days`}>
+            <RevenueProfitChart points={points} format={(n) => money(n)} axisFormat={fmtShort} profitName={profitName} summary={`Revenue and ${profitName} per day for the last ${days.length} days, in ${currency}.`} />
+          </Panel>
+          <Section id="revenue.outlets" forceOpen={tab === "outlets"} title="By outlet" summary={outlets[0] ? `${outlets.length} ${outlets.length === 1 ? "outlet" : "outlets"}, ${fmtRange(sel.range)}. ${outletLabel(outlets[0].outletId)} leads with ${money(outlets[0].now.net, { compact: true })}.` : "No outlets in your selection"}>
+            <Period />
+            <OutletFinance />
+          </Section>
+          <SectionLink href="/money?tab=orders" title="All transactions" summary={`${fmtNum(t.orders)} transactions, ${fmtRange(sel.range)}. Filter by day and search.`} />
+          {can(user, "finance.view") && <p><Link href="/finance?tab=invoices" className={textLink}>Supplier invoices and reconciliation</Link></p>}
+        </>
+      )}
     </div>
   );
 }
@@ -110,7 +183,7 @@ function Mistakes() {
           )}
         </Panel>
         <Panel title="Adjustment rate by outlet" description="Flagged orders per 1,000 orders, so busy and quiet outlets compare fairly.">
-          <BarList format={(n) => n.toFixed(1)} rows={[...rows].sort((a, b) => adjustmentRate(b.now) - adjustmentRate(a.now)).map((r) => ({ key: r.outletId, label: outletLabel(r.outletId), sub: `${r.now.adjustments} of ${fmtNum(r.now.orders)} orders`, value: adjustmentRate(r.now) }))} />
+          <BarList format={(n) => n.toFixed(1)} rows={[...rows].sort((a, b) => adjustmentRate(b.now) - adjustmentRate(a.now)).map((r) => ({ key: r.outletId, outletId: r.outletId, label: outletLabel(r.outletId), sub: `${r.now.adjustments} of ${fmtNum(r.now.orders)} orders`, value: adjustmentRate(r.now) }))} />
         </Panel>
         <Panel title="What Tyll checks" description="Rules agreed with the hotel. A flag means a rule was met, nothing more.">
           <ul className="space-y-3 text-sm text-graphite">
@@ -171,6 +244,9 @@ function Mistakes() {
 
 function Orders() {
   const router = useRouter();
+  // A tag only where there is a case to open.
+  const investigations = useInvestigations();
+  const cases = useMemo(() => new Set(investigations.map((i) => i.id)), [investigations]);
   const { sel } = useView();
   const days = useMemo(() => eachDay(sel.range).reverse(), [sel.range]);
   const [date, setDate] = useState(days[0]);
@@ -224,7 +300,7 @@ function Orders() {
                         {t.comps > 0 && <Badge>complimentary</Badge>}
                         {t.discounts > 0 && <Badge>{o.discountPct}% discount</Badge>}
                         {t.refunds > 0 && <Badge>refund</Badge>}
-                        {flag && <Badge tone="warn">flagged</Badge>}
+                        {flag && cases.has(`EX-${o.id}`) && <Badge tone="warn">flagged</Badge>}
                       </span>
                     </Td>
                   </tr>

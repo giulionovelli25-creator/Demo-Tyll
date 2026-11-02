@@ -2,55 +2,88 @@
   Tyll design tokens. Every colour, type size, radius, shadow and timing lives here, in one file.
   Components use these names and never a colour of their own.
   Spacing follows an 8px grid (Tailwind steps 2, 4, 6, 8; steps 1 and 3 only inside compact controls).
+  The look comes from the brand artwork: black logo, white cards, silver waves. Each section adds one accent colour.
   The light values are the default, on screen and in print. Dark is an optional toggle.
 */
 @theme {
-  /* Text, strongest to quietest: charcoal and slate */
-  --color-ink: #1c2430;
-  --color-graphite: #39434f;
-  --color-steel: #5a6472;
-  --color-fog: #646e7c;
+  /* Text, strongest to quietest: the near black of the logo, then cool greys */
+  --color-ink: #14161a;
+  --color-graphite: #343840;
+  --color-steel: #565c65;
+  --color-fog: #666c75;
 
-  /* Surfaces, layered: warm page, white card, soft hover */
-  --color-mist: #f7f4ee;
-  --color-cloud: #faf8f4;
+  /* Surfaces: silver page behind the waves, white card, soft hover */
+  --color-mist: #f4f5f7;
+  --color-cloud: #fafbfc;
   --color-paper: #ffffff;
-  --color-line: #e5e0d6;
-  --color-hair: #efebe3;
+  --color-line: #e2e5e9;
+  --color-hair: #eceef1;
 
-  /* Sidebar: part of the page, one step warmer */
-  --color-nav: #f2eee6;
-  --color-nav-ink: #1c2430;
-  --color-nav-quiet: #515b69;
-  --color-nav-hover: #e9e4d9;
+  /* Sidebar: layered glass over the waves, as in the Tyll icon */
+  --color-nav: rgba(255, 255, 255, 0.55);
+  --color-nav-ink: #14161a;
+  --color-nav-quiet: #4c5159;
+  --color-nav-hover: rgba(20, 22, 26, 0.05);
   --color-nav-active: #ffffff;
-  --color-nav-line: #e0dacd;
+  --color-nav-line: rgba(20, 22, 26, 0.08);
 
   /* Dims the page behind a panel */
-  --color-scrim: rgba(28, 36, 48, 0.42);
+  --color-scrim: rgba(20, 22, 26, 0.42);
   /* The darkened page around a highlighted element in a tour */
-  --color-spotlight: rgba(28, 36, 48, 0.42);
+  --color-spotlight: rgba(20, 22, 26, 0.42);
   /* The soft edge on a table that scrolls sideways */
-  --color-edge: rgba(28, 36, 48, 0.12);
+  --color-edge: rgba(20, 22, 26, 0.12);
 
-  /* Primary actions: deep navy */
-  --color-accent: #1b2f52;
-  --color-accent-hover: #14243f;
-  --color-accent-ink: #1b2f52;
-  --color-accent-soft: #e6ebf3;
+  /* Primary actions: black, like the logo */
+  --color-accent: #14161a;
+  --color-accent-hover: #2d3036;
   --color-on-accent: #ffffff;
 
-  /* Money: warm copper, used sparingly, only for amounts found or at risk */
-  --color-money: #a4501a;
-  --color-money-soft: #faeee3;
+  /* Each section's own colour, for its links, labels and quiet buttons. Set by data-mod below. Indigo is the default. */
+  --color-accent-ink: #3b3f9c;
+  --color-accent-soft: #ececf8;
+  --color-money: #3b3f9c;
+  --color-money-soft: #ececf8;
 
-  /* Status: green fine, amber low, red act today */
-  --color-pos: #1b6c42;
-  --color-pos-soft: #e3f2e9;
-  --color-warn: #875800;
-  --color-warn-soft: #fbf0d4;
-  --color-neg: #b0261c;
-  --color-neg-soft: #fbe6e3;
+  /* The accents, one per section */
+  --color-indigo: #3b3f9c;
+  --color-indigo-soft: #ececf8;
+  --color-teal: #0f6f74;
+  --color-teal-soft: #e2f2f2;
+  --color-violet: #4a3fb5;
+  --color-violet-soft: #efedfb;
+  --color-blue: #1f5aa6;
+  --color-blue-soft: #e6eefa;
+  --color-plum: #5a4a8a;
+  --color-plum-soft: #f0edf7;
+  --color-terracotta: #a84525;
+  --color-terracotta-soft: #fbece5;
+  --color-rose: #a33a68;
+  --color-rose-soft: #f9e9f0;
+  --color-brown: #7a5a2e;
+  --color-brown-soft: #f5efe4;
+  --color-cyan: #0e6a8a;
+  --color-cyan-soft: #e2f1f6;
+  --color-slate: #4b5563;
+  --color-slate-soft: #eef0f3;
+
+  /* Signature colours, used on their own or for an outlet */
+  --color-emerald: #0d6e55;
+  --color-emerald-soft: #e2f3ec;
+  --color-bronze: #805a24;
+  --color-bronze-soft: #f6efe2;
+  --color-burgundy: #7f2645;
+  --color-burgundy-soft: #f8e9ee;
+  --color-azure: #0d64a0;
+  --color-azure-soft: #e3f0f9;
+
+  /* Status: green fine, amber low, red act today. Reserved for status. */
+  --color-pos: #1e7a3c;
+  --color-pos-soft: #e6f4ea;
+  --color-warn: #8a5300;
+  --color-warn-soft: #fdf1dc;
+  --color-neg: #b0261b;
+  --color-neg-soft: #fce8e6;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-arabic: var(--font-arabic), var(--font-inter), system-ui, sans-serif;
@@ -69,11 +102,11 @@
   --ease-tyll: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Shape and depth: soft and layered, never heavy */
-  --radius-panel: 14px;
+  --radius-panel: 16px;
   --radius-control: 10px;
-  --shadow-panel: 0 1px 1px rgba(28, 36, 48, 0.03), 0 2px 4px rgba(28, 36, 48, 0.03), 0 12px 24px -16px rgba(28, 36, 48, 0.12);
-  --shadow-lift: 0 1px 2px rgba(28, 36, 48, 0.05), 0 4px 8px rgba(28, 36, 48, 0.04), 0 20px 32px -20px rgba(28, 36, 48, 0.2);
-  --shadow-float: 0 2px 6px rgba(28, 36, 48, 0.06), 0 24px 48px -16px rgba(28, 36, 48, 0.3);
+  --shadow-panel: 0 1px 1px rgba(20, 22, 26, 0.03), 0 2px 4px rgba(20, 22, 26, 0.03), 0 12px 24px -16px rgba(20, 22, 26, 0.12);
+  --shadow-lift: 0 1px 2px rgba(20, 22, 26, 0.05), 0 4px 8px rgba(20, 22, 26, 0.04), 0 20px 32px -20px rgba(20, 22, 26, 0.2);
+  --shadow-float: 0 2px 6px rgba(20, 22, 26, 0.06), 0 24px 48px -16px rgba(20, 22, 26, 0.3);
 }
 
 :root {
@@ -82,11 +115,35 @@
   /* Chart lines, checked for colour blindness with the validator. A touch brighter than the brand colours. */
   --chart-a: #2a5aa8;
   --chart-b: #b85c1e;
-  --chart-grid: #efebe3;
-  --chart-axis: #5a6472;
+  --chart-grid: #eceef1;
+  --chart-axis: #565c65;
 
   --brand-filter: none;
+
+  /* Outlet marks: dots and bars, always beside the outlet's name. Checked for colour blindness with the validator, in this order.
+     They live here, not in @theme, because components read them by name at run time. */
+  --color-outlet-blue: #2a6fc9;
+  --color-outlet-green: #0e8a6e;
+  --color-outlet-amber: #b5761a;
+  --color-outlet-violet: #6b4fc8;
+  --color-outlet-rose: #b0326a;
+
+  /* The supplied wave artwork */
+  --wave-image: url("/brand/tyll-waves.webp");
+  --wave-filter: brightness(0.8) contrast(1.6);
 }
+
+/* One section, one colour. Links, labels, quiet buttons and money figures inside follow it. */
+[data-mod="indigo"] { --color-accent-ink: var(--color-indigo); --color-accent-soft: var(--color-indigo-soft); --color-money: var(--color-indigo); --color-money-soft: var(--color-indigo-soft); }
+[data-mod="teal"] { --color-accent-ink: var(--color-teal); --color-accent-soft: var(--color-teal-soft); --color-money: var(--color-teal); --color-money-soft: var(--color-teal-soft); }
+[data-mod="violet"] { --color-accent-ink: var(--color-violet); --color-accent-soft: var(--color-violet-soft); --color-money: var(--color-violet); --color-money-soft: var(--color-violet-soft); }
+[data-mod="blue"] { --color-accent-ink: var(--color-blue); --color-accent-soft: var(--color-blue-soft); --color-money: var(--color-blue); --color-money-soft: var(--color-blue-soft); }
+[data-mod="plum"] { --color-accent-ink: var(--color-plum); --color-accent-soft: var(--color-plum-soft); --color-money: var(--color-plum); --color-money-soft: var(--color-plum-soft); }
+[data-mod="terracotta"] { --color-accent-ink: var(--color-terracotta); --color-accent-soft: var(--color-terracotta-soft); --color-money: var(--color-terracotta); --color-money-soft: var(--color-terracotta-soft); }
+[data-mod="rose"] { --color-accent-ink: var(--color-rose); --color-accent-soft: var(--color-rose-soft); --color-money: var(--color-rose); --color-money-soft: var(--color-rose-soft); }
+[data-mod="brown"] { --color-accent-ink: var(--color-brown); --color-accent-soft: var(--color-brown-soft); --color-money: var(--color-brown); --color-money-soft: var(--color-brown-soft); }
+[data-mod="cyan"] { --color-accent-ink: var(--color-cyan); --color-accent-soft: var(--color-cyan-soft); --color-money: var(--color-cyan); --color-money-soft: var(--color-cyan-soft); }
+[data-mod="slate"] { --color-accent-ink: var(--color-slate); --color-accent-soft: var(--color-slate-soft); --color-money: var(--color-slate); --color-money-soft: var(--color-slate-soft); }
 
 @media screen {
   [data-theme="dark"] {
@@ -114,14 +171,52 @@
     --color-spotlight: rgba(4, 6, 10, 0.7);
     --color-edge: rgba(0, 0, 0, 0.3);
 
-    --color-accent: #3b5688;
-    --color-accent-hover: #314975;
-    --color-accent-ink: #b9c9e6;
-    --color-accent-soft: #232f43;
-    --color-on-accent: #ffffff;
+    --color-accent: #eef1f6;
+    --color-accent-hover: #d6dbe3;
+    --color-on-accent: #14161a;
+    --color-accent-ink: #aeb2f3;
+    --color-accent-soft: #25274a;
+    --color-money: #aeb2f3;
+    --color-money-soft: #25274a;
 
-    --color-money: #eaa672;
-    --color-money-soft: #3a2518;
+    --color-indigo: #aeb2f3;
+    --color-indigo-soft: #25274a;
+    --color-teal: #5cc6ca;
+    --color-teal-soft: #17302f;
+    --color-violet: #aaa2f2;
+    --color-violet-soft: #262347;
+    --color-blue: #7fb0ee;
+    --color-blue-soft: #1a2c47;
+    --color-plum: #bfaeea;
+    --color-plum-soft: #2a2542;
+    --color-terracotta: #ee9a7c;
+    --color-terracotta-soft: #3a2319;
+    --color-rose: #ee94bc;
+    --color-rose-soft: #3a1f2d;
+    --color-brown: #d9b98a;
+    --color-brown-soft: #332818;
+    --color-cyan: #6cc5e4;
+    --color-cyan-soft: #15303b;
+    --color-slate: #aeb6c2;
+    --color-slate-soft: #262c35;
+
+    --color-emerald: #5fd0ad;
+    --color-emerald-soft: #143228;
+    --color-bronze: #d9b77a;
+    --color-bronze-soft: #332817;
+    --color-burgundy: #ec93b0;
+    --color-burgundy-soft: #3a1d28;
+    --color-azure: #79bdec;
+    --color-azure-soft: #15303f;
+
+    --color-outlet-blue: #4a86e0;
+    --color-outlet-green: #1f9d7f;
+    --color-outlet-amber: #bd8430;
+    --color-outlet-violet: #8a72e6;
+    --color-outlet-rose: #d9588a;
+
+    --wave-image: none;
+    --wave-filter: none;
 
     --color-pos: #68d3a0;
     --color-pos-soft: #16322a;
@@ -142,3 +237,26 @@
     --brand-filter: brightness(0) invert(1);
   }
 }
+
+/* Try a look: one colour for everything, set on <html>. Comes after the dark values so it wins for both themes. */
+[data-tone="indigo"] { --look-ink: var(--color-indigo); --look-soft: var(--color-indigo-soft); }
+[data-tone="emerald"] { --look-ink: var(--color-emerald); --look-soft: var(--color-emerald-soft); }
+[data-tone="bronze"] { --look-ink: var(--color-bronze); --look-soft: var(--color-bronze-soft); }
+[data-tone="burgundy"] { --look-ink: var(--color-burgundy); --look-soft: var(--color-burgundy-soft); }
+[data-tone="azure"] { --look-ink: var(--color-azure); --look-soft: var(--color-azure-soft); }
+[data-tone="violet"] { --look-ink: var(--color-violet); --look-soft: var(--color-violet-soft); }
+[data-look="one"], [data-look="one"] [data-mod] {
+  --color-accent-ink: var(--look-ink);
+  --color-accent-soft: var(--look-soft);
+  --color-money: var(--look-ink);
+  --color-money-soft: var(--look-soft);
+}
+
+/* How strongly the waves show. Medium is the default. */
+[data-waves="soft"] { --wave-filter: none; }
+[data-waves="strong"] { --wave-filter: brightness(0.76) contrast(1.9); }
+
+/* Outlet marks only appear in the By outlet look. */
+.outlet-dot { display: none; }
+[data-outlets="on"] .outlet-dot { display: inline-block; }
+[data-outlets="on"] .outlet-bar { background-color: var(--outlet); }

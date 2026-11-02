@@ -14,7 +14,7 @@ import type { User } from "@/lib/types";
 interface TourStep { path: string; target: string; title: string; text: string; module?: ModuleId; perm?: Permission }
 
 const S = {
-  nav: (path: string): TourStep => ({ path, target: "nav", title: "Your main tools", text: "The tools for your job are here. Less common ones sit under More, so this list stays short." }),
+  nav: (path: string): TourStep => ({ path, target: "nav", title: "Your main tools", text: "Your four main tools come first, then Alerts, then Reports and settings. The logo takes you back to the Overview." }),
   search: (path: string): TourStep => ({ path, target: "search", title: "Search anything", text: "Find a record or a screen by name, such as Coca-Cola, PR-DXB-0001 or a room number. Press Ctrl+K on a keyboard." }),
   bell: (path: string): TourStep => ({ path, target: "bell", title: "Requests for you", text: "When another team sends you work, it appears here. Tap a notification to open the exact record." }),
   hub: (path: string, title: string, text: string, module: ModuleId): TourStep => ({ path, target: "hub", title, text, module }),
@@ -22,9 +22,7 @@ const S = {
 };
 
 const ownerLike = (u: User): TourStep[] => [
-  { path: "/", target: "kpis", title: "How the business is doing", text: "Revenue, estimated operating contribution and potential losses for the period. Tap a figure for its breakdown, or the ? for what it means.", module: "overview" },
-  { path: "/", target: "attention", title: "Needs your attention", text: "The three issues most worth your time, each with its evidence. View all issues lists the rest.", module: "overview" },
-  { path: "/", target: "more", title: "Explore performance", text: "Outlet comparison, trends, results, guest experience and confirmed new business are one tap away.", module: "overview" },
+  { path: "/", target: "kpis", title: "Your four main tools", text: "Log waste, Stock, Predictions and Revenue. Each card has one number, one line and one button.", module: "overview" },
   S.page("/investigations", "Investigations", "Every open case with its evidence and what the team decided. Potential losses become confirmed or recovered only when a case is closed.", "investigations"),
   (u.role === "owner" ? S.page : S.hub)("/finance", "Finance", u.role === "owner" ? "Budgets and reports: spending against budget for each department, in each hotel's own currency." : "Approvals, supplier invoices, budgets and reports.", "finance"),
   ...(u.role === "gm" ? [S.hub("/rooms", "Rooms and guests", "Arrivals, room readiness, housekeeping and guest service for the hotel.", "rooms")] : []),
@@ -43,24 +41,23 @@ const TOURS: Partial<Record<User["role"], (u: User) => TourStep[]>> = {
     S.nav("/finance"), S.search("/finance"), S.bell("/finance"),
   ],
   restaurant_manager: () => [
-    { path: "/", target: "kpis", title: "Your restaurant today", text: "Revenue, margin, open issues and your tasks at a glance.", module: "overview" },
-    { path: "/", target: "attention", title: "Tasks and problems", text: "What is waiting for you and the problems at this outlet. Each opens the record.", module: "overview" },
-    S.hub("/stock", "Stock: your main actions", "Order stock, log waste or breakage, investigate differences and check inventory. Counts, recipes and suppliers are under More tools.", "stock"),
+    { path: "/", target: "kpis", title: "Your four main tools", text: "Log waste, Stock, Predictions and Revenue. Each card has one number, one line and one button.", module: "overview" },
+    S.page("/stock", "Stock", "How much is left, with critical items first. Start count is on top, and everything else is one click away.", "stock"),
     S.page("/stock?tab=where", "Where did it go?", "Stock used that sales do not explain, item by item. Open one to see the calculation and what to check.", "investigations"),
-    S.hub("/forecast", "Ordering and requests", "Order stock sends a request to Purchasing; My requests shows where each one is.", "forecast"),
+    S.page("/forecast", "Predictions", "What to order and how much for the month. Build order makes one draft for approval.", "forecast"),
     S.hub("/events", "Events and staff support", "Ask other teams for staff, or answer their requests for yours.", "events"),
     S.nav("/"), S.search("/"), S.bell("/"),
   ],
   purchasing: () => [
-    S.hub("/forecast", "Your purchasing home", "Requests to review, purchase orders and deliveries, each with how many are waiting.", "forecast"),
+    S.page("/forecast", "Predictions", "What to order and how much for the month. Orders and history holds requests, purchase orders and deliveries.", "forecast"),
     S.page("/forecast?tab=approvals&queue=purchasing", "Requests to review", "Open a request to check quantities and choose the supplier, then approve or send it back.", "forecast"),
     S.bell("/forecast?tab=approvals"),
-    S.hub("/stock", "Stock and deliveries", "Stock levels, and supplier deliveries that did not match the order.", "stock"),
+    S.page("/stock", "Stock", "How much is left, with critical items first. Suppliers are under Reports and settings.", "stock"),
     S.search("/forecast?tab=approvals"),
   ],
   chef: () => [
     S.page("/forecast?tab=prep", "What to prep", "How many portions to prepare. Assign each dish to someone in your kitchen; they see it on their phone.", "forecast"),
-    S.hub("/stock", "Stock", "Log waste, count stock and see what is running low.", "stock"),
+    S.page("/stock", "Stock", "Count stock and see what is running low. Log waste is always one tap away.", "stock"),
     S.page("/events?tab=events", "Events", "Events your kitchen prepares for, with their portions.", "events"),
     S.bell("/forecast?tab=prep"),
   ],
@@ -249,7 +246,7 @@ export function Walkthrough() {
   return (
     <div className="no-print">
       {rect ? (
-        <div aria-hidden className="pointer-events-none fixed z-[60] rounded-2xl ring-2 ring-paper transition-all duration-200 ease-tyll"
+        <div aria-hidden className="pointer-events-none fixed z-[60] rounded-2xl ring-2 ring-paper transition-[top,left,width,height,opacity] duration-200 ease-tyll"
           style={{ top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2, boxShadow: "0 0 0 9999px var(--color-spotlight)" }} />
       ) : <div aria-hidden className="pointer-events-none fixed inset-0 z-[60] bg-scrim" />}
       <div ref={box} tabIndex={-1} role="dialog" aria-modal="false" aria-label={`Tour, step ${at + 1} of ${steps.length}: ${step.title}`} aria-live="polite"

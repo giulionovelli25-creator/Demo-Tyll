@@ -1,6 +1,7 @@
 {
   "_comment": "Entries for the What's new panel, newest first. Edit freely: date (YYYY-MM-DD), title and text. These are placeholders.",
   "entries": [
+    { "date": "2026-11-02", "title": "Four main tools first", "text": "Log waste, Stock, Predictions and Revenue now come first. Long lists stay closed until you open them, and Tyll remembers what you left open." },
     { "date": "2026-10-28", "title": "What to buy this week", "text": "Purchasing now opens on a weekly report: items to order, suggested quantities, order-by dates and what runs short before the next delivery." },
     { "date": "2026-10-20", "title": "One-tap waste logging", "text": "Kitchen teams can log waste with a single tap from the stock screen, and undo a mistaken tap." },
     { "date": "2026-10-12", "title": "Invoice reconciliation", "text": "Supplier invoices are compared with what was ordered and delivered, with every difference listed for review." }

@@ -13,7 +13,7 @@ interface Entry { m: ModuleId; href: string; title: string; detail: string; icon
 const AVAILABLE: Entry[] = [
   { m: "finance", href: "/finance?tab=invoices", title: "Reconciliation", detail: "Supplier invoices checked against orders and deliveries." },
   { m: "investigations", href: "/investigations", title: "Money Back List", detail: "Every money case, open and closed." },
-  { m: "alerts", href: "/alerts", title: "All alerts", detail: "Everything that needs a decision, in one list." },
+  { m: "alerts", href: "/alerts", title: "Alerts", detail: "Everything that needs a decision, in one list." },
   { m: "overview", href: "/menu", title: "Menu", detail: "What each dish sells and earns." },
   { m: "tasks", href: "/tasks", title: "My tasks", detail: "Work assigned to you." },
   { m: "flow", href: "/flow", title: "Tyll Flow", detail: "Orders moving through the kitchen and bar." },

@@ -187,4 +187,31 @@ describe("navigation and dates", () => {
     expect(stockAreaOf("wineglass")).toBe("inventory");
     expect(stockAreaOf("towel")).toBe("inventory");
   });
+
+  it("shows the public demo a short list of flags, and keeps the worked examples", async () => {
+    const { demoCases } = await import("../data/demo-cases");
+    const { getDataset } = await import("../data/generate");
+    const d = getDataset();
+    const kept = demoCases(d.exceptions, d.seedInvestigations);
+    const open = kept.filter((e) => e.propertyId === "dxb" && d.seedInvestigations[e.id]?.status !== "closed");
+    expect(open.length).toBeLessThanOrEqual(12);
+    for (const id of ["EX-TRC-1013-198", "EX-VAR-TRC-WAGYU-1013", "EX-VAR-TRC-COKE-1013", "EX-VAR-LBY-WINE-1012"]) expect(kept.some((e) => e.id === id)).toBe(true);
+    expect(d.exceptions.length).toBeGreaterThan(kept.length);
+  });
+
+  it("puts one alert from each area first, so stock does not crowd out money", async () => {
+    const { topAlerts } = await import("../domain/top-alerts");
+    const stock = [1, 2, 3].map((n) => ({ kind: "stock", rag: "red", amount: 5000 - n }));
+    const money = { kind: "money", rag: "amber", amount: 400 };
+    const pour = { kind: "pour", rag: "amber", amount: 800 };
+    expect(topAlerts([...stock, money, pour]).map((a) => a.kind).sort()).toEqual(["money", "pour", "stock"]);
+    expect(topAlerts(stock)).toHaveLength(3);
+  });
+
+  it("keeps the live data files out of the bundler's sight, so saving a record never reloads the page", async () => {
+    const fs = await import("node:fs");
+    for (const f of ["auth.ts", "purchasing-store.ts"]) expect(fs.readFileSync(`src/lib/server/${f}`, "utf8")).not.toMatch(/process\.cwd\(\)[^\n]*\.data/);
+    const { dataFile } = await import("../server/data-file");
+    expect(dataFile("auth.json")).toBe(`${process.cwd()}/.data/auth.json`);
+  });
 });

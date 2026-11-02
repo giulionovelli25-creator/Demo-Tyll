@@ -5,7 +5,7 @@ import { ArrowDownRight, ArrowUpRight, ChevronDown, ChevronUp, ChevronsUpDown, M
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
 import { usePathname } from "next/navigation";
 import { create } from "zustand";
-import { MODULE_ICON } from "@/components/theme";
+import { MODULE_ICON, OUTLET_TONE } from "@/components/theme";
 import { moduleOfPath } from "@/lib/domain/access";
 
 export const cn = clsx;
@@ -99,17 +99,27 @@ export function Panel({ title, description, action, children, className, flush }
  * Key numbers and detail follow.
  */
 export function PageHeader({ title, question, lead, children, crumbs }: { title: ReactNode; question?: ReactNode; lead?: ReactNode; children?: ReactNode; crumbs?: ReactNode }) {
+  const Icon = MODULE_ICON[moduleOfPath(usePathname() ?? "/")];
   return (
-    <header data-tour="page" className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 border-b border-line pb-4">
+    <header data-tour="page" className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 pb-1">
       <div className="min-w-0 max-w-[72ch] flex-1 basis-[280px]">
         {crumbs && <div className="mb-2">{crumbs}</div>}
-        <h1 className="text-title font-medium tracking-[-0.02em] text-ink">{title}</h1>
-        {question && <p className="mt-1 text-[15px] text-graphite">{question}</p>}
-        {lead && <p className="mt-1 text-[13px] leading-relaxed text-steel">{lead}</p>}
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-accent-soft text-accent-ink"><Icon size={18} aria-hidden /></span>
+          <h1 className="text-[28px] font-normal leading-tight tracking-[-0.03em] text-ink">{title}</h1>
+        </div>
+        {question && <p className="mt-2 text-[15px] font-medium text-accent-ink">{question}</p>}
+        {lead && <p className="mt-0.5 text-[13px] leading-relaxed text-steel">{lead}</p>}
       </div>
       {children && <div className="flex flex-wrap items-center gap-2 sm:pt-1">{children}</div>}
     </header>
   );
+}
+
+/** An outlet's colour, beside its name. Only shows in the By outlet look. */
+export function OutletDot({ id, className }: { id?: string; className?: string }) {
+  if (!id || !OUTLET_TONE[id]) return null;
+  return <span aria-hidden className={cn("outlet-dot mr-1.5 h-2.5 w-2.5 shrink-0 rounded-full align-[0.05em]", className)} style={{ background: `var(--color-outlet-${OUTLET_TONE[id].mark})` }} />;
 }
 
 /** The key numbers under a page header. Always a row of the same quiet cards. */
@@ -126,6 +136,28 @@ export function KeyNumber({ label, value, tone, note, delta }: { label: string; 
     </div>
   );
 }
+
+/** The top of a main page: a short row of numbers, then the one thing to do. */
+export function SummaryBar({ items, action }: { items: { label: string; value: ReactNode; tone?: "pos" | "warn" | "neg" | "money"; note?: ReactNode }[]; action?: ReactNode }) {
+  const tones = { pos: "text-pos", warn: "text-warn", neg: "text-neg", money: "text-money" };
+  return (
+    <div className="flex flex-col gap-4 rounded-panel border border-line bg-paper p-4 shadow-panel sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <dl className={cn("grid min-w-0 flex-1 gap-3 sm:gap-6", items.length >= 3 ? "grid-cols-3" : items.length === 2 ? "grid-cols-2" : "grid-cols-1")}>
+        {items.map((i) => (
+          <div key={i.label} className="min-w-0">
+            <dt className="text-[13px] text-steel">{i.label}</dt>
+            <dd className={cn("num mt-0.5 whitespace-nowrap text-[17px] font-medium leading-tight tracking-[-0.02em] sm:text-[26px]", i.tone ? tones[i.tone] : "text-ink")}>{i.value}</dd>
+            {i.note && <dd className="mt-0.5 text-xs text-steel">{i.note}</dd>}
+          </div>
+        ))}
+      </dl>
+      {action && <div className="flex shrink-0 flex-col sm:items-end [&>*]:w-full sm:[&>*]:w-auto">{action}</div>}
+    </div>
+  );
+}
+
+/** Secondary actions are text links, so each screen keeps one primary button. */
+export const textLink = "-my-2.5 inline-flex items-center gap-1 py-2.5 text-[13px] font-medium text-accent-ink underline-offset-4 hover:underline";
 
 /** A link styled as a button, so a page's primary action looks the same everywhere. */
 export const linkButton = (variant: "primary" | "secondary" | "quiet" = "secondary") => cn(
@@ -230,7 +262,7 @@ export function Segmented<T extends string>({ value, onChange, options, label, s
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={cn("whitespace-nowrap rounded-full font-medium transition-colors duration-200 ease-tyll", size === "sm" ? "h-7 px-2 text-xs sm:px-3" : "h-9 px-4 text-[13px]", value === o.value ? "bg-accent text-on-accent" : "text-steel hover:text-ink")}
+          className={cn("whitespace-nowrap rounded-full font-medium transition-colors duration-200 ease-tyll", size === "sm" ? "h-9 px-2 text-xs sm:h-7 sm:px-3" : "h-10 px-4 text-[13px]", value === o.value ? "bg-accent text-on-accent" : "text-steel hover:text-ink")}
         >
           {o.label}
         </button>
@@ -241,7 +273,7 @@ export function Segmented<T extends string>({ value, onChange, options, label, s
 
 export function Tabs<T extends string>({ value, onChange, tabs }: { value: T; onChange: (v: T) => void; tabs: { value: T; label: string; count?: number }[] }) {
   return (
-    <div role="tablist" className="scroll-thin flex gap-6 overflow-x-auto border-b border-line">
+    <div role="tablist" className="flex gap-6 overflow-x-auto overflow-y-hidden border-b border-line [scrollbar-width:none]">
       {tabs.map((t) => (
         <button
           key={t.value}
@@ -249,7 +281,7 @@ export function Tabs<T extends string>({ value, onChange, tabs }: { value: T; on
           type="button"
           aria-selected={value === t.value}
           onClick={() => onChange(t.value)}
-          className={cn("-mb-px flex items-center gap-2 whitespace-nowrap border-b-2 pb-3 pt-1 text-sm transition-colors duration-200 ease-tyll", value === t.value ? "border-accent text-accent-ink" : "border-transparent text-steel hover:text-ink")}
+          className={cn("-mb-px flex items-center gap-2 whitespace-nowrap border-b-2 pb-3.5 pt-2 text-sm transition-colors duration-200 ease-tyll", value === t.value ? "border-accent text-accent-ink" : "border-transparent text-steel hover:text-ink")}
         >
           {t.label}
           {t.count !== undefined && <span className="num rounded-full bg-mist px-1.5 text-xs text-graphite">{t.count}</span>}
@@ -327,7 +359,7 @@ export function Drawer({ open, onClose, title, description, children, wide }: { 
           </div>
           <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close" className="!px-2"><X size={18} /></Button>
         </header>
-        <div className="scroll-thin flex-1 overflow-y-auto px-6 py-5">{children}</div>
+        <div className="scroll-thin flex-1 overflow-y-auto overscroll-contain px-6 py-5">{children}</div>
       </div>
     </div>
   );

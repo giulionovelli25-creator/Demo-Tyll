@@ -3,7 +3,7 @@
 // filled in, so staff only touch what differs. It can be paused and picked up later. Blind mode hides the expected figure for audits.
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowDown, ArrowLeft, ArrowUp, Check, Delete, Minus, Pause, Play, Plus } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, Check, Delete, Minus, Play, Plus, X } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -26,7 +26,7 @@ interface Draft {
   skipped: Record<string, true>;
 }
 
-const useCountDraft = create<{ byUser: Record<string, Draft | undefined>; set(userId: string, d: Draft | undefined): void }>()(
+export const useCountDraft = create<{ byUser: Record<string, Draft | undefined>; set(userId: string, d: Draft | undefined): void }>()(
   persist((set) => ({ byUser: {}, set: (userId, d) => set((s) => ({ byUser: { ...s.byUser, [userId]: d } })) }), { name: "tyll-count-v1" }),
 );
 
@@ -56,20 +56,33 @@ export function CountFlow() {
   const ordered = (scope: "full" | "key") => liveRoute.flatMap((loc) =>
     [...rows.keys()].filter((id) => locationOf(id) === loc && (scope === "full" || ingredientById[id].priority)).sort((a, b) => ingredientById[a].name.localeCompare(ingredientById[b].name)));
 
+  // Leaving keeps everything counted so far. Stock offers to pick it up again.
+  const exit = () => {
+    toast.done("Count paused. Your progress is saved.");
+    router.push("/stock");
+  };
+  const ExitButton = (
+    <button type="button" onClick={exit} className="inline-flex h-11 items-center gap-1.5 rounded-full border border-line bg-paper px-3.5 text-sm font-medium text-ink shadow-panel transition-colors duration-150 hover:bg-cloud">
+      <X size={16} aria-hidden /> Exit count
+    </button>
+  );
   const start = (scope: "full" | "key") => save({ propertyId: pid, scope, blind, order: ordered(scope), index: 0, values: {}, skipped: {} });
   const expectedOf = (id: string) => Math.max(0, rows.get(id)?.estimated ?? 0);
 
   // ---- Starting point ------------------------------------------------------------------------------------------------
   if (!draft) {
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-mist px-4 pb-8 pt-4">
-        <Link href="/stock" className="inline-flex h-11 w-fit items-center gap-2 text-sm text-graphite"><ArrowLeft size={18} aria-hidden /> Stock</Link>
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-8 pt-4">
+        <Link href="/stock" className="inline-flex h-11 w-fit items-center gap-2 text-sm font-medium text-ink"><ArrowLeft size={18} aria-hidden /> Back to Stock</Link>
         <h1 className="mt-2 text-title font-medium text-ink">Stock count</h1>
         <p className="mt-1 text-[15px] text-graphite">{propertyById[pid].name}. Walk the storeroom, and only touch what differs.</p>
         {error && <div className="mt-4"><WidgetError>Stock could not load.</WidgetError></div>}
         {!data ? <Skeleton className="mt-6 h-40 w-full" /> : editing ? (
           <section className="mt-6" aria-label="Walking order">
-            <h2 className="text-section font-medium text-ink">Walking order</h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-section font-medium text-ink">Walking order</h2>
+              <button type="button" onClick={() => { setRoute(null); setEditing(false); }} className="h-11 text-sm font-medium text-accent-ink underline-offset-4 hover:underline">Cancel</button>
+            </div>
             <p className="mt-1 text-[13px] text-steel">Set it once, in the order you walk. Everyone counting here uses it.</p>
             <ol className="mt-3 space-y-2">
               {liveRoute.map((id, i) => (
@@ -143,8 +156,11 @@ export function CountFlow() {
       router.push("/stock");
     };
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-mist px-4 pb-6 pt-4">
-        <button type="button" onClick={() => { setFinishing(false); save({ ...draft, index: Math.max(0, total - 1) }); }} className="inline-flex h-11 w-fit items-center gap-2 text-sm text-graphite"><ArrowLeft size={18} aria-hidden /> Back to the count</button>
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-6 pt-4">
+        <div className="flex items-center justify-between gap-2">
+          <button type="button" onClick={() => { setFinishing(false); save({ ...draft, index: Math.max(0, total - 1) }); }} className="inline-flex h-11 w-fit items-center gap-2 text-sm text-graphite"><ArrowLeft size={18} aria-hidden /> Back to the count</button>
+          {ExitButton}
+        </div>
         <h1 className="mt-2 text-title font-medium text-ink">Check and confirm</h1>
         <p className="mt-1 text-[15px] text-graphite">{counted.length} counted{skipped.length ? `, ${skipped.length} skipped` : ""}. {diffs.length} {diffs.length === 1 ? "item differs" : "items differ"} from what was expected.</p>
         <div className="mt-4 rounded-[var(--radius-panel)] border border-line bg-paper p-4 shadow-panel">
@@ -217,9 +233,9 @@ export function CountFlow() {
       }}
     >
       <div className="flex h-11 items-center justify-between gap-2">
-        <button type="button" onClick={() => router.push("/stock")} className="inline-flex h-11 items-center gap-2 pr-2 text-sm text-graphite"><Pause size={16} aria-hidden /> Pause</button>
+        {ExitButton}
         <p className="num text-sm font-medium text-ink" aria-live="polite">{draft.index + 1} of {total}</p>
-        <button type="button" disabled={draft.index === 0} onClick={() => go({ index: draft.index - 1 })} className="inline-flex h-11 items-center gap-1 pl-2 text-sm text-graphite disabled:opacity-40"><ArrowLeft size={16} aria-hidden /> Back</button>
+        <button type="button" disabled={draft.index === 0} onClick={() => go({ index: draft.index - 1 })} className="inline-flex h-11 items-center gap-1 pl-2 text-sm text-graphite disabled:opacity-40"><ArrowLeft size={16} aria-hidden /> Previous</button>
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={draft.index}><div className="h-full rounded-full bg-accent transition-[width] duration-200" style={{ width: `${(draft.index / total) * 100}%` }} /></div>
 

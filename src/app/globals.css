@@ -27,13 +27,17 @@ h1, h2, h3 {
   letter-spacing: -0.01em;
 }
 
+html { -webkit-tap-highlight-color: transparent; }
+a, button, select, input, [role="radio"], [role="tab"] { touch-action: manipulation; }
+h1, h2, h3 { text-wrap: balance; }
+
 :focus-visible {
   outline: 2px solid var(--color-accent-ink);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
-/* Soft colour fields behind brand panels. Drawn in CSS, so they stay sharp at any size. */
+/* The supplied wave artwork, behind brand panels. */
 .waves {
   position: relative;
   isolation: isolate;
@@ -43,10 +47,20 @@ h1, h2, h3 {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background:
-    radial-gradient(60% 50% at 85% 10%, var(--color-accent-soft), transparent 70%),
-    radial-gradient(50% 45% at 10% 95%, var(--color-money-soft), transparent 70%),
-    var(--color-nav);
+  background: var(--wave-image) center / cover no-repeat, var(--color-mist);
+  filter: var(--wave-filter);
+  pointer-events: none;
+}
+
+/* The waves sit behind every page, fixed, so the white cards float over them. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--wave-image) center / cover no-repeat, var(--color-mist);
+  /* A little more contrast, so the curves read between the cards. The artwork itself is untouched. */
+  filter: var(--wave-filter);
   pointer-events: none;
 }
 
@@ -111,6 +125,7 @@ h1, h2, h3 {
 @media print {
   .no-print { display: none !important; }
   body { background: var(--color-paper); }
+  body::before { display: none; }
   main { padding: 0 !important; }
 }
 

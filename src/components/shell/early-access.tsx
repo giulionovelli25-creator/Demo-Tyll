@@ -30,10 +30,11 @@ export function WhatsNew({ open, onClose }: { open: boolean; onClose: () => void
   );
 }
 
-/** The four stops of the public demo, each seen as the role it is built for. */
+/** The stops of the public demo, all seen as the F&B Director, so nothing changes under the visitor's feet. */
 export const GUIDED_PATH = [
-  { href: "/stock", userId: "u-buy", title: "Stock prediction", text: "What you have, when it runs out, and what to order to reach month end. Try Build order." },
-  { href: "/waste", userId: "u-chef", title: "Waste and breakage", text: "Tap Log breakage, tap the item, tap the number. Done in three taps, with Undo." },
+  { href: "/waste", userId: "u-fnb", title: "Log waste", text: "Tap the item, tap the number. Done in two taps, with Undo." },
+  { href: "/stock", userId: "u-fnb", title: "Stock", text: "How much is left, with what is about to run out on top. Start count walks the storeroom in order." },
+  { href: "/forecast", userId: "u-fnb", title: "Predictions", text: "What to order and how much to reach month end. Try Build order." },
   { href: "/money?tab=pour", userId: "u-fnb", title: "Pour Control", text: "How many glasses each bottle really gave, by outlet and shift, and what the gap is worth." },
   { href: "/more", userId: "u-fnb", title: "Coming soon", text: "Events, rooms and sales are in development. Have a look at where Tyll is heading." },
 ] as const;
@@ -78,7 +79,7 @@ export function GuidedPath({ offer = false }: { offer?: boolean }) {
     return (
       <div className="no-print mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-paper px-4 py-3">
         <Compass size={18} strokeWidth={1.6} className="shrink-0 text-graphite" aria-hidden />
-        <p className="min-w-[200px] flex-1 text-sm text-graphite"><span className="text-ink">New here?</span> Follow a 4 step guided path through what Tyll does today.</p>
+        <p className="min-w-[200px] flex-1 text-sm text-graphite"><span className="text-ink">New here?</span> Follow a {GUIDED_PATH.length} step guided path through what Tyll does today.</p>
         <span className="flex items-center gap-1">
           <Button size="sm" variant="primary" onClick={() => go(0)}>Start guided path</Button>
           <button type="button" onClick={close} aria-label="Close the guided path offer" className="rounded-full p-2 text-steel hover:bg-mist hover:text-ink"><X size={16} /></button>

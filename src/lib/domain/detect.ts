@@ -110,7 +110,7 @@ export function detectOrderException(o: Order): Exception | null {
       type: "excessive_comp",
       min: o.closeMin - 2,
       exposure: t.comps,
-      headline: t.comps > POLICY.compMaxValue ? `Complimentary items worth more than the ${POLICY.compMaxValue} limit` : "Complimentary item with no reason or approval recorded",
+      headline: t.comps > POLICY.compMaxValue ? "Complimentary items above the agreed limit" : "Complimentary item with no reason or approval recorded",
     };
   }
   return null;

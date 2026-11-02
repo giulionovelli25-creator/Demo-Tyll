@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
-import { Delta, EmptyState, Panel, Stat, StatusPill, TableWrap, Td, Th, cn, rowClass, useSort, type Rag } from "@/components/ui";
+import { Delta, EmptyState, Panel, Stat, StatusPill, TableWrap, Td, Th, cn, rowClass, useSort, type Rag, OutletDot } from "@/components/ui";
 import { outletById, propertyById } from "@/lib/data/catalog";
 import { compare, exceptionInSel, totalsByOutlet, type OutletRow, type Totals } from "@/lib/domain/metrics";
 import { useCtx, useInvestigations, useView } from "@/lib/hooks";
@@ -89,7 +89,7 @@ export function OutletFinance() {
               {sorted.map((r) => (
                 <li key={r.outletId} className="border-t border-hair">
                   <button type="button" onClick={() => setOpen(open === r.outletId ? null : r.outletId)} aria-expanded={open === r.outletId} className="w-full px-4 py-4 text-left">
-                    <span className="flex items-center justify-between gap-2"><span className="text-sm font-medium text-ink">{outletById[r.outletId].name}</span><StatusPill rag={ragOf(r)}>{fmtPct(r.now.gpMargin)} margin</StatusPill></span>
+                    <span className="flex items-center justify-between gap-2"><span className="text-sm font-medium text-ink"><OutletDot id={r.outletId} />{outletById[r.outletId].name}</span><StatusPill rag={ragOf(r)}>{fmtPct(r.now.gpMargin)} margin</StatusPill></span>
                     <span className="mt-2 grid grid-cols-3 gap-2 text-table">
                       <span><span className="block text-xs text-steel">Revenue</span><span className="num text-ink">{money(r.now.net, { compact: true })}</span></span>
                       <span><span className="block text-xs text-steel">Cost</span><span className="num text-ink">{money(costOf(r.now), { compact: true })}</span></span>
@@ -117,7 +117,7 @@ export function OutletFinance() {
                   {sorted.map((r) => (
                     <Fragment key={r.outletId}>
                       <tr className={cn(rowClass, "cursor-pointer")} onClick={() => setOpen(open === r.outletId ? null : r.outletId)}>
-                        <Td><span className="font-medium text-ink">{outletById[r.outletId].name}</span><span className="block text-xs text-steel">{outletById[r.outletId].kind}</span></Td>
+                        <Td><span className="font-medium text-ink"><OutletDot id={r.outletId} />{outletById[r.outletId].name}</span><span className="block text-xs text-steel">{outletById[r.outletId].kind}</span></Td>
                         <Td align="right"><span className="text-ink">{money(r.now.net, { compact: true })}</span><span className="block"><Delta value={pctChange(r.now.net, r.before.net)} /></span></Td>
                         <Td align="right"><span className="text-ink">{money(costOf(r.now), { compact: true })}</span><span className="block"><Delta value={pctChange(costOf(r.now), costOf(r.before))} goodWhen="down" /></span></Td>
                         <Td align="right"><span className={profitOf(r.now) < 0 ? "text-neg" : "text-ink"}>{money(profitOf(r.now), { compact: true })}</span><span className="block"><Delta value={pctChange(profitOf(r.now), profitOf(r.before))} /></span></Td>

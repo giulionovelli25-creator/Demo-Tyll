@@ -1,6 +1,7 @@
 // Shared purchasing and preparation records, kept on the server in one JSON file so every user and device sees the
 // same request. A demo store: a live system would use a database with transactions.
 import fs from "node:fs";
+import { dataFile } from "./data-file";
 import path from "node:path";
 import { ingredientById } from "../data/catalog";
 import type { Assignment, Delivery, EventRecord, PrepPlan, PurchaseRequest, SupportRequest } from "../types";
@@ -36,7 +37,7 @@ export interface Shape {
 
 const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify() });
 
-const file = () => process.env.TYLL_PURCHASING_STORE ?? path.join(process.cwd(), ".data", "purchasing.json");
+const file = () => process.env.TYLL_PURCHASING_STORE ?? dataFile("purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
 
 export function loadStore(): Shape {

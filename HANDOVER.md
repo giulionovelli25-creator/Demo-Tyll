@@ -394,3 +394,24 @@ All under **Rooms & Guests** (`/rooms`); sections depend on the role (`src/compo
 ## UX simplification pass (after Stage 7)
 - Progressive disclosure: `MoreDetail` (`components/disclosure.tsx`). Overview trends and summary strips, manager overview chart and side panels, hub "More tools", Finance report filters.
 - Take a tour: `components/shell/walkthrough.tsx`. Role-specific steps (`TOURS`) open real pages and spotlight `data-tour` targets (`kpis`, `attention`, `compare`, `more`, `hub`, `page`, `nav`, `search`, `bell`, `guide`, `staff-*`). Steps are filtered by access; missing targets are skipped. When you add or rename a key element, keep its `data-tour` attribute.
+
+## Reorganisation pass (four main features first)
+- Sidebar: Log waste, Stock, Predictions, Revenue, Alerts, Reports and settings. The logo opens the Overview. Addresses stay `/waste`, `/stock`, `/forecast`, `/money`, so old links work.
+- Long lists, extra charts and history are closed by default. `Section` and `SectionLink` in `components/disclosure.tsx`; open or closed is remembered per person in this browser (`tyll-open-v1`), not on the server.
+- Log waste is one flow for food, drinks and inventory (`components/shell/breakage.tsx`): two taps on its page, three from the floating button or phone bottom bar.
+- Predictions (`components/prediction/predictions.tsx`) took the month plan and Build order from Stock. Orders moved to its sub page, `/forecast?tab=approvals`.
+- Revenue opens on today, 7 days and 30 days. Pour Control and flagged bills are under its Flags tab. Transactions, room charges and tips are sub pages.
+- Reports and settings holds the management report (closed until opened; printing opens it) and links to suppliers, recipes, counts, reconciliation and settings.
+- The date picker only shows where dates change the figures.
+
+## Polish pass (after the reorganisation)
+- Overview greets the person by name, and each card has a small picture of what is behind its number. The whole card is clickable. There is one navy action per screen.
+- Alerts are grouped by job and every amount says what it is. `lib/data/demo-cases.ts` keeps the public demo's flags short.
+- Sidebar has Overview on top and counts on Stock and Alerts. Reports and settings is grouped into four short lists.
+- Predictions shows what to order today and, once built, the draft. Every main page says its data is simulated.
+- Accessibility: the Log waste sheet takes and returns keyboard focus, phone targets are at least 40 px, browser bar colour follows the theme.
+- `USER_TEST.md` is a 15 minute script for testing with hotel managers. That test has not been run yet.
+
+## Black, white and waves (owner's call, after the polish pass)
+- Replaced the warm off white, navy and copper with the brand artwork: cool white, black actions, the supplied waves behind every page, and the original per section accents (`data-mod`).
+- Count flow has a visible Exit count on every step. Progress is kept, and Stock offers Resume count or Clear and start over.

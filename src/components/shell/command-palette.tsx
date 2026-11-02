@@ -21,14 +21,15 @@ interface Hit {
 }
 
 const ACTIONS: { label: string; detail: string; href: string; module?: ModuleId; perm?: Permission }[] = [
-  { label: "See what to order", detail: "Stock prediction to month end", href: "/stock#order", module: "stock" },
+  { label: "See what to order", detail: "Predictions to month end", href: "/forecast", module: "forecast" },
   { label: "Start a stock count", detail: "By location, in walking order", href: "/count", perm: "stock.count" },
-  { label: "Review money flags", detail: "Largest amount first", href: "/money", module: "money" },
+  { label: "See revenue", detail: "Today, this week and this month", href: "/money", module: "money" },
+  { label: "Review flags", detail: "Voids, refunds and over pouring", href: "/money?tab=flags", module: "money" },
   { label: "See Pour Control", detail: "Wine and spirits yield", href: "/money?tab=pour", module: "money" },
   { label: "See profit by outlet", detail: "Revenue, cost and profit", href: "/money?tab=outlets", module: "money" },
-  { label: "Open orders", detail: "Drafts, approvals and deliveries", href: "/forecast", module: "forecast" },
-  { label: "See waste and breakage", detail: "What was lost, and why", href: "/waste", module: "waste" },
-  { label: "See all alerts", detail: "Stock, money and waste", href: "/alerts", module: "alerts" },
+  { label: "Open orders and history", detail: "Drafts, approvals and deliveries", href: "/forecast?tab=approvals", module: "forecast" },
+  { label: "Log waste", detail: "Food, drinks and breakage", href: "/waste", module: "waste" },
+  { label: "See alerts", detail: "Stock, money and waste", href: "/alerts", module: "alerts" },
 ];
 
 export function CommandPalette({ user, pages, onClose }: { user: User; pages: Partial<Record<ModuleId, string>>; onClose: () => void }) {

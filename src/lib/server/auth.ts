@@ -4,6 +4,7 @@ import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypt
 import fs from "node:fs";
 import path from "node:path";
 import { userById } from "../data/catalog";
+import { dataFile } from "./data-file";
 import type { Role, User } from "../types";
 
 // ---- Policy -----------------------------------------------------------------
@@ -119,7 +120,7 @@ interface StoreShape {
   audit: AuditRecord[];
 }
 
-const storePath = () => process.env.TYLL_AUTH_STORE ?? path.join(process.cwd(), ".data", "auth.json");
+const storePath = () => process.env.TYLL_AUTH_STORE ?? dataFile("auth.json");
 const seedPath = () => process.env.TYLL_DEMO_ACCOUNTS ?? path.join(process.cwd(), "config", "demo-accounts.json");
 
 interface DemoAccount {

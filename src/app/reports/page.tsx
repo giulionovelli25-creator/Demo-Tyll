@@ -2,9 +2,10 @@
 import { Download, Printer } from "lucide-react";
 import { useMemo } from "react";
 import { TyllLogo } from "@/components/brand";
-import { Button, Delta, Note, PageHeader, Panel, Segmented, TableWrap, Td, Th, cn, rowClass, toast } from "@/components/ui";
+import { RowLink, Section, useRemembered } from "@/components/disclosure";
+import { Button, Delta, Note, PageHeader, Panel, Segmented, SummaryBar, TableWrap, Td, Th, cn, rowClass, toast } from "@/components/ui";
 import { GROUP_NAME, ingredientById, itemById, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
-import { can } from "@/lib/domain/access";
+import { can, canOpen, type ModuleId } from "@/lib/domain/access";
 import { wasteCost } from "@/lib/domain/inventory";
 import { adjustmentRate, compare, itemPerformance, totalsByOutlet } from "@/lib/domain/metrics";
 import { useCtx, useView } from "@/lib/hooks";
@@ -91,21 +92,55 @@ export default function ReportsPage() {
     </tr>
   );
 
+  const [, setReportOpen] = useRemembered<"open" | "closed">("section.reports.statement", "closed");
+  // The printed page is the management report, so it opens first.
+  const print = () => { setReportOpen("open"); setTimeout(() => window.print(), 80); };
+  const groups: { title: string; links: { m: ModuleId; href: string; title: string; summary: string }[] }[] = [
+    { title: "Stock records", links: [
+      { m: "stock", href: "/stock?tab=suppliers", title: "Suppliers", summary: "Prices and delivery differences" },
+      { m: "stock", href: "/stock?tab=recipes", title: "Recipes and costs", summary: "What each dish costs to make" },
+      { m: "stock", href: "/stock?tab=inventory", title: "Item history", summary: "Deliveries, counts and use" },
+      { m: "stock", href: "/stock?tab=counts", title: "Count records", summary: "Every count and its review" },
+    ] },
+    { title: "Money records", links: [
+      { m: "investigations", href: "/investigations", title: "Money Back List", summary: "Every case, open and closed" },
+      { m: "finance", href: "/finance?tab=invoices", title: "Reconciliation", summary: "Invoices against deliveries" },
+      { m: "money", href: "/money?tab=rooms", title: "Room charges", summary: "Charges posted to rooms" },
+      { m: "money", href: "/money?tab=tips", title: "Tips", summary: "By outlet. Preview" },
+    ] },
+    { title: "Performance", links: [
+      { m: "overview", href: "/menu", title: "Menu", summary: "What each dish sells and earns" },
+      { m: "overview", href: "/performance", title: "Sales and performance", summary: "Outlets and trends. Preview" },
+    ] },
+    { title: "Settings and tools", links: [
+      { m: "settings", href: "/settings", title: "Settings", summary: "Connections, access and change log" },
+      { m: "more", href: "/more", title: "More tools", summary: "Events, rooms and what is coming" },
+    ] },
+  ];
+
   return (
-    <div className="space-y-5">
-      <div className="no-print">
-        <PageHeader title="Reports" question="How did we do, and what do I send to the owner?" lead="A management report for the selection in the top bar. Print it, save it as a PDF, or export the tables.">
-          <Segmented label="Report period" value={preset} onChange={(v: RangePreset) => setPreset(v)} options={[{ value: "today", label: "Daily" }, { value: "week", label: "Weekly" }, { value: "month", label: "Monthly" }, ...(preset === "custom" ? [{ value: "custom" as const, label: "Custom" }] : [])]} />
-          <Button variant="primary" onClick={() => window.print()}><Printer size={15} /> Print or save as PDF</Button>
-        </PageHeader>
+    <div className="space-y-4">
+      <div className="no-print space-y-4">
+        <PageHeader title="Reports and settings" question="Where is the full detail?" lead={`${scopeName}, ${fmtRange(sel.range)}. Simulated data.`} />
+        <SummaryBar
+          items={[{ label: "Net sales, this period", value: money(t.net, { compact: true }) }, { label: "Gross margin", value: fmtPct(t.gpMargin) }, { label: "Orders", value: fmtNum(t.orders) }]}
+          action={<Button variant="primary" onClick={print}><Printer size={15} /> Print or save as PDF</Button>}
+        />
+        {mayExport && (
+          <Section id="reports.csv" title="Download as CSV" summary="Statement, outlet comparison, menu performance and waste log">
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={exportStatement}><Download size={15} /> Statement</Button>
+              <Button onClick={exportOutlets}><Download size={15} /> Outlet comparison</Button>
+              <Button onClick={exportMenu}><Download size={15} /> Menu performance</Button>
+              <Button onClick={exportWaste}><Download size={15} /> Waste log</Button>
+            </div>
+          </Section>
+        )}
       </div>
 
-      <div className="no-print flex flex-wrap gap-2">
-        <Button onClick={exportStatement}><Download size={15} /> Statement, CSV</Button>
-        <Button onClick={exportOutlets}><Download size={15} /> Outlet comparison, CSV</Button>
-        <Button onClick={exportMenu}><Download size={15} /> Menu performance, CSV</Button>
-        <Button onClick={exportWaste}><Download size={15} /> Waste log, CSV</Button>
-      </div>
+      <Section id="reports.statement" title="Management report" summary={`Sales to profit, money at risk, outlets and menu. ${money(t.gross, { compact: true })} total revenue, ${t.orders ? fmtNum(t.covers) : 0} guests.`} flush>
+      <div className="space-y-5 p-4 print:p-0 sm:p-6">
+      <div className="no-print"><Segmented label="Report period" value={preset} onChange={(v: RangePreset) => setPreset(v)} options={[{ value: "today", label: "Daily" }, { value: "week", label: "Weekly" }, { value: "month", label: "Monthly" }]} /></div>
 
       <Panel flush>
         <div className="flex flex-wrap items-end justify-between gap-4 px-6 pb-5">
@@ -169,6 +204,19 @@ export default function ReportsPage() {
             </TableWrap>
           </Panel>
         ))}
+      </div>
+      </div>
+      </Section>
+
+      <div className="no-print grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+        {groups.map((g) => {
+          const links = g.links.filter((l) => canOpen(user, l.m));
+          return links.length === 0 ? null : (
+            <Panel key={g.title} title={g.title} flush>
+              <ul>{links.map((l) => <li key={l.href} className="border-t border-hair"><RowLink href={l.href} title={l.title} summary={l.summary} /></li>)}</ul>
+            </Panel>
+          );
+        })}
       </div>
     </div>
   );

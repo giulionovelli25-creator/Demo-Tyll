@@ -60,7 +60,7 @@ export function StaffApp() {
   const what = params.get("do") as Do | null;
   const allowed = staffActions(user).map((a) => a.id);
   if (what && !allowed.includes(what)) return <Screen title="Not available"><EmptyState title="This action is not part of your job in Tyll." /></Screen>;
-  if (what === "breakage") return <Screen title="Log breakage"><BreakageFlow onDone={() => undefined} /></Screen>;
+  if (what === "breakage") return <Screen title="Log breakage"><BreakageFlow only="inventory" onDone={() => undefined} /></Screen>;
   if (what === "waste") return <QuickLog kind={what} />;
   if (what === "prep") return <PrepTasks />;
   if (what === "rooms") return params.get("room") ? <RoomDetail roomId={params.get("room")!} back="/staff?do=rooms" /> : <MyRoomsMobile />;

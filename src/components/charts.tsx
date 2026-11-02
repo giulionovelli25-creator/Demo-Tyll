@@ -1,7 +1,9 @@
 "use client";
 // Charts share one restrained style: ink for the current period, silver for the comparison.
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { cn } from "./ui";
+import type { CSSProperties } from "react";
+import { OUTLET_TONE } from "./theme";
+import { OutletDot, cn } from "./ui";
 
 const INK = "var(--chart-a)";
 const FOG = "var(--color-fog)";
@@ -103,7 +105,7 @@ export function ColumnChart({ data, format, axisFormat, height = 220, summary, n
 }
 
 /** A ranked list with proportional bars. Rows can be clicked to drill in. */
-export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; label: string; sub?: string; value: number; onClick?: () => void }[]; format: (n: number) => string; tone?: "ink" | "warn" }) {
+export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; label: string; sub?: string; value: number; onClick?: () => void; outletId?: string }[]; format: (n: number) => string; tone?: "ink" | "warn" }) {
   const max = Math.max(...rows.map((r) => Math.abs(r.value)), 1e-9);
   return (
     <ul className="space-y-1">
@@ -111,11 +113,11 @@ export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; l
         const body = (
           <>
             <div className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0 truncate text-sm text-ink">{r.label}{r.sub && <span className="ml-2 text-xs text-steel">{r.sub}</span>}</span>
+              <span className="min-w-0 truncate text-sm text-ink"><OutletDot id={r.outletId} />{r.label}{r.sub && <span className="ml-2 text-xs text-steel">{r.sub}</span>}</span>
               <span className="num shrink-0 text-sm text-ink">{format(r.value)}</span>
             </div>
             <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-hair">
-              <div className={cn("h-full rounded-full", tone === "warn" ? "bg-warn" : "bg-accent")} style={{ width: `${(Math.abs(r.value) / max) * 100}%` }} />
+              <div className={cn("h-full rounded-full", tone === "warn" ? "bg-warn" : "bg-accent", r.outletId && "outlet-bar")} style={{ width: `${(Math.abs(r.value) / max) * 100}%`, ...(r.outletId && OUTLET_TONE[r.outletId] ? ({ "--outlet": `var(--color-outlet-${OUTLET_TONE[r.outletId].mark})` } as CSSProperties) : {}) }} />
             </div>
           </>
         );

@@ -19,17 +19,17 @@ Open **http://localhost:3210**. (Plain `npm run dev` uses port 3000.) Node.js 20
 
 Set `TYLL_PUBLIC_DEMO=on` (for local use, in `.env.local`) and restart. Visitors see one welcome screen with **Enter demo**, which opens the **Overview** as the F&B Director. No password or PIN. A role switcher in the top bar changes instantly between Purchasing Manager, F&B Director, Head Chef and Financial Controller. Any deep link, such as `/stock`, `/money?tab=pour` or `/forecast?tab=buy`, opens directly as a role that can see it. Shared records return to their starting state at most once an hour, when someone enters.
 
-The sidebar is **Overview, Stock, Orders, Money, Waste and Breakage, Reports**. The profile menu holds More tools, All alerts, What's new, light or dark mode, and Settings. **More tools** separates Available now from Coming soon (Events and Staffing, Rooms and Guest Experience, Sales and Performance), which carry a Preview badge and a banner. A 4 step **Guided path**, offered on More tools and restartable from the sidebar, sits in the page and closes with ×.
+The sidebar is **Overview**, then **Log waste, Stock, Predictions, Revenue, Alerts, Reports and settings**. The profile menu holds More tools, What's new, light or dark mode, and Settings. **More tools** separates Available now from Coming soon (Events and Staffing, Rooms and Guest Experience, Sales and Performance), which carry a Preview badge and a banner. A 5 step **Guided path**, offered on More tools and restartable from the sidebar, sits in the page and closes with ×.
 
 ### The two selling points
 
-- **Stock prediction:** Stock → *Order recommendation*. Predicted use to month end from forecast covers and events, a safe buffer, the cost, and **Build order**, which makes one draft grouped by supplier. *Monthly view* shows stock against predicted use for each category, with the reorder date marked. *What the prediction uses* shows the inputs.
-- **Pour Control:** Money → *Pour Control*. Per wine: bottles opened, glasses sold, expected per bottle, actual yield and the gap. *Where and when* breaks it down by outlet and shift, with no names. Spirits are the second tab. **Bottles opened are simulated in this demo**, and the one house wine is shared across four labels.
+- **Predictions:** the cost to month end, items to order and next order date, with **Build order**, which makes one draft grouped by supplier. *How this is calculated* holds the inputs and the monthly charts. *Orders and history* is its own page.
+- **Pour Control:** Revenue → *Flags and Pour Control*, open by default. An Overview alert links straight to it. Per wine: bottles opened, glasses sold, expected per bottle, actual yield and the gap. *Where and when* breaks it down by outlet and shift, with no names. Spirits are the second tab. **Bottles opened are simulated in this demo**, and the one house wine is shared across four labels.
 
 ### The two fast flows
 
-- **Log breakage:** the floating button on a phone, or the top bar on a desktop. Tap the item, tap the number. Undo is in the toast.
-- **Stock count:** Stock → *Count stock*, or `/count`. By location, in walking order, with the expected quantity filled in. Pause and pick up later. Blind count is an option for audits.
+- **Log waste:** the first sidebar item, the floating button on a desktop, or the bottom bar on a phone. Food, Drinks or Inventory, tap the item, tap the number. Undo is in the toast.
+- **Stock count:** Stock → *Start count*, or `/count`. By location, in walking order, with the expected quantity filled in. Pause and pick up later. Blind count is an option for audits.
 
 **Cmd K** (Ctrl K on Windows) opens search and actions from anywhere.
 
@@ -77,7 +77,7 @@ Main stories: Where did the Cokes go? · More wine than expected · Forecast to 
 
 ## Where things are
 
-Stock and Waste and Breakage each switch between **Food, Drinks and Inventory** (glassware, china and hotel supplies). Stock is one full page, with older detail screens linked at its foot. Money opens on its flagged bills, with Pour Control, profit by outlet and transactions as tabs. The Overview shows five cards; the outlet comparison, trends, results, guest experience and confirmed business are on `/performance` (linked from the bottom of the Overview and from More tools). Finance reports keep department and category filters behind **Filter by department or category**.
+Food, Drinks and Inventory (glassware, china and hotel supplies) stay separate in Log waste, Stock and Predictions. Long lists are closed until opened. Revenue opens on today, the last 7 days and the last 30 days, with Flags as a tab and transactions on their own page. The Overview shows four cards, one chart and three alerts. Suppliers, recipes, count records, the outlet comparison, trends and guest results (`/performance`) are all reached from Reports and settings. Finance reports keep department and category filters behind **Filter by department or category**.
 
 ## Reset
 

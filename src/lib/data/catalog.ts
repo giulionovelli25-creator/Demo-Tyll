@@ -73,7 +73,7 @@ export const INGREDIENTS: Ingredient[] = [
   ing("tahini", "Tahini", "طحينة", "kg", 46, "dry", 180, 3, 5, false),
   ing("tomatosauce", "Tomato sauce", "صلصة طماطم", "kg", 17.5, "dry", 180, 3, 10, false),
   ing("sauces", "Mayonnaise and sauces", "مايونيز وصلصات", "kg", 35, "dry", 90, 3, 5, false),
-  ing("stock", "Stock", "مرق", "l", 26, "dry", 30, 3, 10, false),
+  ing("stock", "Cooking stock", "مرق", "l", 26, "dry", 30, 3, 10, false),
   ing("oil", "Cooking oil", "زيت الطبخ", "l", 13, "dry", 365, 3, 20, false),
   ing("oliveoil", "Olive oil", "زيت زيتون", "l", 49, "dry", 365, 3, 5, false),
   ing("truffle", "Truffle paste", "معجون الكمأة", "kg", 1305, "dry", 120, 4, 0.5, true),

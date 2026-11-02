@@ -1,6 +1,6 @@
 "use client";
 // Tomorrow and the next seven days: guests per outlet, what to prep, and what the figures are based on.
-// What to order lives on Stock, so it is only linked from here.
+// What to order lives on Predictions, so it is only linked from here.
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
