@@ -7,7 +7,7 @@ import { GuestConnect, GuestRequests, ServicePerformance, SuppliesPanel, TableRe
 import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
-import { Crumbs, PageHeader, Tabs } from "@/components/ui";
+import { PageHeader, Tabs } from "@/components/ui";
 import { useView } from "@/lib/hooks";
 import { roomsTabs, type RoomsTab as Tab } from "@/components/guest/tabs";
 
@@ -46,7 +46,6 @@ export default function RoomsPage() {
       <PageHeader
         title={tab ? LABEL[tab] : "Rooms and Guest Experience"}
         lead={tab ? undefined : "Today's arrivals, room readiness and guest requests, in one place."}
-        crumbs={tab && tabs.length > 1 ? <Crumbs items={[{ label: "Rooms and Guest Experience", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert where="rooms" />}
       {tab === null && <ModuleHub onPick={setTab} choices={tabs.map((t) => ({ value: t, title: LABEL[t], ...DETAIL[t], help: ROOM_HELP[t], more: tabs.length > 4 && ["connect", "tables", "bell"].includes(t) }))} />}

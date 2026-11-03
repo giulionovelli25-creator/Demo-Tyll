@@ -5,7 +5,7 @@ import { Approvals } from "@/components/forecast/approvals";
 import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
-import { Crumbs, PageHeader, Tabs } from "@/components/ui";
+import { PageHeader, Tabs } from "@/components/ui";
 import { can } from "@/lib/domain/access";
 import { useView } from "@/lib/hooks";
 
@@ -25,7 +25,6 @@ export default function FinancePage() {
       <PageHeader
         title={tab ? LABEL[tab] : "Reconciliation"}
         lead={tab ? undefined : data ? `${n(data.invoices, "supplier invoice to check", "supplier invoices to check")}${data.overBudget.length ? `. Over budget: ${data.overBudget.join(", ")}.` : "."}` : "Supplier invoices checked against orders and deliveries."}
-        crumbs={tab && tabs.length > 1 ? <Crumbs items={[{ label: "Reconciliation", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert where="finance" />}
       {tab === null && (

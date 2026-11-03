@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { TrendChart } from "@/components/charts";
-import { Badge, Button, Crumbs, Delta, EmptyState, Note, PageHeader, Panel, Stat, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
+import { Badge, Button, Delta, EmptyState, Note, PageHeader, Panel, Stat, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
 import { ingredientById, itemById, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { computeTotals, itemPerformance, type Sel } from "@/lib/domain/metrics";
 import { ingredientCostAt, itemEconomics, recipeBreakdown } from "@/lib/domain/pricing";
@@ -56,7 +56,6 @@ export default function MenuItemPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        crumbs={<Crumbs items={[{ label: "Home", onClick: () => router.push("/") }, { label: "Menu performance", onClick: () => router.push("/menu") }, { label: item.name }]} />}
         title={item.name}
         lead={`${item.category}, ${item.dept === "food" ? "kitchen" : "bar"}. Sold at ${selling.length} outlet${selling.length === 1 ? "" : "s"} in this selection.`}
       >

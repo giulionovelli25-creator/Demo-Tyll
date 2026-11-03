@@ -231,4 +231,22 @@ describe("navigation and dates", () => {
     expect(stockGroupOf("chicken")).toBe("meat");
     expect(groupByStock(["coke", "wine", "soda"], (x) => x).map((g) => g.name)).toEqual(["Wine", "Soft drinks"]);
   });
+
+  it("gives every sub page one exit to its main page", async () => {
+    const { backTarget } = await import("../back");
+    const to = (url: string, from: string | null = null) => { const [path, q] = url.split("?"); return backTarget(path, new URLSearchParams(q), from, "/"); };
+    expect(to("/money?tab=orders")).toBe("/money");
+    expect(to("/money/orders/1")).toBe("/money");
+    expect(to("/money")).toBeNull();
+    expect(to("/money?tab=flags")).toBeNull();
+    expect(to("/stock?tab=where", "/drinks")).toBe("/drinks");
+    expect(to("/forecast?tab=approvals")).toBe("/forecast");
+    expect(to("/waste?log=1")).toBe("/waste");
+    expect(to("/alerts?kind=stock")).toBeNull();
+    expect(to("/investigations/EX-1")).toBe("/investigations");
+    expect(to("/events?tab=events")).toBe("/events");
+    expect(to("/events")).toBe("/reports");
+    expect(to("/finance", "/money")).toBe("/money");
+    expect(to("/count")).toBeNull();
+  });
 });

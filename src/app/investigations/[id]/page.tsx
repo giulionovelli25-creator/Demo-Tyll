@@ -5,7 +5,7 @@ import { Check, CircleHelp, ListChecks, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ChargeEvidence, OrderTimeline, OrderVersusBill, Tickets } from "@/components/order-evidence";
 import { UsageCaseBody } from "@/components/stock/usage";
-import { Badge, Button, Crumbs, EmptyState, Field, Note, PageHeader, Panel, Select, TextArea, cn, report } from "@/components/ui";
+import { Badge, Button, EmptyState, Field, Note, PageHeader, Panel, Select, TextArea, cn, report } from "@/components/ui";
 import { ingredientById, outletById, propertyById, staffById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
 import { TYPE_LABEL } from "@/lib/domain/detect";
@@ -108,7 +108,6 @@ export default function InvestigationPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        crumbs={<Crumbs items={[{ label: "Money Back List", onClick: () => router.push("/investigations") }, { label: inv.id.replace("EX-", "Case ") }]} />}
         title={inv.headline}
         lead={!usage && explanation.whatHappened !== inv.headline ? explanation.whatHappened : undefined}
       >

@@ -1,13 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Approvals } from "@/components/forecast/approvals";
 import { WhatToBuy } from "@/components/forecast/buy";
 import { WhatToPrep } from "@/components/forecast/prep";
 import { useSection } from "@/components/module-hub";
 import { Outlook } from "@/components/prediction/outlook";
 import { Predictions } from "@/components/prediction/predictions";
-import { Crumbs, KeyNumber, KeyNumbers, PageHeader, Tabs, linkButton } from "@/components/ui";
+import { KeyNumber, KeyNumbers, PageHeader, Tabs, linkButton } from "@/components/ui";
 import { propertyById } from "@/lib/data/catalog";
 import { allowedProperties, can, canOpen } from "@/lib/domain/access";
 import { useLiveGet } from "@/lib/guest-hooks";
@@ -39,7 +38,6 @@ export default function ForecastPage() {
 
 function Orders({ tab, tabs, setTab, predicts }: { tab: Tab; tabs: Tab[]; setTab: (t: Tab | null) => void; predicts: boolean }) {
   const { user } = useView();
-  const router = useRouter();
   const { data } = useLiveGet<{ requests: PurchaseRequest[] }>("/api/purchasing");
   const requests = data?.requests ?? [];
   const value = (rs: PurchaseRequest[]) => sum(rs, (r) => sum(r.lines, (l) => l.qty * l.unitPrice));
@@ -55,7 +53,6 @@ function Orders({ tab, tabs, setTab, predicts }: { tab: Tab; tabs: Tab[]; setTab
         title={LABEL[tab]}
         question={tab === "approvals" ? "What is on order, and what still needs a decision?" : undefined}
         lead={tab === "approvals" ? (data ? `${waiting.length} waiting for approval, ${onTheWay.length} on the way, ${drafts.length} ${drafts.length === 1 ? "draft" : "drafts"} of yours.` : "Loading orders.") : undefined}
-        crumbs={predicts ? <Crumbs items={[{ label: "Predictions", onClick: () => router.push("/forecast") }, { label: LABEL[tab] }]} /> : undefined}
       >
         {predicts && can(user, "purchase.create") && <Link href="/forecast" className={linkButton("primary")}>Build order</Link>}
       </PageHeader>

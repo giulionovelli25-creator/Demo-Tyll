@@ -37,7 +37,7 @@ export default function OrderPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        crumbs={<Crumbs items={[{ label: "Revenue", onClick: () => router.push("/money") }, { label: "Order history", onClick: () => router.push("/money?tab=orders") }, { label: order.id }]} />}
+        crumbs={<Crumbs items={[{ label: "All transactions", onClick: () => router.push("/money?tab=orders") }, { label: order.id }]} />}
         title={`Order ${order.id}`}
         lead={`${outlet.name}, ${property.name}. ${fmtDate(order.date, true)}, opened ${fmtTime(order.openMin)} on ${order.table.toLowerCase()} under the POS login of ${staffById[order.staffId]?.name ?? order.staffId}.`}
       >

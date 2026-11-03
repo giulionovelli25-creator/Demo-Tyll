@@ -6,7 +6,7 @@ import { ConfirmedBusiness, Opportunities, Proposals } from "@/components/sales/
 import { HELP } from "@/components/help";
 import { ModuleHub, useSection, type HubChoice } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
-import { Crumbs, PageHeader, Tabs } from "@/components/ui";
+import { PageHeader, Tabs } from "@/components/ui";
 import { can } from "@/lib/domain/access";
 import { useView } from "@/lib/hooks";
 
@@ -31,7 +31,6 @@ export default function EventsPage() {
       <PageHeader
         title={tab ? LABEL[tab] : "Events and Staffing"}
         lead={tab ? undefined : "Upcoming events, the staff they need, and who can help."}
-        crumbs={tab ? <Crumbs items={[{ label: "Events and Staffing", onClick: () => setTab(null) }, { label: LABEL[tab] }]} /> : undefined}
       />
       {tab === null && <StockAlert where="events" />}
       {tab === null && (

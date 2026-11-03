@@ -9,20 +9,14 @@ import { Suppliers } from "@/components/stock/suppliers";
 import { WasteLogger } from "@/components/stock/waste-logger";
 import { WhereDidItGo } from "@/components/stock/where";
 import { useSection } from "@/components/module-hub";
-import { Badge, Crumbs, PageHeader, Segmented, Tabs } from "@/components/ui";
-import { ingredientById, propertyById } from "@/lib/data/catalog";
+import { Badge, PageHeader, Segmented, Tabs } from "@/components/ui";
+import { propertyById } from "@/lib/data/catalog";
 import { allowedProperties, canOpen } from "@/lib/domain/access";
 import { useView } from "@/lib/hooks";
 
 type Tab = "inventory" | "where" | "counts" | "recipes" | "suppliers" | "log";
 
 const LABEL: Record<Tab, string> = { inventory: "Item history", where: "Where missing stock went", counts: "Count records", recipes: "Recipes and costs", suppliers: "Suppliers", log: "Log waste or breakage" };
-
-/** A period id carries its item: UP-<outlet code>-<ingredient>-<date>-<time>. */
-const crumbFor = (periodId: string) => {
-  const g = ingredientById[periodId.split("-")[2] ?? ""];
-  return g ? g.name : "Item";
-};
 
 /** Stock is one full page. The older detail screens stay reachable from the links at its foot, and by their old addresses. */
 export default function StockRoute() {
@@ -36,7 +30,6 @@ export default function StockRoute() {
   const [picked, setPicked] = useState(props[0]);
   // Stock is held per hotel. In a group view the user chooses which hotel's store to look at.
   const pid = propertyId ?? picked;
-  const inDetail = tab === "where" && params.get("period");
   // Old links to waste now live on their own page.
   const raw = params.get("tab");
   useEffect(() => {
@@ -49,7 +42,6 @@ export default function StockRoute() {
     <div className="space-y-6">
       <PageHeader
         title={label}
-        crumbs={!employee ? <Crumbs items={[{ label: "Stock", onClick: () => setTab(null) }, { label, onClick: inDetail ? () => setTab("where") : undefined }, ...(inDetail ? [{ label: crumbFor(params.get("period")!) }] : [])]} /> : undefined}
       >
         {tab !== "recipes" && (propertyId || props.length === 1 ? <Badge>{propertyById[pid].name}</Badge> : (
           <Segmented label="Hotel" value={picked} onChange={setPicked} options={props.map((p) => ({ value: p, label: propertyById[p].name }))} />

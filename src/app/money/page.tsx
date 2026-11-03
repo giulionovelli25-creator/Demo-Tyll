@@ -10,7 +10,7 @@ import { OutletFinance } from "@/components/finance/outlets";
 import type { ChartPoint } from "@/components/home/chart";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
-import { Badge, Button, Crumbs, Delta, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, Tabs, Td, Th, cn, rowClass, textLink } from "@/components/ui";
+import { Badge, Button, Delta, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, Tabs, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
 import { can, canSeeOutlet } from "@/lib/domain/access";
@@ -78,7 +78,7 @@ export default function MoneyPage() {
   if (sub) {
     return (
       <div className="space-y-5">
-        <PageHeader title={sub} crumbs={<Crumbs items={[{ label: "Revenue", onClick: () => router.push("/money") }, { label: sub }]} />} />
+        <PageHeader title={sub} />
         {tab === "orders" && <><Period /><Orders /></>}
         {tab === "rooms" && <RoomCharges />}
         {tab === "tips" && <Tips />}

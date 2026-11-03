@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { BarList } from "@/components/charts";
 import { Section, useRemembered } from "@/components/disclosure";
 import { BreakageFlow, mayLogBreakage } from "@/components/shell/breakage";
 import { WasteAnalytics } from "@/components/stock/waste-analytics";
 import { WasteLogger } from "@/components/stock/waste-logger";
-import { Crumbs, EmptyState, OutletDot, PageHeader, Panel, Segmented, SummaryBar, TableWrap, Td, Th, rowClass, textLink } from "@/components/ui";
+import { EmptyState, OutletDot, PageHeader, Panel, Segmented, SummaryBar, TableWrap, Td, Th, rowClass, textLink } from "@/components/ui";
 import { ingredientById, itemById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { STOCK_AREAS, stockAreaOf, type StockArea } from "@/lib/data/locations";
 import { allowedProperties, can } from "@/lib/domain/access";
@@ -28,7 +28,6 @@ export default function WastePage() {
   const { user, sel, money, propertyId } = useView();
   const ctx = useCtx();
   const params = useSearchParams();
-  const router = useRouter();
   const pid = propertyId ?? allowedProperties(user)[0];
   const [area, setArea] = useRemembered<StockArea>("waste.month.area", "food");
   const [flowKey, setFlowKey] = useState(0);
@@ -59,7 +58,7 @@ export default function WastePage() {
   if (params.get("log") === "1") {
     return (
       <div className="space-y-5">
-        <PageHeader title="Log with more detail" question="For a prepared dish, a late entry or a note." crumbs={<Crumbs items={[{ label: "Log waste", onClick: () => router.push("/waste") }, { label: "More detail" }]} />} />
+        <PageHeader title="Log with more detail" question="For a prepared dish, a late entry or a note." />
         <WasteLogger key={pid} propertyId={pid} />
       </div>
     );

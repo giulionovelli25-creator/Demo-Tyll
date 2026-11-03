@@ -1,16 +1,17 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Wine,
+import { usePathname, useSearchParams } from "next/navigation";
+import { ArrowLeft, Wine,
   Banknote, Bell, BedDouble, CalendarDays, ChevronDown, ClipboardList, Eye, FileSearch, FileText, Landmark, LayoutDashboard, LayoutGrid, LockKeyhole, LogOut, Moon, Package, Palette, PlayCircle, Search, Settings, ShoppingCart, Smartphone, Sparkles, Sun, Trash2, UtensilsCrossed, type LucideIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, Fragment } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, Fragment } from "react";
 import { BrandLoader, TyllLogo, TyllMark } from "@/components/brand";
 import { Badge, Button, EmptyState, Field, Segmented, Select, Toaster, cn, report, toast } from "@/components/ui";
 import { ROLE_LABEL, outletById, propertyById } from "@/lib/data/catalog";
 import { clearDataset, getDataset, hasDataset, hydrateDataset } from "@/lib/data/dataset";
 import { api, goToLogin, lockLocally, reloadTo, useSession } from "@/lib/api";
 import { MODULE_TONE, OUTLET_TONE } from "@/components/theme";
+import { backTarget, isMainPage } from "@/lib/back";
 import { useLook } from "@/lib/look";
 import { LookPicker } from "./look-picker";
 import { AlertFeedProvider, useAlertFeed } from "@/lib/alert-feed";
@@ -286,6 +287,33 @@ function useLookSync(user: User) {
   }, [colour, waves, outletId]);
 }
 
+// The last main page opened in this tab, so the exit returns there.
+let lastMainPage: string | null = null;
+
+/** One exit on every sub page, in the top bar so it stays in reach and never covers the page. Leaving keeps saved drafts and nothing is submitted. */
+function BackToMain({ user }: { user: User }) {
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const publicDemo = useSession((s) => !!s.demoRoles);
+  const main = isMainPage(pathname, params);
+  useEffect(() => { if (main) lastMainPage = pathname; }, [main, pathname]);
+  // These roles open the section straight on its only list, so there is no main page to return to.
+  const noMainPage = (pathname === "/stock" && user.role === "employee") || (pathname === "/forecast" && (user.role === "employee" || !canOpen(user, "stock")));
+  const wanted = noMainPage || !canOpen(user, moduleOfPath(pathname)) ? null : backTarget(pathname, params, lastMainPage, publicDemo ? "" : homePath(user));
+  if (!wanted) return null;
+  const target = publicDemo || canOpen(user, moduleOfPath(wanted)) ? wanted : homePath(user);
+  // Sent home because the role cannot open the main page, and already there.
+  if (target !== wanted && target.split("?")[0] === pathname) return null;
+  const label = target === "/menu" ? "Menu performance" : NAV[moduleOfPath(target.split("?")[0])].label;
+  const style = "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-paper px-4 text-sm font-medium text-ink transition-colors duration-150 ease-tyll hover:bg-cloud";
+  const body = <><ArrowLeft size={16} aria-hidden /> Back to {label}</>;
+  return (
+    <div className="mx-auto w-full max-w-[1760px] px-4 pb-2 sm:px-6 lg:px-8">
+      {publicDemo && !demoRoleFits(user, moduleOfPath(target.split("?")[0])) ? <a href={target} className={style}>{body}</a> : <Link href={target} className={style}>{body}</Link>}
+    </div>
+  );
+}
+
 function Signed({ user, children }: { user: User; children: ReactNode }) {
   useLookSync(user);
   const pathname = usePathname();
@@ -537,6 +565,7 @@ function Topbar({ user }: { user: User }) {
           </div>
         </div>
       </div>
+      <Suspense fallback={null}><BackToMain user={user} /></Suspense>
     </div>
     {palette && <CommandPalette user={user} pages={PAGES} onClose={() => setPalette(false)} />}
     <WhatsNew open={news} onClose={() => setNews(false)} />
