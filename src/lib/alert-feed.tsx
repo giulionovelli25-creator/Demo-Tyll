@@ -135,7 +135,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
       const rate = fxRate(propertyById[pour.propertyId].currency, sel.currency);
       // The two largest wine patterns, so the list stays readable. The rest are on Pour Control.
       for (const f of pour.wine.flags.slice(0, 2)) {
-        out.push({ id: f.id, kind: "pour", rag: "amber", what: `Check pouring at ${outletById[f.outletId].name}`, why: f.text, where: outletById[f.outletId].name, outletId: f.outletId, amount: f.figures.gapValue * rate, amountWord: "not billed", next: { label: "See Pour Control", href: "/money?tab=pour" } });
+        out.push({ id: f.id, kind: "pour", rag: "amber", what: `Check pouring at ${outletById[f.outletId].name}`, why: f.text, where: outletById[f.outletId].name, outletId: f.outletId, amount: f.figures.gapValue * rate, amountWord: "not billed", next: { label: "See over pouring", href: "/drinks" } });
       }
     }
     out.sort((a, b) => (b.amount ?? -1) - (a.amount ?? -1));

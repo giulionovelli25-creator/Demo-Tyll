@@ -1,13 +1,15 @@
 "use client";
-// Pour Control: how many glasses each bottle really gave. By wine, then where and when. Never by person.
-import { useState } from "react";
-import { EmptyState, KeyNumber, KeyNumbers, Note, Panel, Segmented, Skeleton, StatusPill, TableWrap, Td, Th, WidgetError, cn, rowClass, OutletDot } from "@/components/ui";
+// Over pouring: how many glasses each bottle really gave. By wine, then where and when. Never by person. Each part opens on its own in Drinks control.
+import { useRemembered } from "@/components/disclosure";
+import { EmptyState, Note, Segmented, StatusPill, TableWrap, Td, Th, cn, rowClass, OutletDot } from "@/components/ui";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { outletById } from "@/lib/data/catalog";
 import { SHIFTS, type PourFigures } from "@/lib/domain/pour";
 import type { PourPeriod } from "@/lib/server/pour";
 import type { Currency } from "@/lib/types";
 import { fmtMoney, fmtNum } from "@/lib/util";
+
+type Family = "wine" | "spirits";
 
 const PERIODS: { value: PourPeriod; label: string }[] = [{ value: "today", label: "Today" }, { value: "week", label: "This week" }, { value: "month", label: "This month" }];
 const fmtBottles = (n: number) => fmtNum(n, n % 1 === 0 ? 0 : 1);
@@ -17,46 +19,42 @@ function YieldCell({ f }: { f: PourFigures }) {
   return <span className={cn("num", f.flagged ? "font-medium text-neg" : "text-ink")}>{fmtNum(f.yieldPer, 1)}</span>;
 }
 
-export function PourControl() {
+function PeriodSwitch() {
+  const [period, setPeriod] = useRemembered<PourPeriod>("drinks.period", "week");
+  return <Segmented size="sm" label="Period" value={period} onChange={setPeriod} options={PERIODS} />;
+}
+
+function FamilySwitch() {
+  const [family, setFamily] = useRemembered<Family>("drinks.family", "wine");
+  return <Segmented size="sm" label="Wine or spirits" value={family} onChange={setFamily} options={[{ value: "wine", label: "Wine" }, { value: "spirits", label: "Spirits" }]} />;
+}
+
+/** One line of what is not billed, today, this week and this month. */
+function Gaps({ family }: { family: Family }) {
   const { pour } = useAlertFeed();
-  const [family, setFamily] = useState<"wine" | "spirits">("wine");
-  const [period, setPeriod] = useState<PourPeriod>("week");
-  const [allFlags, setAllFlags] = useState(false);
+  if (!pour) return null;
+  const noun = family === "wine" ? "glasses" : "measures";
+  const money = (n: number) => fmtMoney(n, pour.currency as Currency);
+  return <p className="text-[13px] text-graphite">Not billed: {PERIODS.map((p) => `${p.label.toLowerCase()} ${money(pour[family].totals[p.value].gapValue)} (${fmtNum(pour[family].totals[p.value].gap)} ${noun})`).join(", ")}.</p>;
+}
 
-  if (!pour) return <div className="space-y-4" aria-busy><KeyNumbers>{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full" />)}</KeyNumbers><Skeleton className="h-72 w-full" /></div>;
-
+export function PourByItem({ family }: { family: Family }) {
+  const { pour } = useAlertFeed();
+  const [period] = useRemembered<PourPeriod>("drinks.period", "week");
+  if (!pour) return null;
   const data = pour[family];
   const money = (n: number) => fmtMoney(n, pour.currency as Currency);
-  const noun = family === "wine" ? "glasses" : "measures";
   const Noun = family === "wine" ? "Glasses" : "Measures";
-  const per = (r: { perBottle: number }) => `${r.perBottle} per bottle`;
-  const flagged = data.outlets.reduce((n, o) => n + SHIFTS.filter((s) => o.shifts[s.id][period].flagged).length, 0);
-  const flags = allFlags ? data.flags : data.flags.slice(0, 6);
-  const hasData = data.rows.some((r) => r.periods.month.sold > 0);
-
+  if (!data.rows.some((r) => r.periods.month.sold > 0)) return <EmptyState title={`No ${family} sold here this month`}>Pick another outlet in the top bar.</EmptyState>;
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <Segmented label="Wine or spirits" value={family} onChange={setFamily} options={[{ value: "wine", label: "Wine by the glass" }, { value: "spirits", label: "Spirits" }]} />
-        <Segmented size="sm" label="Period" value={period} onChange={setPeriod} options={PERIODS} />
-      </div>
-
-      {!hasData ? <EmptyState title={`No ${family} sold here this month`}>Pick another outlet in the top bar.</EmptyState> : (
-        <>
-          <KeyNumbers>
-            {PERIODS.map((p) => {
-              const f = data.totals[p.value];
-              return <KeyNumber key={p.value} label={`Gap, ${p.label.toLowerCase()}`} value={money(f.gapValue)} tone={f.gapValue > 0 ? "money" : undefined} note={`${fmtNum(f.gap)} ${noun} not billed`} />;
-            })}
-            <KeyNumber label="Below the threshold" value={flagged} tone={flagged ? "warn" : "pos"} note={`Outlet shifts, ${PERIODS.find((p) => p.value === period)!.label.toLowerCase()}`} />
-          </KeyNumbers>
-
-          <Panel title={family === "wine" ? "Per wine by the glass" : "Per spirit"} description={`Flagged in red when a bottle gives under ${Math.round(pour.threshold * 100)}% of what it should. The gap columns are always today, this week and this month.`} flush>
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-4 sm:px-6"><Gaps family={family} /><PeriodSwitch /></div>
+      <div className="pt-3">
             <TableWrap>
-              <table className="w-full min-w-[760px] text-table">
+              <table className="w-full min-w-[560px] text-table">
                 <thead><tr>
                   <Th>{family === "wine" ? "Wine" : "Spirit"}</Th><Th align="right">Bottles opened</Th><Th align="right">{Noun} sold</Th><Th align="right">Expected per bottle</Th><Th align="right">Actual yield</Th>
-                  <Th align="right">Gap today</Th><Th align="right">Gap this week</Th><Th align="right">Gap this month</Th>
+                  <Th align="right">Gap</Th>
                 </tr></thead>
                 <tbody>
                   {data.rows.map((r) => {
@@ -68,17 +66,35 @@ export function PourControl() {
                         <Td align="right">{fmtNum(f.sold)}</Td>
                         <Td align="right">{r.perBottle}</Td>
                         <Td align="right"><YieldCell f={f} /></Td>
-                        {PERIODS.map((p) => <Td key={p.value} align="right"><span className={r.periods[p.value].gapValue > 0 ? "text-money" : "text-steel"}>{r.periods[p.value].gapValue > 0 ? money(r.periods[p.value].gapValue) : "None"}</span><span className="block text-xs text-steel">{fmtNum(r.periods[p.value].gap)} {noun}</span></Td>)}
+                        <Td align="right"><span className={f.gapValue > 0 ? "text-money" : "text-steel"}>{f.gapValue > 0 ? money(f.gapValue) : "None"}</span></Td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             </TableWrap>
-          </Panel>
+      </div>
+      <div className="px-4 py-3 sm:px-6">
+        <p className="mb-2 text-xs text-steel">Flagged when a bottle gives under {Math.round(pour.threshold * 100)}% of what it should.</p>
+        <Note>
+            Glasses sold come from the POS. Bottles opened are simulated in this demo, because the POS does not record them, and the one house wine on the menu is shared across labels here. A low yield usually means generous pours, unrecorded free glasses or breakage. Check pour size and measures first. It says nothing about any one person.
+          </Note>
+      </div>
+    </>
+  );
+}
 
-          <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
-            <Panel title="Where and when" description={`${Noun} each bottle gave, by outlet and shift. Red is below the threshold. No names here: this is about the shift, not a person.`} flush>
+export function PourWhere() {
+  const { pour } = useAlertFeed();
+  const [period] = useRemembered<PourPeriod>("drinks.period", "week");
+  const [family] = useRemembered<Family>("drinks.family", "wine");
+  if (!pour) return null;
+  const data = pour[family];
+  const money = (n: number) => fmtMoney(n, pour.currency as Currency);
+  const per = (r: { perBottle: number }) => `${r.perBottle} per bottle`;
+  return (
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-4 sm:px-6"><FamilySwitch /><PeriodSwitch /></div>
               <TableWrap>
                 <table className="w-full min-w-[420px] text-table">
                   <thead><tr><Th>Outlet</Th>{SHIFTS.map((s) => <Th key={s.id} align="right">{s.name}</Th>)}<Th align="right">Gap</Th></tr></thead>
@@ -97,24 +113,21 @@ export function PourControl() {
                 </table>
               </TableWrap>
               <p className="px-4 py-3 text-xs text-steel sm:px-6">Should give {per(data.rows[0])}{family === "spirits" ? " for rum, more for spirits in smaller measures" : ""}. Day is until 5 PM, evening until 10 PM, late after that.</p>
-            </Panel>
+    </>
+  );
+}
 
-            <Panel title="Flags to check" description="Patterns over the last 4 weeks, largest first. Each one covers every matching shift in that time." flush>
-              {flags.length === 0 ? <div className="px-4 pb-6 sm:px-6"><EmptyState title="Nothing below the threshold">Every outlet and shift is pouring close to standard.</EmptyState></div> : (
-                <ul>
-                  {flags.map((f) => <li key={f.id} className="border-t border-hair px-4 py-3 text-sm text-graphite sm:px-6">{f.text}</li>)}
-                </ul>
-              )}
-              {data.flags.length > 6 && <div className="border-t border-hair px-4 py-3 sm:px-6"><button type="button" onClick={() => setAllFlags((v) => !v)} className="text-[13px] font-medium text-accent-ink underline-offset-4 hover:underline">{allFlags ? "Show fewer" : `Show all ${data.flags.length} flags`}</button></div>}
-            </Panel>
-          </div>
-
-          <Note>
-            Glasses sold come from the POS. Bottles opened are simulated in this demo, because the POS does not record them, and the one house wine on the menu is shared across labels here. A low yield usually means generous pours, unrecorded free glasses or breakage. Check pour size and measures first. It says nothing about any one person.
-          </Note>
-        </>
+export function PourPatterns() {
+  const { pour } = useAlertFeed();
+  const [family] = useRemembered<Family>("drinks.family", "wine");
+  if (!pour) return null;
+  const flags = pour[family].flags;
+  return (
+    <>
+      <div className="px-4 py-4 sm:px-6"><FamilySwitch /></div>
+      {flags.length === 0 ? <div className="px-4 pb-6 sm:px-6"><EmptyState title="Nothing below the threshold">Every outlet and shift is pouring close to standard.</EmptyState></div> : (
+        <ul>{flags.map((f) => <li key={f.id} className="border-t border-hair px-4 py-3 text-sm text-graphite sm:px-6">{f.text}</li>)}</ul>
       )}
-      {!pour && <WidgetError>Pour Control could not load.</WidgetError>}
-    </div>
+    </>
   );
 }

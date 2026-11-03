@@ -29,7 +29,7 @@ const ICONS: Record<string, LucideIcon> = {
   plate: Disc, sideplate: Disc, soupbowl: Soup, coffeecup: Coffee, saucer: Disc, jug: Milk,
 };
 const SUPPLIER_ICONS: Record<string, LucideIcon> = { meat: Beef, sea: Fish, produce: Carrot, bakery: Croissant, dry: Package, bev: CupSoda, ware: GlassWater };
-const ItemIcon = ({ g, size }: { g: Ingredient; size: number }) => createElement(ICONS[g.id] ?? SUPPLIER_ICONS[g.supplierId] ?? Package, { size, "aria-hidden": true });
+export const ItemIcon = ({ g, size }: { g: Ingredient; size: number }) => createElement(ICONS[g.id] ?? SUPPLIER_ICONS[g.supplierId] ?? Package, { size, "aria-hidden": true });
 
 interface Reason { id: string; label: string; reason: WasteReason }
 const REASONS: Record<StockArea, Reason[]> = {

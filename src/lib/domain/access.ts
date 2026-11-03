@@ -3,7 +3,7 @@
 import { OUTLETS, PROPERTIES, outletById } from "../data/catalog";
 import type { Currency, Role, Scope, User } from "../types";
 
-export type ModuleId = "overview" | "money" | "stock" | "forecast" | "events" | "flow" | "rooms" | "investigations" | "reports" | "settings" | "tasks" | "finance" | "staff" | "alerts" | "more" | "waste";
+export type ModuleId = "overview" | "money" | "stock" | "forecast" | "events" | "flow" | "rooms" | "investigations" | "reports" | "settings" | "tasks" | "finance" | "staff" | "alerts" | "more" | "waste" | "drinks";
 
 export type Permission =
   | "investigation.assign"
@@ -69,11 +69,11 @@ export type Permission =
   | "sales.view";
 
 const MODULES: Record<Role, ModuleId[]> = {
-  owner: ["overview", "money", "stock", "waste", "forecast", "alerts", "events", "flow", "rooms", "investigations", "reports", "finance", "more", "settings"],
-  gm: ["overview", "money", "stock", "waste", "forecast", "alerts", "events", "flow", "rooms", "investigations", "reports", "finance", "more", "settings"],
-  controller: ["overview", "money", "stock", "waste", "forecast", "alerts", "rooms", "investigations", "reports", "finance", "more", "settings"],
-  fnb_director: ["overview", "money", "stock", "waste", "forecast", "alerts", "events", "flow", "investigations", "reports", "more", "settings"],
-  restaurant_manager: ["overview", "money", "stock", "waste", "forecast", "alerts", "events", "rooms", "flow", "investigations", "reports", "more", "settings"],
+  owner: ["overview", "money", "drinks", "stock", "waste", "forecast", "alerts", "events", "flow", "rooms", "investigations", "reports", "finance", "more", "settings"],
+  gm: ["overview", "money", "drinks", "stock", "waste", "forecast", "alerts", "events", "flow", "rooms", "investigations", "reports", "finance", "more", "settings"],
+  controller: ["overview", "money", "drinks", "stock", "waste", "forecast", "alerts", "rooms", "investigations", "reports", "finance", "more", "settings"],
+  fnb_director: ["overview", "money", "drinks", "stock", "waste", "forecast", "alerts", "events", "flow", "investigations", "reports", "more", "settings"],
+  restaurant_manager: ["overview", "money", "drinks", "stock", "waste", "forecast", "alerts", "events", "rooms", "flow", "investigations", "reports", "more", "settings"],
   // Purchasing sees requests, stock and suppliers, not sales. The head chef sees preparation and stock, not finances.
   purchasing: ["forecast", "stock", "waste", "alerts", "more", "settings"],
   chef: ["forecast", "events", "tasks", "stock", "waste", "flow", "alerts", "more", "settings"],
@@ -111,12 +111,15 @@ const PERMISSIONS: Record<Role, Permission[]> = {
 
 export const MODULE_PATH: Record<ModuleId, string> = {
   overview: "/", money: "/money", stock: "/stock", forecast: "/forecast", events: "/events", flow: "/flow", rooms: "/rooms",
-  investigations: "/investigations", reports: "/reports", settings: "/settings", tasks: "/tasks", finance: "/finance", staff: "/staff", alerts: "/alerts", more: "/more", waste: "/waste",
+  investigations: "/investigations", reports: "/reports", settings: "/settings", tasks: "/tasks", finance: "/finance", staff: "/staff", alerts: "/alerts", more: "/more", waste: "/waste", drinks: "/drinks",
 };
 
 export const modulesFor = (user: User): ModuleId[] => MODULES[user.role];
 export const canOpen = (user: User, module: ModuleId) => MODULES[user.role].includes(module);
 export const can = (user: User, permission: Permission) => PERMISSIONS[user.role].includes(permission);
+/** In the public demo, whether this role can do a module's main job. If not, opening it switches role, which needs a full page load. */
+export const demoRoleFits = (user: User, module: ModuleId) =>
+  canOpen(user, module) && (module !== "finance" || can(user, "finance.review")) && (module !== "forecast" || can(user, "purchase.create"));
 export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/stock" : user.role === "chef" ? "/stock" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : user.role === "controller" ? "/finance?tab=invoices" : "/");
 
 /** Which module a URL path belongs to, for route guarding. */

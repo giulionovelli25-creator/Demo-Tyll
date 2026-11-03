@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ClipboardCheck, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Section, useRemembered } from "@/components/disclosure";
 import { useCountDraft } from "@/components/stock/count-flow";
 import { QuickCount } from "@/components/stock/quick-count";
-import { EmptyState, PageHeader, Panel, Segmented, Skeleton, StatusPill, SummaryBar, TableWrap, Tabs, Td, Th, WidgetError, cn, linkButton, rowClass, textLink, toast, useSort, type Rag } from "@/components/ui";
+import { EmptyState, PageHeader, Panel, Segmented, Skeleton, StatusPill, SummaryBar, TableWrap, Tabs, Td, Th, WidgetError, cn, linkButton, rowClass, textLink, useSort, type Rag } from "@/components/ui";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { ingredientById, propertyById } from "@/lib/data/catalog";
-import { STOCK_AREAS, stockAreaOf, type StockArea } from "@/lib/data/locations";
+import { STOCK_AREAS, STOCK_GROUPS, groupByStock, stockAreaOf, stockGroupOf, type StockArea } from "@/lib/data/locations";
 import { can } from "@/lib/domain/access";
 import { countVariance, countVarianceValue } from "@/lib/domain/inventory";
 import { VARIANCE_RULES } from "@/lib/domain/variance";
@@ -32,16 +32,21 @@ function CriticalItems({ plan }: { plan: MonthPlanOut }) {
   if (rows.length === 0) return <Panel><p className="text-sm text-graphite">Nothing is critical. Every item can wait for a normal order.</p></Panel>;
   return (
     <Panel title="Critical items" description="An order placed today would arrive too late." action={<Link href="/forecast" className={textLink}>See what to order</Link>} flush>
-      <ul>
-        {rows.map((r) => (
-          <li key={r.ingredientId} className="border-t border-hair">
-            <Link href={`/stock?tab=inventory&item=${r.ingredientId}`} className="flex flex-col gap-0.5 px-4 py-2.5 transition-colors duration-150 hover:bg-cloud sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
-              <span className="text-sm font-medium text-ink">{name(r)}</span>
-              <span className="num text-table text-graphite">{STOCK_AREAS.find((a) => a.id === stockAreaOf(r.ingredientId))!.name}, {fmtQty(r.onHand, r.unit)} left, runs out in {daysWords(r, plan.period.to).toLowerCase()}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {STOCK_AREAS.filter((area) => rows.some((r) => stockAreaOf(r.ingredientId) === area.id)).map((area) => (
+        <div key={area.id}>
+          <h3 className="border-t border-hair bg-cloud px-4 py-1.5 text-xs font-semibold text-ink sm:px-6">{area.name}</h3>
+          <ul>
+            {rows.filter((r) => stockAreaOf(r.ingredientId) === area.id).map((r) => (
+              <li key={r.ingredientId} className="border-t border-hair">
+                <Link href={`/stock?tab=inventory&item=${r.ingredientId}`} className="flex flex-col gap-0.5 px-4 py-2.5 transition-colors duration-150 hover:bg-cloud sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+                  <span className="text-sm font-medium text-ink">{name(r)}</span>
+                  <span className="num text-table text-graphite">{STOCK_GROUPS.find((g) => g.id === stockGroupOf(r.ingredientId))!.name}, {fmtQty(r.onHand, r.unit)} left, runs out in {daysWords(r, plan.period.to).toLowerCase()}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </Panel>
   );
 }
@@ -63,7 +68,8 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
       return (sort.dir === "asc" ? d : -d) || (a.daysUntilOut ?? 9999) - (b.daysUntilOut ?? 9999);
     });
   }, [plan.items, q, show, sort]);
-  const shown = rows;
+  const groups = groupByStock(rows, (r) => r.ingredientId);
+  const note = (list: PlanItem[]) => { const n = list.filter((r) => r.health === "critical").length; return `${list.length} ${list.length === 1 ? "item" : "items"}${n ? `, ${n} critical` : ""}`; };
   const count = (h: StockHealth) => plan.items.filter((i) => i.health === h).length;
   return (
     <>
@@ -78,7 +84,7 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
       {rows.length === 0 ? <div className="px-4 pb-6 sm:px-6"><EmptyState title={q ? `No item matches "${q}"` : "No items here right now"}>Try another name, or show all items.</EmptyState></div> : (
         <>
           <ul className="md:hidden">
-            {shown.map((r) => (
+            {groups.map((g) => <Fragment key={g.id}><li className="border-t border-hair bg-cloud px-4 py-2"><span className="text-[13px] font-semibold text-ink">{g.name}</span> <span className="text-xs text-steel">{note(g.rows)}</span></li>{g.rows.map((r) => (
               <li key={r.ingredientId} className={cn("border-t border-hair px-4 py-3", r.health === "critical" && "bg-neg-soft/40")}>
                 <div className="flex items-start justify-between gap-2"><span className="text-sm font-medium text-ink">{name(r)}</span><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill></div>
                 <dl className="mt-2 grid grid-cols-3 gap-2 text-table">
@@ -87,7 +93,7 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
                   <div><dt className="text-xs text-steel">Runs out in</dt><dd className="num text-ink">{daysWords(r, plan.period.to)}</dd></div>
                 </dl>
               </li>
-            ))}
+            ))}</Fragment>)}
           </ul>
           <TableWrap className="hidden md:block">
             <table className="w-full min-w-[560px] text-table">
@@ -99,7 +105,7 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
                 <Th sortKey="health" sort={sort} onSort={toggle}>Status</Th>
               </tr></thead>
               <tbody>
-                {shown.map((r) => (
+                {groups.map((g) => <Fragment key={g.id}><tr><td colSpan={5} className="border-t border-hair bg-cloud px-5 py-2 sm:px-6"><span className="text-[13px] font-semibold text-ink">{g.name}</span> <span className="ml-1 text-xs text-steel">{note(g.rows)}</span></td></tr>{g.rows.map((r) => (
                   <tr key={r.ingredientId} className={cn(rowClass, r.health === "critical" && "bg-neg-soft/40")}>
                     <Td><Link href={`/stock?tab=inventory&item=${r.ingredientId}`} className="text-ink underline-offset-4 hover:underline">{name(r)}</Link></Td>
                     <Td align="right"><span className="text-ink">{fmtQty(r.onHand, r.unit)}</span></Td>
@@ -107,7 +113,7 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
                     <Td align="right"><span className={r.health === "critical" ? "text-neg" : r.health === "low" ? "text-warn" : "text-ink"}>{daysWords(r, plan.period.to)}</span></Td>
                     <Td><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill></Td>
                   </tr>
-                ))}
+                ))}</Fragment>)}
               </tbody>
             </table>
           </TableWrap>
@@ -136,7 +142,7 @@ function ExpectedVsActual({ propertyId, area }: { propertyId: string; area: Stoc
     }).sort((a, b) => Number(b.flagged) - Number(a.flagged) || a.value - b.value);
   }, [ctx.counts, ctx.overrides, propertyId, area]);
   const flagged = rows.filter((r) => r.flagged);
-  const shown = rows;
+  const groups = groupByStock(rows, (r) => r.c.ingredientId);
   const Words = ({ gap, unit }: { gap: number; unit: string }) => <>{Math.abs(gap) < 0.005 ? "None" : `${fmtQty(Math.abs(gap), unit)} ${gap < 0 ? "short" : "over"}`}</>;
   return (
     <Panel
@@ -147,7 +153,7 @@ function ExpectedVsActual({ propertyId, area }: { propertyId: string; area: Stoc
       {rows.length === 0 ? <div className="px-4 pb-6 sm:px-6"><EmptyState title="No counts yet">Start a stock count to compare it with sales.</EmptyState></div> : (
         <>
           <ul className="md:hidden">
-            {shown.map((r) => {
+            {groups.map((group) => <Fragment key={group.id}><li className="border-t border-hair bg-cloud px-4 py-2 text-[13px] font-semibold text-ink">{group.name}</li>{group.rows.map((r) => {
               const g = ingredientById[r.c.ingredientId];
               return (
                 <li key={r.c.id} className={cn("border-t border-hair px-4 py-3", r.flagged && "bg-money-soft/60")}>
@@ -155,13 +161,13 @@ function ExpectedVsActual({ propertyId, area }: { propertyId: string; area: Stoc
                   <p className="mt-1 text-xs text-steel">Should be {fmtQty(r.c.expected, g.unit)}, counted {fmtQty(r.c.counted, g.unit)} on {fmtDate(r.c.date)}. <Words gap={r.gap} unit={g.unit} />.</p>
                 </li>
               );
-            })}
+            })}</Fragment>)}
           </ul>
           <TableWrap className="hidden md:block">
             <table className="w-full min-w-[640px] text-table">
               <thead><tr><Th>Item</Th><Th align="right">Should be left</Th><Th align="right">Counted</Th><Th align="right">Gap</Th><Th align="right">Worth</Th><Th>Counted on</Th></tr></thead>
               <tbody>
-                {shown.map((r) => {
+                {groups.map((group) => <Fragment key={group.id}><tr><td colSpan={6} className="border-t border-hair bg-cloud px-5 py-2 text-[13px] font-semibold text-ink sm:px-6">{group.name}</td></tr>{group.rows.map((r) => {
                   const g = ingredientById[r.c.ingredientId];
                   return (
                     <tr key={r.c.id} className={cn(rowClass, r.flagged && "bg-money-soft/60")}>
@@ -173,7 +179,7 @@ function ExpectedVsActual({ propertyId, area }: { propertyId: string; area: Stoc
                       <Td>{fmtDate(r.c.date)}</Td>
                     </tr>
                   );
-                })}
+                })}</Fragment>)}
               </tbody>
             </table>
           </TableWrap>
@@ -191,12 +197,6 @@ export function StockPage() {
   const [area, setArea] = useRemembered<StockArea>("stock.area", "food");
   const mayCount = can(user, "stock.count");
   const paused = useCountDraft((d) => d.byUser[user.id]);
-  const setPaused = useCountDraft((d) => d.set);
-  const startOver = () => {
-    const kept = paused;
-    setPaused(user.id, undefined);
-    toast.done("Count cleared.", { label: "Undo", run: () => setPaused(user.id, kept) });
-  };
   const count = (a: StockArea) => plan?.items.filter((i) => stockAreaOf(i.ingredientId) === a).length ?? 0;
   const view = useMemo(() => plan && { ...plan, items: plan.items.filter((i) => stockAreaOf(i.ingredientId) === area) }, [plan, area]);
   const by = (h: StockHealth) => plan?.items.filter((i) => i.health === h).length ?? 0;
@@ -219,7 +219,7 @@ export function StockPage() {
             action={mayCount ? (
               <>
                 <Link href="/count" className={linkButton("primary")}><ClipboardCheck size={16} aria-hidden /> {paused ? `Resume count, ${Math.min(paused.index + 1, paused.order.length)} of ${paused.order.length}` : "Start count"}</Link>
-                {paused && <button type="button" onClick={startOver} className={cn(textLink, "mt-3 justify-center")}>Clear and start over</button>}
+                {paused && <Link href="/count?choose=1" className={cn(textLink, "mt-3 justify-center")}>Choose another count</Link>}
               </>
             ) : undefined}
           />
@@ -227,7 +227,7 @@ export function StockPage() {
           {tab === "stock" ? (
             <>
               <CriticalItems plan={plan} />
-              <Section id="stock.all" title="Show all items" summary={`${plan.items.length} items: ${count("food")} food, ${count("drinks")} drinks, ${count("inventory")} inventory`} flush>
+              <Section id="stock.all" title="Show all items" summary={`${plan.items.length} items: ${count("food")} food, ${count("drinks")} beverage, ${count("inventory")} inventory`} flush>
                 <div className="px-4 pt-4 sm:px-6">{areaSwitch}</div>
                 <AllItems key={area} plan={view} area={area} />
               </Section>

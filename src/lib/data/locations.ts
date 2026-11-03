@@ -36,7 +36,7 @@ export const CATEGORIES = [
   { id: "produce", name: "Fresh produce", suppliers: ["produce"] },
   { id: "bakery", name: "Bakery", suppliers: ["bakery"] },
   { id: "dry", name: "Dairy and dry goods", suppliers: ["dry"] },
-  { id: "drinks", name: "Drinks", suppliers: ["bev"] },
+  { id: "drinks", name: "Beverage", suppliers: ["bev"] },
 ] as const;
 
 export type CategoryId = (typeof CATEGORIES)[number]["id"];
@@ -46,7 +46,7 @@ export const categoryOf = (ingredientId: string): CategoryId | null =>
 /** The three parts of Stock and of Log waste. Food and drinks are used up. Inventory is reused until it breaks. */
 export const STOCK_AREAS = [
   { id: "food", name: "Food" },
-  { id: "drinks", name: "Drinks" },
+  { id: "drinks", name: "Beverage" },
   { id: "inventory", name: "Inventory" },
 ] as const;
 
@@ -55,4 +55,43 @@ export function stockAreaOf(ingredientId: string): StockArea {
   const g = ingredientById[ingredientId];
   if (g.dept === "glassware" || g.dept === "supplies") return "inventory";
   return g.supplierId === "bev" ? "drinks" : "food";
+}
+
+/** How a hotel files its stock: food and beverage, each by category, then inventory. Lists show items under these headings, in this order. */
+export const STOCK_GROUPS = [
+  { id: "meat", area: "food", name: "Meat and fish" },
+  { id: "produce", area: "food", name: "Fresh produce" },
+  { id: "dairy", area: "food", name: "Dairy and eggs" },
+  { id: "bakery", area: "food", name: "Bakery" },
+  { id: "dry", area: "food", name: "Dry goods" },
+  { id: "wine", area: "drinks", name: "Wine" },
+  { id: "spirits", area: "drinks", name: "Spirits and liqueurs" },
+  { id: "soft", area: "drinks", name: "Soft drinks" },
+  { id: "coffee", area: "drinks", name: "Coffee" },
+  { id: "glass", area: "inventory", name: "Glassware" },
+  { id: "china", area: "inventory", name: "China and serving" },
+  { id: "supplies", area: "inventory", name: "Hotel supplies" },
+] as const;
+
+export type StockGroupId = (typeof STOCK_GROUPS)[number]["id"];
+const GLASSES = new Set(["wineglass", "highball", "rocks", "flute", "beerglass", "waterglass"]);
+
+export function stockGroupOf(ingredientId: string): StockGroupId {
+  const g = ingredientById[ingredientId];
+  if (g.dept === "supplies") return "supplies";
+  if (g.dept === "glassware") return GLASSES.has(g.id) ? "glass" : "china";
+  if (g.id === "wine") return "wine";
+  if (g.id === "rum" || g.id === "vodka" || g.id === "liqueur") return "spirits";
+  if (g.id === "coffee") return "coffee";
+  if (g.supplierId === "bev") return "soft";
+  if (DAIRY.has(g.id) || g.id === "icecream") return "dairy";
+  if (g.supplierId === "meat" || g.supplierId === "sea") return "meat";
+  if (g.supplierId === "produce") return "produce";
+  if (g.supplierId === "bakery") return "bakery";
+  return "dry";
+}
+
+/** Rows under their category, keeping the order they came in. Empty categories are left out. */
+export function groupByStock<T>(rows: readonly T[], idOf: (row: T) => string) {
+  return STOCK_GROUPS.map((group) => ({ ...group, rows: rows.filter((r) => stockGroupOf(idOf(r)) === group.id) })).filter((g) => g.rows.length > 0);
 }

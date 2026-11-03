@@ -3,14 +3,14 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Section, SectionLink, useRemembered } from "@/components/disclosure";
 import { Button, Drawer, EmptyState, Note, PageHeader, Panel, Segmented, Skeleton, StatusPill, SummaryBar, TableWrap, Td, Th, WidgetError, cn, linkButton, rowClass, textLink, toast, useSort, type Rag } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { ingredientById, propertyById } from "@/lib/data/catalog";
 import { supplierName } from "@/lib/data/purchasing-rules";
-import { STOCK_AREAS, stockAreaOf, type StockArea } from "@/lib/data/locations";
+import { STOCK_AREAS, groupByStock, stockAreaOf, type StockArea } from "@/lib/data/locations";
 import { can } from "@/lib/domain/access";
 import type { ConfidenceLevel } from "@/lib/domain/planning";
 import { useLiveGet } from "@/lib/guest-hooks";
@@ -63,23 +63,24 @@ function OrderBy({ r }: { r: PlanItem }) {
 function ItemList({ rows, plan }: { rows: PlanItem[]; plan: MonthPlanOut }) {
   const money = (n: number) => fmtMoney(n, propertyById[plan.propertyId].currency);
   const end = fmtDate(plan.period.to);
+  const groups = groupByStock(rows, (r) => r.ingredientId);
   const Split = ({ r }: { r: PlanItem }) => (r.deliveries > 1 ? <span className="block text-xs text-steel">Keeps {r.shelfLifeDays} days: {r.deliveries} deliveries, next {fmtQty(r.nextQty, r.unit)}</span> : null);
   return (
     <>
       <ul className="md:hidden">
-        {rows.map((r) => (
+        {groups.map((g) => <Fragment key={g.id}><li className="border-t border-hair bg-cloud px-4 py-2 text-[13px] font-semibold text-ink">{g.name}</li>{g.rows.map((r) => (
           <li key={r.ingredientId} className="border-t border-hair px-4 py-3">
             <div className="flex items-baseline justify-between gap-2"><span className="text-sm font-medium text-ink">{name(r)}</span><span className="num shrink-0 text-sm font-medium text-ink">{fmtQty(r.orderQty, r.unit)}</span></div>
             <p className="mt-1 text-xs text-steel">Order by <OrderBy r={r} />. Cost {money(r.cost)}. Use to {end}: {fmtQty(r.predicted, r.unit)}.</p>
             <Split r={r} />
           </li>
-        ))}
+        ))}</Fragment>)}
       </ul>
       <TableWrap className="hidden md:block">
         <table className="w-full min-w-[560px] text-table">
           <thead><tr><Th>Item</Th><Th align="right">Predicted use</Th><Th align="right">Have and coming</Th><Th align="right">Order</Th><Th align="right">Cost</Th><Th>Order by</Th></tr></thead>
           <tbody>
-            {rows.map((r) => (
+            {groups.map((g) => <Fragment key={g.id}><tr><td colSpan={6} className="border-t border-hair bg-cloud px-5 py-2 text-[13px] font-semibold text-ink sm:px-6">{g.name}</td></tr>{g.rows.map((r) => (
               <tr key={r.ingredientId} className={rowClass}>
                 <Td><span className="text-ink">{name(r)}</span><span className="block text-xs text-steel">{supplierName(r.supplierId)}</span></Td>
                 <Td align="right">{fmtQty(r.predicted, r.unit)}<span className="block text-xs text-steel">last 4 weeks {fmtQty(r.lastFourWeeks, r.unit)}</span></Td>
@@ -88,7 +89,7 @@ function ItemList({ rows, plan }: { rows: PlanItem[]; plan: MonthPlanOut }) {
                 <Td align="right">{money(r.cost)}</Td>
                 <Td><OrderBy r={r} /></Td>
               </tr>
-            ))}
+            ))}</Fragment>)}
           </tbody>
         </table>
       </TableWrap>
@@ -186,19 +187,26 @@ export function Predictions() {
           <section id="order" className="scroll-mt-24">
             <Panel title={dueToday.length ? `Order today: ${dueToday.length} ${dueToday.length === 1 ? "item" : "items"}, ${local(sum(dueToday, (r) => r.nextCost))}` : "Order these first"} flush>
               {rows.length === 0 ? <div className="px-4 pb-6 sm:px-6"><EmptyState title="Nothing to order">Stock covers the month.</EmptyState></div> : (
-                <ul>
-                  {(dueToday.length ? dueToday : rows).slice(0, FIRST).map((r) => (
-                    <li key={r.ingredientId} className="flex flex-col gap-0.5 border-t border-hair px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
-                      <span className="text-sm font-medium text-ink">{name(r)}</span>
-                      <span className="num text-table text-graphite">{r.orderBy === DEMO_TODAY ? `${fmtQty(r.nextQty, r.unit)} now, ${local(r.nextCost)}` : `${fmtQty(r.orderQty, r.unit)}, ${local(r.cost)}, by ${fmtDate(r.orderBy!, true)}`}</span>
-                    </li>
+                <>
+                  {STOCK_AREAS.filter((area) => (dueToday.length ? dueToday : rows).slice(0, FIRST).some((r) => stockAreaOf(r.ingredientId) === area.id)).map((area) => (
+                    <div key={area.id}>
+                      <h3 className="border-t border-hair bg-cloud px-4 py-1.5 text-xs font-semibold text-ink sm:px-6">{area.name}</h3>
+                      <ul>
+                        {(dueToday.length ? dueToday : rows).slice(0, FIRST).filter((r) => stockAreaOf(r.ingredientId) === area.id).map((r) => (
+                          <li key={r.ingredientId} className="flex flex-col gap-0.5 border-t border-hair px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+                            <span className="text-sm font-medium text-ink">{name(r)}</span>
+                            <span className="num text-table text-graphite">{r.orderBy === DEMO_TODAY ? `${fmtQty(r.nextQty, r.unit)} now, ${local(r.nextCost)}` : `${fmtQty(r.orderQty, r.unit)}, ${local(r.cost)}, by ${fmtDate(r.orderBy!, true)}`}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </>
               )}
             </Panel>
           </section>
           {rows.length > FIRST && (
-            <Section id="predictions.all" title={`Show all ${rows.length} recommended items`} summary={`${rows.filter((r) => stockAreaOf(r.ingredientId) === "food").length} food, ${rows.filter((r) => stockAreaOf(r.ingredientId) === "drinks").length} drinks, ${rows.filter((r) => stockAreaOf(r.ingredientId) === "inventory").length} inventory`} flush>
+            <Section id="predictions.all" title={`Show all ${rows.length} recommended items`} summary={`${rows.filter((r) => stockAreaOf(r.ingredientId) === "food").length} food, ${rows.filter((r) => stockAreaOf(r.ingredientId) === "drinks").length} beverage, ${rows.filter((r) => stockAreaOf(r.ingredientId) === "inventory").length} inventory`} flush>
               <AllRecommended rows={rows} plan={plan} />
             </Section>
           )}

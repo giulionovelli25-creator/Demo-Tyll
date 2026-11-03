@@ -83,7 +83,7 @@ export function Panel({ title, description, action, children, className, flush }
       {(title || action) && (
         <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-5 pt-5 sm:px-6">
           <div className="min-w-0">
-            {title && <h2 className="text-[17px] leading-snug text-ink">{title}</h2>}
+            {title && <h2 className="text-[17px] font-semibold leading-snug text-ink">{title}</h2>}
             {description && <p className="mt-1 max-w-[70ch] text-[13px] text-steel">{description}</p>}
           </div>
           {action && <div className="flex flex-wrap items-center gap-2">{action}</div>}
@@ -106,7 +106,7 @@ export function PageHeader({ title, question, lead, children, crumbs }: { title:
         {crumbs && <div className="mb-2">{crumbs}</div>}
         <div className="flex items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-accent-soft text-accent-ink"><Icon size={18} aria-hidden /></span>
-          <h1 className="text-[28px] font-normal leading-tight tracking-[-0.03em] text-ink">{title}</h1>
+          <h1 className="text-[30px] font-semibold leading-tight tracking-[-0.025em] text-ink">{title}</h1>
         </div>
         {question && <p className="mt-2 text-[15px] font-medium text-accent-ink">{question}</p>}
         {lead && <p className="mt-0.5 text-[13px] leading-relaxed text-steel">{lead}</p>}
@@ -308,7 +308,7 @@ export function Th<K extends string>({ children, sortKey, sort, onSort, align = 
   const active = sortKey && sort?.key === sortKey;
   const Icon = !active ? ChevronsUpDown : sort!.dir === "asc" ? ChevronUp : ChevronDown;
   return (
-    <th scope="col" aria-sort={active ? (sort!.dir === "asc" ? "ascending" : "descending") : undefined} className={cn("whitespace-nowrap px-3 py-2.5 text-xs font-medium text-steel first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6", align === "right" ? "text-right" : "text-left", className)}>
+    <th scope="col" aria-sort={active ? (sort!.dir === "asc" ? "ascending" : "descending") : undefined} className={cn("whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-graphite first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6", align === "right" ? "text-right" : "text-left", className)}>
       {sortKey && onSort ? (
         <button type="button" onClick={() => onSort(sortKey)} className={cn("inline-flex items-center gap-1 hover:text-ink", active && "text-ink", align === "right" && "flex-row-reverse")}>
           {children}

@@ -2,8 +2,9 @@
 // Overview: the four main features as large cards, one chart, and the three things that matter most today. Nothing else.
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Wine } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
+import { useMissingDrinks } from "@/components/drinks/missing";
 import { MODULE_ICON, MODULE_TONE } from "@/components/theme";
 import { EmptyState, OutletDot, PageHeader, Panel, Skeleton, WidgetError, cn, linkButton, textLink } from "@/components/ui";
 import { useAlertFeed } from "@/lib/alert-feed";
@@ -12,7 +13,7 @@ import { compare, computeTotals } from "@/lib/domain/metrics";
 import { topAlerts } from "@/lib/domain/top-alerts";
 import type { ModuleId } from "@/lib/domain/access";
 import { useCtx, useView } from "@/lib/hooks";
-import { DEMO_NOW_MIN, DEMO_TODAY, addDays, eachDay, fmtDate, fmtMoney, fmtPct, fmtShort, fmtTime, pctChange, presetRange, sum } from "@/lib/util";
+import { DEMO_NOW_MIN, DEMO_TODAY, addDays, eachDay, fmtDate, fmtMoney, fmtPct, fmtShort, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
 import type { ChartPoint } from "./chart";
 
 const RevenueProfitChart = dynamic(() => import("./chart").then((m) => m.RevenueProfitChart), { ssr: false, loading: () => <Skeleton className="h-[172px] w-full" /> });
@@ -26,13 +27,13 @@ function Spark({ values }: { values: number[] }) {
   const low = Math.min(...values);
   const span = top - low || 1;
   const points = values.map((v, i) => `${(i / Math.max(values.length - 1, 1)) * 100},${26 - ((v - low) / span) * 22}`).join(" ");
-  return <svg viewBox="0 0 100 28" preserveAspectRatio="none" className="h-7 w-full" aria-hidden><polyline points={points} fill="none" stroke="var(--color-accent-ink)" strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round" /></svg>;
+  return <svg viewBox="0 0 100 28" preserveAspectRatio="none" className="h-5 w-full" aria-hidden><polyline points={points} fill="none" stroke="var(--color-accent-ink)" strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round" /></svg>;
 }
 
 function Bars({ values }: { values: number[] }) {
   const top = Math.max(...values, 1);
   return (
-    <div className="flex h-7 items-end gap-1" aria-hidden>
+    <div className="flex h-5 items-end gap-1" aria-hidden>
       {values.map((v, i) => <span key={i} className={cn("flex-1 rounded-t-[3px]", i === values.length - 1 ? "bg-money" : "bg-money/30")} style={{ height: `${Math.max((v / top) * 100, 6)}%` }} />)}
     </div>
   );
@@ -40,7 +41,7 @@ function Bars({ values }: { values: number[] }) {
 
 function Split({ parts }: { parts: { n: number; className: string }[] }) {
   return (
-    <div className="flex h-7 items-center" aria-hidden>
+    <div className="flex h-5 items-center" aria-hidden>
       <div className="flex h-2 w-full gap-0.5">
         {parts.filter((p) => p.n > 0).map((p, i) => <span key={i} className={cn("rounded-full", p.className)} style={{ flexGrow: p.n, flexBasis: 0 }} />)}
       </div>
@@ -53,7 +54,7 @@ function Card({ module, title, number, tone, line, cta, href, picture, loading }
   return (
     <section aria-label={title} data-mod={MODULE_TONE[module]} className="relative flex min-w-0 items-center gap-3 rounded-panel border border-line bg-paper p-3 shadow-panel transition-shadow duration-200 ease-tyll hover:shadow-lift sm:flex-col sm:items-stretch sm:gap-0 sm:p-4">
       <div className="min-w-0 flex-1">
-        <h2 className="flex items-center gap-2 text-[14px] font-medium text-accent-ink"><span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-soft"><Icon size={15} aria-hidden /></span>{title}</h2>
+        <h2 className="flex items-center gap-2 text-[15px] font-semibold text-accent-ink"><span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-soft"><Icon size={15} aria-hidden /></span>{title}</h2>
         {loading ? (
           <div className="space-y-2 pt-2" aria-hidden><Skeleton className="h-8 w-2/3" /><Skeleton className="h-4 w-full" /></div>
         ) : (
@@ -76,7 +77,8 @@ const POINTS = 14;
 export function Home() {
   const { user, sel, money, propertyId, currency } = useView();
   const ctx = useCtx();
-  const { plan, open, error, loading } = useAlertFeed();
+  const { plan, open, pour, error, loading } = useAlertFeed();
+  const missing = useMissingDrinks();
   const week = useMemo(() => compare(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
   const today = useMemo(() => computeTotals(ctx, { ...sel, range: { from: DEMO_TODAY, to: DEMO_TODAY } }), [ctx, sel]);
   const points = useMemo<(ChartPoint & { lost: number })[]>(() => eachDay({ from: addDays(DEMO_TODAY, -(POINTS - 1)), to: DEMO_TODAY }).map((date) => {
@@ -131,7 +133,14 @@ export function Home() {
         />
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[3fr_2fr]">
+      <Link href="/drinks" data-mod={MODULE_TONE.drinks} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-panel border border-line bg-paper px-3 py-2.5 shadow-panel transition-shadow duration-200 ease-tyll hover:shadow-lift sm:px-4">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-soft text-accent-ink"><Wine size={15} aria-hidden /></span>
+        <span className="text-[15px] font-semibold text-accent-ink">Drinks control</span>
+        <span className="min-w-0 flex-1 basis-[220px] text-[13px] text-graphite">{pour ? `${pour.wine.totals.week.gap} glasses of wine not billed this week, ${money(pour.wine.totals.week.gapValue * fxRate(propertyById[pour.propertyId].currency, sel.currency), { compact: true })}. ` : ""}{missing.count} missing {missing.count === 1 ? "drink" : "drinks"} to check.</span>
+        <span className="flex items-center gap-1 text-[13px] font-medium text-accent-ink">See over pouring and missing drinks <ArrowRight size={15} aria-hidden /></span>
+      </Link>
+
+      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
         <Panel title={`Revenue and ${profit !== null ? "estimated profit" : "gross profit"}, last ${POINTS} days`} >
           <RevenueProfitChart small points={points} format={(n) => money(n)} axisFormat={fmtShort} profitName={profitName} summary={`Revenue and ${profitName} per day for the last ${POINTS} days, in ${currency}.`} />
         </Panel>
@@ -139,7 +148,7 @@ export function Home() {
           {top.length === 0 ? <p className="px-5 pb-5 text-sm text-steel sm:px-6">{loading ? "Checking." : "Nothing needs you right now."}</p> : (
             <ul>
               {top.map((a) => (
-                <li key={a.id} className="border-t border-hair px-5 py-3 sm:px-6">
+                <li key={a.id} className="border-t border-hair px-5 py-2 sm:px-6">
                   <Link href={a.next.href} className="-my-1 block rounded-md py-1 underline-offset-4 hover:underline">
                     <span className="flex items-baseline justify-between gap-3">
                       <span className="text-[14px] font-medium leading-snug text-ink">{a.what}</span>

@@ -1,9 +1,10 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ListChecks } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Badge, Button, EmptyState, Note, Panel, Segmented, TableWrap, Td, Th, cn, report, rowClass, useSort } from "@/components/ui";
 import { ingredientById, outletById, propertyById } from "@/lib/data/catalog";
+import { STOCK_AREAS, groupByStock } from "@/lib/data/locations";
 import { can } from "@/lib/domain/access";
 import { bottles, periodVariance, qtyWords, stepsFor, summaryFor, type Variance } from "@/lib/domain/variance";
 import { useCtx, useInvestigations, useVariancePeriods, useView } from "@/lib/hooks";
@@ -61,6 +62,7 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
       return sort.dir === "asc" ? d : -d;
     });
   const flagged = rows.filter((r) => r.v.significant && r.v.unexplained > 0);
+  const areas = groupByStock(visible, (r) => r.p.ingredientId);
 
   return (
     <div className="space-y-5">
@@ -78,8 +80,8 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
       <Panel flush>
         <div className="flex flex-wrap items-end gap-2 px-5 pb-4 sm:px-6">
           <Segmented label="Show" value={show} onChange={setShow} options={[{ value: "flagged", label: "Needs a look" }, { value: "all", label: "All counted items" }]} />
-          <Segmented label="Kind" value={kind} onChange={setKind} options={[{ value: "all", label: "All" }, { value: "beverage", label: "Drinks" }, { value: "food", label: "Food" }]} />
-          <p className="num ml-auto pb-2 text-[13px] text-steel">{visible.length} item{visible.length === 1 ? "" : "s"}</p>
+          <Segmented label="Kind" value={kind} onChange={setKind} options={[{ value: "all", label: "All" }, { value: "food", label: "Food" }, { value: "beverage", label: "Beverage" }]} />
+          <p className="num ml-auto pb-2 text-[13px] text-steel">{propertyById[propertyId].name}, {visible.length} item{visible.length === 1 ? "" : "s"}</p>
         </div>
         {error ? <div className="px-6 pb-6"><EmptyState title="The stock records could not be loaded">{error}</EmptyState></div>
           : !data ? <div className="px-6 pb-6"><EmptyState title="Loading the stock records" /></div>
@@ -89,15 +91,19 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
                   <thead>
                     <tr>
                       <Th sortKey="item" sort={sort} onSort={toggle}>Item</Th>
-                      <Th sortKey="expected" sort={sort} onSort={toggle} align="right">Expected use</Th>
-                      <Th sortKey="actual" sort={sort} onSort={toggle} align="right">Counted use</Th>
-                      <Th sortKey="unexplained" sort={sort} onSort={toggle} align="right">Unexplained</Th>
+                      <Th sortKey="expected" sort={sort} onSort={toggle} align="right">Should have used</Th>
+                      <Th sortKey="actual" sort={sort} onSort={toggle} align="right">Actually used</Th>
+                      <Th sortKey="unexplained" sort={sort} onSort={toggle} align="right">Not explained</Th>
                       <Th sortKey="value" sort={sort} onSort={toggle} align="right">Estimated cost</Th>
                       <Th>Investigation</Th>
                     </tr>
                   </thead>
                   <tbody>
-                    {visible.map(({ p, v, c }) => (
+                    {STOCK_AREAS.filter((area) => areas.some((g) => g.area === area.id)).map((area) => <Fragment key={area.id}>
+                      <tr><td colSpan={6} className="border-t border-line bg-mist px-5 py-2 text-[13px] font-semibold text-ink sm:px-6">{area.name}</td></tr>
+                      {areas.filter((g) => g.area === area.id).map((g) => <Fragment key={g.id}>
+                      <tr><td colSpan={6} className="border-t border-hair bg-cloud px-5 py-1.5 text-xs font-semibold text-graphite sm:px-6">{g.name}</td></tr>
+                      {g.rows.map(({ p, v, c }) => (
                       <tr key={p.id} className={cn(rowClass, "cursor-pointer")} onClick={() => open(p.id)}>
                         <Td>
                           <button type="button" className="text-left text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); open(p.id); }}>{ingredientById[p.ingredientId].name}</button>
@@ -112,12 +118,13 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
                         <Td align="right">{v.unexplained > 0 ? money(v.value) : "None"}</Td>
                         <Td>{c ? <Badge tone={c.status === "closed" ? "neutral" : c.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[c.status]}</Badge> : <span className="text-xs text-steel">{v.significant && v.unexplained > 0 ? "Not investigated" : "Within normal range"}</span>}</Td>
                       </tr>
-                    ))}
+                      ))}</Fragment>)}
+                    </Fragment>)}
                   </tbody>
                 </table>
               </TableWrap>
             )}
-        <Note className="px-6 py-4">Expected use is units sold, including complimentary ones, times the recipe quantity. Counted use is the opening count, plus stock received, less the closing count. A difference does not show what happened to the stock.</Note>
+        <Note className="px-6 py-4">Should have used is units sold, including complimentary ones, times the recipe quantity. Actually used is the opening count, plus stock received, less the closing count. A difference does not show what happened to the stock.</Note>
       </Panel>
     </div>
   );

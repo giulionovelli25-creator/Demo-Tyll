@@ -2,23 +2,28 @@
 // Stock count, built for one hand on a phone. By location, in the order someone walks the storeroom. The expected quantity is
 // filled in, so staff only touch what differs. It can be paused and picked up later. Blind mode hides the expected figure for audits.
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ArrowDown, ArrowLeft, ArrowUp, Check, Delete, Minus, Play, Plus, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Check, Delete, GlassWater, Minus, Play, Plus, Utensils, Wine, X, type LucideIcon } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Skeleton, WidgetError, cn, toast } from "@/components/ui";
+import { ItemIcon } from "@/components/shell/breakage";
+import { Skeleton, WidgetError, cn, textLink, toast } from "@/components/ui";
 import { api } from "@/lib/api";
 import { ingredientById, propertyById } from "@/lib/data/catalog";
-import { COUNT_LOCATIONS, DEFAULT_ROUTE, locationOf, type LocationId } from "@/lib/data/locations";
+import { COUNT_LOCATIONS, DEFAULT_ROUTE, locationOf, stockAreaOf, type LocationId, type StockArea } from "@/lib/data/locations";
 import { allowedProperties } from "@/lib/domain/access";
 import { useApi, useServerStock, useView } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { fmtDate, fmtMoney, fmtQty, sum } from "@/lib/util";
 
+type Scope = "full" | "key" | StockArea;
+const SCOPE_NAME: Record<Scope, string> = { full: "Total check", key: "Key items", food: "Food", drinks: "Beverage", inventory: "Inventory" };
+const AREA_TILES: { scope: StockArea; icon: LucideIcon }[] = [{ scope: "food", icon: Utensils }, { scope: "drinks", icon: Wine }, { scope: "inventory", icon: GlassWater }];
+
 interface Draft {
   propertyId: string;
-  scope: "full" | "key";
+  scope: Scope;
   blind: boolean;
   order: string[];
   index: number;
@@ -49,12 +54,14 @@ export function CountFlow() {
   const [blind, setBlind] = useState(false);
   const [pad, setPad] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
+  const askedToChoose = useSearchParams().get("choose") === "1";
+  const [choosing, setChoosing] = useState(askedToChoose);
   const touch = useRef<number | null>(null);
   const recordCount = useDemo((s) => s.recordCount);
 
   const rows = useMemo(() => new Map((data?.rows ?? []).filter((r) => ingredientById[r.ingredientId].dept !== "supplies").map((r) => [r.ingredientId, r])), [data]);
-  const ordered = (scope: "full" | "key") => liveRoute.flatMap((loc) =>
-    [...rows.keys()].filter((id) => locationOf(id) === loc && (scope === "full" || ingredientById[id].priority)).sort((a, b) => ingredientById[a].name.localeCompare(ingredientById[b].name)));
+  const ordered = (scope: Scope) => liveRoute.flatMap((loc) =>
+    [...rows.keys()].filter((id) => locationOf(id) === loc && (scope === "full" || (scope === "key" ? ingredientById[id].priority : stockAreaOf(id) === scope))).sort((a, b) => ingredientById[a].name.localeCompare(ingredientById[b].name)));
 
   // Leaving keeps everything counted so far. Stock offers to pick it up again.
   const exit = () => {
@@ -66,15 +73,22 @@ export function CountFlow() {
       <X size={16} aria-hidden /> Exit count
     </button>
   );
-  const start = (scope: "full" | "key") => save({ propertyId: pid, scope, blind, order: ordered(scope), index: 0, values: {}, skipped: {} });
+  const start = (scope: Scope) => {
+    const earlier = draft;
+    save({ propertyId: pid, scope, blind, order: ordered(scope), index: 0, values: {}, skipped: {} });
+    setChoosing(false);
+    setFinishing(false);
+    // Starting another count replaces the one in progress, so it can be brought back.
+    if (earlier && (earlier.index > 0 || Object.keys(earlier.values).length > 0)) toast.done(`Started ${SCOPE_NAME[scope]}. Your other count was closed.`, { label: "Undo", run: () => save(earlier) });
+  };
   const expectedOf = (id: string) => Math.max(0, rows.get(id)?.estimated ?? 0);
 
   // ---- Starting point ------------------------------------------------------------------------------------------------
-  if (!draft) {
+  if (!draft || choosing) {
     return (
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-8 pt-4">
         <Link href="/stock" className="inline-flex h-11 w-fit items-center gap-2 text-sm font-medium text-ink"><ArrowLeft size={18} aria-hidden /> Back to Stock</Link>
-        <h1 className="mt-2 text-title font-medium text-ink">Stock count</h1>
+        <h1 className="mt-2 text-title font-semibold text-ink">What do you want to count?</h1>
         <p className="mt-1 text-[15px] text-graphite">{propertyById[pid].name}. Walk the storeroom, and only touch what differs.</p>
         {error && <div className="mt-4"><WidgetError>Stock could not load.</WidgetError></div>}
         {!data ? <Skeleton className="mt-6 h-40 w-full" /> : editing ? (
@@ -108,14 +122,29 @@ export function CountFlow() {
           </section>
         ) : (
           <>
+            {draft && (
+              <button type="button" onClick={() => setChoosing(false)} className="mt-6 flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] border border-accent-ink bg-accent-soft p-4 text-left">
+                <span><span className="block text-[15px] font-semibold text-accent-ink">Carry on with {SCOPE_NAME[draft.scope]}</span><span className="num block text-[13px] text-graphite">{Math.min(draft.index + 1, draft.order.length)} of {draft.order.length}</span></span>
+                <ArrowRight size={20} className="text-accent-ink" aria-hidden />
+              </button>
+            )}
             <div className="mt-6 space-y-3">
-              <button type="button" onClick={() => start("full")} className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] bg-accent p-4 text-left text-on-accent shadow-panel hover:bg-accent-hover">
-                <span><span className="block text-[17px] font-medium">Full count</span><span className="block text-[13px]">{ordered("full").length} items, in walking order</span></span>
+              <button type="button" onClick={() => start("full")} className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] bg-accent p-4 text-left text-on-accent shadow-float hover:bg-accent-hover">
+                <span><span className="block text-[17px] font-semibold">Total check</span><span className="block text-[13px]">All {ordered("full").length} items, in walking order</span></span>
                 <Play size={22} aria-hidden />
               </button>
-              <button type="button" onClick={() => start("key")} className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] border border-line bg-paper p-4 text-left shadow-panel hover:bg-cloud">
-                <span><span className="block text-[17px] font-medium text-ink">Key items only</span><span className="block text-[13px] text-steel">{ordered("key").length} items that matter most</span></span>
-                <Play size={22} className="text-accent-ink" aria-hidden />
+              <div className="grid grid-cols-3 gap-2">
+                {AREA_TILES.map(({ scope, icon: Icon }) => (
+                  <button key={scope} type="button" onClick={() => start(scope)} className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-[var(--radius-panel)] border border-line bg-paper p-2 text-center shadow-panel transition-colors duration-150 hover:bg-cloud">
+                    <Icon size={22} className="text-accent-ink" aria-hidden />
+                    <span className="text-[15px] font-semibold text-ink">{SCOPE_NAME[scope]}</span>
+                    <span className="num text-xs text-steel">{ordered(scope).length} items</span>
+                  </button>
+                ))}
+              </div>
+              <button type="button" onClick={() => start("key")} className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] border border-line bg-paper p-4 text-left shadow-panel transition-colors duration-150 hover:bg-cloud">
+                <span><span className="block text-[15px] font-semibold text-ink">Key items only</span><span className="block text-[13px] text-steel">{ordered("key").length} items that matter most</span></span>
+                <Play size={20} className="text-accent-ink" aria-hidden />
               </button>
             </div>
             <label className="mt-4 flex min-h-14 items-center justify-between gap-3 rounded-[var(--radius-panel)] border border-line bg-paper p-4 shadow-panel">
@@ -161,7 +190,8 @@ export function CountFlow() {
           <button type="button" onClick={() => { setFinishing(false); save({ ...draft, index: Math.max(0, total - 1) }); }} className="inline-flex h-11 w-fit items-center gap-2 text-sm text-graphite"><ArrowLeft size={18} aria-hidden /> Back to the count</button>
           {ExitButton}
         </div>
-        <h1 className="mt-2 text-title font-medium text-ink">Check and confirm</h1>
+        <h1 className="mt-2 text-title font-semibold text-ink">Check and confirm</h1>
+        <button type="button" onClick={() => setChoosing(true)} className={cn(textLink, "my-0 w-fit py-2 text-accent-ink")}>Change what you are counting</button>
         <p className="mt-1 text-[15px] text-graphite">{counted.length} counted{skipped.length ? `, ${skipped.length} skipped` : ""}. {diffs.length} {diffs.length === 1 ? "item differs" : "items differ"} from what was expected.</p>
         <div className="mt-4 rounded-[var(--radius-panel)] border border-line bg-paper p-4 shadow-panel">
           <p className="text-[13px] text-steel">Total difference</p>
@@ -240,11 +270,21 @@ export function CountFlow() {
       <div className="h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={draft.index}><div className="h-full rounded-full bg-accent transition-[width] duration-200" style={{ width: `${(draft.index / total) * 100}%` }} /></div>
 
       <div className="mt-4">
-        <p className="text-[13px] text-steel">{locationName(location)}{draft.blind ? ", blind count" : ""}</p>
-        <h1 className="mt-1 text-[28px] font-medium leading-tight tracking-[-0.02em] text-ink">{g.name}</h1>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-[13px] text-steel">{SCOPE_NAME[draft.scope]}, {locationName(location).toLowerCase()}{draft.blind ? ", blind count" : ""}</p>
+          <button type="button" onClick={() => setChoosing(true)} className={cn(textLink, "shrink-0")}>Change count</button>
+        </div>
+        <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.02em] text-ink">{g.name}</h1>
         {/* A blind count hides anything that gives away the expected figure. */}
-        {!draft.blind && <p className="mt-1 text-sm text-graphite">Par {fmtQty(row.par, g.unit)}. Last count {fmtQty(row.baselineQty, g.unit)} on {fmtDate(row.baselineDate)}.</p>}
+        {!draft.blind && <p className="mt-1 text-sm text-graphite">{row.par > 0 ? `Par ${fmtQty(row.par, g.unit)}. ` : ""}Last count {fmtQty(row.baselineQty, g.unit)} on {fmtDate(row.baselineDate)}.</p>}
       </div>
+
+      {/* The item, large, so it can be recognised at a glance. It gives way when the number pad needs the room or the screen is short. */}
+      {!padOpen && (
+        <div className="flex min-h-0 flex-1 items-center justify-center py-4 [@media(max-height:560px)]:hidden" aria-hidden>
+          <span className="flex h-44 w-44 items-center justify-center rounded-full bg-accent-soft text-accent-ink icon-thin"><ItemIcon g={g} size={96} /></span>
+        </div>
+      )}
 
       {/* Everything to tap sits at the bottom, within reach of a thumb. */}
       <div className="mt-auto pt-4">

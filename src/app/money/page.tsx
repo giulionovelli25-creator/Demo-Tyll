@@ -3,12 +3,11 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BarList } from "@/components/charts";
 import { Section, SectionLink } from "@/components/disclosure";
 import { OutletFinance } from "@/components/finance/outlets";
 import type { ChartPoint } from "@/components/home/chart";
-import { PourControl } from "@/components/money/pour-control";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
 import { Badge, Button, Crumbs, Delta, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, Tabs, Td, Th, cn, rowClass, textLink } from "@/components/ui";
@@ -73,6 +72,8 @@ export default function MoneyPage() {
   const onFlags = tab === "flags" || tab === "mistakes" || tab === "pour";
   const profitName = monthC.now.operatingProfit !== null ? "Net profit" : "Gross profit";
 
+  // Pour Control moved to Drinks control. Old links still land in the right place.
+  useEffect(() => { if (tab === "pour") router.replace("/drinks"); }, [tab, router]);
   const sub = tab ? SUB_PAGE[tab] : undefined;
   if (sub) {
     return (
@@ -103,13 +104,11 @@ export default function MoneyPage() {
           action={<Link href="/money?tab=orders" className={linkButton("primary")}>See transactions</Link>}
         />
       )}
-      <Tabs value={onFlags ? "flags" : "revenue"} onChange={(v) => setTab(v === "flags" ? "flags" : null)} tabs={[{ value: "revenue", label: "Revenue" }, { value: "flags", label: "Flags and Pour Control", count: flags.length }]} />
+      <Tabs value={onFlags ? "flags" : "revenue"} onChange={(v) => setTab(v === "flags" ? "flags" : null)} tabs={[{ value: "revenue", label: "Revenue" }, { value: "flags", label: "Flags", count: flags.length }]} />
       {onFlags ? (
         <>
-          <Section id="revenue.pour" defaultOpen forceOpen={tab === "pour"} title="Pour Control" summary={pour ? `${pour.wine.totals.week.gap} glasses of wine not billed this week, ${money(wineWeek)}. ${money(pourWeek - wineWeek)} more on spirits.` : "Wine and spirits, by outlet and shift"}>
-            <PourControl />
-          </Section>
-          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds and removed items" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
+          <SectionLink href="/drinks" title="Over pouring and missing drinks" summary={pour ? `${pour.wine.totals.week.gap} glasses of wine not billed this week, ${money(wineWeek)}. See Drinks control.` : "See Drinks control."} />
+          <Section id="revenue.flagged" defaultOpen forceOpen={tab === "mistakes"} title="Voids, refunds and removed items" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
             <Mistakes />
           </Section>
         </>

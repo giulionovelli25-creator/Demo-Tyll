@@ -19,7 +19,7 @@ export function WasteAnalytics({ area, range }: { area: "food" | "drinks"; range
   const { money, currency } = view;
   const sel = useMemo(() => (range ? { ...view.sel, range } : view.sel), [view.sel, range]);
   const ctx = useCtx();
-  const word = area === "drinks" ? "drinks" : "food";
+  const word = area === "drinks" ? "beverage" : "food";
   const inArea = useCallback((w: WasteLog) => w.synced && sel.outletIds.includes(w.outletId) && !isBreakage(w) && !(w.ingredientId && stockAreaOf(w.ingredientId) === "inventory") && isDrink(w) === (area === "drinks"), [sel.outletIds, area]);
   const c = useMemo(() => compare(ctx, sel), [ctx, sel]);
   const logs = useMemo(
@@ -45,7 +45,7 @@ export function WasteAnalytics({ area, range }: { area: "food" | "drinks"; range
 
   return (
     <div className="space-y-5">
-      <Panel title={`What ${word} waste cost`} description={`${fmtRange(sel.range)}. ${area === "drinks" ? "Drinks" : "Food"} only. Breakage is under Inventory.`}>
+      <Panel title={`What ${word} waste cost`} description={`${fmtRange(sel.range)}. ${area === "drinks" ? "Beverage" : "Food"} only. Breakage is under Inventory.`}>
         <div className="grid grid-cols-2 gap-x-6 gap-y-6 lg:grid-cols-3">
           <Stat label="Waste cost" value={money(lost)} delta={<Delta value={pctChange(lost, lostBefore)} goodWhen="down" />} />
           <Stat label="Waste per guest" value={money(t.covers ? lost / t.covers : 0, { decimals: true })} />
@@ -67,7 +67,7 @@ export function WasteAnalytics({ area, range }: { area: "food" | "drinks"; range
       </div>
 
       {byDay.length > 1 && (
-        <Panel title={`${area === "drinks" ? "Drinks" : "Food"} waste over time`} description="Cost of recorded waste per day.">
+        <Panel title={`${area === "drinks" ? "Beverage" : "Food"} waste over time`} description="Cost of recorded waste per day.">
           <AreaTrend data={byDay} format={(n) => money(n)} axisFormat={fmtShort} name="Waste cost" summary={`Daily waste cost for ${fmtRange(sel.range)}.`} />
         </Panel>
       )}

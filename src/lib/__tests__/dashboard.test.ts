@@ -214,4 +214,21 @@ describe("navigation and dates", () => {
     const { dataFile } = await import("../server/data-file");
     expect(dataFile("auth.json")).toBe(`${process.cwd()}/.data/auth.json`);
   });
+
+  it("gives Drinks control to the roles that see revenue, and switches page without a reload when the role fits", async () => {
+    const { demoRoleFits, moduleOfPath } = await import("../domain/access");
+    expect(moduleOfPath("/drinks")).toBe("drinks");
+    expect(canOpen(userById["u-fnb"], "drinks")).toBe(true);
+    expect(canOpen(userById["u-buy"], "drinks")).toBe(false);
+    expect(demoRoleFits(userById["u-fnb"], "forecast")).toBe(true);
+    expect(demoRoleFits(userById["u-chef"], "money")).toBe(false);
+  });
+
+  it("files every stock item under a hotel category, inside its food, beverage or inventory area", async () => {
+    const { STOCK_GROUPS, groupByStock, stockAreaOf, stockGroupOf } = await import("../data/locations");
+    for (const g of INGREDIENTS) expect(STOCK_GROUPS.find((x) => x.id === stockGroupOf(g.id))!.area).toBe(stockAreaOf(g.id));
+    expect(stockGroupOf("coke")).toBe("soft");
+    expect(stockGroupOf("chicken")).toBe("meat");
+    expect(groupByStock(["coke", "wine", "soda"], (x) => x).map((g) => g.name)).toEqual(["Wine", "Soft drinks"]);
+  });
 });

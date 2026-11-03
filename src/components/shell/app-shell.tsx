@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
+import { Wine,
   Banknote, Bell, BedDouble, CalendarDays, ChevronDown, ClipboardList, Eye, FileSearch, FileText, Landmark, LayoutDashboard, LayoutGrid, LockKeyhole, LogOut, Moon, Package, Palette, PlayCircle, Search, Settings, ShoppingCart, Smartphone, Sparkles, Sun, Trash2, UtensilsCrossed, type LucideIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, Fragment } from "react";
@@ -15,7 +15,7 @@ import { useLook } from "@/lib/look";
 import { LookPicker } from "./look-picker";
 import { AlertFeedProvider, useAlertFeed } from "@/lib/alert-feed";
 import type { Snapshot } from "@/lib/server/snapshot";
-import { MODULE_PATH, allowedOutlets, allowedProperties, canOpen, clampScope, hasWholeProperty, homePath, moduleOfPath, modulesFor, type ModuleId } from "@/lib/domain/access";
+import { MODULE_PATH, allowedOutlets, demoRoleFits, allowedProperties, canOpen, clampScope, hasWholeProperty, homePath, moduleOfPath, modulesFor, type ModuleId } from "@/lib/domain/access";
 import { deliveryOvercharge } from "@/lib/domain/inventory";
 import { assessArrival } from "@/lib/domain/operations";
 import { useInvestigations, useUser } from "@/lib/hooks";
@@ -41,6 +41,7 @@ const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }>
   stock: { label: "Stock", icon: Package },
   forecast: { label: "Predictions", icon: ShoppingCart },
   money: { label: "Revenue", icon: Banknote },
+  drinks: { label: "Drinks control", short: "Drinks", icon: Wine },
   waste: { label: "Log waste", icon: Trash2 },
   reports: { label: "Reports and settings", short: "Reports", icon: FileText },
   alerts: { label: "Alerts", icon: Bell },
@@ -55,8 +56,8 @@ const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }>
   finance: { label: "Reconciliation", icon: Landmark },
 };
 
-/** The four main features first, then Alerts, then Reports and settings. Never more than six. The logo opens the Overview. */
-const PRIMARY: ModuleId[] = ["waste", "stock", "forecast", "money", "alerts", "reports"];
+/** The four main features, Drinks control, then Alerts and Reports and settings. Overview sits on its own above them. */
+const PRIMARY: ModuleId[] = ["waste", "stock", "forecast", "money", "drinks", "alerts", "reports"];
 /** Which sidebar item lights up on each screen. */
 const NAV_HOME: Partial<Record<ModuleId, ModuleId>> = { investigations: "money", finance: "money", settings: "reports", more: "reports" };
 
@@ -72,7 +73,7 @@ function navFor(user: User, publicDemo: boolean): ModuleId[] {
   const lead = PRIMARY.includes(home) || home === "overview" ? [] : [home];
   const main = PRIMARY.filter((m) => publicDemo || modules.includes(m));
   // Roles without reports still need one way to their settings.
-  return [...lead, ...main, ...(main.includes("reports") ? [] : ["settings" as const])].slice(0, 6);
+  return [...lead, ...main, ...(main.includes("reports") ? [] : ["settings" as const])].slice(0, 7);
 }
 
 /** How many things are waiting behind a sidebar item. */
@@ -366,10 +367,10 @@ function Sidebar({ user, active }: { user: User; active: ModuleId }) {
         </div>
         <nav data-tour="nav" aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-2 py-2 xl:px-3">
           {(publicDemo || modulesFor(user).includes("overview")) && (
-            <ul className="mb-2 border-b border-nav-line pb-2"><SideItem m="overview" active={lit === "overview" && pathname === "/"} reload={publicDemo} /></ul>
+            <ul className="mb-2 border-b border-nav-line pb-2"><SideItem m="overview" active={lit === "overview" && pathname === "/"} reload={publicDemo && !demoRoleFits(user, "overview")} /></ul>
           )}
           <ul className="space-y-1">
-            {items.map((m) => <Fragment key={m}>{m === "alerts" && <li aria-hidden className="!my-2 border-t border-nav-line" />}<SideItem m={m} active={lit === m} reload={publicDemo} count={counts[m]} /></Fragment>)}
+            {items.map((m) => <Fragment key={m}>{m === "alerts" && <li aria-hidden className="!my-2 border-t border-nav-line" />}<SideItem m={m} active={lit === m} reload={publicDemo && !demoRoleFits(user, m)} count={counts[m]} /></Fragment>)}
           </ul>
         </nav>
         <div className="space-y-1 border-t border-nav-line p-2 xl:p-3">
@@ -398,7 +399,8 @@ function Sidebar({ user, active }: { user: User; active: ModuleId }) {
 function PhoneBar({ user, active }: { user: User; active: ModuleId }) {
   const publicDemo = useSession((s) => !!s.demoRoles);
   const lit = NAV_HOME[active] ?? active;
-  const items = navFor(user, publicDemo);
+  // Six fit a thumb. Reports and settings is in the profile menu on a phone.
+  const items = navFor(user, publicDemo).filter((m) => m !== "reports");
   const logs = mayLogBreakage(user);
   const openLog = useBreakageSheet((b) => b.set);
   const counts = useNavCounts();
@@ -419,7 +421,7 @@ function PhoneBar({ user, active }: { user: User; active: ModuleId }) {
             <li key={m} data-mod={MODULE_TONE[m]} className="min-w-0 flex-1">
               {/* Log waste opens where you stand: staff use it mid shift. */}
               {m === "waste" && logs && lit !== "waste" ? <button type="button" onClick={() => openLog(true)} className={className}>{body}</button>
-                : publicDemo ? <a href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</Link>}
+                : publicDemo && !demoRoleFits(user, m) ? <a href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</Link>}
             </li>
           );
         })}
@@ -489,7 +491,7 @@ function Topbar({ user }: { user: User }) {
   const [theme, toggleTheme] = useTheme();
   const pathname = usePathname();
   // Main pages show fixed periods, and the sections that follow a date choice carry their own switch.
-  const dated = !["/", "/waste", "/stock", "/forecast", "/alerts", "/money", "/reports"].includes(pathname);
+  const dated = !["/", "/waste", "/stock", "/forecast", "/alerts", "/money", "/reports", "/drinks"].includes(pathname);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Ctrl+K or Cmd+K opens search from anywhere.
   useEffect(() => {
@@ -510,10 +512,10 @@ function Topbar({ user }: { user: User }) {
         </Link>
         <span className="md:hidden"><EarlyAccessBadge /></span>
         {showScope ? (
-          <div className="order-last flex min-w-0 basis-full items-center gap-2 lg:order-none lg:basis-auto">
+          <div className="order-last flex min-w-0 basis-full flex-wrap items-center gap-2 lg:order-none lg:basis-auto lg:flex-nowrap">
             <ScopeControl user={user} />
             <span className="ml-auto lg:hidden"><RoleSwitcher user={user} /></span>
-            <div className={cn("relative min-w-0", !dated && "hidden")}>
+            <div className={cn("relative min-w-0 max-lg:order-last max-lg:basis-full", !dated && "hidden")}>
               <Segmented size="sm" label="Date range" value={preset} onChange={(v) => (v === "custom" ? setPanel("dates") : (setPreset(v), setPanel(null)))} options={PRESETS.map((p) => (p.value === "custom" && preset === "custom" ? { ...p, label: fmtRange(custom) } : p))} />
               {panel === "dates" && <DatePanel onClose={() => setPanel(null)} />}
             </div>
@@ -611,6 +613,7 @@ function ProfileMenu({ user, onClose, onNews, theme, onTheme }: { user: User; on
         <button role="menuitem" type="button" onClick={() => { onClose(); onNews(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist"><Sparkles size={16} strokeWidth={1.7} /> What&apos;s new</button>
         <button role="menuitem" type="button" onClick={onTheme} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />} {theme === "dark" ? "Light mode" : "Dark mode"}</button>
         <button role="menuitem" type="button" onClick={() => { onClose(); openLook(true); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist"><Palette size={16} /> Try a look</button>
+        <Link role="menuitem" href="/reports" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist md:hidden"><FileText size={16} /> Reports and settings</Link>
         <Link role="menuitem" href="/more" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><LayoutGrid size={16} /> More tools</Link>
         <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} /> Settings</Link>
         {pinRequired && !publicDemo && (

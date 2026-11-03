@@ -100,7 +100,7 @@ export default function WastePage() {
         )}
       </Section>
 
-      <Section id="waste.month" title="Waste this month" summary={`${money(sum(month, (x) => x.cost))} lost since ${fmtDate(MONTH.from)}: ${money(monthBy("food"))} food, ${money(monthBy("drinks"))} drinks, ${money(monthBy("inventory"))} inventory`}>
+      <Section id="waste.month" title="Waste this month" summary={`${money(sum(month, (x) => x.cost))} lost since ${fmtDate(MONTH.from)}: ${money(monthBy("food"))} food, ${money(monthBy("drinks"))} beverage, ${money(monthBy("inventory"))} inventory`}>
         <Segmented label="Part of waste" value={area} onChange={setArea} options={STOCK_AREAS.map((a) => ({ value: a.id, label: a.name }))} />
         {area !== "inventory" ? <WasteAnalytics area={area} range={MONTH} /> : (
           <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">

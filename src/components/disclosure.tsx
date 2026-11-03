@@ -7,6 +7,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { cn } from "@/components/ui";
 import { useSession } from "@/lib/api";
+import { userById } from "@/lib/data/catalog";
+import { demoRoleFits, moduleOfPath } from "@/lib/domain/access";
 
 interface Memory {
   byUser: Record<string, Record<string, string>>;
@@ -31,12 +33,20 @@ export function useRemembered<T extends string>(key: string, fallback: T): [T, (
   return [(value as T | undefined) ?? fallback, (next) => set(userId, key, next)];
 }
 
+/** A full load lets the public demo change role on the server first. Only needed when this role cannot open the page. */
+function useNeedsFullLoad(href: string) {
+  const inDemo = useSession((s) => !!s.demoRoles);
+  const userId = useSession((s) => s.userId);
+  const user = userId ? userById[userId] : undefined;
+  return inDemo && !(user && demoRoleFits(user, moduleOfPath(href.split("?")[0])));
+}
+
 const ROW = "flex w-full items-center gap-3 rounded-panel px-4 py-3.5 text-left transition-colors duration-150 ease-tyll hover:bg-cloud sm:px-6";
 
 function RowText({ title, summary }: { title: ReactNode; summary: ReactNode }) {
   return (
     <span className="min-w-0 flex-1">
-      <span className="block text-[15px] font-medium text-ink">{title}</span>
+      <span className="block text-[15px] font-semibold text-ink">{title}</span>
       <span className="mt-0.5 block text-[13px] text-steel">{summary}</span>
     </span>
   );
@@ -65,8 +75,7 @@ export function Section({ id, title, summary, children, forceOpen, defaultOpen, 
 
 /** The same row, leading to a page of its own. Use it when a list needs its own filters and search. */
 export function SectionLink({ href, title, summary, className }: { href: string; title: ReactNode; summary: ReactNode; className?: string }) {
-  // A full load lets the public demo change role on the server first.
-  const publicDemo = useSession((s) => !!s.demoRoles);
+  const publicDemo = useNeedsFullLoad(href);
   const body = (
     <>
       <RowText title={title} summary={summary} />
@@ -79,7 +88,7 @@ export function SectionLink({ href, title, summary, className }: { href: string;
 
 /** A short link row for lists of places. */
 export function RowLink({ href, title, summary }: { href: string; title: ReactNode; summary: ReactNode }) {
-  const publicDemo = useSession((s) => !!s.demoRoles);
+  const publicDemo = useNeedsFullLoad(href);
   const style = "flex min-h-11 items-center justify-between gap-3 px-4 py-2.5 transition-colors duration-150 ease-tyll hover:bg-cloud sm:px-6";
   const body = <><span className="text-sm font-medium text-ink">{title}</span><span className="flex min-w-0 items-center gap-2 text-right text-[13px] text-steel"><span className="hidden sm:inline">{summary}</span><ChevronRight size={16} className="shrink-0" aria-hidden /></span></>;
   return publicDemo ? <a href={href} className={style}>{body}</a> : <Link href={href} className={style}>{body}</Link>;

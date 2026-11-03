@@ -1,10 +1,10 @@
 // One icon and one accent per module. The accent is a token set: see data-mod in tokens.css.
-import { Banknote, Bell, BedDouble, CalendarDays, ClipboardList, FileSearch, FileText, Landmark, LayoutDashboard, LayoutGrid, Package, Settings, ShoppingCart, Smartphone, Trash2, UtensilsCrossed, type LucideIcon } from "lucide-react";
+import { Banknote, Bell, BedDouble, CalendarDays, ClipboardList, FileSearch, FileText, Landmark, LayoutDashboard, LayoutGrid, Package, Settings, ShoppingCart, Smartphone, Trash2, UtensilsCrossed, Wine, type LucideIcon } from "lucide-react";
 import type { ModuleId } from "@/lib/domain/access";
 
 export const MODULE_ICON: Record<ModuleId, LucideIcon> = {
   staff: Smartphone, tasks: ClipboardList, overview: LayoutDashboard, money: Banknote, stock: Package, forecast: ShoppingCart, events: CalendarDays,
-  flow: UtensilsCrossed, rooms: BedDouble, investigations: FileSearch, finance: Landmark, reports: FileText, settings: Settings, alerts: Bell, more: LayoutGrid, waste: Trash2,
+  flow: UtensilsCrossed, rooms: BedDouble, investigations: FileSearch, finance: Landmark, reports: FileText, settings: Settings, alerts: Bell, more: LayoutGrid, waste: Trash2, drinks: Wine,
 };
 
 export const MODULE_TONE: Record<ModuleId, string> = {
@@ -12,6 +12,7 @@ export const MODULE_TONE: Record<ModuleId, string> = {
   waste: "teal", stock: "teal",
   forecast: "violet",
   money: "blue", finance: "blue", investigations: "blue",
+  drinks: "rose",
   reports: "plum", settings: "slate",
   events: "terracotta", rooms: "rose", flow: "brown", tasks: "cyan", staff: "cyan",
 };

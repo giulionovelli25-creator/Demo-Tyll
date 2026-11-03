@@ -38,6 +38,7 @@ export const sessionCookie = (token: string) => ({
   value: token,
   httpOnly: true,
   sameSite: "lax" as const,
-  secure: process.env.NODE_ENV === "production",
+  // The local link runs a production build over plain http, where a browser may refuse a secure cookie.
+  secure: process.env.NODE_ENV === "production" && process.env.TYLL_LOCAL_HTTP !== "on",
   path: "/",
 });

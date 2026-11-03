@@ -16,9 +16,9 @@ body {
   font-feature-settings: "cv11", "ss03";
 }
 
-h1, h2, h3 {
-  font-weight: 400;
-  letter-spacing: -0.02em;
+/* In a layer, so a heading's own weight and tracking classes win. */
+@layer base {
+  h1, h2, h3 { letter-spacing: -0.02em; }
 }
 
 /* Financial figures line up in columns. */
@@ -72,6 +72,8 @@ body::before {
   stroke-width: 1.75;
   shape-rendering: geometricPrecision;
 }
+/* A large icon needs a lighter line. */
+.icon-thin .lucide { stroke-width: 1.25; }
 
 /* Wide tables show a soft edge where there is more to scroll to. */
 .scroll-hint {

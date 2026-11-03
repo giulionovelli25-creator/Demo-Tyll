@@ -19,7 +19,7 @@ Only real people can tell whether the demo is clear. Run this with two or three 
 | 4 | "What do you need to order today, and what will it cost?" | They reach Predictions and read the total for today | Under 20 seconds |
 | 5 | "Create the order so someone can approve it." | The draft order opens | Under 20 seconds |
 | 6 | "How much did the hotel make this week?" | They read the last 7 days on Revenue | Under 10 seconds |
-| 7 | "Is the bar pouring too much wine anywhere?" | They reach Pour Control and name an outlet | Under 30 seconds |
+| 7 | "Is the bar pouring too much wine anywhere?" | They reach Drinks control and name an outlet | Under 30 seconds |
 
 ## Ask at the end
 

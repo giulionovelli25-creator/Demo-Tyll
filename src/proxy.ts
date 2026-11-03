@@ -2,7 +2,7 @@
 // Pages need a live session and a role that may open them. Data itself is guarded again by each API route.
 // Public demo (TYLL_PUBLIC_DEMO=on): no sign-in. Visitors start on /welcome, and a deep link opens directly as a role that may see it.
 import { NextResponse, type NextRequest } from "next/server";
-import { can, canOpen, homePath, moduleOfPath } from "./lib/domain/access";
+import { canOpen, demoRoleFits, homePath, moduleOfPath } from "./lib/domain/access";
 import { SESSION_COOKIE, demoRoleFor, publicDemo, resolveSession, startDemoSession } from "./lib/server/auth";
 import { freshenPublicDemo } from "./lib/server/demo";
 import { sessionCookie } from "./lib/server/guard";
@@ -20,8 +20,7 @@ export function proxy(req: NextRequest) {
     if (pathname === "/" && !view) return NextResponse.redirect(new URL("/welcome", req.url));
     const mod = moduleOfPath(pathname);
     // A live module needs a role that can do its main job: reconcile invoices, or plan what to buy.
-    const fits = (u: Parameters<typeof canOpen>[0]) =>
-      canOpen(u, mod) && (mod !== "finance" || can(u, "finance.review")) && (mod !== "forecast" || can(u, "purchase.create"));
+    const fits = (u: Parameters<typeof canOpen>[0]) => demoRoleFits(u, mod);
     if (view && fits(view.user)) return NextResponse.next();
     const userId = demoRoleFor(fits, PREFERRED[mod ?? ""] ?? "u-fnb");
     const started = userId ? startDemoSession(userId, req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local", req.cookies.get(SESSION_COOKIE)?.value) : null;

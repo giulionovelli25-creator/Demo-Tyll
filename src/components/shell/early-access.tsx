@@ -35,7 +35,7 @@ export const GUIDED_PATH = [
   { href: "/waste", userId: "u-fnb", title: "Log waste", text: "Tap the item, tap the number. Done in two taps, with Undo." },
   { href: "/stock", userId: "u-fnb", title: "Stock", text: "How much is left, with what is about to run out on top. Start count walks the storeroom in order." },
   { href: "/forecast", userId: "u-fnb", title: "Predictions", text: "What to order and how much to reach month end. Try Build order." },
-  { href: "/money?tab=pour", userId: "u-fnb", title: "Pour Control", text: "How many glasses each bottle really gave, by outlet and shift, and what the gap is worth." },
+  { href: "/drinks", userId: "u-fnb", title: "Drinks control", text: "How many glasses each bottle really gave, and which drinks sales do not explain." },
   { href: "/more", userId: "u-fnb", title: "Coming soon", text: "Events, rooms and sales are in development. Have a look at where Tyll is heading." },
 ] as const;
 

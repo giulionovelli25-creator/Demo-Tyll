@@ -5,6 +5,7 @@ import { ChevronDown, Search } from "lucide-react";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Badge, EmptyState, Note, Panel, Stat, TableWrap, Td, Th, cn, rowClass, useSort } from "@/components/ui";
 import { ingredientById, outletById, propertyById, supplierById } from "@/lib/data/catalog";
+import { STOCK_AREAS, groupByStock } from "@/lib/data/locations";
 import { can } from "@/lib/domain/access";
 import { countVariance, countVarianceValue, type StockRow } from "@/lib/domain/inventory";
 import { personName, useCtx, useInvestigations, useServerStock, useUser } from "@/lib/hooks";
@@ -92,7 +93,11 @@ export function Inventory({ propertyId }: { propertyId: string }) {
                 </tr>
               </thead>
               <tbody>
-                {visible.map((r) => {
+                {STOCK_AREAS.filter((area) => groupByStock(visible, (r) => r.ingredientId).some((g) => g.area === area.id)).map((area) => <Fragment key={area.id}>
+                <tr><td colSpan={9} className="border-t border-line bg-mist px-5 py-2 text-[13px] font-semibold text-ink sm:px-6">{area.name}</td></tr>
+                {groupByStock(visible, (r) => r.ingredientId).filter((group) => group.area === area.id).map((group) => <Fragment key={group.id}>
+                <tr><td colSpan={9} className="border-t border-hair bg-cloud px-5 py-1.5 text-xs font-semibold text-graphite sm:px-6">{group.name}</td></tr>
+                {group.rows.map((r) => {
                   const g = ingredientById[r.ingredientId];
                   const net = r.transferIn - r.transferOut;
                   const low = r.daysCover !== null && r.daysCover < 1;
@@ -119,6 +124,8 @@ export function Inventory({ propertyId }: { propertyId: string }) {
                     </Fragment>
                   );
                 })}
+                </Fragment>)}
+                </Fragment>)}
               </tbody>
             </table>
           </TableWrap>
