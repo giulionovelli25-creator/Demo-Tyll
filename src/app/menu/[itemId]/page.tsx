@@ -86,7 +86,7 @@ export default function MenuItemPage() {
                     const was = ingredientCostAt(l.ingredientId, previousRange(sel.range).from, ctx.overrides);
                     return (
                       <tr key={l.ingredientId} className={rowClass}>
-                        <Td>{g.name}{Math.abs(l.unitCost / was - 1) > 0.001 && <span className="ml-2"><Delta value={l.unitCost / was - 1} goodWhen="down" /></span>}</Td>
+                        <Td>{g.name}{Math.abs(l.unitCost / was - 1) > 0.001 && <span className="ms-2"><Delta value={l.unitCost / was - 1} goodWhen="down" /></span>}</Td>
                         <Td align="right">{fmtQty(l.qty, g.unit)}</Td>
                         <Td align="right">{money(l.unitCost * baseCurrencyRate, { decimals: true })}</Td>
                         <Td align="right" className="text-ink">{money(l.cost * baseCurrencyRate, { decimals: true })}</Td>
@@ -161,7 +161,7 @@ export default function MenuItemPage() {
             </TableWrap>
             <p className="num border-t border-hair px-6 py-3 text-xs text-steel">
               Showing {Math.min(shown, orders.length)} of {fmtNum(orders.length)} orders.
-              {orders.length > shown && <button type="button" className="ml-3 underline underline-offset-4 hover:text-ink" onClick={() => setShown((n) => n + 25)}>Show 25 more</button>}
+              {orders.length > shown && <button type="button" className="ms-3 underline underline-offset-4 hover:text-ink" onClick={() => setShown((n) => n + 25)}>Show 25 more</button>}
             </p>
           </>
         )}

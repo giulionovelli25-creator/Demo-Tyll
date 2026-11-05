@@ -53,11 +53,11 @@ export function NotificationBell({ attention = [], align = "right" }: { attentio
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}
         className={cn("relative flex h-10 w-10 items-center justify-center rounded-full text-graphite transition-colors hover:bg-mist", open && "bg-mist text-ink")}>
         <Bell size={18} strokeWidth={1.7} />
-        {unread > 0 ? <span className="num absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-ink px-1 text-[10px] text-paper ring-2 ring-paper">{unread > 9 ? "9+" : unread}</span>
-          : count > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-warn ring-2 ring-paper" aria-hidden />}
+        {unread > 0 ? <span className="num absolute -end-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-ink px-1 text-[10px] text-paper ring-2 ring-paper">{unread > 9 ? "9+" : unread}</span>
+          : count > 0 && <span className="absolute end-2 top-2 h-2 w-2 rounded-full bg-warn ring-2 ring-paper" aria-hidden />}
       </button>
       {open && (
-        <div role="dialog" aria-label="Notifications" className={cn("animate-rise fixed inset-x-3 top-16 z-50 rounded-2xl border border-line bg-paper p-2 shadow-float sm:absolute sm:inset-x-auto sm:top-12 sm:w-[360px]", align === "right" ? "sm:right-0" : "sm:left-0")}>
+        <div role="dialog" aria-label="Notifications" className={cn("animate-rise fixed inset-x-3 top-16 z-50 rounded-2xl border border-line bg-paper p-2 shadow-float sm:absolute sm:inset-x-auto sm:top-12 sm:w-[360px]", align === "right" ? "sm:end-0" : "sm:start-0")}>
           <div className="flex items-center justify-between px-3 py-2">
             <p className="text-[13px] text-steel">For you</p>
             {unread > 0 && <button type="button" onClick={readAll} className="text-[13px] text-graphite underline-offset-2 hover:underline">Mark all read</button>}
@@ -66,7 +66,7 @@ export function NotificationBell({ attention = [], align = "right" }: { attentio
             <ul className="scroll-thin max-h-[50vh] overflow-y-auto">
               {notices.slice(0, 15).map((n) => (
                 <li key={n.id}>
-                  <button type="button" onClick={() => go(n)} className={cn("flex w-full gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-mist", n.resolved && "opacity-60")}>
+                  <button type="button" onClick={() => go(n)} className={cn("flex w-full gap-3 rounded-xl px-3 py-2.5 text-start hover:bg-mist", n.resolved && "opacity-60")}>
                     <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", !n.read && !n.resolved ? "bg-ink" : "bg-transparent")} aria-hidden />
                     <span className="min-w-0">
                       <span className={cn("block text-sm", !n.read && !n.resolved ? "text-ink" : "text-graphite")}>{n.title}</span>
@@ -84,7 +84,7 @@ export function NotificationBell({ attention = [], align = "right" }: { attentio
               <ul>
                 {attention.map((a) => (
                   <li key={a.id}>
-                    <button type="button" onClick={() => { setOpen(false); router.push(a.href); }} className="flex w-full gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-mist">
+                    <button type="button" onClick={() => { setOpen(false); router.push(a.href); }} className="flex w-full gap-3 rounded-xl px-3 py-2.5 text-start hover:bg-mist">
                       <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", a.tone === "neg" ? "bg-neg" : a.tone === "warn" ? "bg-warn" : "bg-fog")} aria-hidden />
                       <span className="min-w-0"><span className="block text-sm text-ink">{a.text}</span><span className="block truncate text-xs text-steel">{a.detail}</span></span>
                     </button>

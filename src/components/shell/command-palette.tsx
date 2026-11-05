@@ -114,7 +114,7 @@ export function CommandPalette({ user, pages, onClose }: { user: User; pages: Pa
     <div className="no-print fixed inset-0 z-50 flex items-start justify-center bg-scrim p-4 pt-[10vh] animate-fade" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div role="dialog" aria-modal="true" aria-label="Search and actions" className="flex max-h-[76vh] w-full max-w-[640px] flex-col overflow-hidden rounded-panel border border-line bg-paper shadow-float">
         <div className="relative border-b border-hair">
-          <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
+          <Search size={18} className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
           <input
             autoFocus
             value={q}
@@ -130,9 +130,9 @@ export function CommandPalette({ user, pages, onClose }: { user: User; pages: Pa
             role="combobox"
             aria-expanded="true"
             aria-controls="palette-list"
-            className="h-14 w-full bg-transparent pl-12 pr-16 text-[15px] text-ink outline-none placeholder:text-steel"
+            className="h-14 w-full bg-transparent ps-12 pe-16 text-[15px] text-ink outline-none placeholder:text-steel"
           />
-          <kbd className="absolute right-4 top-1/2 -translate-y-1/2 rounded-md border border-line px-1.5 py-0.5 text-[11px] text-steel">Esc</kbd>
+          <kbd className="absolute end-4 top-1/2 -translate-y-1/2 rounded-md border border-line px-1.5 py-0.5 text-[11px] text-steel">Esc</kbd>
         </div>
         {q.trim().length < 2 && recent.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 border-b border-hair px-4 py-3 text-sm">
@@ -156,7 +156,7 @@ export function CommandPalette({ user, pages, onClose }: { user: User; pages: Pa
                     aria-selected={i === selected}
                     onMouseEnter={() => setAt(i)}
                     onClick={() => run(h)}
-                    className={cn("flex w-full items-center justify-between gap-4 rounded-[var(--radius-control)] px-3 py-2 text-left text-sm", i === selected ? "bg-accent-soft text-accent-ink" : "text-ink")}
+                    className={cn("flex w-full items-center justify-between gap-4 rounded-[var(--radius-control)] px-3 py-2 text-start text-sm", i === selected ? "bg-accent-soft text-accent-ink" : "text-ink")}
                   >
                     <span className="min-w-0 truncate">{h.label}</span>
                     <span className={cn("shrink-0 text-xs", i === selected ? "text-accent-ink" : "text-steel")}>{h.detail}</span>

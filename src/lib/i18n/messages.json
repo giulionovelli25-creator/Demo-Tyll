@@ -1,0 +1,7562 @@
+{
+"({0} booked, {1} walk-in, {2} from the event)": [
+"({0} gebucht, {1} Laufkundschaft, {2} vom Event)",
+"({0} prenotati, {1} senza prenotazione, {2} dall'evento)",
+"({0} محجوز، {1} دون حجز، {2} من الفعالية)"
+],
+"({0} glasses a bottle)": [
+"({0} Gläser pro Flasche)",
+"({0} calici a bottiglia)",
+"({0} كؤوس لكل زجاجة)"
+],
+". Connecting a real system means writing one adapter. Screens and calculations stay as they are.": [
+". Für ein echtes System reicht ein Adapter. Ansichten und Berechnungen bleiben gleich.",
+". Collegare un sistema reale significa scrivere un adattatore. Schermate e calcoli restano invariati.",
+". ربط نظام حقيقي يعني كتابة موائم واحد. تبقى الشاشات والحسابات كما هي."
+],
+". Cost {0}. Use to {1}: {2}": [
+". Kosten {0}. Verbrauch bis {1}: {2}",
+". Costo {0}. Consumo fino al {1}: {2}",
+". التكلفة {0}. الاستخدام حتى {1}: {2}"
+],
+". Cost {0}. Use to {1}: {2}.": [
+". Kosten {0}. Verbrauch bis {1}: {2}.",
+". Costo {0}. Consumo fino al {1}: {2}.",
+". التكلفة {0}. الاستخدام حتى {1}: {2}."
+],
+"A difference can have several explanations, such as complimentary drinks, waste not logged or a late delivery.": [
+"Eine Differenz kann mehrere Erklärungen haben, etwa Gratisgetränke, nicht erfasster Abfall oder eine späte Lieferung.",
+"Una differenza può avere varie spiegazioni, come bevande omaggio, scarti non registrati o una consegna in ritardo.",
+"قد تكون للفرق تفسيرات عدة، مثل مشروبات مجانية أو هدر غير مسجل أو توريد متأخر."
+],
+"A difference can have several explanations, such as complimentary drinks, waste not logged or a late delivery. Check before concluding.": [
+"Eine Differenz kann mehrere Erklärungen haben, etwa Gratisgetränke, nicht erfasster Abfall oder eine späte Lieferung. Vor einem Schluss prüfen.",
+"Una differenza può avere varie spiegazioni, come bevande omaggio, scarti non registrati o una consegna in ritardo. Verifica prima di concludere.",
+"قد تكون للفرق تفسيرات عدة، مثل مشروبات مجانية أو هدر غير مسجل أو توريد متأخر. تحقق قبل الاستنتاج."
+],
+"A managed database with backups in place of the local file store and browser storage.": [
+"Eine verwaltete Datenbank mit Backups statt lokaler Dateien und Browserspeicher.",
+"Un database gestito con backup al posto di file locali e memoria del browser.",
+"قاعدة بيانات مُدارة بنسخ احتياطية بدل الملفات المحلية وتخزين المتصفح."
+],
+"A manager approves the summary before anything is paid.": [
+"Eine Führungskraft gibt die Übersicht frei, bevor etwas ausgezahlt wird.",
+"Un responsabile approva il riepilogo prima di ogni pagamento.",
+"يوافق مدير على الملخص قبل أي دفع."
+],
+"A preview of a planned feature. You can try the calculation here, but nothing on this tab is saved or sent to payroll.": [
+"Vorschau auf eine geplante Funktion. Sie können die Berechnung testen, aber hier wird nichts gespeichert oder an die Lohnabrechnung gesendet.",
+"Anteprima di una funzione prevista. Puoi provare il calcolo, ma nulla viene salvato o inviato alle paghe.",
+"معاينة لميزة مخطط لها. يمكنك تجربة الحساب هنا، لكن لا يُحفظ شيء ولا يُرسل إلى الرواتب."
+],
+"A shortfall is stock that left without a sale, a waste entry or a transfer. It says something is unexplained. It does not say what happened.": [
+"Ein Fehlbestand ist Ware, die ohne Verkauf, Abfalleintrag oder Umlagerung abging. Er zeigt, dass etwas ungeklärt ist, nicht was passiert ist.",
+"Un ammanco è merce uscita senza vendita, scarto registrato o trasferimento. Indica che qualcosa non è spiegato, non cosa sia successo.",
+"النقص هو مخزون خرج دون بيع أو تسجيل هدر أو تحويل. يعني أن شيئًا غير مفسر، ولا يبين ما حدث."
+],
+"A worked example of what Tyll looks for. The order below is in tonight's records.": [
+"Ein Beispiel dafür, wonach Tyll sucht. Die Bestellung unten steht in den heutigen Daten.",
+"Un esempio di ciò che cerca Tyll. L'ordine qui sotto è nei dati di stasera.",
+"مثال على ما يبحث عنه Tyll. الطلب أدناه ضمن سجلات الليلة."
+],
+"AED": [
+"AED",
+"AED",
+"درهم"
+],
+"About {0} less profit in this period.": [
+"Etwa {0} weniger Gewinn in diesem Zeitraum.",
+"Circa {0} di profitto in meno nel periodo.",
+"نحو {0} ربح أقل في هذه الفترة."
+],
+"About {0} of wine not billed.": [
+"Etwa {0} an Wein nicht berechnet.",
+"Circa {0} di vino non fatturato.",
+"نحو {0} من النبيذ غير مفوتر."
+],
+"Accounting ledger and payroll": [
+"Hauptbuch und Lohnabrechnung",
+"Contabilità e paghe",
+"دفتر الأستاذ والرواتب"
+],
+"Act today": [
+"Heute handeln",
+"Da gestire oggi",
+"تصرف اليوم"
+],
+"Actions": [
+"Aktionen",
+"Azioni",
+"الإجراءات"
+],
+"Actual use": [
+"Tatsächlicher Verbrauch",
+"Consumo reale",
+"الاستخدام الفعلي"
+],
+"Actual use less the use the records explain. Counting can be out by up to {0}.": [
+"Tatsächlicher minus erklärter Verbrauch. Zählungen können um bis zu {0} abweichen.",
+"Consumo reale meno quello spiegato dai dati. Il conteggio può variare fino a {0}.",
+"الاستخدام الفعلي ناقص ما تفسره السجلات. قد يختلف الجرد حتى {0}."
+],
+"Actual yield": [
+"Tatsächliche Ausbeute",
+"Resa reale",
+"الناتج الفعلي"
+],
+"Actually posted": [
+"Tatsächlich gebucht",
+"Realmente registrato",
+"المرحّل فعليًا"
+],
+"Actually received": [
+"Tatsächlich erhalten",
+"Realmente ricevuto",
+"المستلم فعليًا"
+],
+"Actually used": [
+"Tatsächlich verbraucht",
+"Consumo reale",
+"المستخدم فعليًا"
+],
+"Adjustment rate by outlet": [
+"Korrekturquote nach Outlet",
+"Tasso di rettifiche per punto vendita",
+"معدل التعديلات حسب المنفذ"
+],
+"Adjustments": [
+"Korrekturen",
+"Rettifiche",
+"التعديلات"
+],
+"Alerts": [
+"Warnungen",
+"Avvisi",
+"التنبيهات"
+],
+"Alerts you set aside show up here, and you can bring them back at any time.": [
+"Zurückgestellte Warnungen erscheinen hier und können jederzeit zurückgeholt werden.",
+"Gli avvisi messi da parte appaiono qui e puoi riprenderli quando vuoi.",
+"تظهر هنا التنبيهات التي أجّلتها، ويمكنك إعادتها في أي وقت."
+],
+"All": [
+"Alle",
+"Tutti",
+"الكل"
+],
+"All ({0})": [
+"Alle ({0})",
+"Tutti ({0})",
+"الكل ({0})"
+],
+"All categories": [
+"Alle Kategorien",
+"Tutte le categorie",
+"جميع الفئات"
+],
+"All counted items": [
+"Alle gezählten Artikel",
+"Tutti gli articoli contati",
+"جميع الأصناف المجرودة"
+],
+"All day": [
+"Ganztägig",
+"Tutto il giorno",
+"طوال اليوم"
+],
+"All departments": [
+"Alle Abteilungen",
+"Tutti i reparti",
+"جميع الأقسام"
+],
+"All hotels": [
+"Alle Hotels",
+"Tutti gli hotel",
+"جميع الفنادق"
+],
+"All items": [
+"Alle Artikel",
+"Tutti gli articoli",
+"جميع الأصناف"
+],
+"All my outlets": [
+"Alle meine Outlets",
+"Tutti i miei punti vendita",
+"جميع منافذي"
+],
+"All orders": [
+"Alle Bestellungen",
+"Tutti gli ordini",
+"جميع الطلبات"
+],
+"All outcomes": [
+"Alle Ergebnisse",
+"Tutti gli esiti",
+"جميع النتائج"
+],
+"All outlets": [
+"Alle Outlets",
+"Tutti i punti vendita",
+"جميع المنافذ"
+],
+"All outlets in those hotels": [
+"Alle Outlets dieser Hotels",
+"Tutti i punti vendita di questi hotel",
+"جميع المنافذ في هذه الفنادق"
+],
+"All patterns": [
+"Alle Muster",
+"Tutti gli schemi",
+"جميع الأنماط"
+],
+"All room charges": [
+"Alle Zimmerbelastungen",
+"Tutti gli addebiti camera",
+"جميع رسوم الغرف"
+],
+"All transactions": [
+"Alle Transaktionen",
+"Tutte le transazioni",
+"جميع المعاملات"
+],
+"All types": [
+"Alle Arten",
+"Tutti i tipi",
+"جميع الأنواع"
+],
+"All {0}": [
+"Alle {0}",
+"Tutti {0}",
+"الكل {0}"
+],
+"All {0} items, in walking order": [
+"Alle {0} Artikel, in Laufreihenfolge",
+"Tutti i {0} articoli, in ordine di percorso",
+"جميع الأصناف ({0}) بترتيب السير"
+],
+"Already booked": [
+"Bereits gebucht",
+"Già prenotati",
+"محجوز بالفعل"
+],
+"Amount": [
+"Menge",
+"Quantità",
+"الكمية"
+],
+"An estimate from forecast covers, events and recent use. Simulated data.": [
+"Eine Schätzung aus prognostizierten Gästen, Events und letztem Verbrauch. Simulierte Daten.",
+"Una stima da coperti previsti, eventi e consumi recenti. Dati simulati.",
+"تقدير من الزبائن المتوقعين والفعاليات والاستخدام الأخير. بيانات محاكاة."
+],
+"An independent security review and penetration test.": [
+"Eine unabhängige Sicherheitsprüfung und ein Penetrationstest.",
+"Una revisione di sicurezza indipendente e un penetration test.",
+"مراجعة أمنية مستقلة واختبار اختراق."
+],
+"An order placed today would arrive too late.": [
+"Eine heutige Bestellung käme zu spät an.",
+"Un ordine fatto oggi arriverebbe troppo tardi.",
+"الطلب الذي يُرسل اليوم سيصل متأخرًا."
+],
+"Analysis": [
+"Analyse",
+"Analisi",
+"التحليل"
+],
+"Any date": [
+"Beliebiges Datum",
+"Qualsiasi data",
+"أي تاريخ"
+],
+"Anyone": [
+"Alle",
+"Chiunque",
+"أي شخص"
+],
+"Anything you log appears here at once.": [
+"Jeder Eintrag erscheint sofort hier.",
+"Ogni registrazione appare subito qui.",
+"يظهر كل ما تسجله هنا فورًا."
+],
+"Apply dates": [
+"Daten übernehmen",
+"Applica date",
+"طبّق التواريخ"
+],
+"Approve distribution": [
+"Verteilung freigeben",
+"Approva distribuzione",
+"وافق على التوزيع"
+],
+"Approve purchase suggestions": [
+"Einkaufsvorschläge freigeben",
+"Approva suggerimenti d'acquisto",
+"الموافقة على اقتراحات الشراء"
+],
+"Arborio rice": [
+"Arborio-Reis",
+"Riso Arborio",
+"أرز أربوريو"
+],
+"As ordered": [
+"Wie bestellt",
+"Come ordinato",
+"كما طُلب"
+],
+"Ask whether stock was lent to another outlet or to banqueting.": [
+"Fragen, ob Bestand an ein anderes Outlet oder das Bankett verliehen wurde.",
+"Chiedi se le scorte sono state prestate a un altro punto vendita o al banqueting.",
+"اسأل عما إذا أُعير المخزون إلى منفذ آخر أو إلى الولائم."
+],
+"Asparagus": [
+"Spargel",
+"Asparagi",
+"هليون"
+],
+"Assign investigations": [
+"Prüfungen zuweisen",
+"Assegna verifiche",
+"إسناد التحقيقات"
+],
+"Assigned": [
+"Zugewiesen",
+"Assegnato",
+"مُسند"
+],
+"Audit trail": [
+"Prüfprotokoll",
+"Registro di controllo",
+"سجل التدقيق"
+],
+"Available now": [
+"Jetzt verfügbar",
+"Disponibile ora",
+"متاح الآن"
+],
+"Awaiting delivery ({0})": [
+"Warten auf Lieferung ({0})",
+"In attesa di consegna ({0})",
+"بانتظار التسليم ({0})"
+],
+"BAR TICKET": [
+"BARBON",
+"COMANDA BAR",
+"تذكرة البار"
+],
+"Back": [
+"Zurück",
+"Indietro",
+"رجوع"
+],
+"Back to Alerts": [
+"Zurück zu Warnungen",
+"Torna agli Avvisi",
+"العودة إلى التنبيهات"
+],
+"Back to Drinks control": [
+"Zurück zur Getränkekontrolle",
+"Torna a Controllo bevande",
+"العودة إلى مراقبة المشروبات"
+],
+"Back to Events and Staffing": [
+"Zurück zu Events und Personal",
+"Torna a Eventi e personale",
+"العودة إلى الفعاليات والموظفين"
+],
+"Back to Log waste": [
+"Zurück zu Abfall erfassen",
+"Torna a Registra scarti",
+"العودة إلى تسجيل الهدر"
+],
+"Back to Menu performance": [
+"Zurück zur Menüleistung",
+"Torna a Rendimento del menu",
+"العودة إلى أداء القائمة"
+],
+"Back to Money Back List": [
+"Zurück zur Rückholliste",
+"Torna alla Lista recuperi",
+"العودة إلى قائمة استرداد الأموال"
+],
+"Back to More tools": [
+"Zurück zu Weitere Tools",
+"Torna ad Altri strumenti",
+"العودة إلى أدوات أخرى"
+],
+"Back to Overview": [
+"Zurück zur Übersicht",
+"Torna alla Panoramica",
+"العودة إلى نظرة عامة"
+],
+"Back to Predictions": [
+"Zurück zu Prognosen",
+"Torna a Previsioni",
+"العودة إلى التوقعات"
+],
+"Back to Reconciliation": [
+"Zurück zum Abgleich",
+"Torna alla Riconciliazione",
+"العودة إلى المطابقة"
+],
+"Back to Reports and settings": [
+"Zurück zu Berichte und Einstellungen",
+"Torna a Report e impostazioni",
+"العودة إلى التقارير والإعدادات"
+],
+"Back to Revenue": [
+"Zurück zu Umsatz",
+"Torna a Ricavi",
+"العودة إلى الإيرادات"
+],
+"Back to Rooms and Guest Experience": [
+"Zurück zu Zimmer und Gästeerlebnis",
+"Torna a Camere ed esperienza ospiti",
+"العودة إلى الغرف وتجربة الضيوف"
+],
+"Back to Settings": [
+"Zurück zu Einstellungen",
+"Torna a Impostazioni",
+"العودة إلى الإعدادات"
+],
+"Back to Stock": [
+"Zurück zu Bestand",
+"Torna a Scorte",
+"العودة إلى المخزون"
+],
+"Back to the count": [
+"Zurück zur Zählung",
+"Torna al conteggio",
+"العودة إلى الجرد"
+],
+"Back to the start": [
+"Zurück zum Anfang",
+"Torna all'inizio",
+"العودة إلى البداية"
+],
+"Back to {0}": [
+"Zurück zu {0}",
+"Torna a {0}",
+"العودة إلى {0}"
+],
+"Bakery": [
+"Backwaren",
+"Panetteria",
+"المخبوزات"
+],
+"Bakery, {0} left, runs out in {1} days": [
+"Backwaren, noch {0}, reicht {1} Tage",
+"Panetteria, restano {0}, finisce tra {1} giorni",
+"مخبوزات، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"Bar (beverage)": [
+"Bar (Getränke)",
+"Bar (bevande)",
+"البار (مشروبات)"
+],
+"Bath towels": [
+"Badetücher",
+"Asciugamani da bagno",
+"مناشف حمام"
+],
+"Beef tenderloin": [
+"Rinderfilet",
+"Filetto di manzo",
+"فيليه بقري"
+],
+"Beer glasses": [
+"Biergläser",
+"Bicchieri da birra",
+"كؤوس بيرة"
+],
+"Before real customer use": [
+"Vor dem Einsatz bei echten Kunden",
+"Prima dell'uso con clienti reali",
+"قبل الاستخدام مع عملاء حقيقيين"
+],
+"Bell captain": [
+"Bell Captain",
+"Capo facchini",
+"كبير الحمالين"
+],
+"Berry cheesecake": [
+"Beeren-Käsekuchen",
+"Cheesecake ai frutti di bosco",
+"تشيز كيك"
+],
+"Best sellers": [
+"Bestseller",
+"Più venduti",
+"الأكثر مبيعًا"
+],
+"Beverage": [
+"Getränke",
+"Bevande",
+"المشروبات"
+],
+"Beverage waste over time": [
+"Getränkeabfall im Zeitverlauf",
+"Scarti di bevande nel tempo",
+"هدر المشروبات بمرور الوقت"
+],
+"Blind count": [
+"Blindzählung",
+"Conteggio alla cieca",
+"جرد أعمى"
+],
+"Booked": [
+"Gebucht",
+"Prenotati",
+"محجوز"
+],
+"Booked covers per restaurant and day": [
+"Gebuchte Gäste pro Restaurant und Tag",
+"Coperti prenotati per ristorante e giorno",
+"الزبائن المحجوزون لكل مطعم ويوم"
+],
+"Bookings come from the reservation book. Walk ins come from the same weekdays over the last {0} weeks.": [
+"Buchungen stammen aus dem Reservierungsbuch. Laufkundschaft aus denselben Wochentagen der letzten {0} Wochen.",
+"Le prenotazioni vengono dal registro. Gli ospiti senza prenotazione dagli stessi giorni delle ultime {0} settimane.",
+"تأتي الحجوزات من دفتر الحجز. والضيوف دون حجز من أيام الأسبوع نفسها في آخر {0} أسابيع."
+],
+"Both hotels": [
+"Beide Hotels",
+"Entrambi gli hotel",
+"كلا الفندقين"
+],
+"Both items are sent for preparation": [
+"Beide Artikel gehen in die Zubereitung",
+"Entrambi gli articoli vanno in preparazione",
+"يُرسل الصنفان للتحضير"
+],
+"Bottles opened": [
+"Geöffnete Flaschen",
+"Bottiglie aperte",
+"الزجاجات المفتوحة"
+],
+"Bottles opened are simulated. Simulated data.": [
+"Geöffnete Flaschen sind simuliert. Simulierte Daten.",
+"Le bottiglie aperte sono simulate. Dati simulati.",
+"الزجاجات المفتوحة محاكاة. بيانات محاكاة."
+],
+"Breakage by outlet": [
+"Bruch nach Outlet",
+"Rotture per punto vendita",
+"الكسر حسب المنفذ"
+],
+"Breakage or spillage": [
+"Bruch oder Verschüttetes",
+"Rottura o versamento",
+"كسر أو انسكاب"
+],
+"Breakage, glass and plates": [
+"Bruch, Gläser und Teller",
+"Rotture, bicchieri e piatti",
+"الكسر، الزجاج والأطباق"
+],
+"Breakages": [
+"Bruch",
+"Rotture",
+"الكسر"
+],
+"Breakfast": [
+"Frühstück",
+"Colazione",
+"الإفطار"
+],
+"Brioche buns": [
+"Brioche-Brötchen",
+"Panini brioche",
+"خبز بريوش"
+],
+"Bronze": [
+"Bronze",
+"Bronzo",
+"برونزي"
+],
+"Build order": [
+"Bestellung erstellen",
+"Crea ordine",
+"أنشئ الطلب"
+],
+"Building…": [
+"Wird erstellt…",
+"Creazione…",
+"جارٍ الإنشاء…"
+],
+"Burgundy": [
+"Burgund",
+"Borgogna",
+"عنابي"
+],
+"Business date": [
+"Geschäftsdatum",
+"Data operativa",
+"تاريخ العمل"
+],
+"Business date {0}{1}{2}.": [
+"Geschäftsdatum {0}{1}{2}.",
+"Data operativa {0}{1}{2}.",
+"تاريخ العمل {0}{1}{2}."
+],
+"Butter": [
+"Butter",
+"Burro",
+"زبدة"
+],
+"By cost, ingredients and prepared dishes.": [
+"Nach Kosten, Zutaten und zubereitete Gerichte.",
+"Per costo, ingredienti e piatti preparati.",
+"حسب التكلفة، المكونات والأطباق الجاهزة."
+],
+"By location, in walking order": [
+"Nach Ort, in Laufreihenfolge",
+"Per luogo, in ordine di percorso",
+"حسب الموقع، بترتيب السير"
+],
+"By outlet": [
+"Nach Outlet",
+"Per punto vendita",
+"حسب المنفذ"
+],
+"By outlet and shift, with no names. {0} wine shift below the threshold this week": [
+"Nach Outlet und Schicht, ohne Namen. {0} Weinschicht diese Woche unter dem Schwellenwert",
+"Per punto vendita e turno, senza nomi. {0} turno di vino sotto la soglia questa settimana",
+"حسب المنفذ والوردية، دون أسماء. {0} وردية نبيذ تحت الحد هذا الأسبوع"
+],
+"By outlet and shift, with no names. {0} wine shifts below the threshold this week": [
+"Nach Outlet und Schicht, ohne Namen. {0} Weinschichten diese Woche unter dem Schwellenwert",
+"Per punto vendita e turno, senza nomi. {0} turni di vino sotto la soglia questa settimana",
+"حسب المنفذ والوردية، دون أسماء. {0} ورديات نبيذ تحت الحد هذا الأسبوع"
+],
+"By outlet. Preview": [
+"Nach Outlet. Vorschau",
+"Per punto vendita. Anteprima",
+"حسب المنفذ. معاينة"
+],
+"By reason": [
+"Nach Grund",
+"Per motivo",
+"حسب السبب"
+],
+"By section": [
+"Nach Bereich",
+"Per sezione",
+"حسب القسم"
+],
+"By source": [
+"Nach Quelle",
+"Per fonte",
+"حسب المصدر"
+],
+"By value.": [
+"Nach Wert.",
+"Per valore.",
+"حسب القيمة."
+],
+"By value. Glassware and china.": [
+"Nach Wert. Glas und Porzellan.",
+"Per valore. Bicchieri e porcellana.",
+"حسب القيمة. الزجاج والخزف."
+],
+"Calculate what to buy": [
+"Einkauf berechnen",
+"Calcola cosa acquistare",
+"احسب ما يجب شراؤه"
+],
+"Can wait": [
+"Kann warten",
+"Può attendere",
+"يمكن الانتظار"
+],
+"Cappuccino": [
+"Cappuccino",
+"Cappuccino",
+"كابتشينو"
+],
+"Card, {0}": [
+"Karte, {0}",
+"Carta, {0}",
+"بطاقة، {0}"
+],
+"Carry on with {0}": [
+"Weiter mit {0}",
+"Continua con {0}",
+"تابع {0}"
+],
+"Casual restaurant": [
+"Casual-Restaurant",
+"Ristorante informale",
+"مطعم غير رسمي"
+],
+"Category": [
+"Kategorie",
+"Categoria",
+"الفئة"
+],
+"Champagne flutes": [
+"Sektflöten",
+"Flûte da champagne",
+"كؤوس شمبانيا"
+],
+"Change": [
+"Änderung",
+"Variazione",
+"التغير"
+],
+"Change a price and every recipe cost, margin and forecast that uses it updates from today.": [
+"Ändern Sie einen Preis, und alle Rezeptkosten, Margen und Prognosen damit werden ab heute aktualisiert.",
+"Cambia un prezzo: costi ricetta, margini e previsioni che lo usano si aggiornano da oggi.",
+"غيّر سعرًا وستتحدث من اليوم كل تكلفة وصفة وهامش وتوقع يستخدمه."
+],
+"Change count": [
+"Zählung ändern",
+"Cambia conteggio",
+"غيّر الجرد"
+],
+"Change expected guests": [
+"Erwartete Gäste ändern",
+"Cambia ospiti previsti",
+"غيّر الضيوف المتوقعين"
+],
+"Change ingredient prices": [
+"Zutatenpreise ändern",
+"Modifica prezzi ingredienti",
+"تغيير أسعار المكونات"
+],
+"Change order status": [
+"Bestellstatus ändern",
+"Modifica stato ordine",
+"تغيير حالة الطلب"
+],
+"Change period": [
+"Zeitraum ändern",
+"Cambia periodo",
+"غيّر الفترة"
+],
+"Change the standard": [
+"Standard ändern",
+"Cambia lo standard",
+"غيّر المعيار"
+],
+"Change the walking order": [
+"Laufreihenfolge ändern",
+"Cambia ordine di percorso",
+"غيّر ترتيب السير"
+],
+"Change what you are counting": [
+"Zählumfang ändern",
+"Cambia cosa stai contando",
+"غيّر ما تجرده"
+],
+"Changed, expected {0}": [
+"Geändert, erwartet {0}",
+"Modificato, previsto {0}",
+"معدل، المتوقع {0}"
+],
+"Changes only this browser. Keep clicking around while it is open.": [
+"Ändert nur diesen Browser. Klicken Sie ruhig weiter, solange es offen ist.",
+"Cambia solo questo browser. Continua a navigare mentre è aperto.",
+"يغير هذا المتصفح فقط. واصل التنقل أثناء فتحه."
+],
+"Charged": [
+"Berechnet",
+"Addebitato",
+"محتسب"
+],
+"Charges": [
+"Belastungen",
+"Addebiti",
+"الرسوم"
+],
+"Charges checked": [
+"Geprüfte Belastungen",
+"Addebiti verificati",
+"الرسوم المفحوصة"
+],
+"Charges posted to rooms": [
+"Auf Zimmer gebuchte Belastungen",
+"Addebiti registrati sulle camere",
+"الرسوم المرحلة إلى الغرف"
+],
+"Charges to guest rooms": [
+"Belastungen auf Gästezimmer",
+"Addebiti alle camere",
+"الرسوم على غرف الضيوف"
+],
+"Check and confirm": [
+"Prüfen und bestätigen",
+"Controlla e conferma",
+"تحقق وأكد"
+],
+"Check and correct": [
+"Prüfen und korrigieren",
+"Controlla e correggi",
+"تحقق وصحح"
+],
+"Check before concluding.": [
+"Vor einem Schluss prüfen.",
+"Verifica prima di concludere.",
+"تحقق قبل الاستنتاج."
+],
+"Check deliveries": [
+"Lieferungen prüfen",
+"Controlla consegne",
+"تحقق من التوريدات"
+],
+"Check pouring at {0}": [
+"Ausschank in {0} prüfen",
+"Controlla il servizio a {0}",
+"تحقق من السكب في {0}"
+],
+"Check stock": [
+"Bestand prüfen",
+"Controlla le scorte",
+"تحقق من المخزون"
+],
+"Check the largest gap": [
+"Größte Lücke prüfen",
+"Controlla lo scarto maggiore",
+"تحقق من أكبر فرق"
+],
+"Check the pour measure and the standard serving size.": [
+"Schankmaß und Standardmenge prüfen.",
+"Controlla la misura e la dose standard.",
+"تحقق من مقياس السكب وحجم التقديم المعياري."
+],
+"Check the storeroom issue notes for the period.": [
+"Lagerausgabescheine für den Zeitraum prüfen.",
+"Controlla le bolle di uscita di magazzino del periodo.",
+"تحقق من إشعارات الصرف من المخزن لهذه الفترة."
+],
+"Check {0} supplier invoices against what was delivered": [
+"{0} Lieferantenrechnungen mit den Lieferungen abgleichen",
+"Confronta {0} fatture fornitore con quanto consegnato",
+"طابق {0} فواتير موردين مع ما تم تسليمه"
+],
+"Checking the counts.": [
+"Zählungen werden geprüft.",
+"Controllo dei conteggi.",
+"جارٍ فحص الجرد."
+],
+"Checking.": [
+"Wird geprüft.",
+"Controllo in corso.",
+"جارٍ التحقق."
+],
+"Cheddar": [
+"Cheddar",
+"Cheddar",
+"جبن شيدر"
+],
+"Chicken Caesar salad": [
+"Caesar Salad mit Hähnchen",
+"Insalata Caesar con pollo",
+"سلطة سيزر"
+],
+"Chicken breast": [
+"Hähnchenbrust",
+"Petto di pollo",
+"صدر دجاج"
+],
+"Chicken shawarma plate": [
+"Hähnchen-Schawarma-Teller",
+"Piatto di shawarma di pollo",
+"شاورما دجاج"
+],
+"Chickpeas": [
+"Kichererbsen",
+"Ceci",
+"حمص"
+],
+"China and serving": [
+"Porzellan und Servierware",
+"Porcellana e servizio",
+"الخزف وأدوات التقديم"
+],
+"Chipped": [
+"Angeschlagen",
+"Scheggiato",
+"مثلوم"
+],
+"Chocolate fondant": [
+"Schokoladen-Fondant",
+"Tortino al cioccolato",
+"فوندان شوكولاتة"
+],
+"Choose an item": [
+"Artikel wählen",
+"Scegli un articolo",
+"اختر صنفًا"
+],
+"Choose an outlet to begin": [
+"Outlet wählen, um zu beginnen",
+"Scegli un punto vendita per iniziare",
+"اختر منفذًا للبدء"
+],
+"Choose outlet and department": [
+"Outlet und Abteilung wählen",
+"Scegli punto vendita e reparto",
+"اختر المنفذ والقسم"
+],
+"Cleaning chemicals": [
+"Reinigungsmittel",
+"Detergenti",
+"مواد تنظيف"
+],
+"Close": [
+"Schließen",
+"Chiudi",
+"إغلاق"
+],
+"Close panel": [
+"Bereich schließen",
+"Chiudi pannello",
+"أغلق اللوحة"
+],
+"Close the guided path": [
+"Rundgang schließen",
+"Chiudi il percorso guidato",
+"أغلق الجولة الإرشادية"
+],
+"Close the guided path offer": [
+"Rundgang-Angebot schließen",
+"Chiudi l'offerta del percorso guidato",
+"أغلق عرض الجولة الإرشادية"
+],
+"Closed": [
+"Geschlossen",
+"Chiuso",
+"مغلق"
+],
+"Closed as legitimate": [
+"Als legitim geschlossen",
+"Chiuso come legittimo",
+"أُغلق كمشروع"
+],
+"Closing count": [
+"Endzählung",
+"Conteggio finale",
+"الجرد الختامي"
+],
+"Closing count, {0}, close": [
+"Endzählung, {0}, Schluss",
+"Conteggio finale, {0}, chiusura",
+"الجرد الختامي، {0}، الإغلاق"
+],
+"Closing count, {0}, close, {1}": [
+"Endzählung, {0}, Schluss, {1}",
+"Conteggio finale, {0}, chiusura, {1}",
+"الجرد الختامي، {0}، الإغلاق، {1}"
+],
+"Closing count: {0}": [
+"Endzählung: {0}",
+"Conteggio finale: {0}",
+"الجرد الختامي: {0}"
+],
+"Club sandwich": [
+"Club-Sandwich",
+"Club sandwich",
+"كلوب ساندويتش"
+],
+"Coca-Cola": [
+"Coca-Cola",
+"Coca-Cola",
+"كوكاكولا"
+],
+"Coca-Cola cans": [
+"Coca-Cola Dosen",
+"Lattine di Coca-Cola",
+"علب كوكاكولا"
+],
+"Cocktails": [
+"Cocktails",
+"Cocktail",
+"الكوكتيلات"
+],
+"Coffee": [
+"Kaffee",
+"Caffè",
+"القهوة"
+],
+"Coffee beans": [
+"Kaffeebohnen",
+"Caffè in grani",
+"حبوب قهوة"
+],
+"Coffee cups": [
+"Kaffeetassen",
+"Tazze da caffè",
+"فناجين قهوة"
+],
+"Coffee liqueur": [
+"Kaffeelikör",
+"Liquore al caffè",
+"ليكيور القهوة"
+],
+"Colours": [
+"Farben",
+"Colori",
+"الألوان"
+],
+"Coming soon": [
+"Demnächst",
+"Prossimamente",
+"قريبًا"
+],
+"Complete order history": [
+"Vollständiger Bestellverlauf",
+"Storia completa dell'ordine",
+"السجل الكامل للطلب"
+],
+"Complimentary": [
+"Gratis",
+"Omaggio",
+"مجاني"
+],
+"Complimentary item with no reason or approval recorded": [
+"Gratisartikel ohne erfassten Grund oder Freigabe",
+"Omaggio senza motivo o approvazione registrati",
+"صنف مجاني دون سبب أو موافقة مسجلين"
+],
+"Complimentary items": [
+"Gratisartikel",
+"Omaggi",
+"أصناف مجانية"
+],
+"Complimentary items above the agreed limit": [
+"Gratisartikel über dem vereinbarten Limit",
+"Omaggi oltre il limite concordato",
+"أصناف مجانية تتجاوز الحد المتفق عليه"
+],
+"Complimentary items above {0} per order, or with no reason.": [
+"Gratisartikel über {0} pro Bestellung oder ohne Grund.",
+"Omaggi oltre {0} per ordine o senza motivo.",
+"أصناف مجانية تتجاوز {0} لكل طلب أو دون سبب."
+],
+"Complimentary items · {0}": [
+"Gratisartikel · {0}",
+"Omaggi · {0}",
+"أصناف مجانية · {0}"
+],
+"Complimentary limit per order": [
+"Gratislimit pro Bestellung",
+"Limite omaggi per ordine",
+"الحد المجاني لكل طلب"
+],
+"Concierge": [
+"Concierge",
+"Concierge",
+"الكونسيرج"
+],
+"Confidence": [
+"Sicherheit",
+"Affidabilità",
+"الثقة"
+],
+"Confirm count": [
+"Zählung bestätigen",
+"Conferma conteggio",
+"أكد الجرد"
+],
+"Confirmed event guests": [
+"Bestätigte Eventgäste",
+"Ospiti di eventi confermati",
+"ضيوف الفعاليات المؤكدون"
+],
+"Confirmed loss": [
+"Bestätigter Verlust",
+"Perdita confermata",
+"خسارة مؤكدة"
+],
+"Confirmed losses": [
+"Bestätigte Verluste",
+"Perdite confermate",
+"خسائر مؤكدة"
+],
+"Confirmed losses, all time": [
+"Bestätigte Verluste, gesamt",
+"Perdite confermate, totale",
+"خسائر مؤكدة، الإجمالي"
+],
+"Connections, access and change log": [
+"Verbindungen, Zugriff und Änderungsprotokoll",
+"Connessioni, accessi e registro modifiche",
+"الاتصالات والوصول وسجل التغييرات"
+],
+"Consider it only after the other explanations have been checked.": [
+"Erst prüfen, wenn die anderen Erklärungen geklärt sind.",
+"Consideralo solo dopo aver verificato le altre spiegazioni.",
+"لا تنظر فيه إلا بعد التحقق من التفسيرات الأخرى."
+],
+"Cooking cream": [
+"Kochsahne",
+"Panna da cucina",
+"كريمة"
+],
+"Cooking oil": [
+"Speiseöl",
+"Olio da cucina",
+"زيت الطبخ"
+],
+"Cooking stock": [
+"Kochfond",
+"Brodo da cucina",
+"مرق"
+],
+"Corrections are added to the records and never replace them. The figures above update straight away.": [
+"Korrekturen werden ergänzt und ersetzen die Daten nie. Die Zahlen oben aktualisieren sich sofort.",
+"Le correzioni si aggiungono ai dati e non li sostituiscono mai. I valori sopra si aggiornano subito.",
+"تُضاف التصحيحات إلى السجلات ولا تحل محلها أبدًا. تتحدث الأرقام أعلاه فورًا."
+],
+"Cost": [
+"Kosten",
+"Costo",
+"التكلفة"
+],
+"Cost change": [
+"Kostenänderung",
+"Variazione costo",
+"تغير التكلفة"
+],
+"Cost of recorded waste per day.": [
+"Kosten des erfassten Abfalls pro Tag.",
+"Costo degli scarti registrati al giorno.",
+"تكلفة الهدر المسجل يوميًا."
+],
+"Cost per portion at today's ingredient prices, against the group list price. Choose a recipe to see what goes into it.": [
+"Kosten pro Portion zu heutigen Zutatenpreisen, verglichen mit dem Gruppenlistenpreis. Wählen Sie ein Rezept, um die Zutaten zu sehen.",
+"Costo per porzione ai prezzi di oggi, rispetto al listino di gruppo. Scegli una ricetta per vedere cosa contiene.",
+"تكلفة الحصة بأسعار المكونات اليوم، مقابل سعر قائمة المجموعة. اختر وصفة لترى مكوناتها."
+],
+"Cost per portion at today's ingredient prices, in the group price list (AED).": [
+"Kosten pro Portion zu heutigen Zutatenpreisen, in der Gruppenpreisliste (AED).",
+"Costo per porzione ai prezzi di oggi, nel listino di gruppo (AED).",
+"تكلفة الحصة بأسعار المكونات اليوم، بقائمة أسعار المجموعة (بالدرهم)."
+],
+"Cost to {0}": [
+"Kosten bis {0}",
+"Costo fino al {0}",
+"التكلفة حتى {0}"
+],
+"Cost, estimate": [
+"Kosten, geschätzt",
+"Costo, stima",
+"التكلفة، تقديرية"
+],
+"Count another item": [
+"Anderen Artikel zählen",
+"Conta un altro articolo",
+"جرد صنف آخر"
+],
+"Count differences are shared out in these proportions.": [
+"Zähldifferenzen werden in diesen Anteilen aufgeteilt.",
+"Le differenze di conteggio sono ripartite in queste proporzioni.",
+"تُوزع فروق الجرد بهذه النسب."
+],
+"Count full racks instead of single glasses. Tyll multiplies by the rack size and adds the loose ones.": [
+"Zählen Sie volle Körbe statt einzelner Gläser. Tyll multipliziert mit der Korbgröße und addiert die losen Gläser.",
+"Conta i cestelli pieni invece dei singoli bicchieri. Tyll moltiplica per la capienza e aggiunge quelli sfusi.",
+"اجرد الحوامل الممتلئة بدل الكؤوس المفردة. يضرب Tyll في حجم الحامل ويضيف الكؤوس المتفرقة."
+],
+"Count paused. Your progress is saved.": [
+"Zählung pausiert. Ihr Fortschritt ist gespeichert.",
+"Conteggio in pausa. I tuoi progressi sono salvati.",
+"أُوقف الجرد مؤقتًا. حُفظ تقدمك."
+],
+"Count records": [
+"Zählprotokolle",
+"Registri dei conteggi",
+"سجلات الجرد"
+],
+"Count saved: {0} items.": [
+"Zählung gespeichert: {0} Artikel.",
+"Conteggio salvato: {0} articoli.",
+"حُفظ الجرد: {0} أصناف."
+],
+"Count this item": [
+"Diesen Artikel zählen",
+"Conta questo articolo",
+"جرد هذا الصنف"
+],
+"Count to correct": [
+"Zu korrigierende Zählung",
+"Conteggio da correggere",
+"الجرد المراد تصحيحه"
+],
+"Counted": [
+"Gezählt",
+"Contato",
+"المجرود"
+],
+"Counted by": [
+"Gezählt von",
+"Contato da",
+"جرده"
+],
+"Counted on": [
+"Gezählt am",
+"Contato il",
+"تاريخ الجرد"
+],
+"Counted quantity of {0}": [
+"Gezählte Menge von {0}",
+"Quantità contata di {0}",
+"الكمية المجرودة من {0}"
+],
+"Covers booked so far for the period.": [
+"Bisher gebuchte Gäste für den Zeitraum.",
+"Coperti prenotati finora per il periodo.",
+"الزبائن المحجوزون حتى الآن لهذه الفترة."
+],
+"Cream cheese": [
+"Frischkäse",
+"Formaggio spalmabile",
+"جبن كريمي"
+],
+"Critical": [
+"Kritisch",
+"Critico",
+"حرج"
+],
+"Critical items": [
+"Kritische Artikel",
+"Articoli critici",
+"الأصناف الحرجة"
+],
+"Critical {0}": [
+"Kritisch {0}",
+"Critici {0}",
+"حرج {0}"
+],
+"Custom": [
+"Benutzerdefiniert",
+"Personalizzato",
+"مخصص"
+],
+"Daily": [
+"Täglich",
+"Giornaliero",
+"يومي"
+],
+"Daily gross margin of {0} for {1} to {2} against the previous period.": [
+"Tägliche Bruttomarge von {0} für {1} bis {2} gegenüber dem Vorzeitraum.",
+"Margine lordo giornaliero di {0} dal {1} al {2} rispetto al periodo precedente.",
+"هامش الربح اليومي لـ {0} من {1} إلى {2} مقابل الفترة السابقة."
+],
+"Daily waste cost for {0} to {1}.": [
+"Tägliche Abfallkosten von {0} bis {1}.",
+"Costo giornaliero degli scarti dal {0} al {1}.",
+"تكلفة الهدر اليومية من {0} إلى {1}."
+],
+"Dairy and dry goods": [
+"Milchprodukte und Trockenware",
+"Latticini e prodotti secchi",
+"الألبان والمواد الجافة"
+],
+"Dairy and eggs": [
+"Milchprodukte und Eier",
+"Latticini e uova",
+"الألبان والبيض"
+],
+"Dairy and eggs, {0} left, runs out in {1} day": [
+"Milchprodukte und Eier, noch {0}, reicht {1} Tag",
+"Latticini e uova, restano {0}, finisce tra {1} giorno",
+"ألبان وبيض، متبقٍ {0}، ينفد خلال {1} يوم"
+],
+"Dairy and eggs, {0} left, runs out in {1} days": [
+"Milchprodukte und Eier, noch {0}, reicht {1} Tage",
+"Latticini e uova, restano {0}, finisce tra {1} giorni",
+"ألبان وبيض، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"Damaged goods": [
+"Beschädigte Ware",
+"Merce danneggiata",
+"بضائع متضررة"
+],
+"Dark chocolate": [
+"Zartbitterschokolade",
+"Cioccolato fondente",
+"شوكولاتة داكنة"
+],
+"Dark mode": [
+"Dunkler Modus",
+"Modalità scura",
+"الوضع الداكن"
+],
+"Data sources": [
+"Datenquellen",
+"Fonti dati",
+"مصادر البيانات"
+],
+"Data-protection agreements, hosting location and retention rules for each country.": [
+"Datenschutzverträge, Hosting-Standort und Aufbewahrungsregeln je Land.",
+"Accordi sulla protezione dei dati, sede di hosting e regole di conservazione per paese.",
+"اتفاقيات حماية البيانات وموقع الاستضافة وقواعد الاحتفاظ لكل دولة."
+],
+"Date range": [
+"Zeitraum",
+"Periodo",
+"النطاق الزمني"
+],
+"Dates": [
+"Daten",
+"Date",
+"التواريخ"
+],
+"Day": [
+"Tag",
+"Giorno",
+"النهار"
+],
+"Day it happened": [
+"Tag des Vorfalls",
+"Giorno dell'evento",
+"يوم الحدوث"
+],
+"Days of cover": [
+"Reichweite in Tagen",
+"Giorni di copertura",
+"أيام التغطية"
+],
+"Deadline": [
+"Frist",
+"Scadenza",
+"الموعد النهائي"
+],
+"Delete": [
+"Löschen",
+"Elimina",
+"حذف"
+],
+"Delete last digit": [
+"Letzte Ziffer löschen",
+"Cancella l'ultima cifra",
+"حذف آخر رقم"
+],
+"Delivered": [
+"Geliefert",
+"Consegnato",
+"المسلّم"
+],
+"Delivered less than ordered": [
+"Weniger geliefert als bestellt",
+"Consegnato meno dell'ordinato",
+"تم تسليم أقل من المطلوب"
+],
+"Deliveries": [
+"Lieferungen",
+"Consegne",
+"التوريدات"
+],
+"Deliveries checked": [
+"Geprüfte Lieferungen",
+"Consegne verificate",
+"التوريدات المفحوصة"
+],
+"Deliveries confirmed": [
+"Bestätigte Lieferungen",
+"Consegne confermate",
+"التوريدات المؤكدة"
+],
+"Deliveries, counts and use": [
+"Lieferungen, Zählungen und Verbrauch",
+"Consegne, conteggi e consumi",
+"التوريدات والجرد والاستخدام"
+],
+"Demo PIN: {0}": [
+"Demo-PIN: {0}",
+"PIN demo: {0}",
+"رقم PIN التجريبي: {0}"
+],
+"Demo data": [
+"Demodaten",
+"Dati demo",
+"البيانات التجريبية"
+],
+"Desserts": [
+"Desserts",
+"Dessert",
+"الحلويات"
+],
+"Detection thresholds": [
+"Erkennungsschwellen",
+"Soglie di rilevamento",
+"حدود الكشف"
+],
+"Difference": [
+"Differenz",
+"Differenza",
+"الفرق"
+],
+"Difference from the original order": [
+"Differenz zur ursprünglichen Bestellung",
+"Differenza dall'ordine originale",
+"الفرق عن الطلب الأصلي"
+],
+"Dinner": [
+"Abendessen",
+"Cena",
+"العشاء"
+],
+"Dinner plates": [
+"Speiseteller",
+"Piatti piani",
+"أطباق عشاء"
+],
+"Discount limit": [
+"Rabattlimit",
+"Limite sconti",
+"حد الخصم"
+],
+"Discounts": [
+"Rabatte",
+"Sconti",
+"الخصومات"
+],
+"Discounts above {0}, or with no reason or approval.": [
+"Rabatte über {0} oder ohne Grund oder Freigabe.",
+"Sconti oltre {0} o senza motivo o approvazione.",
+"خصومات تتجاوز {0} أو دون سبب أو موافقة."
+],
+"Discounts, comps and refunds": [
+"Rabatte, Gratisartikel und Erstattungen",
+"Sconti, omaggi e rimborsi",
+"الخصومات والمجاني والمبالغ المستردة"
+],
+"Dismiss": [
+"Schließen",
+"Chiudi",
+"إغلاق"
+],
+"Download as CSV": [
+"Als CSV herunterladen",
+"Scarica in CSV",
+"نزّل بصيغة CSV"
+],
+"Draft order {0}": [
+"Bestellentwurf {0}",
+"Bozza d'ordine {0}",
+"مسودة الطلب {0}"
+],
+"Drafts, approvals and deliveries": [
+"Entwürfe, Freigaben und Lieferungen",
+"Bozze, approvazioni e consegne",
+"المسودات والموافقات والتوريدات"
+],
+"Draught beer": [
+"Bier vom Fass",
+"Birra alla spina",
+"بيرة"
+],
+"Drinks": [
+"Getränke",
+"Bevande",
+"المشروبات"
+],
+"Drinks control": [
+"Getränkekontrolle",
+"Controllo bevande",
+"مراقبة المشروبات"
+],
+"Drinks served but not entered in the POS, or removed from the bill": [
+"Getränke serviert, aber nicht im POS erfasst oder von der Rechnung entfernt",
+"Bevande servite ma non inserite nel POS o rimosse dal conto",
+"مشروبات قُدمت ولم تُدخل في نقطة البيع أو حُذفت من الفاتورة"
+],
+"Drinks used that sales do not explain": [
+"Verbrauchte Getränke, die Verkäufe nicht erklären",
+"Bevande usate non spiegate dalle vendite",
+"مشروبات مستخدمة لا تفسرها المبيعات"
+],
+"Dropped": [
+"Fallen gelassen",
+"Caduto",
+"سقط"
+],
+"Dry goods": [
+"Trockenware",
+"Prodotti secchi",
+"المواد الجافة"
+],
+"Dry goods, {0} left, runs out in {1} day": [
+"Trockenware, noch {0}, reicht {1} Tag",
+"Prodotti secchi, restano {0}, finisce tra {1} giorno",
+"مواد جافة، متبقٍ {0}، ينفد خلال {1} يوم"
+],
+"Dry goods, {0} left, runs out in {1} days": [
+"Trockenware, noch {0}, reicht {1} Tage",
+"Prodotti secchi, restano {0}, finisce tra {1} giorni",
+"مواد جافة، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"Dubai, all outlets": [
+"Dubai, alle Outlets",
+"Dubai, tutti i punti vendita",
+"دبي، جميع المنافذ"
+],
+"Duplicated": [
+"Doppelt",
+"Duplicato",
+"مكرر"
+],
+"Each charge recorded at an outlet or by housekeeping is matched to the line on the guest bill in the property management system.": [
+"Jede Belastung aus Outlet oder Housekeeping wird mit der Position auf der Gästerechnung im Hotelsystem abgeglichen.",
+"Ogni addebito di punto vendita o housekeeping è abbinato alla riga del conto ospite nel gestionale.",
+"تُطابق كل رسوم مسجلة في منفذ أو من التدبير الفندقي مع بند فاتورة الضيف في نظام إدارة الفندق."
+],
+"Each delivery is checked three ways: what was ordered, what arrived, and what the supplier invoiced.": [
+"Jede Lieferung wird dreifach geprüft: was bestellt wurde, was ankam und was der Lieferant berechnet hat.",
+"Ogni consegna è verificata in tre modi: cosa è stato ordinato, cosa è arrivato e cosa ha fatturato il fornitore.",
+"تُفحص كل توريدة بثلاث طرق: ما طُلب وما وصل وما فوتره المورد."
+],
+"Each entry lowers estimated stock and adds to the waste figures on the Overview, in Reports and in waste analytics.": [
+"Jeder Eintrag senkt den geschätzten Bestand und erhöht die Abfallzahlen in der Übersicht, in den Berichten und in der Abfallanalyse.",
+"Ogni voce riduce le scorte stimate e si somma ai dati sugli scarti in Panoramica, nei Report e nelle analisi.",
+"كل إدخال يخفض المخزون التقديري ويضاف إلى أرقام الهدر في نظرة عامة والتقارير وتحليلات الهدر."
+],
+"Each outlet counts its own bar and kitchen stock. Tyll compares what left between two counts with what the POS sold and what was logged as waste.": [
+"Jedes Outlet zählt seinen eigenen Bar- und Küchenbestand. Tyll vergleicht den Abgang zwischen zwei Zählungen mit den POS-Verkäufen und dem erfassten Abfall.",
+"Ogni punto vendita conta le proprie scorte di bar e cucina. Tyll confronta ciò che è uscito tra due conteggi con le vendite POS e gli scarti registrati.",
+"يجرد كل منفذ مخزون البار والمطبخ الخاص به. ويقارن Tyll ما خرج بين جردين بما باعه نظام نقاط البيع وما سُجل هدرًا."
+],
+"Each source sits behind a typed adapter interface in": [
+"Jede Quelle liegt hinter einer typisierten Adapter-Schnittstelle in",
+"Ogni fonte è dietro un'interfaccia adattatore tipizzata in",
+"يقع كل مصدر خلف واجهة موائم محددة النوع في"
+],
+"Early access": [
+"Früher Zugang",
+"Accesso anticipato",
+"وصول مبكر"
+],
+"Edit ingredient prices": [
+"Zutatenpreise bearbeiten",
+"Modifica prezzi ingredienti",
+"عدّل أسعار المكونات"
+],
+"Effect on gross margin": [
+"Wirkung auf die Bruttomarge",
+"Effetto sul margine lordo",
+"الأثر على هامش الربح الإجمالي"
+],
+"Eggplant": [
+"Aubergine",
+"Melanzane",
+"باذنجان"
+],
+"Eggs": [
+"Eier",
+"Uova",
+"بيض"
+],
+"Email for important requests:": [
+"E-Mail für wichtige Anfragen:",
+"Email per richieste importanti:",
+"البريد للطلبات المهمة:"
+],
+"Emerald": [
+"Smaragd",
+"Smeraldo",
+"زمردي"
+],
+"Enter to open": [
+"Enter zum Öffnen",
+"Invio per aprire",
+"Enter للفتح"
+],
+"Enter what you count": [
+"Gezählte Menge eingeben",
+"Inserisci ciò che conti",
+"أدخل ما تجرده"
+],
+"Enter your PIN": [
+"PIN eingeben",
+"Inserisci il PIN",
+"أدخل رقم PIN"
+],
+"Entered": [
+"Eingegeben",
+"Inserito",
+"أُدخل"
+],
+"Equal rate per hour worked": [
+"Gleicher Satz pro Arbeitsstunde",
+"Stessa quota per ora lavorata",
+"معدل متساوٍ لكل ساعة عمل"
+],
+"Esc to close": [
+"Esc zum Schließen",
+"Esc per chiudere",
+"Esc للإغلاق"
+],
+"Espresso martini": [
+"Espresso Martini",
+"Espresso martini",
+"إسبريسو مارتيني"
+],
+"Estimated by Tyll": [
+"Von Tyll geschätzt",
+"Stimato da Tyll",
+"تقدير Tyll"
+],
+"Estimated cost": [
+"Geschätzte Kosten",
+"Costo stimato",
+"التكلفة التقديرية"
+],
+"Estimated cost at today’s price": [
+"Geschätzte Kosten zum heutigen Preis",
+"Costo stimato al prezzo di oggi",
+"التكلفة التقديرية بسعر اليوم"
+],
+"Estimated now": [
+"Aktuell geschätzt",
+"Stima attuale",
+"التقدير الحالي"
+],
+"Estimated operating contribution": [
+"Geschätzter Betriebsbeitrag",
+"Contributo operativo stimato",
+"المساهمة التشغيلية التقديرية"
+],
+"Estimated stock is the last physical count plus deliveries, less what recipes say was used, less recorded waste and breakage, plus or minus transfers. Last full count: {0}.": [
+"Der geschätzte Bestand ist die letzte Inventur plus Lieferungen, minus Rezeptverbrauch, minus erfasster Abfall und Bruch, plus oder minus Umlagerungen. Letzte volle Zählung: {0}.",
+"Le scorte stimate sono l'ultimo conteggio più le consegne, meno il consumo da ricetta, meno scarti e rotture registrati, più o meno i trasferimenti. Ultimo conteggio completo: {0}.",
+"المخزون التقديري هو آخر جرد فعلي زائد التوريدات، ناقص استخدام الوصفات، ناقص الهدر والكسر المسجلين، زائد أو ناقص التحويلات. آخر جرد كامل: {0}."
+],
+"Estimated stock value": [
+"Geschätzter Bestandswert",
+"Valore stimato delle scorte",
+"القيمة التقديرية للمخزون"
+],
+"Estimates from the last count, deliveries and sales. Simulated data.": [
+"Schätzung aus letzter Zählung, Lieferungen und Verkäufen. Simulierte Daten.",
+"Stime da ultimo conteggio, consegne e vendite. Dati simulati.",
+"تقديرات من آخر جرد والتوريدات والمبيعات. بيانات محاكاة."
+],
+"Evening": [
+"Abend",
+"Sera",
+"المساء"
+],
+"Events": [
+"Events",
+"Eventi",
+"الفعاليات"
+],
+"Events and Staffing": [
+"Events und Personal",
+"Eventi e personale",
+"الفعاليات والموظفون"
+],
+"Events manager": [
+"Eventleitung",
+"Responsabile eventi",
+"مدير الفعاليات"
+],
+"Events, rooms and sales are in development. Have a look at where Tyll is heading.": [
+"Events, Zimmer und Verkauf sind in Entwicklung. Sehen Sie, wohin sich Tyll bewegt.",
+"Eventi, camere e vendite sono in sviluppo. Guarda dove sta andando Tyll.",
+"الفعاليات والغرف والمبيعات قيد التطوير. انظر إلى أين يتجه Tyll."
+],
+"Events, rooms and what is coming": [
+"Events, Zimmer und was noch kommt",
+"Eventi, camere e novità in arrivo",
+"الفعاليات والغرف وما هو قادم"
+],
+"Every case, open and closed": [
+"Jeder Fall, offen und geschlossen",
+"Ogni caso, aperto e chiuso",
+"كل حالة، مفتوحة ومغلقة"
+],
+"Every count and its review": [
+"Jede Zählung und ihre Prüfung",
+"Ogni conteggio e la sua revisione",
+"كل جرد ومراجعته"
+],
+"Every money case, open and closed.": [
+"Jeder Geldfall, offen und geschlossen.",
+"Ogni caso finanziario, aperto e chiuso.",
+"كل حالة مالية، مفتوحة ومغلقة."
+],
+"Every outlet and shift is pouring close to standard.": [
+"Alle Outlets und Schichten schenken nahe am Standard aus.",
+"Ogni punto vendita e turno versa vicino allo standard.",
+"يسكب كل منفذ ووردية قرب المعيار."
+],
+"Every sign-in and every change made in this browser, newest first.": [
+"Jede Anmeldung und Änderung in diesem Browser, neueste zuerst.",
+"Ogni accesso e modifica in questo browser, dal più recente.",
+"كل تسجيل دخول وتغيير في هذا المتصفح، الأحدث أولًا."
+],
+"Every step the point of sale recorded.": [
+"Jeder vom Kassensystem erfasste Schritt.",
+"Ogni passaggio registrato dalla cassa.",
+"كل خطوة سجلتها نقطة البيع."
+],
+"Every transaction Tyll has flagged, who is responsible for it, and what came of it. Shared by owners, finance and outlet managers.": [
+"Jede von Tyll markierte Transaktion, wer zuständig ist und was daraus wurde. Geteilt von Eigentümern, Finanzen und Outlet-Leitungen.",
+"Ogni transazione segnalata da Tyll, chi ne è responsabile e com'è finita. Condivisa da proprietari, finanza e responsabili.",
+"كل معاملة أشار إليها Tyll، ومن المسؤول عنها، وما نتج عنها. مشتركة بين المالكين والمالية ومديري المنافذ."
+],
+"Everything matched. Nothing to look at.": [
+"Alles stimmt. Nichts zu prüfen.",
+"Tutto corrisponde. Niente da controllare.",
+"كل شيء مطابق. لا شيء للمراجعة."
+],
+"Everything that needs a decision, in one list.": [
+"Alles, was entschieden werden muss, in einer Liste.",
+"Tutto ciò che richiede una decisione, in un elenco.",
+"كل ما يحتاج إلى قرار في قائمة واحدة."
+],
+"Example for {0}, week to {1}.": [
+"Beispiel für {0}, Woche bis {1}.",
+"Esempio per {0}, settimana fino al {1}.",
+"مثال لـ {0}، الأسبوع حتى {1}."
+],
+"Exit count": [
+"Zählung verlassen",
+"Esci dal conteggio",
+"الخروج من الجرد"
+],
+"Expected": [
+"Soll",
+"Previsto",
+"المتوقع"
+],
+"Expected against actual, largest shortfall first.": [
+"Soll gegen Ist, größter Fehlbestand zuerst.",
+"Previsto rispetto a reale, ammanco maggiore per primo.",
+"المتوقع مقابل الفعلي، بدءًا بأكبر نقص."
+],
+"Expected demand": [
+"Erwartete Nachfrage",
+"Domanda prevista",
+"الطلب المتوقع"
+],
+"Expected from the records": [
+"Laut Daten erwartet",
+"Previsto dai dati",
+"المتوقع من السجلات"
+],
+"Expected guests": [
+"Erwartete Gäste",
+"Ospiti previsti",
+"الضيوف المتوقعون"
+],
+"Expected guests:": [
+"Erwartete Gäste:",
+"Ospiti previsti:",
+"الضيوف المتوقعون:"
+],
+"Expected per bottle": [
+"Soll pro Flasche",
+"Previsti per bottiglia",
+"المتوقع لكل زجاجة"
+],
+"Expected usage": [
+"Erwarteter Verbrauch",
+"Consumo previsto",
+"الاستخدام المتوقع"
+],
+"Expected use": [
+"Soll-Verbrauch",
+"Consumo previsto",
+"الاستخدام المتوقع"
+],
+"Expected vs actual": [
+"Soll und Ist",
+"Previsto e reale",
+"المتوقع مقابل الفعلي"
+],
+"Expected, change it only if it differs": [
+"Soll, nur bei Abweichung ändern",
+"Previsto, cambialo solo se diverso",
+"المتوقع، غيّره فقط إذا اختلف"
+],
+"Export CSV": [
+"CSV exportieren",
+"Esporta CSV",
+"تصدير CSV"
+],
+"Export reports": [
+"Berichte exportieren",
+"Esporta report",
+"تصدير التقارير"
+],
+"F&B Director": [
+"F&B-Leitung",
+"Direttore F&B",
+"مدير الأغذية والمشروبات"
+],
+"F&B Director, {0}": [
+"F&B-Leitung, {0}",
+"Direttore F&B, {0}",
+"مدير الأغذية والمشروبات، {0}"
+],
+"F&B director": [
+"F&B-Leitung",
+"Direttore F&B",
+"مدير الأغذية والمشروبات"
+],
+"Falling margin": [
+"Sinkende Marge",
+"Margine in calo",
+"هامش متراجع"
+],
+"Fewer {0}": [
+"Weniger {0}",
+"Meno {0}",
+"أقل من {0}"
+],
+"Final bill": [
+"Endrechnung",
+"Conto finale",
+"الفاتورة النهائية"
+],
+"Final bill produced": [
+"Endrechnung erstellt",
+"Conto finale emesso",
+"أُصدرت الفاتورة النهائية"
+],
+"Financial Controller": [
+"Finanzcontroller",
+"Controller finanziario",
+"المراقب المالي"
+],
+"Financial controller": [
+"Finanzcontroller",
+"Controller finanziario",
+"المراقب المالي"
+],
+"Financial impact": [
+"Finanzielle Wirkung",
+"Impatto finanziario",
+"الأثر المالي"
+],
+"Find a dish or drink": [
+"Gericht oder Getränk suchen",
+"Trova un piatto o una bevanda",
+"ابحث عن طبق أو مشروب"
+],
+"Find an item": [
+"Artikel suchen",
+"Trova un articolo",
+"ابحث عن صنف"
+],
+"Fine": [
+"In Ordnung",
+"A posto",
+"جيد"
+],
+"Fine dining restaurant": [
+"Gourmetrestaurant",
+"Ristorante gourmet",
+"مطعم راقٍ"
+],
+"Fine {0}": [
+"In Ordnung {0}",
+"A posto {0}",
+"جيد {0}"
+],
+"Finish": [
+"Fertig",
+"Fine",
+"إنهاء"
+],
+"Finish now": [
+"Jetzt beenden",
+"Termina ora",
+"إنهاء الآن"
+],
+"Fish and chips": [
+"Fish and Chips",
+"Fish and chips",
+"سمك وبطاطس"
+],
+"Five priority items each day. Count first: the expected quantity is shown only after you record yours, so the count is not led by the number on screen.": [
+"Fünf Prioritätsartikel pro Tag. Erst zählen: Die erwartete Menge erscheint erst nach Ihrem Eintrag, damit die Zahl am Bildschirm die Zählung nicht beeinflusst.",
+"Cinque articoli prioritari al giorno. Prima conta: la quantità prevista appare solo dopo la tua registrazione, così il numero a schermo non influenza il conteggio.",
+"خمسة أصناف ذات أولوية يوميًا. اجرد أولًا: تظهر الكمية المتوقعة بعد تسجيل كميتك فقط، حتى لا يتأثر الجرد بالرقم على الشاشة."
+],
+"Flagged": [
+"Markiert",
+"Segnalato",
+"مشار إليه"
+],
+"Flagged by type": [
+"Markiert nach Art",
+"Segnalazioni per tipo",
+"المشار إليه حسب النوع"
+],
+"Flagged orders per {0} orders, so busy and quiet outlets compare fairly.": [
+"Markierte Bestellungen je {0} Bestellungen, für einen fairen Vergleich von vollen und ruhigen Outlets.",
+"Ordini segnalati ogni {0} ordini, per confrontare equamente punti vendita affollati e tranquilli.",
+"الطلبات المشار إليها لكل {0} طلب، لمقارنة عادلة بين المنافذ المزدحمة والهادئة."
+],
+"Flagged postings": [
+"Markierte Buchungen",
+"Registrazioni segnalate",
+"الترحيلات المشار إليها"
+],
+"Flagged when a bottle gives under {0} of what it should.": [
+"Markiert, wenn eine Flasche unter {0} des Solls ergibt.",
+"Segnalato quando una bottiglia rende meno di {0} del previsto.",
+"يُشار إليه عندما تعطي الزجاجة أقل من {0} مما يجب."
+],
+"Flags": [
+"Hinweise",
+"Segnalazioni",
+"الإشارات"
+],
+"Flour": [
+"Mehl",
+"Farina",
+"طحين"
+],
+"Follow a {0} step guided path through what Tyll does today.": [
+"Folgen Sie einem geführten Rundgang in {0} Schritten durch das, was Tyll heute kann.",
+"Segui un percorso guidato in {0} passi per scoprire cosa fa Tyll oggi.",
+"اتبع جولة إرشادية من {0} خطوات لما يقدمه Tyll اليوم."
+],
+"Food": [
+"Speisen",
+"Cibo",
+"الأطعمة"
+],
+"Food and drink cost": [
+"Waren- und Getränkekosten",
+"Costo di cibo e bevande",
+"تكلفة الأطعمة والمشروبات"
+],
+"Food waste is up {0} on the previous period": [
+"Speisenabfall {0} über dem Vorzeitraum",
+"Scarti di cibo su di {0} rispetto al periodo precedente",
+"ارتفع هدر الأطعمة {0} عن الفترة السابقة"
+],
+"Food waste over time": [
+"Speisenabfall im Zeitverlauf",
+"Scarti di cibo nel tempo",
+"هدر الأطعمة بمرور الوقت"
+],
+"Food, drinks and breakage": [
+"Speisen, Getränke und Bruch",
+"Cibo, bevande e rotture",
+"الأطعمة والمشروبات والكسر"
+],
+"Food, walk in fridge": [
+"Speisen, Kühlraum",
+"Cibo, cella frigo",
+"أطعمة، غرفة التبريد"
+],
+"For a prepared dish, a late entry or a note.": [
+"Für ein zubereitetes Gericht, einen späten Eintrag oder eine Notiz.",
+"Per un piatto preparato, una voce tardiva o una nota.",
+"لطبق جاهز أو إدخال متأخر أو ملاحظة."
+],
+"For audits: hides what is expected": [
+"Für Audits: Soll wird ausgeblendet",
+"Per gli audit: nasconde il previsto",
+"للتدقيق: يخفي المتوقع"
+],
+"For example: a case was in the back fridge": [
+"Zum Beispiel: Eine Kiste stand im hinteren Kühlschrank",
+"Per esempio: una cassa era nel frigo sul retro",
+"مثال: كان صندوق في الثلاجة الخلفية"
+],
+"For example: the menu serves {0}": [
+"Zum Beispiel: Die Karte sieht {0} vor",
+"Per esempio: il menu serve {0}",
+"مثال: تقدم القائمة {0}"
+],
+"For example: two cases missing on the pallet": [
+"Zum Beispiel: zwei Kisten fehlen auf der Palette",
+"Per esempio: due casse mancanti sul pallet",
+"مثال: صندوقان مفقودان من المنصة"
+],
+"For you": [
+"Für Sie",
+"Per te",
+"لك"
+],
+"Forecast covers": [
+"Prognostizierte Gäste",
+"Coperti previsti",
+"الزبائن المتوقعون"
+],
+"Four weeks earlier": [
+"Vier Wochen früher",
+"Quattro settimane prima",
+"قبل أربعة أسابيع"
+],
+"Free-text investigation summaries": [
+"Freitext-Zusammenfassungen von Prüfungen",
+"Riepiloghi liberi delle verifiche",
+"ملخصات تحقيق بنص حر"
+],
+"Fresh herbs": [
+"Frische Kräuter",
+"Erbe fresche",
+"أعشاب طازجة"
+],
+"Fresh items keep only a few days, so this draft covers their next delivery. Build it again whenever you need the next one. Building again updates this draft.": [
+"Frischware hält nur wenige Tage, daher deckt dieser Entwurf die nächste Lieferung ab. Erstellen Sie ihn neu, wenn Sie die folgende brauchen. Das aktualisiert diesen Entwurf.",
+"I prodotti freschi durano pochi giorni, quindi questa bozza copre la prossima consegna. Ricreala quando serve la successiva. Ricrearla aggiorna questa bozza.",
+"تبقى المنتجات الطازجة أيامًا قليلة، لذا تغطي هذه المسودة التوريد التالي. أنشئها مجددًا عند الحاجة، وسيحدّث ذلك المسودة."
+],
+"Fresh orange juice": [
+"Frischer Orangensaft",
+"Spremuta d'arancia",
+"عصير برتقال"
+],
+"Fresh produce": [
+"Frischware",
+"Prodotti freschi",
+"المنتجات الطازجة"
+],
+"Fresh produce, {0} left, runs out in {1} day": [
+"Frischware, noch {0}, reicht {1} Tag",
+"Prodotti freschi, restano {0}, finisce tra {1} giorno",
+"منتجات طازجة، متبقٍ {0}، ينفد خلال {1} يوم"
+],
+"Fresh produce, {0} left, runs out in {1} days": [
+"Frischware, noch {0}, reicht {1} Tage",
+"Prodotti freschi, restano {0}, finisce tra {1} giorni",
+"منتجات طازجة، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"From booking records": [
+"Aus Buchungsdaten",
+"Dai dati di prenotazione",
+"من سجلات الحجز"
+],
+"From sales and recipes": [
+"Aus Verkäufen und Rezepten",
+"Da vendite e ricette",
+"من المبيعات والوصفات"
+],
+"From the stock counts": [
+"Aus den Bestandszählungen",
+"Dai conteggi delle scorte",
+"من جرد المخزون"
+],
+"Front office": [
+"Front Office",
+"Front office",
+"الاستقبال"
+],
+"Full Tyll": [
+"Ganzes Tyll",
+"Tyll completo",
+"Tyll الكامل"
+],
+"Full racks": [
+"Volle Körbe",
+"Cestelli pieni",
+"حوامل ممتلئة"
+],
+"Gap": [
+"Lücke",
+"Scarto",
+"الفرق"
+],
+"General manager": [
+"General Manager",
+"Direttore generale",
+"المدير العام"
+],
+"Glasses sold": [
+"Verkaufte Gläser",
+"Calici venduti",
+"الكؤوس المبيعة"
+],
+"Glasses sold come from the POS. Bottles opened are simulated in this demo, because the POS does not record them, and the one house wine on the menu is shared across labels here. A low yield usually means generous pours, unrecorded free glasses or breakage. Check pour size and measures first. It says nothing about any one person.": [
+"Verkaufte Gläser stammen aus dem POS. Geöffnete Flaschen sind in dieser Demo simuliert, da das POS sie nicht erfasst, und der eine Hauswein der Karte ist hier auf mehrere Etiketten verteilt. Geringe Ausbeute bedeutet meist großzügiges Einschenken, nicht erfasste Gratisgläser oder Bruch. Prüfen Sie zuerst Schankmenge und Maße. Über einzelne Personen sagt das nichts aus.",
+"I calici venduti vengono dal POS. Le bottiglie aperte sono simulate in questa demo, perché il POS non le registra, e l'unico vino della casa è qui diviso su più etichette. Una resa bassa di solito indica versamenti generosi, calici gratuiti non registrati o rotture. Controlla prima dosi e misure. Non dice nulla sulle singole persone.",
+"الكؤوس المبيعة من نظام نقاط البيع. والزجاجات المفتوحة محاكاة هنا لأن النظام لا يسجلها، ونبيذ البيت الوحيد موزع هنا على عدة علامات. يعني الناتج المنخفض عادة سكبًا سخيًا أو كؤوسًا مجانية غير مسجلة أو كسرًا. تحقق أولًا من حجم السكب والمقاييس. ولا يقول شيئًا عن أي شخص."
+],
+"Glassware": [
+"Gläser",
+"Bicchieri",
+"الأواني الزجاجية"
+],
+"Glassware by dishwasher rack": [
+"Gläser nach Spülkorb",
+"Bicchieri per cestello",
+"الأواني الزجاجية حسب حامل الغسالة"
+],
+"Go to your home page": [
+"Zu Ihrer Startseite",
+"Vai alla tua home",
+"انتقل إلى صفحتك الرئيسية"
+],
+"Gone off": [
+"Abgelaufen",
+"Andato a male",
+"فسد"
+],
+"Good afternoon, Marco": [
+"Guten Tag, Marco",
+"Buon pomeriggio, Marco",
+"مساء الخير يا ماركو"
+],
+"Good evening, Marco": [
+"Guten Abend, Marco",
+"Buonasera, Marco",
+"مساء الخير يا ماركو"
+],
+"Good morning, Marco": [
+"Guten Morgen, Marco",
+"Buongiorno, Marco",
+"صباح الخير يا ماركو"
+],
+"Grilled salmon": [
+"Gegrillter Lachs",
+"Salmone alla griglia",
+"سلمون مشوي"
+],
+"Gross margin": [
+"Bruttomarge",
+"Margine lordo",
+"هامش الربح الإجمالي"
+],
+"Gross profit": [
+"Bruttogewinn",
+"Profitto lordo",
+"إجمالي الربح"
+],
+"Gross profit per unit": [
+"Bruttogewinn pro Einheit",
+"Profitto lordo per unità",
+"إجمالي الربح لكل وحدة"
+],
+"Guest": [
+"Gast",
+"Ospite",
+"ضيف"
+],
+"Guest amenity kits": [
+"Gäste-Amenity-Sets",
+"Kit di cortesia",
+"أطقم ضيافة"
+],
+"Guest bill postings, occupancy, arrivals, room status": [
+"Buchungen auf Gästerechnungen, Auslastung, Anreisen, Zimmerstatus",
+"Registrazioni sui conti, occupazione, arrivi, stato camere",
+"ترحيلات فواتير الضيوف والإشغال والوصول وحالة الغرف"
+],
+"Guest orders a burger and a Coke": [
+"Gast bestellt Burger und Cola",
+"L'ospite ordina un hamburger e una Coca-Cola",
+"يطلب الضيف برغر وكوكاكولا"
+],
+"Guests": [
+"Gäste",
+"Ospiti",
+"الضيوف"
+],
+"Guests per outlet": [
+"Gäste pro Outlet",
+"Ospiti per punto vendita",
+"الضيوف لكل منفذ"
+],
+"Guests without a booking. The same weekdays brought {0} guests in total over the last four weeks, on average.": [
+"Gäste ohne Buchung. Dieselben Wochentage brachten in den letzten vier Wochen im Schnitt insgesamt {0} Gäste.",
+"Ospiti senza prenotazione. Gli stessi giorni hanno portato in media {0} ospiti in totale nelle ultime quattro settimane.",
+"ضيوف دون حجز. جلبت أيام الأسبوع نفسها {0} ضيفًا إجمالًا في المتوسط خلال آخر أربعة أسابيع."
+],
+"Guided demo": [
+"Geführte Demo",
+"Demo guidata",
+"عرض إرشادي"
+],
+"Guided path": [
+"Geführter Rundgang",
+"Percorso guidato",
+"جولة إرشادية"
+],
+"Guided path, step": [
+"Rundgang, Schritt",
+"Percorso guidato, passo",
+"الجولة الإرشادية، الخطوة"
+],
+"Half a day": [
+"Ein halber Tag",
+"Mezza giornata",
+"نصف يوم"
+],
+"Hammour fillet": [
+"Hammour-Filet",
+"Filetto di hammour",
+"فيليه هامور"
+],
+"Have and coming": [
+"Vorhanden und unterwegs",
+"Disponibile e in arrivo",
+"المتوفر والقادم"
+],
+"Head Chef": [
+"Küchenchef",
+"Capo chef",
+"رئيس الطهاة"
+],
+"Head chef": [
+"Küchenchef",
+"Capo chef",
+"رئيس الطهاة"
+],
+"High": [
+"Hoch",
+"Alta",
+"عالية"
+],
+"High confidence": [
+"Hohe Sicherheit",
+"Affidabilità alta",
+"ثقة عالية"
+],
+"Highball glasses": [
+"Highball-Gläser",
+"Bicchieri highball",
+"كؤوس طويلة"
+],
+"Hotel": [
+"Hotel",
+"Hotel",
+"الفندق"
+],
+"Hotel group owner": [
+"Eigentümer der Hotelgruppe",
+"Proprietario del gruppo",
+"مالك مجموعة الفنادق"
+],
+"Hotel occupancy": [
+"Hotelauslastung",
+"Occupazione hotel",
+"إشغال الفندق"
+],
+"Hotel supplies": [
+"Hotelbedarf",
+"Forniture hotel",
+"لوازم الفندق"
+],
+"Hotels": [
+"Hotels",
+"Hotel",
+"الفنادق"
+],
+"Hours for {0}": [
+"Stunden für {0}",
+"Ore per {0}",
+"ساعات {0}"
+],
+"Hours worked": [
+"Arbeitsstunden",
+"Ore lavorate",
+"ساعات العمل"
+],
+"House red": [
+"Hauswein rot",
+"Vino rosso della casa",
+"نبيذ البيت الأحمر"
+],
+"House white": [
+"Hauswein weiß",
+"Vino bianco della casa",
+"نبيذ البيت الأبيض"
+],
+"House wine": [
+"Hauswein",
+"Vino della casa",
+"نبيذ"
+],
+"House wine, glass": [
+"Hauswein, Glas",
+"Vino della casa, calice",
+"نبيذ"
+],
+"Housekeeping manager": [
+"Hausdamenleitung",
+"Responsabile housekeeping",
+"مدير التدبير الفندقي"
+],
+"How Tyll forecasts": [
+"So prognostiziert Tyll",
+"Come prevede Tyll",
+"كيف يتوقع Tyll"
+],
+"How many glasses each bottle really gave, and which drinks sales do not explain.": [
+"Wie viele Gläser jede Flasche wirklich ergab und welche Getränke Verkäufe nicht erklären.",
+"Quanti calici ha dato davvero ogni bottiglia e quali bevande le vendite non spiegano.",
+"كم كأسًا أعطت كل زجاجة فعليًا، وأي مشروبات لا تفسرها المبيعات."
+],
+"How many kg?": [
+"Wie viele kg?",
+"Quanti kg?",
+"كم كيلوغرامًا؟"
+],
+"How many litres?": [
+"Wie viele Liter?",
+"Quanti litri?",
+"كم لترًا؟"
+],
+"How many?": [
+"Wie viele?",
+"Quanti?",
+"كم العدد؟"
+],
+"How much did we make?": [
+"Wie viel haben wir eingenommen?",
+"Quanto abbiamo incassato?",
+"كم حققنا؟"
+],
+"How much is left, with what is about to run out on top. Start count walks the storeroom in order.": [
+"Wie viel übrig ist, was bald ausgeht steht oben. Zählung starten führt der Reihe nach durchs Lager.",
+"Quanto resta, con in alto ciò che sta per finire. Avvia conteggio percorre il magazzino in ordine.",
+"كم تبقى، وما يوشك على النفاد في الأعلى. ويمر بدء الجرد بالمخزن بالترتيب."
+],
+"How much stock is left?": [
+"Wie viel Bestand ist noch da?",
+"Quante scorte restano?",
+"كم تبقى من المخزون؟"
+],
+"How this is calculated": [
+"So wird das berechnet",
+"Come viene calcolato",
+"كيف يُحسب هذا"
+],
+"How to check:": [
+"So prüfen Sie:",
+"Come verificare:",
+"كيفية التحقق:"
+],
+"How was it found?": [
+"Wie wurde es festgestellt?",
+"Come è stato rilevato?",
+"كيف اكتُشف ذلك؟"
+],
+"In review": [
+"In Prüfung",
+"In revisione",
+"قيد المراجعة"
+],
+"In this demo": [
+"In dieser Demo",
+"In questa demo",
+"في هذه النسخة"
+],
+"In-room dining": [
+"Zimmerservice",
+"Servizio in camera",
+"تناول الطعام في الغرفة"
+],
+"Incorrect physical count": [
+"Falsche Inventur",
+"Conteggio fisico errato",
+"جرد فعلي غير صحيح"
+],
+"Indigo": [
+"Indigo",
+"Indaco",
+"نيلي"
+],
+"Ingredient": [
+"Zutat",
+"Ingrediente",
+"المكوّن"
+],
+"Ingredient cost": [
+"Zutatenkosten",
+"Costo ingredienti",
+"تكلفة المكونات"
+],
+"Ingredient prices": [
+"Zutatenpreise",
+"Prezzi degli ingredienti",
+"أسعار المكونات"
+],
+"Ingredients needed": [
+"Benötigte Zutaten",
+"Ingredienti necessari",
+"المكونات المطلوبة"
+],
+"Inventory": [
+"Inventar",
+"Inventario",
+"العهدة"
+],
+"Investigation": [
+"Prüfung",
+"Verifica",
+"التحقيق"
+],
+"Investigation new · {0} involved": [
+"Prüfung neu · {0} betroffen",
+"Verifica nuova · {0} coinvolti",
+"تحقيق جديد · {0} معنية"
+],
+"Invoice price": [
+"Rechnungspreis",
+"Prezzo fattura",
+"سعر الفاتورة"
+],
+"Invoice price above the order price": [
+"Rechnungspreis über dem Bestellpreis",
+"Prezzo fattura superiore al prezzo d'ordine",
+"سعر الفاتورة أعلى من سعر الطلب"
+],
+"Invoiced": [
+"Berechnet",
+"Fatturato",
+"المفوتر"
+],
+"Invoiced beyond delivery or agreed price": [
+"Über Lieferung oder vereinbarten Preis hinaus berechnet",
+"Fatturato oltre la consegna o il prezzo concordato",
+"فوترة تتجاوز التوريد أو السعر المتفق عليه"
+],
+"Invoiced for goods not delivered": [
+"Nicht gelieferte Ware berechnet",
+"Fatturata merce non consegnata",
+"فوترة بضائع لم تُسلم"
+],
+"Is the bar over pouring, and are any drinks missing?": [
+"Wird an der Bar zu viel ausgeschenkt, und fehlen Getränke?",
+"Il bar versa troppo e mancano bevande?",
+"هل يبالغ البار في السكب، وهل هناك مشروبات مفقودة؟"
+],
+"Issue": [
+"Thema",
+"Problema",
+"المشكلة"
+],
+"Item": [
+"Artikel",
+"Articolo",
+"الصنف"
+],
+"Item history": [
+"Artikelverlauf",
+"Storico articolo",
+"سجل الصنف"
+],
+"Items": [
+"Artikel",
+"Articoli",
+"الأصناف"
+],
+"Items removed after their ticket went to the kitchen or bar, without an approval.": [
+"Artikel, die ohne Freigabe entfernt wurden, nachdem der Bon an Küche oder Bar ging.",
+"Articoli rimossi senza approvazione dopo l'invio della comanda a cucina o bar.",
+"أصناف حُذفت دون موافقة بعد وصول تذكرتها إلى المطبخ أو البار."
+],
+"Items the kitchen marked ready that are not on the final bill.": [
+"Von der Küche als fertig markierte Artikel, die nicht auf der Endrechnung stehen.",
+"Articoli segnati pronti dalla cucina ma assenti dal conto finale.",
+"أصناف أشار المطبخ إلى جاهزيتها وليست في الفاتورة النهائية."
+],
+"Items to order": [
+"Zu bestellende Artikel",
+"Articoli da ordinare",
+"أصناف للطلب"
+],
+"KITCHEN TICKET": [
+"KÜCHENBON",
+"COMANDA CUCINA",
+"تذكرة المطبخ"
+],
+"Keeps {0} days: {1} deliveries, next {2}": [
+"Hält {0} Tage: {1} Lieferungen, nächste {2}",
+"Dura {0} giorni: {1} consegne, prossima {2}",
+"يبقى {0} أيام: {1} توريدات، التالي {2}"
+],
+"Kept separate from tips and not distributed here.": [
+"Getrennt vom Trinkgeld und hier nicht verteilt.",
+"Separato dalle mance e non distribuito qui.",
+"منفصلة عن الإكراميات ولا تُوزع هنا."
+],
+"Key items": [
+"Wichtige Artikel",
+"Articoli chiave",
+"الأصناف الرئيسية"
+],
+"Key items only": [
+"Nur wichtige Artikel",
+"Solo articoli chiave",
+"الأصناف الرئيسية فقط"
+],
+"Kids pasta": [
+"Kinderpasta",
+"Pasta per bambini",
+"باستا للأطفال"
+],
+"Kind": [
+"Art",
+"Tipo",
+"النوع"
+],
+"Kitchen": [
+"Küche",
+"Cucina",
+"المطبخ"
+],
+"Kitchen (food)": [
+"Küche (Speisen)",
+"Cucina (cibo)",
+"المطبخ (أطعمة)"
+],
+"Kitchen and bar tickets": [
+"Küchen- und Barbons",
+"Comande di cucina e bar",
+"تذاكر المطبخ والبار"
+],
+"Kitchen and bar tickets print": [
+"Küchen- und Barbons werden gedruckt",
+"Si stampano le comande di cucina e bar",
+"تُطبع تذاكر المطبخ والبار"
+],
+"Kitchen checklist": [
+"Küchencheckliste",
+"Checklist di cucina",
+"قائمة تحقق المطبخ"
+],
+"Kitchen display": [
+"Küchendisplay",
+"Display di cucina",
+"شاشة المطبخ"
+],
+"Kitchen display and waste scales": [
+"Küchendisplay und Abfallwaagen",
+"Display di cucina e bilance scarti",
+"شاشة المطبخ وموازين الهدر"
+],
+"Kitchen plan": [
+"Küchenplan",
+"Piano di cucina",
+"خطة المطبخ"
+],
+"Kitchens and stores often have no signal. Entries made offline are kept on the device and released when the connection returns.": [
+"Küchen und Lager haben oft keinen Empfang. Offline-Einträge bleiben auf dem Gerät und werden gesendet, sobald die Verbindung zurück ist.",
+"Cucine e magazzini spesso non hanno segnale. Le voci offline restano sul dispositivo e partono al ritorno della connessione.",
+"غالبًا لا تتوفر إشارة في المطابخ والمخازن. تبقى الإدخالات على الجهاز وتُرسل عند عودة الاتصال."
+],
+"Labneh": [
+"Labneh",
+"Labneh",
+"لبنة"
+],
+"Labor": [
+"Personalkosten",
+"Manodopera",
+"العمالة"
+],
+"Lamb chops": [
+"Lammkoteletts",
+"Costolette d'agnello",
+"ريش غنم"
+],
+"Lamb rack": [
+"Lammkarree",
+"Carré d'agnello",
+"ريش غنم"
+],
+"Language": [
+"Sprache",
+"Lingua",
+"اللغة"
+],
+"Language model for explanations": [
+"Sprachmodell für Erläuterungen",
+"Modello linguistico per le spiegazioni",
+"نموذج لغوي للتفسيرات"
+],
+"Last count": [
+"Letzte Zählung",
+"Ultimo conteggio",
+"آخر جرد"
+],
+"Last count {0} on {1}.": [
+"Letzte Zählung {0} am {1}.",
+"Ultimo conteggio {0} il {1}.",
+"آخر جرد {0} في {1}."
+],
+"Last full count, {0}": [
+"Letzte volle Zählung, {0}",
+"Ultimo conteggio completo, {0}",
+"آخر جرد كامل، {0}"
+],
+"Last {0} days": [
+"Letzte {0} Tage",
+"Ultimi {0} giorni",
+"آخر {0} أيام"
+],
+"Last {0} days, up {1}. {2} profit, estimate.": [
+"Letzte {0} Tage, plus {1}. {2} Gewinn, geschätzt.",
+"Ultimi {0} giorni, +{1}. {2} di profitto, stima.",
+"آخر {0} أيام، بزيادة {1}. {2} ربح، تقديري."
+],
+"Last {0} weeks usage": [
+"Verbrauch der letzten {0} Wochen",
+"Consumi delle ultime {0} settimane",
+"استخدام آخر {0} أسابيع"
+],
+"Late": [
+"Spät",
+"Tarda sera",
+"وقت متأخر"
+],
+"Late refund": [
+"Späte Erstattung",
+"Rimborso tardivo",
+"استرداد متأخر"
+],
+"Latest flagged orders": [
+"Letzte markierte Bestellungen",
+"Ultimi ordini segnalati",
+"أحدث الطلبات المشار إليها"
+],
+"Laundry": [
+"Wäscherei",
+"Lavanderia",
+"الغسيل"
+],
+"Least profitable items": [
+"Am wenigsten profitable Artikel",
+"Articoli meno redditizi",
+"الأصناف الأقل ربحًا"
+],
+"Least sold": [
+"Am wenigsten verkauft",
+"Meno venduti",
+"الأقل مبيعًا"
+],
+"Legal review of staff-related monitoring and of tip rules in each jurisdiction.": [
+"Rechtliche Prüfung personalbezogener Überwachung und der Trinkgeldregeln je Rechtsraum.",
+"Verifica legale del monitoraggio del personale e delle regole sulle mance per giurisdizione.",
+"مراجعة قانونية لمراقبة الموظفين وقواعد الإكراميات في كل ولاية قضائية."
+],
+"Legitimate correction": [
+"Legitime Korrektur",
+"Correzione legittima",
+"تصحيح مشروع"
+],
+"Lemons": [
+"Zitronen",
+"Limoni",
+"ليمون"
+],
+"Less": [
+"Weniger",
+"Meno",
+"أقل"
+],
+"Light mode": [
+"Heller Modus",
+"Modalità chiara",
+"الوضع الفاتح"
+],
+"Limes": [
+"Limetten",
+"Lime",
+"ليمون أخضر"
+],
+"Linguine": [
+"Linguine",
+"Linguine",
+"لينغويني"
+],
+"Live ticket status, Winnow and Orbisk waste weights": [
+"Bonstatus in Echtzeit, Abfallgewichte von Winnow und Orbisk",
+"Stato comande in tempo reale, pesi scarti di Winnow e Orbisk",
+"حالة التذاكر المباشرة وأوزان الهدر من Winnow وOrbisk"
+],
+"Loading": [
+"Wird geladen",
+"Caricamento",
+"جارٍ التحميل"
+],
+"Loading Tyll": [
+"Tyll wird geladen",
+"Caricamento di Tyll",
+"جارٍ تحميل Tyll"
+],
+"Loading orders": [
+"Bestellungen werden geladen",
+"Caricamento ordini",
+"جارٍ تحميل الطلبات"
+],
+"Loading orders.": [
+"Bestellungen werden geladen.",
+"Caricamento ordini.",
+"جارٍ تحميل الطلبات."
+],
+"Loading requests": [
+"Anfragen werden geladen",
+"Caricamento richieste",
+"جارٍ تحميل الطلبات"
+],
+"Loading stock": [
+"Bestand wird geladen",
+"Caricamento scorte",
+"جارٍ تحميل المخزون"
+],
+"Loading the latest counts.": [
+"Letzte Zählungen werden geladen.",
+"Caricamento degli ultimi conteggi.",
+"جارٍ تحميل آخر عمليات الجرد."
+],
+"Loading the order": [
+"Bestellung wird geladen",
+"Caricamento dell'ordine",
+"جارٍ تحميل الطلب"
+],
+"Loading the stock records": [
+"Bestandsdaten werden geladen",
+"Caricamento dei dati di scorte",
+"جارٍ تحميل سجلات المخزون"
+],
+"Lobby lounge": [
+"Lobby-Lounge",
+"Lounge della hall",
+"صالة الردهة"
+],
+"Lobster linguine": [
+"Linguine mit Hummer",
+"Linguine all'aragosta",
+"لينغويني بالكركند"
+],
+"Lobster tail": [
+"Hummerschwanz",
+"Coda di aragosta",
+"كركند"
+],
+"Lock now": [
+"Jetzt sperren",
+"Blocca ora",
+"اقفل الآن"
+],
+"Log": [
+"Erfassen",
+"Registra",
+"سجل"
+],
+"Log a prepared dish or add a note": [
+"Zubereitetes Gericht erfassen oder Notiz hinzufügen",
+"Registra un piatto preparato o aggiungi una nota",
+"سجل طبقًا جاهزًا أو أضف ملاحظة"
+],
+"Log any waste, spillage or breakage that was not recorded.": [
+"Nicht erfassten Abfall, Verschüttetes oder Bruch eintragen.",
+"Registra scarti, versamenti o rotture non registrati.",
+"سجل أي هدر أو انسكاب أو كسر لم يُسجل."
+],
+"Log for this period": [
+"Für diesen Zeitraum erfassen",
+"Registra per questo periodo",
+"سجل لهذه الفترة"
+],
+"Log waste": [
+"Abfall erfassen",
+"Registra scarti",
+"تسجيل الهدر"
+],
+"Log waste or breakage": [
+"Abfall oder Bruch erfassen",
+"Registra scarti o rotture",
+"سجل الهدر أو الكسر"
+],
+"Log waste that was missed": [
+"Vergessenen Abfall erfassen",
+"Registra scarti dimenticati",
+"سجل الهدر الذي فات"
+],
+"Log with more detail": [
+"Mit mehr Details erfassen",
+"Registra con più dettagli",
+"سجل بتفاصيل أكثر"
+],
+"Look ahead": [
+"Vorausschau",
+"Previsione",
+"نظرة مستقبلية"
+],
+"Looks right, next": [
+"Stimmt, weiter",
+"Corretto, avanti",
+"صحيح، التالي"
+],
+"Loose pieces": [
+"Einzelstücke",
+"Pezzi sfusi",
+"قطع متفرقة"
+],
+"Lost today": [
+"Heute verloren",
+"Perso oggi",
+"خسائر اليوم"
+],
+"Lost today: {0} wasted, {1} broken.": [
+"Heute verloren: {0} Abfall, {1} Bruch.",
+"Perso oggi: {0} scarti, {1} rotture.",
+"خسائر اليوم: {0} هدر، {1} كسر."
+],
+"Low": [
+"Niedrig",
+"Basso",
+"منخفض"
+],
+"Low {0}": [
+"Niedrig {0}",
+"Bassi {0}",
+"منخفض {0}"
+],
+"Lunch": [
+"Mittagessen",
+"Pranzo",
+"الغداء"
+],
+"Made too much": [
+"Zu viel zubereitet",
+"Preparato in eccesso",
+"أُعد بكمية زائدة"
+],
+"Main": [
+"Hauptmenü",
+"Principale",
+"الرئيسية"
+],
+"Mains": [
+"Hauptgerichte",
+"Secondi",
+"الأطباق الرئيسية"
+],
+"Mains, kitchen. Sold at {0} outlets in this selection.": [
+"Hauptgerichte, Küche. In {0} Outlets dieser Auswahl verkauft.",
+"Secondi, cucina. Venduto in {0} punti vendita della selezione.",
+"الأطباق الرئيسية، المطبخ. يُباع في {0} منافذ ضمن هذا الاختيار."
+],
+"Manage rooms and housekeeping": [
+"Zimmer und Housekeeping verwalten",
+"Gestisci camere e housekeeping",
+"إدارة الغرف والتدبير الفندقي"
+],
+"Management report": [
+"Managementbericht",
+"Report direzionale",
+"تقرير الإدارة"
+],
+"Management report, {0} to {1}, today to {2}. Compared with the previous period of the same length. Amounts in AED.": [
+"Managementbericht, {0} bis {1}, heute bis {2}. Verglichen mit dem gleich langen Vorzeitraum. Beträge in AED.",
+"Report direzionale, dal {0} al {1}, oggi fino alle {2}. Confronto con il periodo precedente di pari durata. Importi in AED.",
+"تقرير الإدارة، من {0} إلى {1}، اليوم حتى {2}. مقارنة بالفترة السابقة بالطول نفسه. المبالغ بالدرهم."
+],
+"Management report, {0}, today to {1}. Compared with the previous day at the same time. Amounts in AED.": [
+"Managementbericht, {0}, heute bis {1}. Verglichen mit dem Vortag zur selben Zeit. Beträge in AED.",
+"Report direzionale, {0}, oggi fino alle {1}. Confronto con il giorno precedente alla stessa ora. Importi in AED.",
+"تقرير الإدارة، {0}، اليوم حتى {1}. مقارنة باليوم السابق في الوقت نفسه. المبالغ بالدرهم."
+],
+"Margherita pizza": [
+"Pizza Margherita",
+"Pizza margherita",
+"بيتزا مارغريتا"
+],
+"Margin": [
+"Marge",
+"Margine",
+"الهامش"
+],
+"Margin change": [
+"Margenänderung",
+"Variazione margine",
+"تغير الهامش"
+],
+"Margin day by day": [
+"Marge Tag für Tag",
+"Margine giorno per giorno",
+"الهامش يومًا بيوم"
+],
+"Mark all read": [
+"Alle als gelesen markieren",
+"Segna tutto come letto",
+"تعليم الكل كمقروء"
+],
+"Mayonnaise and sauces": [
+"Mayonnaise und Saucen",
+"Maionese e salse",
+"مايونيز وصلصات"
+],
+"Meal": [
+"Mahlzeit",
+"Pasto",
+"الوجبة"
+],
+"Measures sold": [
+"Verkaufte Maße",
+"Misure vendute",
+"المقادير المبيعة"
+],
+"Meat and fish": [
+"Fleisch und Fisch",
+"Carne e pesce",
+"اللحوم والأسماك"
+],
+"Meat and fish, {0} left, runs out in {1} day": [
+"Fleisch und Fisch, noch {0}, reicht {1} Tag",
+"Carne e pesce, restano {0}, finisce tra {1} giorno",
+"لحوم وأسماك، متبقٍ {0}، ينفد خلال {1} يوم"
+],
+"Meat and fish, {0} left, runs out in {1} days": [
+"Fleisch und Fisch, noch {0}, reicht {1} Tage",
+"Carne e pesce, restano {0}, finisce tra {1} giorni",
+"لحوم وأسماك، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"Menu": [
+"Menü",
+"Menu",
+"القائمة"
+],
+"Menu items": [
+"Menüartikel",
+"Voci di menu",
+"أصناف القائمة"
+],
+"Menu performance": [
+"Menüleistung",
+"Rendimento del menu",
+"أداء القائمة"
+],
+"Menu, Menu": [
+"Menü, Menü",
+"Menu, Menu",
+"القائمة، القائمة"
+],
+"Mezze platter": [
+"Mezze-Platte",
+"Piatto di mezze",
+"طبق مزة"
+],
+"Milk": [
+"Milch",
+"Latte",
+"حليب"
+],
+"Minibar": [
+"Minibar",
+"Minibar",
+"الميني بار"
+],
+"Minibar, spa and laundry postings are simulated for the last {0} days. Room-damage charge verification is planned and not part of this demo.": [
+"Minibar-, Spa- und Wäschebuchungen sind für die letzten {0} Tage simuliert. Die Prüfung von Zimmerschäden ist geplant und nicht Teil dieser Demo.",
+"Le registrazioni di minibar, spa e lavanderia sono simulate per gli ultimi {0} giorni. La verifica dei danni in camera è prevista e non fa parte della demo.",
+"ترحيلات الميني بار والسبا والغسيل محاكاة لآخر {0} أيام. التحقق من رسوم أضرار الغرف مخطط له وليس ضمن هذه النسخة."
+],
+"Missing": [
+"Fehlend",
+"Mancante",
+"مفقود"
+],
+"Missing at last count": [
+"Fehlend bei letzter Zählung",
+"Mancante all'ultimo conteggio",
+"المفقود في آخر جرد"
+],
+"Missing drinks": [
+"Fehlende Getränke",
+"Bevande mancanti",
+"المشروبات المفقودة"
+],
+"Missing on {0}": [
+"Fehlend am {0}",
+"Mancante il {0}",
+"المفقود في {0}"
+],
+"Missing stock, week by week": [
+"Fehlender Bestand, Woche für Woche",
+"Scorte mancanti, settimana per settimana",
+"المخزون المفقود أسبوعًا بأسبوع"
+],
+"Mixed berries": [
+"Gemischte Beeren",
+"Frutti di bosco",
+"توت"
+],
+"Money": [
+"Geld",
+"Denaro",
+"الأموال"
+],
+"Money Back List": [
+"Rückholliste",
+"Lista recuperi",
+"قائمة استرداد الأموال"
+],
+"Money at risk": [
+"Gefährdetes Geld",
+"Denaro a rischio",
+"الأموال المعرضة للخطر"
+],
+"Money cases": [
+"Geldfälle",
+"Casi finanziari",
+"الحالات المالية"
+],
+"Money in these alerts": [
+"Geld in diesen Warnungen",
+"Denaro in questi avvisi",
+"الأموال في هذه التنبيهات"
+],
+"Money records": [
+"Finanzdaten",
+"Dati finanziari",
+"السجلات المالية"
+],
+"Money recovered": [
+"Zurückgewonnenes Geld",
+"Denaro recuperato",
+"الأموال المستردة"
+],
+"Money, {0}, Dubai": [
+"Geld, {0}, Dubai",
+"Denaro, {0}, Dubai",
+"الأموال، {0}، دبي"
+],
+"Monitoring, alerting and an incident process.": [
+"Überwachung, Alarmierung und ein Störungsprozess.",
+"Monitoraggio, allarmi e gestione degli incidenti.",
+"المراقبة والتنبيه وآلية للحوادث."
+],
+"Monthly": [
+"Monatlich",
+"Mensile",
+"شهري"
+],
+"Monthly view": [
+"Monatsansicht",
+"Vista mensile",
+"العرض الشهري"
+],
+"More": [
+"Mehr",
+"Altro",
+"المزيد"
+],
+"More tools": [
+"Weitere Tools",
+"Altri strumenti",
+"أدوات أخرى"
+],
+"More {0}": [
+"Mehr {0}",
+"Più {0}",
+"المزيد من {0}"
+],
+"Most broken": [
+"Am häufigsten zerbrochen",
+"Più rotti",
+"الأكثر كسرًا"
+],
+"Most profitable items": [
+"Profitabelste Artikel",
+"Articoli più redditizi",
+"الأصناف الأكثر ربحًا"
+],
+"Most wasted": [
+"Am meisten weggeworfen",
+"Più scartati",
+"الأكثر هدرًا"
+],
+"Moves walk-ins only. Booked guests are not counted again.": [
+"Ändert nur Laufkundschaft. Gebuchte Gäste werden nicht erneut gezählt.",
+"Cambia solo gli ospiti senza prenotazione. I prenotati non si contano di nuovo.",
+"يغير الضيوف دون حجز فقط. ولا يُحتسب المحجوزون مرة أخرى."
+],
+"Mozzarella": [
+"Mozzarella",
+"Mozzarella",
+"موزاريلا"
+],
+"My drafts ({0})": [
+"Meine Entwürfe ({0})",
+"Le mie bozze ({0})",
+"مسوداتي ({0})"
+],
+"Name": [
+"Name",
+"Nome",
+"الاسم"
+],
+"Needs a look": [
+"Zu prüfen",
+"Da controllare",
+"يحتاج إلى مراجعة"
+],
+"Needs attention": [
+"Braucht Aufmerksamkeit",
+"Richiede attenzione",
+"يحتاج إلى انتباه"
+],
+"Needs checking": [
+"Zu prüfen",
+"Da verificare",
+"يحتاج إلى تحقق"
+],
+"Net profit": [
+"Nettogewinn",
+"Profitto netto",
+"صافي الربح"
+],
+"Net profit, estimate": [
+"Nettogewinn, geschätzt",
+"Profitto netto, stima",
+"صافي الربح، تقديري"
+],
+"Net sales": [
+"Nettoumsatz",
+"Vendite nette",
+"صافي المبيعات"
+],
+"Net sales of this item less its recipe cost on the day.": [
+"Nettoumsatz dieses Artikels minus Rezeptkosten des Tages.",
+"Vendite nette dell'articolo meno il costo ricetta del giorno.",
+"صافي مبيعات هذا الصنف ناقص تكلفة وصفته في ذلك اليوم."
+],
+"Net sales, this period": [
+"Nettoumsatz, dieser Zeitraum",
+"Vendite nette, questo periodo",
+"صافي المبيعات، هذه الفترة"
+],
+"New": [
+"Neu",
+"Nuovo",
+"جديد"
+],
+"New here?": [
+"Neu hier?",
+"Sei nuovo?",
+"جديد هنا؟"
+],
+"New standard (ml)": [
+"Neuer Standard (ml)",
+"Nuovo standard (ml)",
+"المعيار الجديد (مل)"
+],
+"Next": [
+"Weiter",
+"Avanti",
+"التالي"
+],
+"Next order": [
+"Nächste Bestellung",
+"Prossimo ordine",
+"الطلب التالي"
+],
+"Next order {0}.": [
+"Nächste Bestellung {0}.",
+"Prossimo ordine {0}.",
+"الطلب التالي {0}."
+],
+"Next {0} days": [
+"Nächste {0} Tage",
+"Prossimi {0} giorni",
+"الأيام الـ{0} القادمة"
+],
+"Next:": [
+"Weiter:",
+"Avanti:",
+"التالي:"
+],
+"Next: expected demand": [
+"Weiter: erwartete Nachfrage",
+"Avanti: domanda prevista",
+"التالي: الطلب المتوقع"
+],
+"No": [
+"Nein",
+"No",
+"لا"
+],
+"No event is booked in this period.": [
+"In diesem Zeitraum ist kein Event gebucht.",
+"Nessun evento prenotato nel periodo.",
+"لا توجد فعالية محجوزة في هذه الفترة."
+],
+"No events": [
+"Keine Events",
+"Nessun evento",
+"لا توجد فعاليات"
+],
+"No finding": [
+"Kein Befund",
+"Nessun riscontro",
+"لا توجد نتيجة"
+],
+"No line using this item was removed after it was sent.": [
+"Keine Position mit diesem Artikel wurde nach dem Senden entfernt.",
+"Nessuna riga con questo articolo è stata rimossa dopo l'invio.",
+"لم يُحذف أي بند يستخدم هذا الصنف بعد إرساله."
+],
+"No open orders": [
+"Keine offenen Bestellungen",
+"Nessun ordine aperto",
+"لا توجد طلبات مفتوحة"
+],
+"No reason, no approval": [
+"Kein Grund, keine Freigabe",
+"Nessun motivo, nessuna approvazione",
+"دون سبب أو موافقة"
+],
+"No record can show this. A difference on its own does not show that anything was taken.": [
+"Das können keine Daten zeigen. Eine Differenz allein zeigt nicht, dass etwas entnommen wurde.",
+"Nessun dato può mostrarlo. Una differenza da sola non indica che qualcosa sia stato preso.",
+"لا يمكن لأي سجل إظهار ذلك. الفرق وحده لا يعني أن شيئًا أُخذ."
+],
+"No repeated pattern in this selection": [
+"Kein wiederkehrendes Muster in dieser Auswahl",
+"Nessuno schema ricorrente in questa selezione",
+"لا يوجد نمط متكرر في هذا الاختيار"
+],
+"No requests for you. When another team sends you work, it appears here.": [
+"Keine Anfragen für Sie. Wenn ein anderes Team Ihnen Arbeit schickt, erscheint sie hier.",
+"Nessuna richiesta per te. Quando un altro team ti invia lavoro, appare qui.",
+"لا توجد طلبات لك. عندما يرسل إليك فريق آخر عملًا يظهر هنا."
+],
+"No requests in this list.": [
+"Keine Anfragen in dieser Liste.",
+"Nessuna richiesta in questo elenco.",
+"لا توجد طلبات في هذه القائمة."
+],
+"No transfers in or out are recorded for this outlet in this period.": [
+"Für dieses Outlet sind im Zeitraum keine Umlagerungen erfasst.",
+"Nessun trasferimento registrato per questo punto vendita nel periodo.",
+"لا توجد تحويلات مسجلة لهذا المنفذ في هذه الفترة."
+],
+"No transfers in or out were recorded.": [
+"Keine Umlagerungen erfasst.",
+"Nessun trasferimento registrato.",
+"لم تُسجل أي تحويلات واردة أو صادرة."
+],
+"No waste or breakage was recorded for this item at this outlet in the period.": [
+"Für diesen Artikel in diesem Outlet wurde im Zeitraum kein Abfall oder Bruch erfasst.",
+"Nessuno scarto o rottura registrato per questo articolo qui nel periodo.",
+"لم يُسجل هدر أو كسر لهذا الصنف في هذا المنفذ خلال الفترة."
+],
+"None": [
+"Keine",
+"Nessuno",
+"لا يوجد"
+],
+"Not billed: today {0} ({1} glasses), this week {2} ({3} glasses), this month {4} ({5} glasses).": [
+"Nicht berechnet: heute {0} ({1} Gläser), diese Woche {2} ({3} Gläser), diesen Monat {4} ({5} Gläser).",
+"Non fatturato: oggi {0} ({1} calici), questa settimana {2} ({3} calici), questo mese {4} ({5} calici).",
+"غير مفوتر: اليوم {0} ({1} كأس)، هذا الأسبوع {2} ({3} كأس)، هذا الشهر {4} ({5} كأس)."
+],
+"Not billed: today {0} ({1} measures), this week {2} ({3} measures), this month {4} ({5} measures).": [
+"Nicht berechnet: heute {0} ({1} Maße), diese Woche {2} ({3} Maße), diesen Monat {4} ({5} Maße).",
+"Non fatturato: oggi {0} ({1} misure), questa settimana {2} ({3} misure), questo mese {4} ({5} misure).",
+"غير مفوتر: اليوم {0} ({1} مقدار)، هذا الأسبوع {2} ({3} مقدار)، هذا الشهر {4} ({5} مقدار)."
+],
+"Not called in this demo. Explanations are assembled by rules from the recorded facts.": [
+"In dieser Demo nicht verwendet. Erläuterungen entstehen per Regeln aus den erfassten Fakten.",
+"Non usato in questa demo. Le spiegazioni sono composte con regole dai fatti registrati.",
+"لا يُستخدم في هذه النسخة. تُركب التفسيرات بقواعد من الحقائق المسجلة."
+],
+"Not connected": [
+"Nicht verbunden",
+"Non collegato",
+"غير متصل"
+],
+"Not connected. Labor is estimated from rostered hours and overheads are allocated, so every profit figure is labelled an estimate.": [
+"Nicht verbunden. Personalkosten sind aus Dienstplanstunden geschätzt und Gemeinkosten umgelegt, daher ist jede Gewinnzahl als Schätzung markiert.",
+"Non collegato. La manodopera è stimata dai turni e le spese ripartite, quindi ogni profitto è indicato come stima.",
+"غير متصل. العمالة مقدرة من الورديات والنفقات موزعة، لذا يُوسم كل رقم ربح بأنه تقديري."
+],
+"Not explained": [
+"Nicht erklärt",
+"Non spiegato",
+"غير مفسر"
+],
+"Not investigated": [
+"Nicht geprüft",
+"Non verificato",
+"لم يُحقق فيه"
+],
+"Nothing below the threshold": [
+"Nichts unter dem Schwellenwert",
+"Nulla sotto la soglia",
+"لا شيء تحت الحد"
+],
+"Nothing flagged here": [
+"Hier nichts markiert",
+"Nessuna segnalazione qui",
+"لا توجد إشارات هنا"
+],
+"Nothing here": [
+"Hier ist nichts",
+"Qui non c'è nulla",
+"لا يوجد شيء هنا"
+],
+"Nothing is snoozed": [
+"Nichts zurückgestellt",
+"Nulla è posticipato",
+"لا شيء مؤجل"
+],
+"Nothing logged yet in this session. Unlock the app with the demo PIN and log an item to see stock and waste cost move.": [
+"In dieser Sitzung noch nichts erfasst. Entsperren Sie die App mit der Demo-PIN und erfassen Sie einen Artikel, um die Änderung bei Bestand und Abfallkosten zu sehen.",
+"Ancora nulla in questa sessione. Sblocca l'app con il PIN demo e registra un articolo per vedere variare scorte e costi.",
+"لا شيء مسجل في هذه الجلسة بعد. افتح التطبيق برقم PIN التجريبي وسجل صنفًا لترى تغير المخزون وتكلفة الهدر."
+],
+"Nothing logged yet today": [
+"Heute noch nichts erfasst",
+"Ancora nulla registrato oggi",
+"لم يُسجل شيء اليوم بعد"
+],
+"Nothing matches that. Try another word.": [
+"Keine Treffer. Versuchen Sie ein anderes Wort.",
+"Nessun risultato. Prova un'altra parola.",
+"لا توجد نتائج. جرّب كلمة أخرى."
+],
+"Nothing needs you right now.": [
+"Gerade ist nichts zu tun.",
+"Al momento non serve nulla.",
+"لا شيء يحتاج إليك الآن."
+],
+"Nothing resolved yet": [
+"Noch nichts erledigt",
+"Ancora nulla di risolto",
+"لم يُحل شيء بعد"
+],
+"Nothing started": [
+"Nichts begonnen",
+"Nulla di iniziato",
+"لم يبدأ شيء"
+],
+"Nothing to order here": [
+"Hier nichts zu bestellen",
+"Niente da ordinare qui",
+"لا شيء للطلب هنا"
+],
+"Nothing waiting": [
+"Nichts wartet",
+"Nulla in attesa",
+"لا شيء بانتظار"
+],
+"Notifications": [
+"Benachrichtigungen",
+"Notifiche",
+"الإشعارات"
+],
+"Now viewing the demo as F&B director.": [
+"Sie sehen die Demo jetzt als F&B-Leitung.",
+"Ora vedi la demo come Direttore F&B.",
+"تعرض النسخة الآن بصفة مدير الأغذية والمشروبات."
+],
+"Now viewing the demo as Financial controller.": [
+"Sie sehen die Demo jetzt als Finanzcontroller.",
+"Ora vedi la demo come Controller finanziario.",
+"تعرض النسخة الآن بصفة المراقب المالي."
+],
+"Now viewing the demo as General manager.": [
+"Sie sehen die Demo jetzt als General Manager.",
+"Ora vedi la demo come Direttore generale.",
+"تعرض النسخة الآن بصفة المدير العام."
+],
+"Now viewing the demo as Head chef.": [
+"Sie sehen die Demo jetzt als Küchenchef.",
+"Ora vedi la demo come Capo chef.",
+"تعرض النسخة الآن بصفة رئيس الطهاة."
+],
+"Now viewing the demo as Purchasing.": [
+"Sie sehen die Demo jetzt als Einkauf.",
+"Ora vedi la demo come Acquisti.",
+"تعرض النسخة الآن بصفة المشتريات."
+],
+"Now viewing the demo as {0}.": [
+"Sie sehen die Demo jetzt als {0}.",
+"Ora vedi la demo come {0}.",
+"تعرض النسخة الآن بصفة {0}."
+],
+"Offline entries stay on this device, out of stock and reports, until the connection returns. They are then saved on the Tyll server once, so every device and manager sees the same entry. Two devices correcting the same entry are both recorded; the latest correction applies.": [
+"Offline-Einträge bleiben auf diesem Gerät, außerhalb von Bestand und Berichten, bis die Verbindung zurück ist. Dann werden sie einmal auf dem Tyll-Server gespeichert, sodass alle denselben Eintrag sehen. Korrigieren zwei Geräte denselben Eintrag, werden beide erfasst; es gilt die letzte Korrektur.",
+"Le voci offline restano su questo dispositivo, fuori da scorte e report, fino al ritorno della connessione. Vengono poi salvate una volta sul server Tyll, così tutti vedono la stessa voce. Se due dispositivi correggono la stessa voce vengono registrate entrambe; vale l'ultima.",
+"تبقى الإدخالات على هذا الجهاز، خارج المخزون والتقارير، حتى عودة الاتصال. ثم تُحفظ مرة واحدة على خادم Tyll ليرى الجميع الإدخال نفسه. إذا صحح جهازان الإدخال نفسه يُسجل التصحيحان ويُعتمد الأحدث."
+],
+"Olive oil": [
+"Olivenöl",
+"Olio d'oliva",
+"زيت زيتون"
+],
+"On hand": [
+"Bestand",
+"Giacenza",
+"المتوفر"
+],
+"On hand is an estimate from the last count, deliveries and sales. Critical means an order placed today would arrive too late.": [
+"Der Bestand ist eine Schätzung aus letzter Zählung, Lieferungen und Verkäufen. Kritisch heißt: Eine heutige Bestellung käme zu spät.",
+"La giacenza è una stima da ultimo conteggio, consegne e vendite. Critico significa che un ordine di oggi arriverebbe troppo tardi.",
+"المتوفر تقدير من آخر جرد والتوريدات والمبيعات. وتعني حرج أن الطلب الذي يُرسل اليوم سيصل متأخرًا."
+],
+"On the final bill": [
+"Auf der Endrechnung",
+"Sul conto finale",
+"في الفاتورة النهائية"
+],
+"On the way": [
+"Unterwegs",
+"In arrivo",
+"في الطريق"
+],
+"On track": [
+"Im Plan",
+"In linea",
+"على المسار"
+],
+"One day": [
+"Ein Tag",
+"Un giorno",
+"يوم واحد"
+],
+"One thing needs you today.": [
+"Eine Sache braucht heute Ihre Aufmerksamkeit.",
+"Una cosa richiede la tua attenzione oggi.",
+"أمر واحد يحتاج إليك اليوم."
+],
+"Only deliveries with a difference": [
+"Nur Lieferungen mit Differenz",
+"Solo consegne con differenza",
+"التوريدات التي بها فرق فقط"
+],
+"Only orders whose bill differs from the order": [
+"Nur Bestellungen, deren Rechnung abweicht",
+"Solo ordini con conto diverso dall'ordine",
+"الطلبات التي تختلف فاتورتها عن الطلب فقط"
+],
+"Only the delivered quantity is added to estimated stock. Deliveries and invoices are simulated. A live version would read them from the purchasing system.": [
+"Nur die gelieferte Menge wird zum geschätzten Bestand addiert. Lieferungen und Rechnungen sind simuliert. Eine echte Version läse sie aus dem Einkaufssystem.",
+"Solo la quantità consegnata si aggiunge alle scorte stimate. Consegne e fatture sono simulate. Una versione reale le leggerebbe dal sistema acquisti.",
+"تُضاف الكمية المسلّمة فقط إلى المخزون التقديري. التوريدات والفواتير محاكاة. وستقرأها النسخة الفعلية من نظام المشتريات."
+],
+"Only where it was removed, voided or given free": [
+"Nur wo es entfernt, storniert oder gratis gegeben wurde",
+"Solo dove è stato rimosso, annullato o offerto",
+"فقط حيث حُذف أو أُلغي أو قُدم مجانًا"
+],
+"Open": [
+"Offen",
+"Aperto",
+"مفتوح"
+],
+"Open Flow": [
+"Flow öffnen",
+"Apri Flow",
+"فتح Flow"
+],
+"Open Investigations": [
+"Prüfungen öffnen",
+"Apri Verifiche",
+"فتح التحقيقات"
+],
+"Open Overview": [
+"Übersicht öffnen",
+"Apri Panoramica",
+"فتح نظرة عامة"
+],
+"Open Predictions": [
+"Prognosen öffnen",
+"Apri Previsioni",
+"فتح التوقعات"
+],
+"Open Reports": [
+"Berichte öffnen",
+"Apri Report",
+"فتح التقارير"
+],
+"Open Revenue": [
+"Umsatz öffnen",
+"Apri Ricavi",
+"فتح الإيرادات"
+],
+"Open Rooms": [
+"Zimmer öffnen",
+"Apri Camere",
+"فتح الغرف"
+],
+"Open Stock": [
+"Bestand öffnen",
+"Apri Scorte",
+"فتح المخزون"
+],
+"Open a case": [
+"Fall eröffnen",
+"Apri un caso",
+"افتح حالة"
+],
+"Open an outlet to see what makes up its costs, then its transactions and flagged items.": [
+"Öffnen Sie ein Outlet, um die Kosten, Transaktionen und markierten Posten zu sehen.",
+"Apri un punto vendita per vedere costi, transazioni e voci segnalate.",
+"افتح منفذًا لترى مكونات تكاليفه ثم معاملاته والعناصر المشار إليها."
+],
+"Open bottles are counted to the nearest tenth. Each count can be out by up to {0}.": [
+"Offene Flaschen werden auf ein Zehntel gezählt. Jede Zählung kann um bis zu {0} abweichen.",
+"Le bottiglie aperte si contano al decimo. Ogni conteggio può variare fino a {0}.",
+"تُجرد الزجاجات المفتوحة لأقرب عُشر. قد يختلف كل جرد حتى {0}."
+],
+"Open cases": [
+"Offene Fälle",
+"Casi aperti",
+"الحالات المفتوحة"
+],
+"Open draft {0}": [
+"Entwurf {0} öffnen",
+"Apri bozza {0}",
+"افتح المسودة {0}"
+],
+"Open flags": [
+"Offene Hinweise",
+"Segnalazioni aperte",
+"الإشارات المفتوحة"
+],
+"Open in Orders and history": [
+"In Bestellungen und Verlauf öffnen",
+"Apri in Ordini e storico",
+"افتح في الطلبات والسجل"
+],
+"Open orders and history": [
+"Bestellungen und Verlauf öffnen",
+"Apri ordini e storico",
+"افتح الطلبات والسجل"
+],
+"Open the Money Back List and sort by deadline.": [
+"Rückholliste öffnen und nach Frist sortieren.",
+"Apri la Lista recuperi e ordina per scadenza.",
+"افتح قائمة استرداد الأموال ورتب حسب الموعد النهائي."
+],
+"Open the first alert": [
+"Erste Warnung öffnen",
+"Apri il primo avviso",
+"افتح التنبيه الأول"
+],
+"Open the investigation": [
+"Prüfung öffnen",
+"Apri la verifica",
+"افتح التحقيق"
+],
+"Open {0}": [
+"{0} öffnen",
+"Apri {0}",
+"افتح {0}"
+],
+"Opened": [
+"Geöffnet",
+"Aperto",
+"وقت الفتح"
+],
+"Opening count": [
+"Anfangszählung",
+"Conteggio iniziale",
+"الجرد الافتتاحي"
+],
+"Opening count, {0}, {1}": [
+"Anfangszählung, {0}, {1}",
+"Conteggio iniziale, {0}, {1}",
+"الجرد الافتتاحي، {0}، {1}"
+],
+"Opening count, {0}, {1}, {2}": [
+"Anfangszählung, {0}, {1}, {2}",
+"Conteggio iniziale, {0}, {1}, {2}",
+"الجرد الافتتاحي، {0}، {1}، {2}"
+],
+"Opening count: {0}": [
+"Anfangszählung: {0}",
+"Conteggio iniziale: {0}",
+"الجرد الافتتاحي: {0}"
+],
+"Operating contribution (est.)": [
+"Betriebsbeitrag (gesch.)",
+"Contributo operativo (stima)",
+"المساهمة التشغيلية (تقديرية)"
+],
+"Operational employee": [
+"Operative Mitarbeitende",
+"Addetto operativo",
+"موظف تشغيلي"
+],
+"Optional. Breakage trends, linen and expiry tracking are planned.": [
+"Optional. Bruchtrends, Wäsche und Haltbarkeitskontrolle sind geplant.",
+"Opzionale. Andamento rotture, biancheria e scadenze sono in programma.",
+"اختياري. اتجاهات الكسر ومتابعة البياضات وتواريخ الانتهاء مخطط لها."
+],
+"Or one signature colour everywhere": [
+"Oder eine Signaturfarbe überall",
+"O un colore distintivo ovunque",
+"أو لون مميز واحد في كل مكان"
+],
+"Oranges": [
+"Orangen",
+"Arance",
+"برتقال"
+],
+"Order": [
+"Bestellen",
+"Ordine",
+"الطلب"
+],
+"Order and bill differ": [
+"Bestellung und Rechnung weichen ab",
+"Ordine e conto diversi",
+"الطلب والفاتورة مختلفان"
+],
+"Order by": [
+"Bestellen bis",
+"Ordina entro",
+"اطلب قبل"
+],
+"Order by hand": [
+"Manuell bestellen",
+"Ordina a mano",
+"الطلب يدويًا"
+],
+"Order date": [
+"Bestelldatum",
+"Data ordine",
+"تاريخ الطلب"
+],
+"Order history": [
+"Bestellverlauf",
+"Storico ordini",
+"سجل الطلبات"
+],
+"Order number, table or login": [
+"Bestellnummer, Tisch oder Login",
+"Numero ordine, tavolo o accesso",
+"رقم الطلب أو الطاولة أو الدخول"
+],
+"Order opened": [
+"Bestellung geöffnet",
+"Ordine aperto",
+"فُتح الطلب"
+],
+"Order price": [
+"Bestellpreis",
+"Prezzo d'ordine",
+"سعر الطلب"
+],
+"Order today: {0} items, {1}": [
+"Heute bestellen: {0} Artikel, {1}",
+"Ordina oggi: {0} articoli, {1}",
+"اطلب اليوم: {0} أصناف، {1}"
+],
+"Order {0}": [
+"Bestellung {0}",
+"Ordine {0}",
+"الطلب {0}"
+],
+"Order {0} critical items today": [
+"{0} kritische Artikel heute bestellen",
+"Ordina oggi {0} articoli critici",
+"اطلب {0} أصناف حرجة اليوم"
+],
+"Order {0} low items soon": [
+"{0} niedrige Artikel bald bestellen",
+"Ordina presto {0} articoli bassi",
+"اطلب قريبًا {0} أصناف منخفضة"
+],
+"Ordered": [
+"Bestellt",
+"Ordinato",
+"المطلوب"
+],
+"Orders": [
+"Bestellungen",
+"Ordini",
+"الطلبات"
+],
+"Orders and history": [
+"Bestellungen und Verlauf",
+"Ordini e storico",
+"الطلبات والسجل"
+],
+"Orders containing this item": [
+"Bestellungen mit diesem Artikel",
+"Ordini con questo articolo",
+"الطلبات التي تحتوي هذا الصنف"
+],
+"Orders moving through the kitchen and bar.": [
+"Bestellungen auf dem Weg durch Küche und Bar.",
+"Ordini in movimento tra cucina e bar.",
+"الطلبات أثناء مرورها بالمطبخ والبار."
+],
+"Orders, deliveries and invoices": [
+"Bestellungen, Lieferungen und Rechnungen",
+"Ordini, consegne e fatture",
+"الطلبات والتوريدات والفواتير"
+],
+"Orders, modifications, discounts, refunds, voids, kitchen and bar tickets": [
+"Bestellungen, Änderungen, Rabatte, Erstattungen, Stornos, Küchen- und Barbons",
+"Ordini, modifiche, sconti, rimborsi, annullamenti, comande di cucina e bar",
+"الطلبات والتعديلات والخصومات والمبالغ المستردة والإلغاءات وتذاكر المطبخ والبار"
+],
+"Original order": [
+"Ursprüngliche Bestellung",
+"Ordine originale",
+"الطلب الأصلي"
+],
+"Original order and final bill": [
+"Ursprüngliche Bestellung und Endrechnung",
+"Ordine originale e conto finale",
+"الطلب الأصلي والفاتورة النهائية"
+],
+"Other": [
+"Sonstiges",
+"Altro",
+"أخرى"
+],
+"Other operating costs": [
+"Sonstige Betriebskosten",
+"Altri costi operativi",
+"تكاليف تشغيلية أخرى"
+],
+"Other, such as a tasting": [
+"Sonstiges, etwa eine Verkostung",
+"Altro, ad esempio una degustazione",
+"أخرى، مثل التذوق"
+],
+"Outcome": [
+"Ergebnis",
+"Esito",
+"النتيجة"
+],
+"Outlet": [
+"Outlet",
+"Punto vendita",
+"المنفذ"
+],
+"Outlet comparison": [
+"Outlet-Vergleich",
+"Confronto punti vendita",
+"مقارنة المنافذ"
+],
+"Outlet to investigate": [
+"Zu prüfendes Outlet",
+"Punto vendita da verificare",
+"المنفذ المطلوب التحقيق فيه"
+],
+"Outlets": [
+"Outlets",
+"Punti vendita",
+"المنافذ"
+],
+"Outlets and trends. Preview": [
+"Outlets und Trends. Vorschau",
+"Punti vendita e tendenze. Anteprima",
+"المنافذ والاتجاهات. معاينة"
+],
+"Outlets side by side, trends and guest results.": [
+"Outlets im Vergleich, Trends und Gästeergebnisse.",
+"Punti vendita a confronto, tendenze e risultati ospiti.",
+"المنافذ جنبًا إلى جنب والاتجاهات ونتائج الضيوف."
+],
+"Over pouring": [
+"Überschenken",
+"Versamento eccessivo",
+"الإفراط في السكب"
+],
+"Over pouring and missing drinks": [
+"Überschenken und fehlende Getränke",
+"Versamenti eccessivi e bevande mancanti",
+"الإفراط في السكب والمشروبات المفقودة"
+],
+"Over pouring at {0}": [
+"Überschenken in {0}",
+"Versamento eccessivo a {0}",
+"الإفراط في السكب في {0}"
+],
+"Overview": [
+"Übersicht",
+"Panoramica",
+"نظرة عامة"
+],
+"POS login": [
+"POS-Login",
+"Accesso POS",
+"دخول نقطة البيع"
+],
+"POS login {0} · reason: none recorded · approval: none recorded": [
+"POS-Login {0} · Grund: keiner erfasst · Freigabe: keine erfasst",
+"Accesso POS {0} · motivo: nessuno registrato · approvazione: nessuna registrata",
+"دخول {0} · السبب: لم يُسجل · الموافقة: لم تُسجل"
+],
+"Pages": [
+"Seiten",
+"Pagine",
+"الصفحات"
+],
+"Paid by card": [
+"Mit Karte bezahlt",
+"Pagato con carta",
+"دُفع بالبطاقة"
+],
+"Paid by cash": [
+"Bar bezahlt",
+"Pagato in contanti",
+"دُفع نقدًا"
+],
+"Par level": [
+"Sollbestand",
+"Livello par",
+"المستوى المستهدف"
+],
+"Par {0}. Last count {1} on {2}.": [
+"Soll {0}. Letzte Zählung {1} am {2}.",
+"Par {0}. Ultimo conteggio {1} il {2}.",
+"المستوى {0}. آخر جرد {1} في {2}."
+],
+"Parmesan": [
+"Parmesan",
+"Parmigiano",
+"جبن بارميزان"
+],
+"Part of stock": [
+"Bestandsbereich",
+"Tipo di scorte",
+"قسم المخزون"
+],
+"Part of the order": [
+"Bestellbereich",
+"Parte dell'ordine",
+"قسم الطلب"
+],
+"Part of waste": [
+"Abfallbereich",
+"Tipo di scarti",
+"نوع الهدر"
+],
+"Pattern window": [
+"Musterzeitraum",
+"Finestra dello schema",
+"نافذة النمط"
+],
+"Pattern, minimum cases": [
+"Muster, Mindestfälle",
+"Schema, casi minimi",
+"النمط، الحد الأدنى للحالات"
+],
+"Pattern, minimum share": [
+"Muster, Mindestanteil",
+"Schema, quota minima",
+"النمط، الحد الأدنى للحصة"
+],
+"Payment reconciliation": [
+"Zahlungsabgleich",
+"Riconciliazione pagamenti",
+"مطابقة المدفوعات"
+],
+"Payment status: settled at the outlet": [
+"Zahlungsstatus: im Outlet beglichen",
+"Stato pagamento: saldato al punto vendita",
+"حالة الدفع: سُدد في المنفذ"
+],
+"Performance": [
+"Leistung",
+"Rendimento",
+"الأداء"
+],
+"Period": [
+"Zeitraum",
+"Periodo",
+"الفترة"
+],
+"Pita bread": [
+"Pitabrot",
+"Pane pita",
+"خبز عربي"
+],
+"Plan events and find the staff they need.": [
+"Events planen und das nötige Personal finden.",
+"Pianifica eventi e trova il personale necessario.",
+"خطط للفعاليات وابحث عن الموظفين اللازمين."
+],
+"Plan the prep": [
+"Vorbereitung planen",
+"Pianifica la preparazione",
+"خطط للتحضير"
+],
+"Plan what to buy": [
+"Einkauf planen",
+"Pianifica cosa acquistare",
+"خطط لما ستشتريه"
+],
+"Planned": [
+"Geplant",
+"Previsto",
+"مخطط له"
+],
+"Planned. Flow uses simulated live tickets.": [
+"Geplant. Flow nutzt simulierte Bons.",
+"Previsto. Flow usa comande simulate.",
+"مخطط له. يستخدم Flow تذاكر مباشرة محاكاة."
+],
+"Point of sale": [
+"Kassensystem",
+"Punto cassa",
+"نقطة البيع"
+],
+"Pool bar": [
+"Poolbar",
+"Bar a bordo piscina",
+"بار المسبح"
+],
+"Portions of food, based on the same expected guests.": [
+"Essensportionen, basierend auf denselben erwarteten Gästen.",
+"Porzioni di cibo, in base agli stessi ospiti previsti.",
+"حصص الطعام، بناءً على الضيوف المتوقعين أنفسهم."
+],
+"Portions of {0}": [
+"Portionen {0}",
+"Porzioni di {0}",
+"حصص {0}"
+],
+"Possibilities to check, each with what the records show. None is established until a manager verifies it.": [
+"Zu prüfende Möglichkeiten, jeweils mit dem, was die Daten zeigen. Keine gilt als belegt, bis eine Führungskraft sie bestätigt.",
+"Possibilità da verificare, ciascuna con ciò che mostrano i dati. Nessuna è accertata finché un responsabile non la conferma.",
+"احتمالات للتحقق، مع ما تظهره السجلات لكل منها. لا يثبت أي منها حتى يتحقق منه مدير."
+],
+"Posted": [
+"Gebucht",
+"Registrato",
+"مرحّل"
+],
+"Posted labor cost, overheads, accounting profit": [
+"Gebuchte Personalkosten, Gemeinkosten, Buchgewinn",
+"Costo del lavoro registrato, spese generali, profitto contabile",
+"تكلفة العمالة المرحلة والنفقات العامة والربح المحاسبي"
+],
+"Postings flagged": [
+"Markierte Buchungen",
+"Registrazioni segnalate",
+"الترحيلات المشار إليها"
+],
+"Potatoes": [
+"Kartoffeln",
+"Patate",
+"بطاطس"
+],
+"Potential losses, open": [
+"Mögliche Verluste, offen",
+"Perdite potenziali, aperte",
+"خسائر محتملة، مفتوحة"
+],
+"Potential losses, open cases": [
+"Mögliche Verluste, offene Fälle",
+"Perdite potenziali, casi aperti",
+"خسائر محتملة، حالات مفتوحة"
+],
+"Pour Control, {0}": [
+"Ausschankkontrolle, {0}",
+"Controllo versamenti, {0}",
+"مراقبة السكب، {0}"
+],
+"Pours larger than the standard measure": [
+"Größere Mengen als das Standardmaß",
+"Versamenti oltre la misura standard",
+"سكب أكبر من المقياس المعياري"
+],
+"Predicted use": [
+"Prognostizierter Verbrauch",
+"Consumo previsto",
+"الاستخدام المتوقع"
+],
+"Predicted use from forecast covers and events, plus a safe buffer of {0} days, less what you have and what is on the way. Simulated data. Build order puts food, drinks and inventory into one draft.": [
+"Prognostizierter Verbrauch aus Gästen und Events, plus {0} Tage Sicherheitspuffer, minus Vorhandenes und Unterwegs. Simulierte Daten. Die Bestellung fasst Speisen, Getränke und Inventar in einem Entwurf zusammen.",
+"Consumo previsto da coperti ed eventi, più {0} giorni di margine, meno il disponibile e l'in arrivo. Dati simulati. Crea ordine riunisce cibo, bevande e inventario in una bozza.",
+"الاستخدام المتوقع من الزبائن والفعاليات، زائد هامش أمان {0} أيام، ناقص المتوفر والقادم. بيانات محاكاة. يجمع إنشاء الطلب الأطعمة والمشروبات والعهدة في مسودة واحدة."
+],
+"Predicted use to month end: {0}": [
+"Prognostizierter Verbrauch bis Monatsende: {0}",
+"Consumo previsto a fine mese: {0}",
+"الاستخدام المتوقع حتى نهاية الشهر: {0}"
+],
+"Predictions": [
+"Prognosen",
+"Previsioni",
+"التوقعات"
+],
+"Predictions to month end": [
+"Prognosen bis Monatsende",
+"Previsioni a fine mese",
+"التوقعات حتى نهاية الشهر"
+],
+"Preparation ticket printed": [
+"Zubereitungsbon gedruckt",
+"Comanda stampata",
+"طُبعت تذكرة التحضير"
+],
+"Prepared, not charged": [
+"Zubereitet, nicht berechnet",
+"Preparato, non addebitato",
+"حُضر ولم يُحتسب"
+],
+"Preview": [
+"Vorschau",
+"Anteprima",
+"معاينة"
+],
+"Preview.": [
+"Vorschau.",
+"Anteprima.",
+"معاينة."
+],
+"Previous": [
+"Vorher",
+"Precedente",
+"السابق"
+],
+"Previous period": [
+"Vorzeitraum",
+"Periodo precedente",
+"الفترة السابقة"
+],
+"Price": [
+"Preis",
+"Prezzo",
+"السعر"
+],
+"Price change": [
+"Preisänderung",
+"Variazione prezzo",
+"تغير السعر"
+],
+"Price of {0}": [
+"Preis von {0}",
+"Prezzo di {0}",
+"سعر {0}"
+],
+"Price per unit (AED)": [
+"Preis pro Einheit (AED)",
+"Prezzo per unità (AED)",
+"سعر الوحدة (بالدرهم)"
+],
+"Prices and delivery differences": [
+"Preise und Lieferdifferenzen",
+"Prezzi e differenze di consegna",
+"الأسعار وفروق التوريد"
+],
+"Print or save as PDF": [
+"Drucken oder als PDF speichern",
+"Stampa o salva in PDF",
+"اطبع أو احفظ بصيغة PDF"
+],
+"Priority items only": [
+"Nur Prioritätsartikel",
+"Solo articoli prioritari",
+"الأصناف ذات الأولوية فقط"
+],
+"Profit": [
+"Gewinn",
+"Profitto",
+"الربح"
+],
+"Profit per unit": [
+"Gewinn pro Einheit",
+"Profitto per unità",
+"الربح لكل وحدة"
+],
+"Properties": [
+"Hotels",
+"Hotel",
+"الفنادق"
+],
+"Property management system": [
+"Hotelverwaltungssystem",
+"Gestionale alberghiero",
+"نظام إدارة الفندق"
+],
+"Prosecco": [
+"Prosecco",
+"Prosecco",
+"بروسيكو"
+],
+"Purchase order": [
+"Bestellung",
+"Ordine d'acquisto",
+"أمر الشراء"
+],
+"Purchase orders ({0})": [
+"Bestellungen ({0})",
+"Ordini d'acquisto ({0})",
+"أوامر الشراء ({0})"
+],
+"Purchase orders, deliveries, supplier invoices, counts": [
+"Bestellungen, Lieferungen, Lieferantenrechnungen, Zählungen",
+"Ordini d'acquisto, consegne, fatture fornitore, conteggi",
+"أوامر الشراء والتوريدات وفواتير الموردين والجرد"
+],
+"Purchasing": [
+"Einkauf",
+"Acquisti",
+"المشتريات"
+],
+"Purchasing Manager": [
+"Einkaufsleitung",
+"Responsabile acquisti",
+"مدير المشتريات"
+],
+"Quantities for {0}, valued at today’s cost in AED. Expected usage covers the first {1} recipes. Items sold at a standard cost do not draw down stock yet.": [
+"Mengen für {0}, bewertet zu heutigen Kosten in AED. Der erwartete Verbrauch umfasst die ersten {1} Rezepte. Zu Standardkosten verkaufte Artikel mindern den Bestand noch nicht.",
+"Quantità per {0}, valutate al costo di oggi in AED. Il consumo previsto copre le prime {1} ricette. Gli articoli a costo standard non riducono ancora le scorte.",
+"الكميات لـ {0}، مقيّمة بتكلفة اليوم بالدرهم. يشمل الاستخدام المتوقع أول {1} وصفة. الأصناف المبيعة بتكلفة قياسية لا تخصم من المخزون بعد."
+],
+"Quantity": [
+"Menge",
+"Quantità",
+"الكمية"
+],
+"Rate": [
+"Satz",
+"Quota",
+"المعدل"
+],
+"Reason": [
+"Grund",
+"Motivo",
+"السبب"
+],
+"Reason recorded": [
+"Erfasster Grund",
+"Motivo registrato",
+"السبب المسجل"
+],
+"Received": [
+"Eingegangen",
+"Ricevuto",
+"المستلم"
+],
+"Received from the main storeroom": [
+"Aus dem Hauptlager erhalten",
+"Ricevuto dal magazzino centrale",
+"المستلم من المخزن الرئيسي"
+],
+"Recent": [
+"Zuletzt",
+"Recenti",
+"الأخيرة"
+],
+"Recent counts": [
+"Letzte Zählungen",
+"Conteggi recenti",
+"عمليات الجرد الأخيرة"
+],
+"Recipe and cost": [
+"Rezept und Kosten",
+"Ricetta e costo",
+"الوصفة والتكلفة"
+],
+"Recipe cost": [
+"Rezeptkosten",
+"Costo ricetta",
+"تكلفة الوصفة"
+],
+"Recipe cost of items sold": [
+"Rezeptkosten verkaufter Artikel",
+"Costo ricetta degli articoli venduti",
+"تكلفة وصفات الأصناف المبيعة"
+],
+"Recipe cost per portion": [
+"Rezeptkosten pro Portion",
+"Costo ricetta per porzione",
+"تكلفة الوصفة للحصة"
+],
+"Recipes and costs": [
+"Rezepte und Kosten",
+"Ricette e costi",
+"الوصفات والتكاليف"
+],
+"Recipes for the top {0} items": [
+"Rezepte der {0} wichtigsten Artikel",
+"Ricette dei {0} articoli principali",
+"وصفات أهم {0} صنفًا"
+],
+"Reconciliation": [
+"Abgleich",
+"Riconciliazione",
+"المطابقة"
+],
+"Reconciliation of Tyll’s totals against the systems of record, per property.": [
+"Abgleich der Tyll-Summen mit den führenden Systemen, je Hotel.",
+"Riconciliazione dei totali Tyll con i sistemi di riferimento, per struttura.",
+"مطابقة إجماليات Tyll مع أنظمة السجلات لكل فندق."
+],
+"Record": [
+"Erfassen",
+"Registra",
+"سجل"
+],
+"Record a recount": [
+"Nachzählung erfassen",
+"Registra un nuovo conteggio",
+"سجل إعادة جرد"
+],
+"Record an outcome and close": [
+"Ergebnis erfassen und schließen",
+"Registra l'esito e chiudi",
+"سجل النتيجة وأغلق"
+],
+"Record count": [
+"Zählung erfassen",
+"Registra conteggio",
+"سجل الجرد"
+],
+"Record difference": [
+"Differenz erfassen",
+"Registra differenza",
+"سجل الفرق"
+],
+"Record glassware count": [
+"Gläserzählung erfassen",
+"Registra conteggio bicchieri",
+"سجل جرد الأواني الزجاجية"
+],
+"Record stock counts": [
+"Bestandszählungen erfassen",
+"Registra conteggi scorte",
+"تسجيل جرد المخزون"
+],
+"Record the verified cause and any corrective action, then resolve the case.": [
+"Bestätigte Ursache und Korrekturmaßnahme erfassen, dann den Fall abschließen.",
+"Registra la causa verificata e l'eventuale azione correttiva, poi risolvi il caso.",
+"سجل السبب المؤكد وأي إجراء تصحيحي، ثم أغلق الحالة."
+],
+"Recorded offline on this device.": [
+"Offline auf diesem Gerät erfasst.",
+"Registrato offline su questo dispositivo.",
+"سُجل دون اتصال على هذا الجهاز."
+],
+"Recorded waste": [
+"Erfasster Abfall",
+"Scarti registrati",
+"الهدر المسجل"
+],
+"Recorded waste and breakage": [
+"Erfasster Abfall und Bruch",
+"Scarti e rotture registrati",
+"الهدر والكسر المسجلان"
+],
+"Recorded wine use is higher than expected from the {0} glasses sold: {1} left stock against {2} expected, a difference of {3}. Check serving sizes, wastage and complimentary pours.": [
+"Der erfasste Weinverbrauch liegt über dem Soll aus {0} verkauften Gläsern: {1} gingen ab, {2} waren erwartet, eine Differenz von {3}. Prüfen Sie Schankmengen, Schwund und Gratisausschank.",
+"Il consumo di vino registrato supera il previsto dai {0} calici venduti: {1} usciti rispetto a {2} previsti, differenza di {3}. Controlla dosi, perdite e versamenti omaggio.",
+"استخدام النبيذ المسجل أعلى من المتوقع من {0} كأسًا مبيعة: خرج {1} مقابل {2} متوقعة، بفرق {3}. تحقق من أحجام التقديم والفاقد والسكب المجاني."
+],
+"Recount {0} at {1} and record the recount here.": [
+"{0} in {1} erneut zählen und hier erfassen.",
+"Riconta {0} a {1} e registra qui il nuovo conteggio.",
+"أعد جرد {0} في {1} وسجل ذلك هنا."
+],
+"Recovered": [
+"Zurückgewonnen",
+"Recuperato",
+"المسترد"
+],
+"Recovered, all time": [
+"Zurückgewonnen, gesamt",
+"Recuperato, totale",
+"المسترد، الإجمالي"
+],
+"Refund issued with no reason recorded": [
+"Erstattung ohne erfassten Grund",
+"Rimborso senza motivo registrato",
+"استرداد دون تسجيل سبب"
+],
+"Refund share needing review": [
+"Erstattungsanteil mit Prüfpflicht",
+"Quota rimborso da rivedere",
+"نسبة الاسترداد التي تحتاج إلى مراجعة"
+],
+"Refunds": [
+"Erstattungen",
+"Rimborsi",
+"المبالغ المستردة"
+],
+"Refunds above {0} of a bill, late, or unexplained.": [
+"Erstattungen über {0} einer Rechnung, verspätet oder ungeklärt.",
+"Rimborsi oltre {0} del conto, tardivi o non spiegati.",
+"مبالغ مستردة تتجاوز {0} من الفاتورة، أو متأخرة، أو غير مفسرة."
+],
+"Regional sales conference dinner, {0}, {1} guests": [
+"Abendessen zur regionalen Vertriebskonferenz, {0}, {1} Gäste",
+"Cena della conferenza vendite regionale, {0}, {1} ospiti",
+"عشاء مؤتمر المبيعات الإقليمي، {0}، {1} ضيفًا"
+],
+"Rejected or changes requested ({0})": [
+"Abgelehnt oder Änderungen angefordert ({0})",
+"Rifiutati o con modifiche richieste ({0})",
+"مرفوضة أو طُلب تعديلها ({0})"
+],
+"Reload the page to try again.": [
+"Seite neu laden und erneut versuchen.",
+"Ricarica la pagina per riprovare.",
+"أعد تحميل الصفحة للمحاولة مجددًا."
+],
+"Removed": [
+"Entfernt",
+"Rimosso",
+"محذوف"
+],
+"Removed after dispatch": [
+"Nach Weitergabe entfernt",
+"Rimosso dopo l'invio",
+"حُذف بعد الإرسال"
+],
+"Removed after dispatch · {0}": [
+"Nach Weitergabe entfernt · {0}",
+"Rimosso dopo l'invio · {0}",
+"حُذف بعد الإرسال · {0}"
+],
+"Removed before dispatch": [
+"Vor Weitergabe entfernt",
+"Rimosso prima dell'invio",
+"حُذف قبل الإرسال"
+],
+"Removed from a bill after going to the bar": [
+"Nach Weitergabe an die Bar von der Rechnung entfernt",
+"Rimosso dal conto dopo l'invio al bar",
+"حُذف من الفاتورة بعد إرساله إلى البار"
+],
+"Reopen closed cases": [
+"Geschlossene Fälle wieder öffnen",
+"Riapri casi chiusi",
+"إعادة فتح الحالات المغلقة"
+],
+"Reorder by {0}": [
+"Nachbestellen bis {0}",
+"Riordina entro {0}",
+"أعد الطلب قبل {0}"
+],
+"Reorder date": [
+"Nachbestelldatum",
+"Data di riordino",
+"تاريخ إعادة الطلب"
+],
+"Repeated patterns": [
+"Wiederkehrende Muster",
+"Schemi ricorrenti",
+"أنماط متكررة"
+],
+"Report period": [
+"Berichtszeitraum",
+"Periodo del report",
+"فترة التقرير"
+],
+"Reports": [
+"Berichte",
+"Report",
+"التقارير"
+],
+"Reports and settings": [
+"Berichte und Einstellungen",
+"Report e impostazioni",
+"التقارير والإعدادات"
+],
+"Request missing ingredients": [
+"Fehlende Zutaten anfordern",
+"Richiedi ingredienti mancanti",
+"اطلب المكونات الناقصة"
+],
+"Requests are stored on the Tyll server, so every department sees the same record. No order is sent to a real supplier.": [
+"Anfragen liegen auf dem Tyll-Server, sodass jede Abteilung denselben Datensatz sieht. Es geht keine Bestellung an echte Lieferanten.",
+"Le richieste sono sul server Tyll, così ogni reparto vede lo stesso dato. Nessun ordine viene inviato a fornitori reali.",
+"تُحفظ الطلبات على خادم Tyll ليرى كل قسم السجل نفسه. لا يُرسل أي طلب إلى مورد حقيقي."
+],
+"Requests for you appear in the bell. Important handoffs can also be emailed. In this demo no email provider is configured, so emails are prepared and shown here but not sent.": [
+"Anfragen an Sie erscheinen bei der Glocke. Wichtige Übergaben können auch per E-Mail gehen. In dieser Demo ist kein E-Mail-Dienst eingerichtet, E-Mails werden daher nur vorbereitet und angezeigt, nicht gesendet.",
+"Le richieste per te appaiono nella campanella. I passaggi importanti possono arrivare anche via email. In questa demo non c'è un servizio email: le email sono preparate e mostrate qui ma non inviate.",
+"تظهر الطلبات الموجهة إليك في الجرس. ويمكن إرسال المهام المهمة بالبريد أيضًا. لا يوجد مزود بريد في هذه النسخة، لذا تُعد الرسائل وتُعرض هنا دون إرسال."
+],
+"Reservations, walk-ins, occupancy and events": [
+"Reservierungen, Laufkundschaft, Auslastung und Events",
+"Prenotazioni, ospiti senza prenotazione, occupazione ed eventi",
+"الحجوزات والضيوف دون حجز والإشغال والفعاليات"
+],
+"Reset clears the changes kept in this browser. Only the owner or general manager can reset the shared demo records. To reset one story only, use Reset in the guided demo.": [
+"Zurücksetzen löscht die Änderungen in diesem Browser. Nur Eigentümer oder General Manager können die gemeinsamen Demodaten zurücksetzen. Für eine einzelne Geschichte nutzen Sie Zurücksetzen im geführten Rundgang.",
+"Il ripristino cancella le modifiche in questo browser. Solo il proprietario o il direttore generale può ripristinare i dati condivisi. Per una sola storia usa Ripristina nel percorso guidato.",
+"تمسح إعادة الضبط التغييرات في هذا المتصفح. يمكن للمالك أو المدير العام فقط إعادة ضبط السجلات المشتركة. ولقصة واحدة استخدم إعادة الضبط في الجولة الإرشادية."
+],
+"Reset demo data": [
+"Demodaten zurücksetzen",
+"Ripristina dati demo",
+"أعد ضبط البيانات التجريبية"
+],
+"Resolve": [
+"Erledigen",
+"Risolvi",
+"حل"
+],
+"Resolved": [
+"Erledigt",
+"Risolti",
+"محلولة"
+],
+"Responsible": [
+"Zuständig",
+"Responsabile",
+"المسؤول"
+],
+"Rest of here is right": [
+"Rest hier stimmt",
+"Il resto qui è corretto",
+"الباقي هنا صحيح"
+],
+"Restaurant and bar": [
+"Restaurant und Bar",
+"Ristorante e bar",
+"المطعم والبار"
+],
+"Restaurant manager": [
+"Restaurantleitung",
+"Direttore ristorante",
+"مدير المطعم"
+],
+"Restaurant reservations": [
+"Restaurantreservierungen",
+"Prenotazioni ristorante",
+"حجوزات المطعم"
+],
+"Result": [
+"Ergebnis",
+"Esito",
+"النتيجة"
+],
+"Results": [
+"Ergebnisse",
+"Risultati",
+"النتائج"
+],
+"Revenue": [
+"Umsatz",
+"Ricavi",
+"الإيرادات"
+],
+"Revenue and Net profit per day for the last {0} days, in AED.": [
+"Umsatz und Nettogewinn pro Tag der letzten {0} Tage, in AED.",
+"Ricavi e profitto netto al giorno negli ultimi {0} giorni, in AED.",
+"الإيرادات وصافي الربح يوميًا لآخر {0} أيام، بالدرهم."
+],
+"Revenue and estimated profit, last {0} days": [
+"Umsatz und geschätzter Gewinn, letzte {0} Tage",
+"Ricavi e profitto stimato, ultimi {0} giorni",
+"الإيرادات والربح التقديري، آخر {0} أيام"
+],
+"Revenue is counted once.": [
+"Umsatz wird einmal gezählt.",
+"I ricavi sono contati una volta.",
+"تُحتسب الإيرادات مرة واحدة."
+],
+"Revenue recovered": [
+"Umsatz zurückgewonnen",
+"Ricavi recuperati",
+"إيرادات مستردة"
+],
+"Revenue, cost and profit": [
+"Umsatz, Kosten und Gewinn",
+"Ricavi, costi e profitto",
+"الإيرادات والتكلفة والربح"
+],
+"Revenue, cost and profit per outlet": [
+"Umsatz, Kosten und Gewinn pro Outlet",
+"Ricavi, costi e profitto per punto vendita",
+"الإيرادات والتكلفة والربح لكل منفذ"
+],
+"Review case": [
+"Fall prüfen",
+"Rivedi caso",
+"راجع الحالة"
+],
+"Review flags": [
+"Hinweise prüfen",
+"Rivedi segnalazioni",
+"راجع الإشارات"
+],
+"Review storeroom access and the issue process with the outlet manager.": [
+"Lagerzugang und Ausgabeprozess mit der Outlet-Leitung besprechen.",
+"Rivedi accessi al magazzino e processo di uscita con il responsabile.",
+"راجع الوصول إلى المخزن وآلية الصرف مع مدير المنفذ."
+],
+"Review {0} flags": [
+"{0} Hinweise prüfen",
+"Rivedi {0} segnalazioni",
+"راجع {0} إشارات"
+],
+"Roasted tomato soup": [
+"Geröstete Tomatensuppe",
+"Zuppa di pomodori arrosto",
+"شوربة طماطم"
+],
+"Rocks glasses": [
+"Tumbler-Gläser",
+"Bicchieri old fashioned",
+"كؤوس قصيرة"
+],
+"Role": [
+"Rolle",
+"Ruolo",
+"الدور"
+],
+"Roles and permissions": [
+"Rollen und Berechtigungen",
+"Ruoli e permessi",
+"الأدوار والصلاحيات"
+],
+"Romaine lettuce": [
+"Romanasalat",
+"Lattuga romana",
+"خس روماني"
+],
+"Room charge amount differs": [
+"Betrag der Zimmerbelastung weicht ab",
+"Importo addebito camera diverso",
+"مبلغ رسوم الغرفة مختلف"
+],
+"Room charge amount differs · {0}": [
+"Betrag der Zimmerbelastung weicht ab · {0}",
+"Importo addebito camera diverso · {0}",
+"مبلغ رسوم الغرفة مختلف · {0}"
+],
+"Room charge duplicated": [
+"Zimmerbelastung doppelt",
+"Addebito camera duplicato",
+"رسوم غرفة مكررة"
+],
+"Room charge duplicated · {0}": [
+"Zimmerbelastung doppelt · {0}",
+"Addebito camera duplicato · {0}",
+"رسوم غرفة مكررة · {0}"
+],
+"Room charge missing": [
+"Zimmerbelastung fehlt",
+"Addebito camera mancante",
+"رسوم الغرفة مفقودة"
+],
+"Room charge tolerance": [
+"Toleranz Zimmerbelastung",
+"Tolleranza addebito camera",
+"هامش رسوم الغرفة"
+],
+"Room charges": [
+"Zimmerbelastungen",
+"Addebiti in camera",
+"رسوم الغرف"
+],
+"Room readiness, guest requests and luggage.": [
+"Zimmerstatus, Gästewünsche und Gepäck.",
+"Stato camere, richieste ospiti e bagagli.",
+"جاهزية الغرف وطلبات الضيوف والأمتعة."
+],
+"Room service": [
+"Zimmerservice",
+"Servizio in camera",
+"خدمة الغرف"
+],
+"Room {0}": [
+"Zimmer {0}",
+"Camera {0}",
+"غرفة {0}"
+],
+"Room {0}: charge posted {1} times": [
+"Zimmer {0}: Belastung {1}-mal gebucht",
+"Camera {0}: addebito registrato {1} volte",
+"غرفة {0}: رُحلت الرسوم {1} مرات"
+],
+"Room {0}: guest bill shows less than the charge": [
+"Zimmer {0}: Gästerechnung zeigt weniger als die Belastung",
+"Camera {0}: il conto mostra meno dell'addebito",
+"غرفة {0}: تظهر الفاتورة مبلغًا أقل من الرسوم"
+],
+"Rooms and Guest Experience": [
+"Zimmer und Gästeerlebnis",
+"Camere ed esperienza ospiti",
+"الغرف وتجربة الضيوف"
+],
+"Rose": [
+"Rosé",
+"Rosé",
+"روزيه"
+],
+"Rule": [
+"Regel",
+"Regola",
+"القاعدة"
+],
+"Rules agreed with the hotel. A flag means a rule was met, nothing more.": [
+"Mit dem Hotel vereinbarte Regeln. Ein Hinweis heißt nur, dass eine Regel zutraf.",
+"Regole concordate con l'hotel. Una segnalazione significa solo che una regola si è verificata.",
+"قواعد متفق عليها مع الفندق. تعني الإشارة انطباق قاعدة فقط."
+],
+"Rules on tips and service charges differ between countries and between hotel policies. A live version would hold the rule agreed for each property and would need local legal review before use.": [
+"Regeln zu Trinkgeld und Servicegebühr unterscheiden sich je nach Land und Hotel. Eine echte Version enthielte die für jedes Haus vereinbarte Regel und bräuchte eine rechtliche Prüfung vor Ort.",
+"Le regole su mance e servizio variano per paese e hotel. Una versione reale conterrebbe la regola di ogni struttura e richiederebbe una verifica legale locale.",
+"تختلف قواعد الإكراميات ورسوم الخدمة بين الدول وسياسات الفنادق. ستحتفظ النسخة الفعلية بقاعدة كل فندق وتحتاج إلى مراجعة قانونية محلية."
+],
+"Running costs, estimate": [
+"Laufende Kosten, geschätzt",
+"Costi operativi, stima",
+"التكاليف التشغيلية، تقديرية"
+],
+"Runs as its own Tyll product and is not rebuilt here.": [
+"Läuft als eigenes Tyll-Produkt und wird hier nicht nachgebaut.",
+"È un prodotto Tyll a sé e non è ricreato qui.",
+"يعمل كمنتج Tyll مستقل ولا يُعاد بناؤه هنا."
+],
+"Runs out in": [
+"Reicht noch",
+"Finisce tra",
+"ينفد خلال"
+],
+"Safety stock": [
+"Sicherheitsbestand",
+"Scorta di sicurezza",
+"مخزون الأمان"
+],
+"Salad vegetables": [
+"Salatgemüse",
+"Verdure da insalata",
+"خضار السلطة"
+],
+"Sales and Performance": [
+"Verkauf und Leistung",
+"Vendite e rendimento",
+"المبيعات والأداء"
+],
+"Sales and performance": [
+"Verkauf und Leistung",
+"Vendite e rendimento",
+"المبيعات والأداء"
+],
+"Sales recorded in the POS": [
+"Im POS erfasste Verkäufe",
+"Vendite registrate nel POS",
+"المبيعات المسجلة في نقطة البيع"
+],
+"Sales to profit": [
+"Vom Umsatz zum Gewinn",
+"Dalle vendite al profitto",
+"من المبيعات إلى الربح"
+],
+"Sales to profit, money at risk, outlets and menu. {0} total revenue, {1} guests.": [
+"Vom Umsatz zum Gewinn, gefährdetes Geld, Outlets und Menü. {0} Gesamtumsatz, {1} Gäste.",
+"Dalle vendite al profitto, denaro a rischio, punti vendita e menu. {0} ricavi totali, {1} ospiti.",
+"من المبيعات إلى الربح، الأموال المعرضة للخطر، المنافذ والقائمة. إجمالي الإيرادات {0}، {1} ضيفًا."
+],
+"Salmon fillet": [
+"Lachsfilet",
+"Filetto di salmone",
+"فيليه سلمون"
+],
+"Same weekdays moved about {0}": [
+"Gleiche Wochentage schwankten um etwa {0}",
+"Stessi giorni variati di circa {0}",
+"تحركت الأيام نفسها بنحو {0}"
+],
+"Saucers": [
+"Untertassen",
+"Piattini da tazza",
+"صحون فناجين"
+],
+"Save": [
+"Speichern",
+"Salva",
+"حفظ"
+],
+"Save recount": [
+"Nachzählung speichern",
+"Salva nuovo conteggio",
+"احفظ إعادة الجرد"
+],
+"Save the prep plan": [
+"Vorbereitungsplan speichern",
+"Salva il piano di preparazione",
+"احفظ خطة التحضير"
+],
+"Save walking order": [
+"Laufreihenfolge speichern",
+"Salva ordine di percorso",
+"احفظ ترتيب السير"
+],
+"Save, next": [
+"Speichern, weiter",
+"Salva, avanti",
+"احفظ، التالي"
+],
+"Saved to today's log straight away. Simulated data.": [
+"Sofort im heutigen Protokoll gespeichert. Simulierte Daten.",
+"Salvato subito nel registro di oggi. Dati simulati.",
+"يُحفظ في سجل اليوم فورًا. بيانات محاكاة."
+],
+"Search": [
+"Suchen",
+"Cerca",
+"بحث"
+],
+"Search and actions": [
+"Suche und Aktionen",
+"Ricerca e azioni",
+"البحث والإجراءات"
+],
+"Search for something else": [
+"Etwas anderes suchen",
+"Cerca qualcos'altro",
+"ابحث عن شيء آخر"
+],
+"Search items, outlets and actions": [
+"Artikel, Outlets und Aktionen suchen",
+"Cerca articoli, punti vendita e azioni",
+"ابحث عن الأصناف والمنافذ والإجراءات"
+],
+"Search orders": [
+"Bestellungen suchen",
+"Cerca ordini",
+"ابحث في الطلبات"
+],
+"Searching": [
+"Suche läuft",
+"Ricerca in corso",
+"جارٍ البحث"
+],
+"See Drinks control.": [
+"Siehe Getränkekontrolle.",
+"Vedi Controllo bevande.",
+"راجع مراقبة المشروبات."
+],
+"See Rooms for the rooms to prioritise.": [
+"Siehe Zimmer für vorrangige Zimmer.",
+"Vedi Camere per le camere prioritarie.",
+"راجع الغرف لمعرفة الغرف ذات الأولوية."
+],
+"See alerts": [
+"Warnungen ansehen",
+"Vedi avvisi",
+"اعرض التنبيهات"
+],
+"See all alerts": [
+"Alle Warnungen ansehen",
+"Vedi tutti gli avvisi",
+"اعرض جميع التنبيهات"
+],
+"See all missing stock": [
+"Gesamten fehlenden Bestand ansehen",
+"Vedi tutte le scorte mancanti",
+"اعرض كل المخزون المفقود"
+],
+"See dish": [
+"Gericht ansehen",
+"Vedi piatto",
+"اعرض الطبق"
+],
+"See flagged items": [
+"Markierte Posten ansehen",
+"Vedi voci segnalate",
+"اعرض العناصر المشار إليها"
+],
+"See missing drinks": [
+"Fehlende Getränke ansehen",
+"Vedi bevande mancanti",
+"اعرض المشروبات المفقودة"
+],
+"See over pouring": [
+"Überschenken ansehen",
+"Vedi versamento eccessivo",
+"اعرض الإفراط في السكب"
+],
+"See over pouring and missing drinks": [
+"Überschenken und fehlende Getränke ansehen",
+"Vedi versamenti eccessivi e bevande mancanti",
+"اعرض الإفراط في السكب والمشروبات المفقودة"
+],
+"See profit by outlet": [
+"Gewinn nach Outlet ansehen",
+"Vedi profitto per punto vendita",
+"اعرض الربح حسب المنفذ"
+],
+"See revenue": [
+"Umsatz ansehen",
+"Vedi i ricavi",
+"اعرض الإيرادات"
+],
+"See sales, margin by outlet and orders": [
+"Verkäufe, Marge nach Outlet und Bestellungen ansehen",
+"Vedi vendite, margine per punto vendita e ordini",
+"اعرض المبيعات والهامش حسب المنفذ والطلبات"
+],
+"See the audit trail": [
+"Prüfprotokoll ansehen",
+"Vedi il registro di controllo",
+"عرض سجل التدقيق"
+],
+"See the kitchen plan": [
+"Küchenplan ansehen",
+"Vedi il piano di cucina",
+"اعرض خطة المطبخ"
+],
+"See today's log": [
+"Heutiges Protokoll ansehen",
+"Vedi il registro di oggi",
+"اعرض سجل اليوم"
+],
+"See transactions": [
+"Transaktionen ansehen",
+"Vedi transazioni",
+"اعرض المعاملات"
+],
+"See waste": [
+"Abfall ansehen",
+"Vedi scarti",
+"اعرض الهدر"
+],
+"See what to order": [
+"Bestellbedarf ansehen",
+"Vedi cosa ordinare",
+"اعرض ما يجب طلبه"
+],
+"Sees": [
+"Sieht",
+"Vede",
+"يرى"
+],
+"Select all open cases shown": [
+"Alle angezeigten offenen Fälle wählen",
+"Seleziona tutti i casi aperti mostrati",
+"حدد جميع الحالات المفتوحة المعروضة"
+],
+"Selling price": [
+"Verkaufspreis",
+"Prezzo di vendita",
+"سعر البيع"
+],
+"Sent": [
+"Gesendet",
+"Inviato",
+"أُرسل"
+],
+"Sent for preparation, then removed or voided": [
+"Zur Zubereitung geschickt, dann entfernt oder storniert",
+"Inviato in preparazione, poi rimosso o annullato",
+"أُرسل للتحضير ثم حُذف أو أُلغي"
+],
+"Separate Tyll product": [
+"Eigenes Tyll-Produkt",
+"Prodotto Tyll separato",
+"منتج Tyll منفصل"
+],
+"Service charge": [
+"Servicegebühr",
+"Costo di servizio",
+"رسوم الخدمة"
+],
+"Service charge collected": [
+"Eingenommene Servicegebühr",
+"Costo di servizio raccolto",
+"رسوم الخدمة المحصلة"
+],
+"Set it once, in the order you walk. Everyone counting here uses it.": [
+"Einmal festlegen, in Ihrer Laufreihenfolge. Alle Zählenden hier nutzen sie.",
+"Impostalo una volta, nell'ordine in cui cammini. Tutti qui lo useranno.",
+"حدده مرة واحدة بترتيب سيرك، وسيستخدمه كل من يجرد هنا."
+],
+"Settings": [
+"Einstellungen",
+"Impostazioni",
+"الإعدادات"
+],
+"Settings and tools": [
+"Einstellungen und Tools",
+"Impostazioni e strumenti",
+"الإعدادات والأدوات"
+],
+"Share": [
+"Anteil",
+"Quota",
+"الحصة"
+],
+"Share of net sales": [
+"Anteil am Nettoumsatz",
+"Quota sulle vendite nette",
+"الحصة من صافي المبيعات"
+],
+"Shared by hours worked under the agreed rule.": [
+"Nach Arbeitsstunden gemäß vereinbarter Regel verteilt.",
+"Divise per ore lavorate secondo la regola concordata.",
+"تُوزع حسب ساعات العمل وفق القاعدة المتفق عليها."
+],
+"Shared records (requests, events, rooms, sales, finance, waste) are on the demo server; investigation decisions and price changes are kept in this browser.": [
+"Gemeinsame Daten (Anfragen, Events, Zimmer, Verkauf, Finanzen, Abfall) liegen auf dem Demoserver; Prüfentscheidungen und Preisänderungen in diesem Browser.",
+"I dati condivisi (richieste, eventi, camere, vendite, finanza, scarti) sono sul server demo; decisioni sulle verifiche e modifiche di prezzo restano in questo browser.",
+"السجلات المشتركة (الطلبات والفعاليات والغرف والمبيعات والمالية والهدر) على الخادم التجريبي، وقرارات التحقيق وتغييرات الأسعار في هذا المتصفح."
+],
+"Shortages also count what the kitchen will use for other meals and drinks in the same period.": [
+"Engpässe berücksichtigen auch den Küchenbedarf für andere Mahlzeiten und Getränke im selben Zeitraum.",
+"Le carenze contano anche ciò che la cucina userà per altri pasti e bevande nello stesso periodo.",
+"تحتسب النواقص أيضًا ما سيستخدمه المطبخ لوجبات ومشروبات أخرى في الفترة نفسها."
+],
+"Should be left": [
+"Sollte übrig sein",
+"Dovrebbe restare",
+"يجب أن يتبقى"
+],
+"Should be on guest bills": [
+"Sollte auf Gästerechnungen stehen",
+"Dovrebbe essere sui conti",
+"يفترض ظهورها في الفواتير"
+],
+"Should be posted": [
+"Sollte gebucht sein",
+"Da registrare",
+"يفترض ترحيلها"
+],
+"Should be {0} counted {1} on {2}. {3} short.": [
+"Soll {0}, gezählt {1} am {2}. {3} zu wenig.",
+"Previsto {0}, contato {1} il {2}. Mancano {3}.",
+"المفترض {0}، والمجرود {1} في {2}. نقص {3}."
+],
+"Should be {0}, counted {1} on {2}. {3} short.": [
+"Soll {0}, gezählt {1} am {2}. {3} zu wenig.",
+"Previsto {0}, contato {1} il {2}. Mancano {3}.",
+"المفترض {0}، والمجرود {1} في {2}. نقص {3}."
+],
+"Should give {0} per bottle for rum, more for spirits in smaller measures. Day is until {1} PM, evening until {2} PM, late after that.": [
+"Sollte bei Rum {0} pro Flasche ergeben, bei kleineren Maßen mehr. Tag bis {1} Uhr nachmittags, Abend bis {2} Uhr, danach spät.",
+"Dovrebbe dare {0} per bottiglia di rum, di più con misure minori. Giorno fino alle {1} PM, sera fino alle {2} PM, poi tarda sera.",
+"يجب أن تعطي {0} لكل زجاجة روم، وأكثر للمقادير الأصغر. النهار حتى {1} مساءً، والمساء حتى {2} مساءً، ثم وقت متأخر."
+],
+"Should give {0} per bottle. Day is until {1} PM, evening until {2} PM, late after that.": [
+"Sollte {0} pro Flasche ergeben. Tag bis {1} Uhr nachmittags, Abend bis {2} Uhr, danach spät.",
+"Dovrebbe dare {0} per bottiglia. Giorno fino alle {1} PM, sera fino alle {2} PM, poi tarda sera.",
+"يجب أن تعطي {0} لكل زجاجة. النهار حتى {1} مساءً، والمساء حتى {2} مساءً، ثم وقت متأخر."
+],
+"Should have used": [
+"Soll-Verbrauch",
+"Consumo previsto",
+"الاستخدام المفترض"
+],
+"Should have used is units sold, including complimentary ones, times the recipe quantity. Actually used is the opening count, plus stock received, less the closing count. A difference does not show what happened to the stock.": [
+"Soll-Verbrauch sind verkaufte Einheiten, einschließlich Gratisartikel, mal Rezeptmenge. Tatsächlicher Verbrauch ist Anfangszählung plus Wareneingang minus Endzählung. Eine Differenz zeigt nicht, was mit dem Bestand geschehen ist.",
+"Il consumo previsto sono le unità vendute, omaggi compresi, per la quantità in ricetta. Il consumo reale è il conteggio iniziale più le entrate meno il conteggio finale. Una differenza non mostra cosa sia successo alle scorte.",
+"الاستخدام المفترض هو الوحدات المبيعة، بما فيها المجانية، مضروبة في كمية الوصفة. والاستخدام الفعلي هو الجرد الافتتاحي زائد المستلم ناقص الجرد الختامي. لا يبين الفرق ما حدث للمخزون."
+],
+"Show": [
+"Anzeigen",
+"Mostra",
+"عرض"
+],
+"Show alerts about": [
+"Warnungen anzeigen zu",
+"Mostra avvisi su",
+"عرض التنبيهات حول"
+],
+"Show all items": [
+"Alle Artikel anzeigen",
+"Mostra tutti gli articoli",
+"عرض جميع الأصناف"
+],
+"Show all {0} alerts": [
+"Alle {0} Warnungen anzeigen",
+"Mostra tutti i {0} avvisi",
+"عرض جميع التنبيهات ({0})"
+],
+"Show all {0} dishes": [
+"Alle {0} Gerichte anzeigen",
+"Mostra tutti i {0} piatti",
+"عرض جميع الأطباق ({0})"
+],
+"Show all {0} recommended items": [
+"Alle {0} empfohlenen Artikel anzeigen",
+"Mostra tutti i {0} articoli consigliati",
+"عرض جميع الأصناف الموصى بها ({0})"
+],
+"Show items": [
+"Artikel anzeigen",
+"Mostra articoli",
+"عرض الأصناف"
+],
+"Show less": [
+"Weniger anzeigen",
+"Mostra meno",
+"عرض أقل"
+],
+"Show this hotel": [
+"Dieses Hotel anzeigen",
+"Mostra questo hotel",
+"اعرض هذا الفندق"
+],
+"Show {0} more": [
+"{0} weitere anzeigen",
+"Mostra altri {0}",
+"عرض {0} أخرى"
+],
+"Showing {0} of {1} orders.": [
+"{0} von {1} Bestellungen.",
+"{0} di {1} ordini.",
+"عرض {0} من {1} طلب."
+],
+"Showing {0} of {1} orders. Amounts in AED.": [
+"{0} von {1} Bestellungen. Beträge in AED.",
+"{0} di {1} ordini. Importi in AED.",
+"عرض {0} من {1} طلب. المبالغ بالدرهم."
+],
+"Shown in the group price list (AED). Each outlet applies its own price level and each property its own cost level, which Menu performance on the Overview takes into account. The other six menu items use a standard cost until their recipes are built.": [
+"Angezeigt in der Gruppenpreisliste (AED). Jedes Outlet hat sein Preisniveau und jedes Hotel sein Kostenniveau, was die Menüleistung in der Übersicht berücksichtigt. Die übrigen sechs Menüartikel nutzen Standardkosten, bis ihre Rezepte erstellt sind.",
+"Mostrato nel listino di gruppo (AED). Ogni punto vendita ha il suo livello di prezzo e ogni hotel il suo livello di costo, considerati da Rendimento del menu in Panoramica. Gli altri sei articoli usano un costo standard finché le ricette non sono pronte.",
+"معروض بقائمة أسعار المجموعة (بالدرهم). لكل منفذ مستوى سعره ولكل فندق مستوى تكلفته، ويراعي ذلك أداء القائمة في نظرة عامة. تستخدم الأصناف الستة الأخرى تكلفة قياسية حتى تُعد وصفاتها."
+],
+"Side plates": [
+"Beilagenteller",
+"Piattini",
+"أطباق جانبية"
+],
+"Sign out": [
+"Abmelden",
+"Esci",
+"تسجيل الخروج"
+],
+"Signature mojito": [
+"Signature Mojito",
+"Mojito della casa",
+"موهيتو"
+],
+"Signed in as": [
+"Angemeldet als",
+"Connesso come",
+"مسجل الدخول باسم"
+],
+"Simulate losing the connection": [
+"Verbindungsverlust simulieren",
+"Simula la perdita di connessione",
+"محاكاة فقدان الاتصال"
+],
+"Simulated": [
+"Simuliert",
+"Simulato",
+"محاكاة"
+],
+"Simulated data": [
+"Simulierte Daten",
+"Dati simulati",
+"بيانات محاكاة"
+],
+"Simulated data.": [
+"Simulierte Daten.",
+"Dati simulati.",
+"بيانات محاكاة."
+],
+"Simulated data. Business date {0}, {1}.": [
+"Simulierte Daten. Geschäftsdatum {0}, {1}.",
+"Dati simulati. Data operativa {0}, {1}.",
+"بيانات محاكاة. تاريخ العمل {0}، {1}."
+],
+"Simulated data. Labor is estimated from rostered hours and other operating costs are allocated. Estimated operating contribution is not accounting profit: no ledger is connected, and rent, depreciation, management fees and tax are left out. Amounts recovered are reported separately and are not added to net sales.": [
+"Simulierte Daten. Personalkosten sind aus Dienstplanstunden geschätzt, sonstige Betriebskosten sind umgelegt. Der geschätzte Betriebsbeitrag ist kein buchhalterischer Gewinn: Es ist kein Hauptbuch angebunden; Miete, Abschreibung, Managementgebühren und Steuern fehlen. Zurückgewonnene Beträge werden separat ausgewiesen und nicht zum Nettoumsatz addiert.",
+"Dati simulati. La manodopera è stimata dalle ore a turno e gli altri costi sono ripartiti. Il contributo operativo stimato non è un profitto contabile: nessun libro mastro è collegato e affitto, ammortamenti, compensi di gestione e tasse sono esclusi. Gli importi recuperati sono esposti a parte e non si sommano alle vendite nette.",
+"بيانات محاكاة. العمالة مقدرة من ساعات الورديات والتكاليف الأخرى موزعة. المساهمة التشغيلية التقديرية ليست ربحًا محاسبيًا: لا يوجد دفتر أستاذ متصل، والإيجار والإهلاك ورسوم الإدارة والضرائب مستبعدة. تُعرض المبالغ المستردة منفصلة ولا تضاف إلى صافي المبيعات."
+],
+"Simulated records.": [
+"Simulierte Daten.",
+"Dati simulati.",
+"سجلات محاكاة."
+],
+"Simulated records. The website lists MICROS Simphony, Sapaad and HMS as systems Tyll can connect to.": [
+"Simulierte Daten. Die Website nennt MICROS Simphony, Sapaad und HMS als anbindbare Systeme.",
+"Dati simulati. Il sito indica MICROS Simphony, Sapaad e HMS come sistemi collegabili.",
+"سجلات محاكاة. يذكر الموقع MICROS Simphony وSapaad وHMS كأنظمة يمكن ربطها."
+],
+"Simulated records. The website lists OPERA and Shiji Infrasys.": [
+"Simulierte Daten. Die Website nennt OPERA und Shiji Infrasys.",
+"Dati simulati. Il sito indica OPERA e Shiji Infrasys.",
+"سجلات محاكاة. يذكر الموقع OPERA وShiji Infrasys."
+],
+"Simulated records. Waste and counts entered in this demo are stored in your browser.": [
+"Simulierte Daten. Abfall und Zählungen aus dieser Demo liegen in Ihrem Browser.",
+"Dati simulati. Scarti e conteggi inseriti qui restano nel tuo browser.",
+"سجلات محاكاة. يُحفظ الهدر والجرد المدخلان هنا في متصفحك."
+],
+"Since yesterday. See Stock, Suppliers.": [
+"Seit gestern. Siehe Bestand, Lieferanten.",
+"Da ieri. Vedi Scorte, Fornitori.",
+"منذ أمس. راجع المخزون، الموردون."
+],
+"Single sign-on and multi-factor sign-in through the hotel’s identity provider.": [
+"Single Sign-on und Mehrfaktor-Anmeldung über den Identitätsanbieter des Hotels.",
+"Single sign-on e accesso a più fattori tramite il provider d'identità dell'hotel.",
+"تسجيل دخول موحد ومتعدد العوامل عبر موفر هوية الفندق."
+],
+"Skip (or swipe)": [
+"Überspringen (oder wischen)",
+"Salta (o scorri)",
+"تخطَّ (أو اسحب)"
+],
+"Skip to content": [
+"Zum Inhalt springen",
+"Vai al contenuto",
+"انتقل إلى المحتوى"
+],
+"Sliced bread": [
+"Schnittbrot",
+"Pane a fette",
+"خبز توست"
+],
+"Snooze": [
+"Zurückstellen",
+"Posticipa",
+"أجّل"
+],
+"Snoozed": [
+"Zurückgestellt",
+"Posticipati",
+"مؤجلة"
+],
+"Soda water": [
+"Sodawasser",
+"Acqua gassata",
+"مياه غازية"
+],
+"Soft": [
+"Dezent",
+"Tenui",
+"ناعمة"
+],
+"Soft drinks": [
+"Softdrinks",
+"Bibite",
+"المشروبات الغازية"
+],
+"Soft drinks, {0} left, runs out in {1} days": [
+"Softdrinks, noch {0}, reicht {1} Tage",
+"Bibite, restano {0}, finisce tra {1} giorni",
+"مشروبات غازية، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"Sold": [
+"Verkauft",
+"Venduto",
+"المبيع"
+],
+"Sort by": [
+"Sortieren nach",
+"Ordina per",
+"ترتيب حسب"
+],
+"Soup bowls": [
+"Suppenschalen",
+"Fondine",
+"أوعية حساء"
+],
+"Source": [
+"Quelle",
+"Fonte",
+"المصدر"
+],
+"Spa": [
+"Spa",
+"Spa",
+"السبا"
+],
+"Sparkling water": [
+"Sprudelwasser",
+"Acqua frizzante",
+"مياه فوارة"
+],
+"Spillage, or a bottle that was corked or broken": [
+"Verschüttet, oder eine Flasche mit Korkgeschmack oder Bruch",
+"Versato, o bottiglia difettosa o rotta",
+"انسكاب أو زجاجة فاسدة أو مكسورة"
+],
+"Spilled": [
+"Verschüttet",
+"Versato",
+"انسكب"
+],
+"Spirit": [
+"Spirituose",
+"Distillato",
+"المشروب الروحي"
+],
+"Spirits": [
+"Spirituosen",
+"Distillati",
+"المشروبات الروحية"
+],
+"Spirits and liqueurs": [
+"Spirituosen und Liköre",
+"Distillati e liquori",
+"المشروبات الروحية والليكيور"
+],
+"Spirits not billed, week": [
+"Spirituosen nicht berechnet, Woche",
+"Distillati non fatturati, settimana",
+"مشروبات روحية غير مفوترة، الأسبوع"
+],
+"Spoilage": [
+"Verderb",
+"Deterioramento",
+"التلف"
+],
+"Spoilage points to over-ordering, which Purchasing Prediction addresses. Waste points to preparation and portioning.": [
+"Verderb deutet auf zu hohe Bestellungen hin, dabei hilft die Einkaufsprognose. Abfall deutet auf Zubereitung und Portionierung hin.",
+"Il deterioramento indica ordini eccessivi, a cui rispondono le previsioni acquisti. Gli scarti indicano preparazione e porzioni.",
+"يشير التلف إلى الإفراط في الطلب، وتعالجه توقعات المشتريات. ويشير الهدر إلى التحضير وتقدير الحصص."
+],
+"Spoiled": [
+"Verdorben",
+"Deteriorato",
+"تالف"
+],
+"Staff": [
+"Personal",
+"Personale",
+"الموظفون"
+],
+"Staff consumption": [
+"Personalverzehr",
+"Consumo del personale",
+"استهلاك الموظفين"
+],
+"Staff, estimate": [
+"Personal, geschätzt",
+"Personale, stima",
+"الموظفون، تقديري"
+],
+"Standard pour": [
+"Standardausschank",
+"Dose standard",
+"السكب المعياري"
+],
+"Start a stock count": [
+"Bestandszählung starten",
+"Avvia un conteggio scorte",
+"ابدأ جرد المخزون"
+],
+"Start count": [
+"Zählung starten",
+"Avvia conteggio",
+"ابدأ الجرد"
+],
+"Start guided path": [
+"Rundgang starten",
+"Avvia percorso guidato",
+"ابدأ الجولة الإرشادية"
+],
+"Start here": [
+"Hier beginnen",
+"Inizia da qui",
+"ابدأ من هنا"
+],
+"Started {0}. Your other count was closed.": [
+"{0} gestartet. Ihre andere Zählung wurde geschlossen.",
+"Avviato {0}. L'altro conteggio è stato chiuso.",
+"بدأ {0}. أُغلق جردك الآخر."
+],
+"Starters": [
+"Vorspeisen",
+"Antipasti",
+"المقبلات"
+],
+"Statement": [
+"Abrechnung",
+"Rendiconto",
+"كشف الحساب"
+],
+"Statement, outlet comparison, menu performance and waste log": [
+"Abrechnung, Outlet-Vergleich, Menüleistung und Abfallprotokoll",
+"Rendiconto, confronto punti vendita, rendimento menu e registro scarti",
+"كشف الحساب ومقارنة المنافذ وأداء القائمة وسجل الهدر"
+],
+"Status": [
+"Status",
+"Stato",
+"الحالة"
+],
+"Steps": [
+"Schritte",
+"Passaggi",
+"الخطوات"
+],
+"Still water": [
+"Stilles Wasser",
+"Acqua naturale",
+"مياه"
+],
+"Stock": [
+"Bestand",
+"Scorte",
+"المخزون"
+],
+"Stock and deliveries": [
+"Bestand und Lieferungen",
+"Scorte e consegne",
+"المخزون والتوريدات"
+],
+"Stock and purchasing": [
+"Bestand und Einkauf",
+"Scorte e acquisti",
+"المخزون والمشتريات"
+],
+"Stock could not load.": [
+"Bestand konnte nicht geladen werden.",
+"Non è stato possibile caricare le scorte.",
+"تعذر تحميل المخزون."
+],
+"Stock counts": [
+"Bestandszählungen",
+"Conteggi delle scorte",
+"جرد المخزون"
+],
+"Stock missing at count": [
+"Fehlbestand bei Zählung",
+"Scorte mancanti al conteggio",
+"المخزون المفقود عند الجرد"
+],
+"Stock received": [
+"Wareneingang",
+"Merce ricevuta",
+"المخزون المستلم"
+],
+"Stock records": [
+"Bestandsdaten",
+"Dati delle scorte",
+"سجلات المخزون"
+],
+"Stock shortfall": [
+"Fehlbestand",
+"Ammanco di scorte",
+"نقص المخزون"
+],
+"Stock since the last count": [
+"Bestand seit der letzten Zählung",
+"Scorte dall'ultimo conteggio",
+"المخزون منذ آخر جرد"
+],
+"Stock taken without authorisation": [
+"Ohne Genehmigung entnommener Bestand",
+"Scorte prelevate senza autorizzazione",
+"مخزون أُخذ دون تصريح"
+],
+"Stock teal, Predictions violet, Revenue blue": [
+"Bestand Türkis, Prognosen Violett, Umsatz Blau",
+"Scorte verde acqua, Previsioni viola, Ricavi blu",
+"المخزون أخضر مزرق، التوقعات بنفسجي، الإيرادات أزرق"
+],
+"Stock that left without a sale to explain it": [
+"Bestand, der ohne erklärenden Verkauf abging",
+"Scorte uscite senza una vendita che lo spieghi",
+"مخزون خرج دون بيع يفسره"
+],
+"Stock, money and waste": [
+"Bestand, Geld und Abfall",
+"Scorte, denaro e scarti",
+"المخزون والأموال والهدر"
+],
+"Stock, money and waste together. Simulated data.": [
+"Bestand, Geld und Abfall zusammen. Simulierte Daten.",
+"Scorte, denaro e scarti insieme. Dati simulati.",
+"المخزون والأموال والهدر معًا. بيانات محاكاة."
+],
+"Stock, {0}": [
+"Bestand, {0}",
+"Scorte, {0}",
+"المخزون، {0}"
+],
+"Storeroom issue recorded for more than arrived": [
+"Lagerausgabe höher erfasst als angekommen",
+"Uscita da magazzino registrata per più di quanto arrivato",
+"صرف من المخزن مسجل بأكثر مما وصل"
+],
+"Strong": [
+"Kräftig",
+"Forti",
+"قوية"
+],
+"Sugar": [
+"Zucker",
+"Zucchero",
+"سكر"
+],
+"Supplier": [
+"Lieferant",
+"Fornitore",
+"المورد"
+],
+"Supplier invoices checked against orders and deliveries.": [
+"Lieferantenrechnungen, geprüft gegen Bestellungen und Lieferungen.",
+"Fatture fornitore verificate con ordini e consegne.",
+"فواتير الموردين مطابقة مع الطلبات والتوريدات."
+],
+"Supplier, {0}": [
+"Lieferant, {0}",
+"Fornitore, {0}",
+"المورد، {0}"
+],
+"Suppliers": [
+"Lieferanten",
+"Fornitori",
+"الموردون"
+],
+"Supplies": [
+"Liefert",
+"Fornisce",
+"يوفر"
+],
+"System": [
+"System",
+"Sistema",
+"النظام"
+],
+"Table {0}": [
+"Tisch {0}",
+"Tavolo {0}",
+"طاولة {0}"
+],
+"Table {0} · POS login {1} · {2} guest": [
+"Tisch {0} · POS-Login {1} · {2} Gast",
+"Tavolo {0} · accesso POS {1} · {2} ospite",
+"طاولة {0} · دخول {1} · {2} ضيف"
+],
+"Table {0} · {1}": [
+"Tisch {0} · {1}",
+"Tavolo {0} · {1}",
+"طاولة {0} · {1}"
+],
+"Tahini": [
+"Tahini",
+"Tahina",
+"طحينة"
+],
+"Take a tour": [
+"Tour starten",
+"Fai un tour",
+"ابدأ جولة"
+],
+"Tap the item, tap the number. Done in two taps, with Undo.": [
+"Artikel antippen, Zahl antippen. Fertig in zwei Schritten, mit Rückgängig.",
+"Tocca l'articolo, tocca il numero. Fatto in due tocchi, con Annulla.",
+"انقر الصنف ثم الرقم. يتم ذلك بنقرتين، مع إمكانية التراجع."
+],
+"Tapping a number saves it.": [
+"Tippen auf eine Zahl speichert sie.",
+"Toccando un numero lo salvi.",
+"النقر على رقم يحفظه."
+],
+"Team member": [
+"Teammitglied",
+"Membro del team",
+"عضو الفريق"
+],
+"Tested adapters for each customer’s POS, PMS, stock and accounting systems.": [
+"Getestete Adapter für POS-, PMS-, Bestands- und Buchhaltungssysteme jedes Kunden.",
+"Adattatori testati per i sistemi POS, PMS, scorte e contabilità di ogni cliente.",
+"موائمات مختبرة لأنظمة نقاط البيع وإدارة الفندق والمخزون والمحاسبة لكل عميل."
+],
+"That could not be saved.": [
+"Das konnte nicht gespeichert werden.",
+"Non è stato possibile salvare.",
+"تعذر الحفظ."
+],
+"That role could not open.": [
+"Diese Rolle konnte nicht geöffnet werden.",
+"Non è stato possibile aprire questo ruolo.",
+"تعذر فتح هذا الدور."
+],
+"That you can see": [
+"Die Sie sehen können",
+"Che puoi vedere",
+"التي يمكنك رؤيتها"
+],
+"The Coke is removed from the order": [
+"Die Cola wird aus der Bestellung entfernt",
+"La Coca-Cola viene rimossa dall'ordine",
+"تُحذف الكوكاكولا من الطلب"
+],
+"The app takes the colour of the outlet you pick": [
+"Die App übernimmt die Farbe des gewählten Outlets",
+"L'app prende il colore del punto vendita scelto",
+"يأخذ التطبيق لون المنفذ الذي تختاره"
+],
+"The complete record of each order: created, items entered, tickets sent, changes, final bill and payment.": [
+"Der vollständige Verlauf jeder Bestellung: Anlage, Artikel, gesendete Bons, Änderungen, Endrechnung und Zahlung.",
+"La storia completa di ogni ordine: creazione, articoli, comande, modifiche, conto finale e pagamento.",
+"السجل الكامل لكل طلب: الإنشاء والأصناف والتذاكر المرسلة والتغييرات والفاتورة النهائية والدفع."
+],
+"The guest pays for the burger only": [
+"Der Gast zahlt nur den Burger",
+"L'ospite paga solo l'hamburger",
+"يدفع الضيف ثمن البرغر فقط"
+],
+"The individual orders behind the figures above. Choose one to see its full history.": [
+"Die einzelnen Bestellungen hinter den Zahlen oben. Wählen Sie eine für den vollen Verlauf.",
+"I singoli ordini dietro i valori sopra. Scegline uno per la storia completa.",
+"الطلبات الفردية وراء الأرقام أعلاه. اختر واحدًا لترى سجله الكامل."
+],
+"The largest patterns over the last {0} weeks.": [
+"Die größten Muster der letzten {0} Wochen.",
+"Gli schemi maggiori delle ultime {0} settimane.",
+"أكبر الأنماط خلال آخر {0} أسابيع."
+],
+"The records make this unlikely": [
+"Laut Daten unwahrscheinlich",
+"I dati lo rendono improbabile",
+"تجعل السجلات هذا غير مرجح"
+],
+"The rules behind Finance's flags. A hotel agrees these during onboarding. They are fixed in this demo.": [
+"Die Regeln hinter den Finanzhinweisen. Ein Hotel vereinbart sie beim Onboarding. In dieser Demo sind sie fest.",
+"Le regole dietro le segnalazioni finanziarie. L'hotel le concorda all'avvio. In questa demo sono fisse.",
+"القواعد وراء إشارات المالية. يتفق عليها الفندق عند البدء، وهي ثابتة في هذه النسخة."
+],
+"The same weekdays have moved about {0} over the last {1} weeks, and {2} of guests are already booked. Within {3} is high, within {4} is medium.": [
+"Dieselben Wochentage schwankten in den letzten {0} Wochen um etwa {1}, und {2} der Gäste sind bereits gebucht. Innerhalb {3} ist hoch, innerhalb {4} ist mittel.",
+"Gli stessi giorni si sono mossi di circa {0} nelle ultime {1} settimane e {2} degli ospiti è già prenotato. Entro {3} è alta, entro {4} è media.",
+"تحركت أيام الأسبوع نفسها بنحو {0} خلال آخر {1} أسابيع، و{2} من الضيوف محجوزون. ضمن {3} عالية، وضمن {4} متوسطة."
+],
+"The server checks your session, role and PIN before every page and every data request, and sends only the records your role may see. Changes you make are still saved in this browser; moving them to the server is the next step.": [
+"Der Server prüft Sitzung, Rolle und PIN vor jeder Seite und Datenabfrage und sendet nur, was Ihre Rolle sehen darf. Ihre Änderungen liegen noch in diesem Browser; der Umzug auf den Server ist der nächste Schritt.",
+"Il server verifica sessione, ruolo e PIN prima di ogni pagina e richiesta e invia solo i dati consentiti al tuo ruolo. Le modifiche restano in questo browser; spostarle sul server è il prossimo passo.",
+"يتحقق الخادم من الجلسة والدور ورقم PIN قبل كل صفحة وطلب بيانات، ويرسل ما يحق لدورك رؤيته فقط. تُحفظ تغييراتك في هذا المتصفح، ونقلها إلى الخادم هو الخطوة التالية."
+],
+"The six demo accounts and what each role can open and do.": [
+"Die sechs Demokonten und was jede Rolle öffnen und tun kann.",
+"I sei account demo e cosa può aprire e fare ogni ruolo.",
+"الحسابات التجريبية الستة وما يمكن لكل دور فتحه وفعله."
+],
+"The standard serving size in Tyll is wrong": [
+"Die Standardmenge in Tyll ist falsch",
+"La dose standard in Tyll è errata",
+"حجم التقديم المعياري في Tyll خاطئ"
+],
+"The stock prediction could not load. The other figures are still current.": [
+"Die Bestandsprognose konnte nicht geladen werden. Die anderen Zahlen sind aktuell.",
+"Non è stato possibile caricare la previsione. Gli altri dati sono aggiornati.",
+"تعذر تحميل توقع المخزون. الأرقام الأخرى ما زالت محدثة."
+],
+"The {0} of restaurant and room-service sales charged to rooms in this period is already inside net sales at the outlet. Posting it to a room moves it to the guest bill, and settlement at check-out clears that bill. Neither step adds revenue, so Tyll never adds room postings or check-out payments on top of outlet sales.": [
+"Die {0} an Restaurant- und Zimmerservice-Umsätzen, die in diesem Zeitraum auf Zimmer gebucht wurden, sind bereits im Nettoumsatz des Outlets enthalten. Die Buchung verschiebt sie auf die Gästerechnung, das Check-out begleicht sie. Keiner der Schritte erhöht den Umsatz, daher addiert Tyll sie nie zusätzlich.",
+"I {0} di vendite di ristorante e servizio in camera addebitati alle camere nel periodo sono già nelle vendite nette del punto vendita. L'addebito li sposta sul conto ospite, il check-out lo salda. Nessuno dei due aggiunge ricavi, quindi Tyll non li somma mai.",
+"مبلغ {0} من مبيعات المطعم وخدمة الغرف المحمل على الغرف في هذه الفترة مشمول بالفعل في صافي مبيعات المنفذ. الترحيل ينقله إلى فاتورة الضيف والتسوية عند المغادرة تغلقها. ولا تضيف أي خطوة إيرادات، لذا لا يضيفها Tyll أبدًا."
+],
+"This area is outside your role": [
+"Dieser Bereich gehört nicht zu Ihrer Rolle",
+"Quest'area non rientra nel tuo ruolo",
+"هذا القسم خارج نطاق دورك"
+],
+"This could not load.": [
+"Das konnte nicht geladen werden.",
+"Non è stato possibile caricare.",
+"تعذر التحميل."
+],
+"This is a demonstration. These are the main pieces of work between it and a production system.": [
+"Dies ist eine Demonstration. Das sind die wichtigsten Schritte bis zum Produktivsystem.",
+"Questa è una dimostrazione. Ecco i lavori principali per arrivare a un sistema di produzione.",
+"هذا عرض توضيحي. هذه أهم الأعمال المتبقية للوصول إلى نظام إنتاج."
+],
+"This module is in development and not yet part of our pilots.": [
+"Dieses Modul ist in Entwicklung und noch nicht Teil unserer Pilotprojekte.",
+"Questo modulo è in sviluppo e non fa ancora parte dei nostri progetti pilota.",
+"هذه الوحدة قيد التطوير وليست ضمن تجاربنا بعد."
+],
+"This month": [
+"Diesen Monat",
+"Questo mese",
+"هذا الشهر"
+],
+"This part of stock covers the month.": [
+"Dieser Bestandsbereich reicht für den Monat.",
+"Queste scorte coprono il mese.",
+"يكفي هذا القسم من المخزون الشهر."
+],
+"This period": [
+"Dieser Zeitraum",
+"Questo periodo",
+"هذه الفترة"
+],
+"This week": [
+"Diese Woche",
+"Questa settimana",
+"هذا الأسبوع"
+],
+"Till, card company and bank matching": [
+"Abgleich von Kasse, Kartenanbieter und Bank",
+"Abbinamento di cassa, circuiti e banca",
+"مطابقة الصندوق وشركة البطاقات والبنك"
+],
+"Tip distribution": [
+"Trinkgeldverteilung",
+"Distribuzione mance",
+"توزيع الإكراميات"
+],
+"Tips": [
+"Trinkgeld",
+"Mance",
+"الإكراميات"
+],
+"Tips (preview)": [
+"Trinkgeld (Vorschau)",
+"Mance (anteprima)",
+"الإكراميات (معاينة)"
+],
+"Tips collected": [
+"Eingenommenes Trinkgeld",
+"Mance raccolte",
+"الإكراميات المحصلة"
+],
+"To query": [
+"Zu klären",
+"Da chiarire",
+"للاستفسار"
+],
+"Today": [
+"Heute",
+"Oggi",
+"اليوم"
+],
+"Today so far": [
+"Heute bisher",
+"Oggi finora",
+"اليوم حتى الآن"
+],
+"Today's log": [
+"Heutiges Protokoll",
+"Registro di oggi",
+"سجل اليوم"
+],
+"Today's spot checks": [
+"Heutige Stichproben",
+"Controlli a campione di oggi",
+"عمليات الفحص العشوائي اليوم"
+],
+"Today, this week and this month": [
+"Heute, diese Woche und diesen Monat",
+"Oggi, questa settimana e questo mese",
+"اليوم وهذا الأسبوع وهذا الشهر"
+],
+"Tomato sauce": [
+"Tomatensauce",
+"Salsa di pomodoro",
+"صلصة طماطم"
+],
+"Tomorrow": [
+"Morgen",
+"Domani",
+"غدًا"
+],
+"Tomorrow and next {0} days": [
+"Morgen und nächste {0} Tage",
+"Domani e prossimi {0} giorni",
+"غدًا والأيام الـ{0} القادمة"
+],
+"Tonight at {0}: an item removed after it was sent to the bar": [
+"Heute Abend in {0}: Artikel entfernt, nachdem er an die Bar ging",
+"Stasera a {0}: articolo rimosso dopo l'invio al bar",
+"الليلة في {0}: حذف صنف بعد إرساله إلى البار"
+],
+"Total": [
+"Gesamt",
+"Totale",
+"الإجمالي"
+],
+"Total check": [
+"Gesamtprüfung",
+"Controllo totale",
+"الفحص الكامل"
+],
+"Total difference": [
+"Gesamtdifferenz",
+"Differenza totale",
+"إجمالي الفرق"
+],
+"Total gross profit": [
+"Gesamter Bruttogewinn",
+"Profitto lordo totale",
+"إجمالي الربح الكلي"
+],
+"Total revenue": [
+"Gesamtumsatz",
+"Ricavi totali",
+"إجمالي الإيرادات"
+],
+"Total {0}": [
+"Gesamt {0}",
+"Totale {0}",
+"الإجمالي {0}"
+],
+"Total: {0} pieces": [
+"Gesamt: {0} Stück",
+"Totale: {0} pezzi",
+"الإجمالي: {0} قطعة"
+],
+"Tour": [
+"Tour",
+"Tour",
+"جولة"
+],
+"Tour this page": [
+"Tour durch diese Seite",
+"Tour di questa pagina",
+"جولة في هذه الصفحة"
+],
+"Transfers": [
+"Umlagerungen",
+"Trasferimenti",
+"التحويلات"
+],
+"Transfers not recorded": [
+"Nicht erfasste Umlagerungen",
+"Trasferimenti non registrati",
+"تحويلات غير مسجلة"
+],
+"Transfers, net": [
+"Umlagerungen, netto",
+"Trasferimenti, netto",
+"التحويلات، صافي"
+],
+"Truffle fries": [
+"Trüffel-Pommes",
+"Patatine al tartufo",
+"بطاطس بالكمأة"
+],
+"Truffle paste": [
+"Trüffelpaste",
+"Pasta di tartufo",
+"معجون الكمأة"
+],
+"Truffle risotto": [
+"Trüffelrisotto",
+"Risotto al tartufo",
+"ريزوتو بالكمأة"
+],
+"Try a look": [
+"Design testen",
+"Prova un aspetto",
+"جرّب مظهرًا"
+],
+"Try again": [
+"Erneut versuchen",
+"Riprova",
+"حاول مرة أخرى"
+],
+"Turkey bacon": [
+"Putenspeck",
+"Bacon di tacchino",
+"لحم ديك رومي مقدد"
+],
+"Turn email off": [
+"E-Mail ausschalten",
+"Disattiva email",
+"أوقف البريد"
+],
+"Two days": [
+"Zwei Tage",
+"Due giorni",
+"يومان"
+],
+"Tyll Flow": [
+"Tyll Flow",
+"Tyll Flow",
+"Tyll Flow"
+],
+"Tyll Staff": [
+"Tyll Staff",
+"Tyll Staff",
+"Tyll Staff"
+],
+"Tyll Staff home": [
+"Tyll Staff Startseite",
+"Home di Tyll Staff",
+"صفحة Tyll Staff الرئيسية"
+],
+"Tyll expects": [
+"Tyll erwartet",
+"Tyll prevede",
+"يتوقع Tyll"
+],
+"Tyll flags that the Coke was removed after its ticket went to the bar. It does not conclude why. The investigation shows the evidence and what to check.": [
+"Tyll markiert, dass die Cola entfernt wurde, nachdem der Bon an die Bar ging. Tyll schließt nicht auf den Grund. Die Prüfung zeigt die Belege und was zu kontrollieren ist.",
+"Tyll segnala che la Coca-Cola è stata rimossa dopo l'invio della comanda al bar. Non ne deduce il motivo. La verifica mostra le prove e cosa controllare.",
+"يشير Tyll إلى حذف الكوكاكولا بعد وصول تذكرتها إلى البار. ولا يستنتج السبب. ويعرض التحقيق الأدلة وما يجب التحقق منه."
+],
+"Tyll home": [
+"Tyll Startseite",
+"Home di Tyll",
+"صفحة Tyll الرئيسية"
+],
+"Tyll is in early access. New features are added regularly.": [
+"Tyll ist im frühen Zugang. Neue Funktionen kommen regelmäßig dazu.",
+"Tyll è in accesso anticipato. Nuove funzioni vengono aggiunte regolarmente.",
+"Tyll في الوصول المبكر. تُضاف ميزات جديدة بانتظام."
+],
+"Tyll looks for {0} or more cases under one login making up at least {1} of an outlet’s removals.": [
+"Tyll sucht nach {0} oder mehr Fällen unter einem Login, die mindestens {1} der Entfernungen eines Outlets ausmachen.",
+"Tyll cerca {0} o più casi con un accesso che rappresentino almeno {1} delle rimozioni di un punto vendita.",
+"يبحث Tyll عن {0} حالات أو أكثر ضمن دخول واحد تمثل {1} على الأقل من عمليات الحذف في المنفذ."
+],
+"Tyll reads from the hotel's existing systems and changes nothing in them. This is what stands behind each figure in the demo.": [
+"Tyll liest aus den bestehenden Hotelsystemen und ändert dort nichts. Das steht hinter jeder Zahl in der Demo.",
+"Tyll legge dai sistemi esistenti dell'hotel e non vi cambia nulla. Ecco cosa c'è dietro ogni dato della demo.",
+"يقرأ Tyll من أنظمة الفندق الحالية ولا يغير فيها شيئًا. هذا ما يقف وراء كل رقم في هذه النسخة."
+],
+"Tyll starts from bookings, occupancy and the same weekdays in the last four weeks. Change any figure you know better.": [
+"Tyll geht von Buchungen, Auslastung und denselben Wochentagen der letzten vier Wochen aus. Ändern Sie jede Zahl, die Sie besser kennen.",
+"Tyll parte da prenotazioni, occupazione e dagli stessi giorni delle ultime quattro settimane. Cambia ogni valore che conosci meglio.",
+"يبدأ Tyll من الحجوزات والإشغال وأيام الأسبوع نفسها في آخر أربعة أسابيع. غيّر أي رقم تعرفه أفضل."
+],
+"Tyll's suggestion from past sales, bookings and occupancy. Adjust anything you know better.": [
+"Tylls Vorschlag aus früheren Verkäufen, Buchungen und Auslastung. Passen Sie an, was Sie besser wissen.",
+"Suggerimento di Tyll da vendite passate, prenotazioni e occupazione. Modifica ciò che conosci meglio.",
+"اقتراح Tyll من المبيعات السابقة والحجوزات والإشغال. عدّل ما تعرفه أفضل."
+],
+"Type": [
+"Art",
+"Tipo",
+"النوع"
+],
+"Type the quantity": [
+"Menge eingeben",
+"Digita la quantità",
+"اكتب الكمية"
+],
+"Unapproved removals in the last {0} days that cluster under one POS login.": [
+"Nicht freigegebene Entfernungen der letzten {0} Tage, gehäuft unter einem POS-Login.",
+"Rimozioni non approvate negli ultimi {0} giorni concentrate su un accesso POS.",
+"عمليات حذف دون موافقة في آخر {0} أيام تتركز ضمن دخول واحد لنقطة البيع."
+],
+"Unassigned": [
+"Nicht zugewiesen",
+"Non assegnato",
+"غير مسند"
+],
+"Undo": [
+"Rückgängig",
+"Annulla",
+"تراجع"
+],
+"Unexplained difference": [
+"Ungeklärte Differenz",
+"Differenza non spiegata",
+"فرق غير مفسر"
+],
+"Unexplained void": [
+"Ungeklärtes Storno",
+"Annullamento non spiegato",
+"إلغاء غير مفسر"
+],
+"Unexplained void · {0}": [
+"Ungeklärtes Storno · {0}",
+"Annullamento non spiegato · {0}",
+"إلغاء غير مفسر · {0}"
+],
+"Unit cost": [
+"Stückkosten",
+"Costo unitario",
+"تكلفة الوحدة"
+],
+"Units": [
+"Einheiten",
+"Unità",
+"الوحدات"
+],
+"Units sold": [
+"Verkaufte Einheiten",
+"Unità vendute",
+"الوحدات المبيعة"
+],
+"Unrecorded complimentary drinks": [
+"Nicht erfasste Gratisgetränke",
+"Bevande omaggio non registrate",
+"مشروبات مجانية غير مسجلة"
+],
+"Unusual discount": [
+"Ungewöhnlicher Rabatt",
+"Sconto insolito",
+"خصم غير معتاد"
+],
+"Unusual discount · {0}": [
+"Ungewöhnlicher Rabatt · {0}",
+"Sconto insolito · {0}",
+"خصم غير معتاد · {0}"
+],
+"Unusual refund": [
+"Ungewöhnliche Erstattung",
+"Rimborso insolito",
+"استرداد غير معتاد"
+],
+"Unusual refund · {0}": [
+"Ungewöhnliche Erstattung · {0}",
+"Rimborso insolito · {0}",
+"استرداد غير معتاد · {0}"
+],
+"Up and down arrows to move": [
+"Pfeiltasten zum Bewegen",
+"Frecce su e giù per spostarti",
+"الأسهم للتنقل"
+],
+"Update draft order": [
+"Bestellentwurf aktualisieren",
+"Aggiorna bozza d'ordine",
+"حدّث مسودة الطلب"
+],
+"Updates as you change portions. Available stock is what this kitchen can use after other outlets' share of the storeroom, plus deliveries already due.": [
+"Aktualisiert sich mit den Portionen. Verfügbar ist, was diese Küche nach dem Lageranteil anderer Outlets nutzen kann, plus fällige Lieferungen.",
+"Si aggiorna al variare delle porzioni. Il disponibile è ciò che questa cucina può usare dopo la quota di magazzino degli altri, più le consegne in arrivo.",
+"يتحدث مع تغيير الحصص. المتاح هو ما يمكن لهذا المطبخ استخدامه بعد حصة المنافذ الأخرى من المخزن، زائد التوريدات المستحقة."
+],
+"Usage above sales": [
+"Verbrauch über Verkauf",
+"Consumo oltre le vendite",
+"استخدام يفوق المبيعات"
+],
+"Usage above sales · {0}": [
+"Verbrauch über Verkauf · {0}",
+"Consumo oltre le vendite · {0}",
+"استخدام يفوق المبيعات · {0}"
+],
+"Use in the past week": [
+"Verbrauch letzte Woche",
+"Consumo nell'ultima settimana",
+"الاستخدام في الأسبوع الماضي"
+],
+"Use the records explain": [
+"Durch Daten erklärter Verbrauch",
+"Consumo spiegato dai dati",
+"الاستخدام الذي تفسره السجلات"
+],
+"Value": [
+"Wert",
+"Valore",
+"القيمة"
+],
+"Value as ordered": [
+"Wert wie bestellt",
+"Valore come ordinato",
+"القيمة كما طُلبت"
+],
+"Value involved": [
+"Betroffener Wert",
+"Valore coinvolto",
+"القيمة المعنية"
+],
+"Value involved in the period. Choose a type to see its cases.": [
+"Betroffener Wert im Zeitraum. Wählen Sie eine Art, um die Fälle zu sehen.",
+"Valore coinvolto nel periodo. Scegli un tipo per vedere i casi.",
+"القيمة المعنية في الفترة. اختر نوعًا لترى حالاته."
+],
+"Value of priority items missing at each weekly count, at the cost on the day.": [
+"Wert fehlender Prioritätsartikel bei jeder Wochenzählung, zu den Tageskosten.",
+"Valore degli articoli prioritari mancanti a ogni conteggio settimanale, al costo del giorno.",
+"قيمة الأصناف ذات الأولوية المفقودة في كل جرد أسبوعي، بتكلفة ذلك اليوم."
+],
+"Value of priority stock missing at each weekly count.": [
+"Wert des fehlenden Prioritätsbestands bei jeder Wochenzählung.",
+"Valore delle scorte prioritarie mancanti a ogni conteggio settimanale.",
+"قيمة المخزون ذي الأولوية المفقود في كل جرد أسبوعي."
+],
+"Vanilla ice cream": [
+"Vanilleeis",
+"Gelato alla vaniglia",
+"آيس كريم فانيلا"
+],
+"View the demo as": [
+"Demo ansehen als",
+"Visualizza la demo come",
+"عرض النسخة التجريبية بصفة"
+],
+"Vodka": [
+"Wodka",
+"Vodka",
+"فودكا"
+],
+"Voids, refunds and over pouring": [
+"Stornos, Erstattungen und Überschenken",
+"Annullamenti, rimborsi e versamenti eccessivi",
+"الإلغاءات والمبالغ المستردة والإفراط في السكب"
+],
+"Voids, refunds and removed items": [
+"Stornos, Erstattungen und entfernte Artikel",
+"Annullamenti, rimborsi e articoli rimossi",
+"الإلغاءات والمبالغ المستردة والأصناف المحذوفة"
+],
+"Vs usual": [
+"Ggü. üblich",
+"Rispetto al solito",
+"مقابل المعتاد"
+],
+"Wagyu beef burger": [
+"Wagyu-Burger",
+"Hamburger di wagyu",
+"برجر واغيو"
+],
+"Wagyu beef mince": [
+"Wagyu-Hackfleisch",
+"Macinato di manzo wagyu",
+"لحم واغيو مفروم"
+],
+"Waiting for accounting ({0})": [
+"Warten auf Buchhaltung ({0})",
+"In attesa della contabilità ({0})",
+"بانتظار المحاسبة ({0})"
+],
+"Waiting for approval": [
+"Warten auf Freigabe",
+"In attesa di approvazione",
+"بانتظار الموافقة"
+],
+"Waiting for purchasing ({0})": [
+"Warten auf Einkauf ({0})",
+"In attesa degli acquisti ({0})",
+"بانتظار المشتريات ({0})"
+],
+"Walk ins": [
+"Laufkundschaft",
+"Senza prenotazione",
+"دون حجز"
+],
+"Walk-in guests": [
+"Laufkundschaft",
+"Ospiti senza prenotazione",
+"الضيوف دون حجز"
+],
+"Walking order": [
+"Laufreihenfolge",
+"Ordine di percorso",
+"ترتيب السير"
+],
+"Walking order saved for everyone.": [
+"Laufreihenfolge für alle gespeichert.",
+"Ordine di percorso salvato per tutti.",
+"حُفظ ترتيب السير للجميع."
+],
+"Waste": [
+"Abfall",
+"Scarti",
+"الهدر"
+],
+"Waste and breakage": [
+"Abfall und Bruch",
+"Scarti e rotture",
+"الهدر والكسر"
+],
+"Waste cost": [
+"Abfallkosten",
+"Costo degli scarti",
+"تكلفة الهدر"
+],
+"Waste log": [
+"Abfallprotokoll",
+"Registro scarti",
+"سجل الهدر"
+],
+"Waste per guest": [
+"Abfall pro Gast",
+"Scarti per ospite",
+"الهدر لكل ضيف"
+],
+"Waste this month": [
+"Abfall diesen Monat",
+"Scarti di questo mese",
+"الهدر هذا الشهر"
+],
+"Waste, {0}, Dubai": [
+"Abfall, {0}, Dubai",
+"Scarti, {0}, Dubai",
+"الهدر، {0}، دبي"
+],
+"Watch": [
+"Beobachten",
+"Da osservare",
+"للمراقبة"
+],
+"Water glasses": [
+"Wassergläser",
+"Bicchieri da acqua",
+"كؤوس ماء"
+],
+"Water jugs": [
+"Wasserkrüge",
+"Caraffe d'acqua",
+"أباريق ماء"
+],
+"Waves": [
+"Wellen",
+"Onde",
+"الموجات"
+],
+"Weekly": [
+"Wöchentlich",
+"Settimanale",
+"أسبوعي"
+],
+"What Tyll checks": [
+"Was Tyll prüft",
+"Cosa controlla Tyll",
+"ما يتحقق منه Tyll"
+],
+"What Tyll found": [
+"Was Tyll gefunden hat",
+"Cosa ha trovato Tyll",
+"ما وجده Tyll"
+],
+"What are you logging?": [
+"Was erfassen Sie?",
+"Cosa stai registrando?",
+"ماذا تسجل؟"
+],
+"What are you preparing for?": [
+"Wofür bereiten Sie vor?",
+"Per cosa stai preparando?",
+"لماذا تحضّر؟"
+],
+"What beverage waste cost": [
+"Kosten des Getränkeabfalls",
+"Quanto sono costati gli scarti di bevande",
+"تكلفة هدر المشروبات"
+],
+"What changed": [
+"Was sich änderte",
+"Cosa è cambiato",
+"ما الذي تغير"
+],
+"What do I need to order?": [
+"Was muss ich bestellen?",
+"Cosa devo ordinare?",
+"ماذا عليّ أن أطلب؟"
+],
+"What do you want to count?": [
+"Was möchten Sie zählen?",
+"Cosa vuoi contare?",
+"ماذا تريد أن تجرد؟"
+],
+"What each dish costs to make": [
+"Was jedes Gericht in der Herstellung kostet",
+"Quanto costa preparare ogni piatto",
+"تكلفة إعداد كل طبق"
+],
+"What each dish sells and earns": [
+"Was jedes Gericht verkauft und einbringt",
+"Quanto vende e rende ogni piatto",
+"ما يبيعه كل طبق وما يحققه"
+],
+"What each dish sells and earns.": [
+"Was jedes Gericht verkauft und einbringt.",
+"Quanto vende e rende ogni piatto.",
+"ما يبيعه كل طبق وما يحققه."
+],
+"What else is here, and what is coming next?": [
+"Was gibt es noch, und was kommt als Nächstes?",
+"Cos'altro c'è e cosa arriverà?",
+"ماذا يوجد أيضًا، وما القادم؟"
+],
+"What food waste cost": [
+"Kosten des Speisenabfalls",
+"Quanto sono costati gli scarti di cibo",
+"تكلفة هدر الأطعمة"
+],
+"What happened, in order": [
+"Was der Reihe nach geschah",
+"Cosa è successo, in ordine",
+"ما حدث بالترتيب"
+],
+"What happened? Optional.": [
+"Was ist passiert? Optional.",
+"Cosa è successo? Facoltativo.",
+"ماذا حدث؟ اختياري."
+],
+"What is connected, who can see what, and the change log.": [
+"Was verbunden ist, wer was sieht, und das Änderungsprotokoll.",
+"Cosa è collegato, chi vede cosa e il registro modifiche.",
+"ما هو متصل، ومن يرى ماذا، وسجل التغييرات."
+],
+"What is on order, and what still needs a decision?": [
+"Was ist bestellt, und was muss noch entschieden werden?",
+"Cosa è in ordine e cosa richiede ancora una decisione?",
+"ما المطلوب حاليًا، وما الذي يحتاج إلى قرار؟"
+],
+"What might explain it?": [
+"Was könnte es erklären?",
+"Cosa potrebbe spiegarlo?",
+"ما الذي قد يفسر ذلك؟"
+],
+"What needs a decision?": [
+"Was muss entschieden werden?",
+"Cosa richiede una decisione?",
+"ما الذي يحتاج إلى قرار؟"
+],
+"What should be left based on sales, against what was counted. Highlighted when the gap is over {0} and worth at least {1}. {2} highlighted, {3} in total.": [
+"Was laut Verkäufen übrig sein sollte, im Vergleich zur Zählung. Markiert, wenn die Lücke über {0} liegt und mindestens {1} wert ist. {2} markiert, {3} insgesamt.",
+"Ciò che dovrebbe restare in base alle vendite, rispetto al conteggio. Evidenziato se lo scarto supera {0} e vale almeno {1}. {2} evidenziati, {3} in totale.",
+"ما يجب أن يتبقى حسب المبيعات مقابل ما تم جرده. يُميز عندما يتجاوز الفرق {0} وتبلغ قيمته {1} على الأقل. {2} مميزة، {3} إجمالًا."
+],
+"What the prediction uses": [
+"Grundlage der Prognose",
+"Su cosa si basa la previsione",
+"ما تعتمد عليه التوقعات"
+],
+"What the records show": [
+"Was die Daten zeigen",
+"Cosa mostrano i dati",
+"ما تظهره السجلات"
+],
+"What this demo is connected to, who can see what, and a record of every change made in this browser.": [
+"Womit diese Demo verbunden ist, wer was sieht, und jede Änderung in diesem Browser.",
+"A cosa è collegata questa demo, chi vede cosa e ogni modifica fatta in questo browser.",
+"بماذا ترتبط هذه النسخة، ومن يرى ماذا، وسجل كل تغيير في هذا المتصفح."
+],
+"What to buy": [
+"Was einkaufen",
+"Cosa acquistare",
+"ما يجب شراؤه"
+],
+"What to do next": [
+"Nächste Schritte",
+"Cosa fare ora",
+"ما يجب فعله تاليًا"
+],
+"What to order and how much to reach month end. Try Build order.": [
+"Was und wie viel bis Monatsende zu bestellen ist. Testen Sie Bestellung erstellen.",
+"Cosa e quanto ordinare per arrivare a fine mese. Prova Crea ordine.",
+"ماذا تطلب وكم لتصل إلى نهاية الشهر. جرّب إنشاء الطلب."
+],
+"What to prep": [
+"Was vorbereiten",
+"Cosa preparare",
+"ما يجب تحضيره"
+],
+"What was sold against what was actually used, between two counts.": [
+"Was verkauft und was tatsächlich verbraucht wurde, zwischen zwei Zählungen.",
+"Il venduto rispetto al consumo reale, tra due conteggi.",
+"ما بيع مقابل ما استُخدم فعليًا، بين جردين."
+],
+"What was wasted or broken?": [
+"Was wurde weggeworfen oder ist zerbrochen?",
+"Cosa è stato scartato o rotto?",
+"ما الذي تم هدره أو كسره؟"
+],
+"What your entries changed": [
+"Was Ihre Einträge verändert haben",
+"Cosa hanno cambiato le tue voci",
+"ما غيّرته إدخالاتك"
+],
+"What's new": [
+"Neuigkeiten",
+"Novità",
+"ما الجديد"
+],
+"When": [
+"Wann",
+"Quando",
+"متى"
+],
+"Where and when": [
+"Wo und wann",
+"Dove e quando",
+"أين ومتى"
+],
+"Where is money going missing?": [
+"Wo geht Geld verloren?",
+"Dove si perde denaro?",
+"أين يُفقد المال؟"
+],
+"Where is the full detail?": [
+"Wo sind alle Details?",
+"Dove sono tutti i dettagli?",
+"أين التفاصيل الكاملة؟"
+],
+"Where missing stock went": [
+"Wohin fehlender Bestand ging",
+"Dove sono finite le scorte mancanti",
+"أين ذهب المخزون المفقود"
+],
+"Where predicted use passes stock, the shelf is empty without a new order. The dashed line is the date to order by.": [
+"Wo der Verbrauch den Bestand übersteigt, ist das Regal ohne neue Bestellung leer. Die gestrichelte Linie ist der Bestelltermin.",
+"Dove il consumo supera le scorte, senza un nuovo ordine lo scaffale è vuoto. La linea tratteggiata è la data limite.",
+"عندما يتجاوز الاستخدام المخزون، يفرغ الرف دون طلب جديد. الخط المتقطع هو آخر موعد للطلب."
+],
+"Where you are": [
+"Sie sind hier",
+"Dove ti trovi",
+"موقعك"
+],
+"White rum": [
+"Weißer Rum",
+"Rum bianco",
+"رم أبيض"
+],
+"Whole order voided after items were sent for preparation": [
+"Ganze Bestellung storniert, nachdem Artikel zur Zubereitung geschickt wurden",
+"Intero ordine annullato dopo l'invio in preparazione",
+"إلغاء الطلب بالكامل بعد إرسال الأصناف للتحضير"
+],
+"Whole orders voided after dispatch.": [
+"Ganze Bestellungen nach Weitergabe storniert.",
+"Interi ordini annullati dopo l'invio.",
+"طلبات كاملة أُلغيت بعد الإرسال."
+],
+"Why": [
+"Grund",
+"Motivo",
+"السبب"
+],
+"Why recount?": [
+"Warum nachzählen?",
+"Perché ricontare?",
+"لماذا إعادة الجرد؟"
+],
+"Why?": [
+"Warum?",
+"Perché?",
+"لماذا؟"
+],
+"Wine": [
+"Wein",
+"Vino",
+"النبيذ"
+],
+"Wine and beer": [
+"Wein und Bier",
+"Vino e birra",
+"النبيذ والبيرة"
+],
+"Wine and spirits yield, by outlet and shift": [
+"Ausbeute von Wein und Spirituosen, nach Outlet und Schicht",
+"Resa di vino e distillati, per punto vendita e turno",
+"ناتج النبيذ والمشروبات الروحية حسب المنفذ والوردية"
+],
+"Wine by the glass": [
+"Wein glasweise",
+"Vino al calice",
+"النبيذ بالكأس"
+],
+"Wine glasses": [
+"Weingläser",
+"Calici da vino",
+"كؤوس نبيذ"
+],
+"Wine not billed, week": [
+"Wein nicht berechnet, Woche",
+"Vino non fatturato, settimana",
+"نبيذ غير مفوتر، الأسبوع"
+],
+"Wine or spirits": [
+"Wein oder Spirituosen",
+"Vino o distillati",
+"نبيذ أو مشروبات روحية"
+],
+"Wine tastings or bottles opened for guests to try": [
+"Weinproben oder für Gäste geöffnete Flaschen",
+"Degustazioni o bottiglie aperte per gli ospiti",
+"تذوق النبيذ أو زجاجات فُتحت ليجربها الضيوف"
+],
+"Wine use at {0} is {1} above what was sold": [
+"Weinverbrauch in {0} liegt {1} über dem Verkauf",
+"Il consumo di vino a {0} supera di {1} il venduto",
+"استخدام النبيذ في {0} أعلى بمقدار {1} مما بيع"
+],
+"Wine, {0} left, runs out in {1} day": [
+"Wein, noch {0}, reicht {1} Tag",
+"Vino, restano {0}, finisce tra {1} giorno",
+"نبيذ، متبقٍ {0}، ينفد خلال {1} يوم"
+],
+"Wine, {0} left, runs out in {1} days": [
+"Wein, noch {0}, reicht {1} Tage",
+"Vino, restano {0}, finisce tra {1} giorni",
+"نبيذ، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"With a difference": [
+"Mit Differenz",
+"Con differenza",
+"بها فرق"
+],
+"Within normal range": [
+"Im Normalbereich",
+"Nella norma",
+"ضمن النطاق الطبيعي"
+],
+"Working out the forecast": [
+"Prognose wird berechnet",
+"Calcolo della previsione",
+"جارٍ حساب التوقع"
+],
+"Working out the kitchen plan": [
+"Küchenplan wird berechnet",
+"Calcolo del piano di cucina",
+"جارٍ حساب خطة المطبخ"
+],
+"Working without a connection": [
+"Arbeiten ohne Verbindung",
+"Lavorare senza connessione",
+"العمل دون اتصال"
+],
+"Worth": [
+"Wert",
+"Valore",
+"القيمة"
+],
+"Written by Tyll’s rules from the records below. No language model is used.": [
+"Nach Tylls Regeln aus den Daten unten verfasst. Es wird kein Sprachmodell verwendet.",
+"Scritto dalle regole di Tyll in base ai dati sotto. Non si usa alcun modello linguistico.",
+"كُتب وفق قواعد Tyll من السجلات أدناه. لا يُستخدم أي نموذج لغوي."
+],
+"Wrong amount": [
+"Falscher Betrag",
+"Importo errato",
+"مبلغ خاطئ"
+],
+"Wrong since": [
+"Falsch seit",
+"Errato dal",
+"خاطئ منذ"
+],
+"Yes": [
+"Ja",
+"Sì",
+"نعم"
+],
+"Yest.": [
+"Gest.",
+"Ieri",
+"أمس"
+],
+"Yesterday": [
+"Gestern",
+"Ieri",
+"أمس"
+],
+"Your access": [
+"Ihr Zugriff",
+"Il tuo accesso",
+"صلاحياتك"
+],
+"Your count": [
+"Ihre Zählung",
+"Il tuo conteggio",
+"جردك"
+],
+"Your drafts": [
+"Ihre Entwürfe",
+"Le tue bozze",
+"مسوداتك"
+],
+"Your figures appear here once you pick an outlet in the top bar.": [
+"Ihre Zahlen erscheinen hier, sobald Sie oben ein Outlet wählen.",
+"I tuoi dati appaiono qui dopo aver scelto un punto vendita in alto.",
+"تظهر أرقامك هنا بعد اختيار منفذ من الشريط العلوي."
+],
+"Your profile and settings": [
+"Ihr Profil und Einstellungen",
+"Profilo e impostazioni",
+"ملفك الشخصي والإعدادات"
+],
+"Your role cannot record counts.": [
+"Ihre Rolle kann keine Zählungen erfassen.",
+"Il tuo ruolo non può registrare conteggi.",
+"لا يمكن لدورك تسجيل الجرد."
+],
+"Your role cannot see the audit trail. Owners, general managers and financial controllers can.": [
+"Ihre Rolle sieht das Prüfprotokoll nicht. Eigentümer, General Manager und Finanzcontroller schon.",
+"Il tuo ruolo non vede il registro di controllo. Proprietari, direttori generali e controller sì.",
+"لا يمكن لدورك رؤية سجل التدقيق. يمكن للمالكين والمديرين العامين والمراقبين الماليين رؤيته."
+],
+"a glass": [
+"pro Glas",
+"a calice",
+"للكأس"
+],
+"after the opening count": [
+"nach der Anfangszählung",
+"dopo il conteggio iniziale",
+"بعد الجرد الافتتاحي"
+],
+"at cost.": [
+"zum Einstandspreis.",
+"al costo.",
+"بسعر التكلفة."
+],
+"at risk": [
+"gefährdet",
+"a rischio",
+"معرّض للخطر"
+],
+"at {0} per kg": [
+"zu {0} pro kg",
+"a {0} al kg",
+"بسعر {0} للكيلوغرام"
+],
+"at {0} per l": [
+"zu {0} pro l",
+"a {0} al l",
+"بسعر {0} للتر"
+],
+"at {0} per unit": [
+"zu {0} pro Einheit",
+"a {0} per unità",
+"بسعر {0} للوحدة"
+],
+"bartender": [
+"Barkeeper",
+"barista",
+"ساقي البار"
+],
+"bottles": [
+"Flaschen",
+"bottiglie",
+"زجاجات"
+],
+"choose dates": [
+"Daten wählen",
+"scegli le date",
+"اختر التواريخ"
+],
+"complimentary": [
+"gratis",
+"omaggio",
+"مجاني"
+],
+"count in kg": [
+"in kg zählen",
+"conta in kg",
+"الجرد بالكيلوغرام"
+],
+"count in l": [
+"in l zählen",
+"conta in l",
+"الجرد باللتر"
+],
+"counted {0} of {1}": [
+"{0} von {1} gezählt",
+"contati {0} di {1}",
+"جُرد {0} من {1}"
+],
+"covered": [
+"gedeckt",
+"coperto",
+"مغطى"
+],
+"estimate": [
+"geschätzt",
+"stima",
+"تقديري"
+],
+"expected less counted": [
+"Soll minus gezählt",
+"previsto meno contato",
+"المتوقع ناقص المجرود"
+],
+"flagged": [
+"markiert",
+"segnalato",
+"مشار إليه"
+],
+"for tomorrow": [
+"für morgen",
+"per domani",
+"لغد"
+],
+"from recipes and sales": [
+"aus Rezepten und Verkäufen",
+"da ricette e vendite",
+"من الوصفات والمبيعات"
+],
+"guests": [
+"Gäste",
+"ospiti",
+"ضيوف"
+],
+"higher than the previous period": [
+"höher als im Vorzeitraum",
+"in più rispetto al periodo precedente",
+"أعلى من الفترة السابقة"
+],
+"higher than usual": [
+"höher als üblich",
+"più del solito",
+"أعلى من المعتاد"
+],
+"higher than usual for these weekdays": [
+"höher als üblich für diese Wochentage",
+"più del solito per questi giorni",
+"أعلى من المعتاد لهذه الأيام"
+],
+"in less out": [
+"ein minus aus",
+"entrate meno uscite",
+"الوارد ناقص الصادر"
+],
+"kg": [
+"kg",
+"kg",
+"كغم"
+],
+"last {0} days": [
+"letzte {0} Tage",
+"ultimi {0} giorni",
+"آخر {0} أيام"
+],
+"last {0} weeks {1}": [
+"letzte {0} Wochen {1}",
+"ultime {0} settimane {1}",
+"آخر {0} أسابيع {1}"
+],
+"less profit": [
+"weniger Gewinn",
+"profitto in meno",
+"ربح أقل"
+],
+"lost {0}": [
+"verloren {0}",
+"persi {0}",
+"مفقود {0}"
+],
+"low": [
+"niedrig",
+"basso",
+"منخفض"
+],
+"lower than the previous period": [
+"niedriger als im Vorzeitraum",
+"in meno rispetto al periodo precedente",
+"أقل من الفترة السابقة"
+],
+"margin would be {0} without it": [
+"Marge wäre ohne dies {0}",
+"margine sarebbe {0} senza scarti",
+"سيكون الهامش {0} بدونه"
+],
+"matches": [
+"stimmt überein",
+"corrisponde",
+"مطابق"
+],
+"more waste": [
+"mehr Abfall",
+"scarti in più",
+"هدر أكثر"
+],
+"no earlier data": [
+"keine früheren Daten",
+"nessun dato precedente",
+"لا توجد بيانات سابقة"
+],
+"none": [
+"keine",
+"nessuno",
+"لا يوجد"
+],
+"none past deadline": [
+"keine überfällig",
+"nessuno scaduto",
+"لا يوجد متأخر"
+],
+"not billed": [
+"nicht berechnet",
+"non fatturato",
+"غير مفوتر"
+],
+"not set": [
+"nicht gesetzt",
+"non impostato",
+"غير محدد"
+],
+"of which missing stock": [
+"davon fehlender Bestand",
+"di cui scorte mancanti",
+"منها مخزون مفقود"
+],
+"of which waste": [
+"davon Abfall",
+"di cui scarti",
+"منها هدر"
+],
+"of {0} closed": [
+"von {0} geschlossen",
+"di {0} chiusi",
+"من {0} مغلقة"
+],
+"on": [
+"an",
+"attiva",
+"مفعّل"
+],
+"on the bill": [
+"auf der Rechnung",
+"sul conto",
+"في الفاتورة"
+],
+"over invoiced": [
+"zu viel berechnet",
+"fatturato in eccesso",
+"فوترة زائدة"
+],
+"pending": [
+"ausstehend",
+"in sospeso",
+"معلق"
+],
+"portions": [
+"Portionen",
+"porzioni",
+"حصص"
+],
+"priority": [
+"Priorität",
+"priorità",
+"أولوية"
+],
+"profit, estimate": [
+"Gewinn, geschätzt",
+"profitto, stima",
+"ربح، تقديري"
+],
+"recovered {0}": [
+"zurückgewonnen {0}",
+"recuperati {0}",
+"مسترد {0}"
+],
+"refund": [
+"Erstattung",
+"rimborso",
+"استرداد"
+],
+"removed after dispatch": [
+"nach Weitergabe entfernt",
+"rimosso dopo l'invio",
+"حُذف بعد الإرسال"
+],
+"removed after it was sent": [
+"nach dem Senden entfernt",
+"rimosso dopo l'invio",
+"حُذف بعد إرساله"
+],
+"removed before dispatch": [
+"vor Weitergabe entfernt",
+"rimosso prima dell'invio",
+"حُذف قبل الإرسال"
+],
+"server": [
+"Service",
+"cameriere",
+"نادل"
+],
+"standard cost": [
+"Standardkosten",
+"costo standard",
+"التكلفة القياسية"
+],
+"supervisor": [
+"Supervisor",
+"supervisore",
+"مشرف"
+],
+"to order": [
+"zu bestellen",
+"da ordinare",
+"للطلب"
+],
+"to query with suppliers": [
+"bei Lieferanten zu klären",
+"da chiarire con i fornitori",
+"للاستفسار لدى الموردين"
+],
+"unchanged": [
+"unverändert",
+"invariato",
+"دون تغيير"
+],
+"up to the closing count": [
+"bis zur Endzählung",
+"fino al conteggio finale",
+"حتى الجرد الختامي"
+],
+"voided": [
+"storniert",
+"annullato",
+"ملغى"
+],
+"vs the period before": [
+"ggü. dem Vorzeitraum",
+"rispetto al periodo precedente",
+"مقابل الفترة السابقة"
+],
+"vs usual": [
+"ggü. üblich",
+"rispetto al solito",
+"مقابل المعتاد"
+],
+"weekly count, {0}": [
+"Wochenzählung, {0}",
+"conteggio settimanale, {0}",
+"جرد أسبوعي، {0}"
+],
+"you": [
+"Sie",
+"tu",
+"أنت"
+],
+"{0} (prepared)": [
+"{0} (zubereitet)",
+"{0} (preparato)",
+"{0} (جاهز)"
+],
+"{0} (today)": [
+"{0} (heute)",
+"{0} (oggi)",
+"{0} (اليوم)"
+],
+"{0} ({1} bottles)": [
+"{0} ({1} Flaschen)",
+"{0} ({1} bottiglie)",
+"{0} ({1} زجاجات)"
+],
+"{0} ({1} per rack)": [
+"{0} ({1} pro Korb)",
+"{0} ({1} per cestello)",
+"{0} ({1} لكل حامل)"
+],
+"{0} act today, {1} this week, {2} involved, including orders to place.": [
+"{0} heute, {1} diese Woche, {2} betroffen, einschließlich anstehender Bestellungen.",
+"{0} oggi, {1} questa settimana, {2} coinvolti, compresi gli ordini da fare.",
+"{0} اليوم، {1} هذا الأسبوع، {2} معنية، بما فيها الطلبات المطلوبة."
+],
+"{0} and others need an order in the next few days.": [
+"{0} und weitere brauchen in den nächsten Tagen eine Bestellung.",
+"{0} e altri richiedono un ordine nei prossimi giorni.",
+"يحتاج {0} وأصناف أخرى إلى طلب خلال الأيام القادمة."
+],
+"{0} at risk until someone checks it.": [
+"{0} gefährdet, bis es jemand prüft.",
+"{0} a rischio finché qualcuno non controlla.",
+"{0} معرّض للخطر حتى يتحقق منه أحد."
+],
+"{0} available": [
+"{0} verfügbar",
+"{0} disponibili",
+"{0} متاح"
+],
+"{0} billed": [
+"{0} berechnet",
+"{0} fatturati",
+"{0} مفوترة"
+],
+"{0} booked or usually booked, {1} walk ins, {2} from events": [
+"{0} gebucht oder üblich gebucht, {1} Laufkundschaft, {2} aus Events",
+"{0} prenotati o abituali, {1} senza prenotazione, {2} da eventi",
+"{0} محجوز أو يُحجز عادة، {1} دون حجز، {2} من الفعاليات"
+],
+"{0} bottle": [
+"{0} Flasche",
+"{0} bottiglia",
+"زجاجة ({0})"
+],
+"{0} bottles": [
+"{0} Flaschen",
+"{0} bottiglie",
+"{0} زجاجات"
+],
+"{0} bottles opened, {1} glasses sold, expected {2}.": [
+"{0} Flaschen geöffnet, {1} Gläser verkauft, erwartet {2}.",
+"{0} bottiglie aperte, {1} calici venduti, previsti {2}.",
+"فُتحت {0} زجاجات، بيعت {1} كأسًا، المتوقع {2}."
+],
+"{0} cans": [
+"{0} Dosen",
+"{0} lattine",
+"{0} علب"
+],
+"{0} cans of {1} unexplained at {2}": [
+"{0} Dosen {1} ungeklärt in {2}",
+"{0} lattine di {1} non spiegate a {2}",
+"{0} علب من {1} غير مفسرة في {2}"
+],
+"{0} case": [
+"{0} Fall",
+"{0} caso",
+"{0} حالة"
+],
+"{0} cases": [
+"{0} Fälle",
+"{0} casi",
+"{0} حالات"
+],
+"{0} critical": [
+"{0} kritisch",
+"{0} critici",
+"{0} حرجة"
+],
+"{0} d ago": [
+"vor {0} T.",
+"{0} g fa",
+"قبل {0} يوم"
+],
+"{0} day": [
+"{0} Tag",
+"{0} giorno",
+"{0} يوم"
+],
+"{0} days": [
+"{0} Tage",
+"{0} giorni",
+"{0} أيام"
+],
+"{0} difference": [
+"{0} Differenz",
+"{0} di differenza",
+"فرق {0}"
+],
+"{0} discount": [
+"{0} Rabatt",
+"sconto {0}",
+"خصم {0}"
+],
+"{0} discount with no approval recorded": [
+"{0} Rabatt ohne erfasste Freigabe",
+"Sconto {0} senza approvazione registrata",
+"خصم {0} دون موافقة مسجلة"
+],
+"{0} discount, above the {1} policy limit": [
+"{0} Rabatt, über dem Limit von {1}",
+"Sconto {0}, oltre il limite di {1}",
+"خصم {0}، فوق حد السياسة {1}"
+],
+"{0} entered": [
+"{0} eingegeben",
+"{0} inserito",
+"أُدخل {0}"
+],
+"{0} entries waiting to synchronise": [
+"{0} Einträge warten auf Synchronisierung",
+"{0} voci in attesa di sincronizzazione",
+"{0} إدخالات بانتظار المزامنة"
+],
+"{0} entries, {1}": [
+"{0} Einträge, {1}",
+"{0} voci, {1}",
+"{0} إدخالات، {1}"
+],
+"{0} entry, {1}": [
+"{0} Eintrag, {1}",
+"{0} voce, {1}",
+"إدخال واحد ({0})، {1}"
+],
+"{0} flagged transactions, {1} at risk": [
+"{0} markierte Transaktionen, {1} gefährdet",
+"{0} transazioni segnalate, {1} a rischio",
+"{0} معاملات مشار إليها، {1} معرّض للخطر"
+],
+"{0} flagged, {1} at risk": [
+"{0} markiert, {1} gefährdet",
+"{0} segnalati, {1} a rischio",
+"{0} مشار إليها، {1} معرّض للخطر"
+],
+"{0} food, {1} beverage, {2} inventory": [
+"{0} Speisen, {1} Getränke, {2} Inventar",
+"{0} cibo, {1} bevande, {2} inventario",
+"{0} أطعمة، {1} مشروبات، {2} عهدة"
+],
+"{0} for this plan": [
+"{0} für diesen Plan",
+"{0} per questo piano",
+"{0} لهذه الخطة"
+],
+"{0} forecast covers, {1} event, last {2} weeks of usage. Confidence high.": [
+"{0} prognostizierte Gäste, {1} Event, Verbrauch der letzten {2} Wochen. Hohe Sicherheit.",
+"{0} coperti previsti, {1} evento, consumi delle ultime {2} settimane. Affidabilità alta.",
+"{0} زبونًا متوقعًا، {1} فعالية، استخدام آخر {2} أسابيع. الثقة عالية."
+],
+"{0} glasses of wine not billed this week, {1}.": [
+"{0} Gläser Wein diese Woche nicht berechnet, {1}.",
+"{0} calici di vino non fatturati questa settimana, {1}.",
+"{0} كأس نبيذ غير مفوترة هذا الأسبوع، {1}."
+],
+"{0} glasses of wine not billed this week, {1}. See Drinks control.": [
+"{0} Gläser Wein diese Woche nicht berechnet, {1}. Siehe Getränkekontrolle.",
+"{0} calici di vino non fatturati questa settimana, {1}. Vedi Controllo bevande.",
+"{0} كأس نبيذ غير مفوترة هذا الأسبوع، {1}. راجع مراقبة المشروبات."
+],
+"{0} glasses recorded": [
+"{0} Gläser erfasst",
+"{0} calici registrati",
+"{0} كأس مسجلة"
+],
+"{0} guests": [
+"{0} Gäste",
+"{0} ospiti",
+"{0} ضيفًا"
+],
+"{0} h ago": [
+"vor {0} Std.",
+"{0} h fa",
+"قبل {0} ساعة"
+],
+"{0} held separately": [
+"{0} separat geführt",
+"{0} tenuti a parte",
+"{0} محفوظة منفصلة"
+],
+"{0} ingredient is short for this plan.": [
+"{0} Zutat fehlt für diesen Plan.",
+"{0} ingrediente manca per questo piano.",
+"ينقص {0} مكوّن لهذه الخطة."
+],
+"{0} ingredients are short for this plan.": [
+"{0} Zutaten fehlen für diesen Plan.",
+"{0} ingredienti mancano per questo piano.",
+"تنقص {0} مكونات لهذه الخطة."
+],
+"{0} item": [
+"{0} Artikel",
+"{0} articolo",
+"صنف واحد ({0})"
+],
+"{0} items": [
+"{0} Artikel",
+"{0} articoli",
+"{0} أصناف"
+],
+"{0} items from {1} suppliers, {2}. Nothing is sent until it is approved.": [
+"{0} Artikel von {1} Lieferanten, {2}. Nichts wird vor der Freigabe gesendet.",
+"{0} articoli da {1} fornitori, {2}. Nulla viene inviato prima dell'approvazione.",
+"{0} صنفًا من {1} موردين، {2}. لا يُرسل شيء قبل الموافقة."
+],
+"{0} items that matter most": [
+"Die {0} wichtigsten Artikel",
+"I {0} articoli più importanti",
+"أهم {0} صنفًا"
+],
+"{0} items to order by {1}. Next order today.": [
+"{0} Artikel bis {1} zu bestellen. Nächste Bestellung heute.",
+"{0} articoli da ordinare entro {1}. Prossimo ordine oggi.",
+"{0} صنفًا للطلب قبل {1}. الطلب التالي اليوم."
+],
+"{0} items used more than sales and waste explain, about": [
+"{0} Artikel wurden stärker verbraucht als durch Verkäufe und Abfall erklärt, etwa",
+"{0} articoli usati più di quanto spieghino vendite e scarti, circa",
+"{0} أصناف استُخدمت أكثر مما تفسره المبيعات والهدر، بنحو"
+],
+"{0} items, {1} critical": [
+"{0} Artikel, {1} kritisch",
+"{0} articoli, {1} critici",
+"{0} أصناف، {1} حرجة"
+],
+"{0} items: {1} food, {2} beverage, {3} inventory": [
+"{0} Artikel: {1} Speisen, {2} Getränke, {3} Inventar",
+"{0} articoli: {1} cibo, {2} bevande, {3} inventario",
+"{0} صنفًا: {1} أطعمة، {2} مشروبات، {3} عهدة"
+],
+"{0} lost since {1}: {2} food, {3} beverage, {4} inventory": [
+"{0} verloren seit {1}: {2} Speisen, {3} Getränke, {4} Inventar",
+"{0} persi dal {1}: {2} cibo, {3} bevande, {4} inventario",
+"{0} خسائر منذ {1}: {2} أطعمة، {3} مشروبات، {4} عهدة"
+],
+"{0} low and {1} fine.": [
+"{0} niedrig und {1} in Ordnung.",
+"{0} bassi e {1} a posto.",
+"{0} منخفضة و{1} جيدة."
+],
+"{0} margin": [
+"{0} Marge",
+"margine {0}",
+"هامش {0}"
+],
+"{0} margin at today's cost": [
+"{0} Marge zu heutigen Kosten",
+"margine {0} al costo di oggi",
+"هامش {0} بتكلفة اليوم"
+],
+"{0} margin down {1} points": [
+"{0} Marge {1} Punkte gesunken",
+"Margine di {0} sceso di {1} punti",
+"انخفض هامش {0} بمقدار {1} نقاط"
+],
+"{0} marked ready": [
+"{0} als fertig markiert",
+"{0} segnato pronto",
+"أُشير إلى جاهزية {0}"
+],
+"{0} min": [
+"{0} Min.",
+"{0} min",
+"{0} دقيقة"
+],
+"{0} min ago": [
+"vor {0} Min.",
+"{0} min fa",
+"قبل {0} دقيقة"
+],
+"{0} missing drink to check.": [
+"{0} fehlendes Getränk zu prüfen.",
+"{0} bevanda mancante da controllare.",
+"{0} مشروب مفقود للتحقق."
+],
+"{0} missing drinks to check.": [
+"{0} fehlende Getränke zu prüfen.",
+"{0} bevande mancanti da controllare.",
+"{0} مشروبات مفقودة للتحقق."
+],
+"{0} more on the invoices than was delivered or agreed.": [
+"{0} mehr auf den Rechnungen als geliefert oder vereinbart.",
+"{0} in più in fattura rispetto a consegnato o concordato.",
+"{0} في الفواتير أكثر مما سُلم أو اتفق عليه."
+],
+"{0} more waste than the period before.": [
+"{0} mehr Abfall als im Vorzeitraum.",
+"{0} di scarti in più rispetto al periodo precedente.",
+"{0} هدر أكثر من الفترة السابقة."
+],
+"{0} now, {1}": [
+"{0} jetzt, {1}",
+"{0} ora, {1}",
+"{0} الآن، {1}"
+],
+"{0} of all sales": [
+"{0} aller Verkäufe",
+"{0} di tutte le vendite",
+"{0} من جميع المبيعات"
+],
+"{0} of expected": [
+"{0} vom Soll",
+"{0} del previsto",
+"{0} من المتوقع"
+],
+"{0} of {1} digits entered": [
+"{0} von {1} Ziffern eingegeben",
+"{0} di {1} cifre inserite",
+"تم إدخال {0} من {1} أرقام"
+],
+"{0} of {1} orders": [
+"{0} von {1} Bestellungen",
+"{0} di {1} ordini",
+"{0} من {1} طلب"
+],
+"{0} open": [
+"{0} offen",
+"{0} aperti",
+"{0} مفتوحة"
+],
+"{0} outlets, {1} to {2}. {3} leads with {4}.": [
+"{0} Outlets, {1} bis {2}. {3} führt mit {4}.",
+"{0} punti vendita, dal {1} al {2}. {3} è in testa con {4}.",
+"{0} منافذ، من {1} إلى {2}. يتصدر {3} بمبلغ {4}."
+],
+"{0} outlets, {1}. {2} leads with {3}.": [
+"{0} Outlets, {1}. {2} führt mit {3}.",
+"{0} punti vendita, {1}. {2} è in testa con {3}.",
+"{0} منافذ، {1}. يتصدر {2} بمبلغ {3}."
+],
+"{0} per hour": [
+"{0} pro Stunde",
+"{0} all'ora",
+"{0} للساعة"
+],
+"{0} per litre. Not a confirmed loss.": [
+"{0} pro Liter. Kein bestätigter Verlust.",
+"{0} al litro. Non è una perdita confermata.",
+"{0} للتر. ليست خسارة مؤكدة."
+],
+"{0} profit, estimate": [
+"{0} Gewinn, geschätzt",
+"{0} di profitto, stima",
+"{0} ربح، تقديري"
+],
+"{0} pts": [
+"{0} Pkt.",
+"{0} pt",
+"{0} نقطة"
+],
+"{0} received from the main storeroom": [
+"{0} aus dem Hauptlager erhalten",
+"{0} ricevuti dal magazzino centrale",
+"{0} مستلمة من المخزن الرئيسي"
+],
+"{0} removed from the order": [
+"{0} aus der Bestellung entfernt",
+"{0} rimosso dall'ordine",
+"حُذف {0} من الطلب"
+],
+"{0} removed {1} min after it was sent to the bar": [
+"{0} entfernt {1} Min., nachdem es an die Bar ging",
+"{0} rimosso {1} min dopo l'invio al bar",
+"حُذف {0} بعد {1} دقيقة من إرساله إلى البار"
+],
+"{0} runs out first, {1}. An order placed later arrives too late.": [
+"{0} geht zuerst aus, {1}. Eine spätere Bestellung kommt zu spät.",
+"{0} finisce per primo, {1}. Un ordine più tardi arriva troppo tardi.",
+"ينفد {0} أولًا، {1}. الطلب اللاحق يصل متأخرًا."
+],
+"{0} sent to bar": [
+"{0} an die Bar geschickt",
+"{0} inviato al bar",
+"أُرسل {0} إلى البار"
+],
+"{0} sent to kitchen": [
+"{0} an die Küche geschickt",
+"{0} inviato in cucina",
+"أُرسل {0} إلى المطبخ"
+],
+"{0} short": [
+"{0} zu wenig",
+"mancano {0}",
+"نقص {0}"
+],
+"{0} snoozed, {1} resolved. Largest amount of money first.": [
+"{0} zurückgestellt, {1} erledigt. Größter Betrag zuerst.",
+"{0} posticipati, {1} risolti. Prima gli importi maggiori.",
+"{0} مؤجلة، {1} محلولة. الأكبر قيمة أولًا."
+],
+"{0} sold": [
+"{0} verkauft",
+"{0} venduti",
+"{0} مبيعة"
+],
+"{0} sold in the POS": [
+"{0} im POS verkauft",
+"{0} venduti nel POS",
+"{0} مبيعة في نقطة البيع"
+],
+"{0} spirits. {1} measures not billed this week, {2}": [
+"{0} Spirituosen. {1} Maße diese Woche nicht berechnet, {2}",
+"{0} distillati. {1} misure non fatturate questa settimana, {2}",
+"{0} مشروبات روحية. {1} مقادير غير مفوترة هذا الأسبوع، {2}"
+],
+"{0} still open": [
+"{0} noch offen",
+"{0} ancora aperti",
+"{0} ما زالت مفتوحة"
+],
+"{0} store": [
+"Lager {0}",
+"magazzino {0}",
+"مخزن {0}"
+],
+"{0} things need you today.": [
+"{0} Dinge brauchen heute Ihre Aufmerksamkeit.",
+"{0} cose richiedono la tua attenzione oggi.",
+"{0} أمور تحتاج إليك اليوم."
+],
+"{0} to act on today": [
+"{0} heute zu erledigen",
+"{0} da gestire oggi",
+"{0} للتعامل معها اليوم"
+],
+"{0} to {1}": [
+"{0} bis {1}",
+"dal {0} al {1}",
+"من {0} إلى {1}"
+],
+"{0} to {1}, the whole hotel.": [
+"{0} bis {1}, das ganze Hotel.",
+"Dal {0} al {1}, l'intero hotel.",
+"من {0} إلى {1}، الفندق بأكمله."
+],
+"{0} to {1}. Beverage only. Breakage is under Inventory.": [
+"{0} bis {1}. Nur Getränke. Bruch steht unter Inventar.",
+"Dal {0} al {1}. Solo bevande. Le rotture sono in Inventario.",
+"من {0} إلى {1}. المشروبات فقط. الكسر ضمن العهدة."
+],
+"{0} to {1}. Food only. Breakage is under Inventory.": [
+"{0} bis {1}. Nur Speisen. Bruch steht unter Inventar.",
+"Dal {0} al {1}. Solo cibo. Le rotture sono in Inventario.",
+"من {0} إلى {1}. الأطعمة فقط. الكسر ضمن العهدة."
+],
+"{0} transactions, {1} to {2}. Filter by day and search.": [
+"{0} Transaktionen, {1} bis {2}. Nach Tag filtern und suchen.",
+"{0} transazioni, dal {1} al {2}. Filtra per giorno e cerca.",
+"{0} معاملة، من {1} إلى {2}. صفِّ حسب اليوم وابحث."
+],
+"{0} transactions, {1}. Filter by day and search.": [
+"{0} Transaktionen, {1}. Nach Tag filtern und suchen.",
+"{0} transazioni, {1}. Filtra per giorno e cerca.",
+"{0} معاملة، {1}. صفِّ حسب اليوم وابحث."
+],
+"{0} unexplained": [
+"{0} ungeklärt",
+"{0} non spiegati",
+"{0} غير مفسرة"
+],
+"{0} use at {1} is {2} above the recipes": [
+"{0}-Verbrauch in {1} liegt {2} über den Rezepten",
+"Consumo di {0} a {1} superiore di {2} alle ricette",
+"استخدام {0} في {1} أعلى بمقدار {2} من الوصفات"
+],
+"{0} waiting for approval, {1} on the way, {2} draft of yours.": [
+"{0} warten auf Freigabe, {1} unterwegs, {2} Entwurf von Ihnen.",
+"{0} in attesa di approvazione, {1} in arrivo, {2} tua bozza.",
+"{0} بانتظار الموافقة، {1} في الطريق، {2} من مسوداتك."
+],
+"{0} waiting for approval, {1} on the way, {2} drafts of yours.": [
+"{0} warten auf Freigabe, {1} unterwegs, {2} Entwürfe von Ihnen.",
+"{0} in attesa di approvazione, {1} in arrivo, {2} tue bozze.",
+"{0} بانتظار الموافقة، {1} في الطريق، {2} من مسوداتك."
+],
+"{0} waiting for approval, {1} on the way, {2} in total": [
+"{0} warten auf Freigabe, {1} unterwegs, {2} insgesamt",
+"{0} in attesa di approvazione, {1} in arrivo, {2} in totale",
+"{0} بانتظار الموافقة، {1} في الطريق، {2} إجمالًا"
+],
+"{0} wasted, {1} broken": [
+"{0} Abfall, {1} Bruch",
+"{0} scarti, {1} rotture",
+"{0} هدر، {1} كسر"
+],
+"{0} wine and {1} spirit patterns over the last {2} weeks": [
+"{0} Wein- und {1} Spirituosenmuster der letzten {2} Wochen",
+"{0} schemi di vino e {1} di distillati nelle ultime {2} settimane",
+"{0} أنماط نبيذ و{1} أنماط مشروبات روحية خلال آخر {2} أسابيع"
+],
+"{0} wines. {1} glasses not billed this week, {2}": [
+"{0} Weine. {1} Gläser diese Woche nicht berechnet, {2}",
+"{0} vini. {1} calici non fatturati questa settimana, {2}",
+"{0} أنواع نبيذ. {1} كأس غير مفوترة هذا الأسبوع، {2}"
+],
+"{0} · per kg · in {1} recipe": [
+"{0} · pro kg · in {1} Rezept",
+"{0} · al kg · in {1} ricetta",
+"{0} · للكيلوغرام · في {1} وصفة"
+],
+"{0} · per kg · in {1} recipes": [
+"{0} · pro kg · in {1} Rezepten",
+"{0} · al kg · in {1} ricette",
+"{0} · للكيلوغرام · في {1} وصفات"
+],
+"{0} · per l · in {1} recipe": [
+"{0} · pro l · in {1} Rezept",
+"{0} · al l · in {1} ricetta",
+"{0} · للتر · في {1} وصفة"
+],
+"{0} · per l · in {1} recipes": [
+"{0} · pro l · in {1} Rezepten",
+"{0} · al l · in {1} ricette",
+"{0} · للتر · في {1} وصفات"
+],
+"{0} · per unit · in {1} recipe": [
+"{0} · pro Einheit · in {1} Rezept",
+"{0} · per unità · in {1} ricetta",
+"{0} · للوحدة · في {1} وصفة"
+],
+"{0} · per unit · in {1} recipes": [
+"{0} · pro Einheit · in {1} Rezepten",
+"{0} · per unità · in {1} ricette",
+"{0} · للوحدة · في {1} وصفات"
+],
+"{0}, Dubai": [
+"{0}, Dubai",
+"{0}, Dubai",
+"{0}، دبي"
+],
+"{0}, F&B Director, {1}": [
+"{0}, F&B-Leitung, {1}",
+"{0}, Direttore F&B, {1}",
+"{0}، مدير الأغذية والمشروبات، {1}"
+],
+"{0}, Friday day shift:": [
+"{0}, Freitag, Tagschicht:",
+"{0}, venerdì, turno di giorno:",
+"{0}، الجمعة، الوردية النهارية:"
+],
+"{0}, Friday evening shift:": [
+"{0}, Freitag, Abendschicht:",
+"{0}, venerdì, turno serale:",
+"{0}، الجمعة، الوردية المسائية:"
+],
+"{0}, Friday late shift:": [
+"{0}, Freitag, Spätschicht:",
+"{0}, venerdì, turno di notte:",
+"{0}، الجمعة، الوردية المتأخرة:"
+],
+"{0}, Monday day shift:": [
+"{0}, Montag, Tagschicht:",
+"{0}, lunedì, turno di giorno:",
+"{0}، الإثنين، الوردية النهارية:"
+],
+"{0}, Monday evening shift:": [
+"{0}, Montag, Abendschicht:",
+"{0}, lunedì, turno serale:",
+"{0}، الإثنين، الوردية المسائية:"
+],
+"{0}, Monday late shift:": [
+"{0}, Montag, Spätschicht:",
+"{0}, lunedì, turno di notte:",
+"{0}، الإثنين، الوردية المتأخرة:"
+],
+"{0}, POS login {1}": [
+"{0}, POS-Login {1}",
+"{0}, accesso POS {1}",
+"{0}، دخول {1}"
+],
+"{0}, Saturday day shift:": [
+"{0}, Samstag, Tagschicht:",
+"{0}, sabato, turno di giorno:",
+"{0}، السبت، الوردية النهارية:"
+],
+"{0}, Saturday evening shift:": [
+"{0}, Samstag, Abendschicht:",
+"{0}, sabato, turno serale:",
+"{0}، السبت، الوردية المسائية:"
+],
+"{0}, Saturday late shift:": [
+"{0}, Samstag, Spätschicht:",
+"{0}, sabato, turno di notte:",
+"{0}، السبت، الوردية المتأخرة:"
+],
+"{0}, Sunday day shift:": [
+"{0}, Sonntag, Tagschicht:",
+"{0}, domenica, turno di giorno:",
+"{0}، الأحد، الوردية النهارية:"
+],
+"{0}, Sunday evening shift:": [
+"{0}, Sonntag, Abendschicht:",
+"{0}, domenica, turno serale:",
+"{0}، الأحد، الوردية المسائية:"
+],
+"{0}, Sunday late shift:": [
+"{0}, Sonntag, Spätschicht:",
+"{0}, domenica, turno di notte:",
+"{0}، الأحد، الوردية المتأخرة:"
+],
+"{0}, Thursday day shift:": [
+"{0}, Donnerstag, Tagschicht:",
+"{0}, giovedì, turno di giorno:",
+"{0}، الخميس، الوردية النهارية:"
+],
+"{0}, Thursday evening shift:": [
+"{0}, Donnerstag, Abendschicht:",
+"{0}, giovedì, turno serale:",
+"{0}، الخميس، الوردية المسائية:"
+],
+"{0}, Thursday late shift:": [
+"{0}, Donnerstag, Spätschicht:",
+"{0}, giovedì, turno di notte:",
+"{0}، الخميس، الوردية المتأخرة:"
+],
+"{0}, Tuesday day shift:": [
+"{0}, Dienstag, Tagschicht:",
+"{0}, martedì, turno di giorno:",
+"{0}، الثلاثاء، الوردية النهارية:"
+],
+"{0}, Tuesday evening shift:": [
+"{0}, Dienstag, Abendschicht:",
+"{0}, martedì, turno serale:",
+"{0}، الثلاثاء، الوردية المسائية:"
+],
+"{0}, Tuesday late shift:": [
+"{0}, Dienstag, Spätschicht:",
+"{0}, martedì, turno di notte:",
+"{0}، الثلاثاء، الوردية المتأخرة:"
+],
+"{0}, Wednesday day shift:": [
+"{0}, Mittwoch, Tagschicht:",
+"{0}, mercoledì, turno di giorno:",
+"{0}، الأربعاء، الوردية النهارية:"
+],
+"{0}, Wednesday evening shift:": [
+"{0}, Mittwoch, Abendschicht:",
+"{0}, mercoledì, turno serale:",
+"{0}، الأربعاء، الوردية المسائية:"
+],
+"{0}, Wednesday late shift:": [
+"{0}, Mittwoch, Spätschicht:",
+"{0}, mercoledì, turno di notte:",
+"{0}، الأربعاء، الوردية المتأخرة:"
+],
+"{0}, close": [
+"{0}, Schluss",
+"{0}, chiusura",
+"{0}، الإغلاق"
+],
+"{0}, prepared": [
+"{0}, zubereitet",
+"{0}, preparato",
+"{0}، جاهز"
+],
+"{0}, {1} items": [
+"{0}, {1} Artikel",
+"{0}, {1} articoli",
+"{0}، {1} أصناف"
+],
+"{0}, {1} ordered": [
+"{0}, {1} bestellt",
+"{0}, {1} ordinati",
+"{0}، طُلب {1}"
+],
+"{0}, {1} to {2}, close": [
+"{0}, {1} bis {2}, Schluss",
+"{0}, dal {1} al {2}, chiusura",
+"{0}، من {1} إلى {2}، الإغلاق"
+],
+"{0}, {1} to {2}, {3}": [
+"{0}, {1} bis {2}, {3}",
+"{0}, dal {1} al {2}, {3}",
+"{0}، من {1} إلى {2}، {3}"
+],
+"{0}, {1} to {2}. Simulated data.": [
+"{0}, {1} bis {2}. Simulierte Daten.",
+"{0}, dal {1} al {2}. Dati simulati.",
+"{0}، من {1} إلى {2}. بيانات محاكاة."
+],
+"{0}, {1}, issue note {2}": [
+"{0}, {1}, Ausgabeschein {2}",
+"{0}, {1}, bolla {2}",
+"{0}، {1}، إشعار صرف {2}"
+],
+"{0}, {1}, {2} to {3}, close": [
+"{0}, {1}, {2} bis {3}, Schluss",
+"{0}, {1}, dal {2} al {3}, chiusura",
+"{0}، {1}، من {2} إلى {3}، الإغلاق"
+],
+"{0}, {1}. Simulated data.": [
+"{0}, {1}. Simulierte Daten.",
+"{0}, {1}. Dati simulati.",
+"{0}، {1}. بيانات محاكاة."
+],
+"{0}, {1}. {2}, opened {3} on table {4} under the POS login of {5}.": [
+"{0}, {1}. {2}, geöffnet {3} an Tisch {4} unter dem POS-Login von {5}.",
+"{0}, {1}. {2}, aperto alle {3} al tavolo {4} con l'accesso POS di {5}.",
+"{0}، {1}. {2}، فُتح {3} على الطاولة {4} بدخول نقطة البيع لـ {5}."
+],
+"{0}. A prediction looks ahead, so the date range above does not change it.": [
+"{0}. Eine Prognose blickt voraus, der Zeitraum oben ändert sie nicht.",
+"{0}. Una previsione guarda avanti, quindi il periodo sopra non la cambia.",
+"{0}. التوقع يتطلع إلى الأمام، لذا لا يغيره النطاق الزمني أعلاه."
+],
+"{0}. Margins use each item's recipe cost on the day it was sold.": [
+"{0}. Margen nutzen die Rezeptkosten am Verkaufstag.",
+"{0}. I margini usano il costo ricetta del giorno di vendita.",
+"{0}. تستخدم الهوامش تكلفة الوصفة يوم البيع."
+],
+"{0}. Updated {1}, simulated data.": [
+"{0}. Aktualisiert {1}, simulierte Daten.",
+"{0}. Aggiornato {1}, dati simulati.",
+"{0}. آخر تحديث {1}، بيانات محاكاة."
+],
+"{0}. Walk the storeroom, and only touch what differs.": [
+"{0}. Gehen Sie durchs Lager und ändern Sie nur Abweichungen.",
+"{0}. Percorri il magazzino e tocca solo ciò che differisce.",
+"{0}. امشِ في المخزن وعدّل ما يختلف فقط."
+],
+"{0}: Wine use at {1} is {2} above what was sold": [
+"{0}: Weinverbrauch in {1} liegt {2} über dem Verkauf",
+"{0}: il consumo di vino a {1} supera di {2} il venduto",
+"{0}: استخدام النبيذ في {1} أعلى بمقدار {2} مما بيع"
+],
+"{0}: all day at {1}": [
+"{0}: ganztägig in {1}",
+"{0}: tutto il giorno a {1}",
+"{0}: طوال اليوم في {1}"
+],
+"{0}: marked ready {1}": [
+"{0}: als fertig markiert {1}",
+"{0}: segnato pronto {1}",
+"{0}: جاهز {1}"
+],
+"{0}: no completion record (bar has no display)": [
+"{0}: keine Fertigmeldung (Bar hat kein Display)",
+"{0}: nessuna conferma (il bar non ha display)",
+"{0}: لا يوجد سجل إكمال (لا توجد شاشة في البار)"
+],
+"{0}d": [
+"{0} T.",
+"{0} g",
+"{0} يوم"
+],
+"{0}k": [
+"{0}k",
+"{0}k",
+"{0} ألف"
+]
+}

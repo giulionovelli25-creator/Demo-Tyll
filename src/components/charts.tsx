@@ -113,7 +113,7 @@ export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; l
         const body = (
           <>
             <div className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0 truncate text-sm text-ink"><OutletDot id={r.outletId} />{r.label}{r.sub && <span className="ml-2 text-xs text-steel">{r.sub}</span>}</span>
+              <span className="min-w-0 truncate text-sm text-ink"><OutletDot id={r.outletId} />{r.label}{r.sub && <span className="ms-2 text-xs text-steel">{r.sub}</span>}</span>
               <span className="num shrink-0 text-sm text-ink">{format(r.value)}</span>
             </div>
             <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-hair">
@@ -123,7 +123,7 @@ export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; l
         );
         return (
           <li key={r.key}>
-            {r.onClick ? <button type="button" onClick={r.onClick} className="-mx-2 block w-[calc(100%+1rem)] rounded-xl px-2 py-2 text-left transition-colors duration-200 hover:bg-mist">{body}</button> : <div className="py-2">{body}</div>}
+            {r.onClick ? <button type="button" onClick={r.onClick} className="-mx-2 block w-[calc(100%+1rem)] rounded-xl px-2 py-2 text-start transition-colors duration-200 hover:bg-mist">{body}</button> : <div className="py-2">{body}</div>}
           </li>
         );
       })}

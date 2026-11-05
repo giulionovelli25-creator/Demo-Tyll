@@ -1,5 +1,6 @@
 "use client";
-import { Apple, Beef, Check, ChevronLeft, CloudOff, Coffee, Delete, Fish, GlassWater, Hammer, HelpCircle, Languages, Milk, PackageX, Salad, Soup, Trash2, Wheat, Wine, type LucideIcon } from "lucide-react";
+import { useLanguage } from "@/components/shell/language";
+import { Apple, Beef, Check, ChevronLeft, CloudOff, Coffee, Delete, Fish, GlassWater, Hammer, HelpCircle, Milk, PackageX, Salad, Soup, Trash2, Wheat, Wine, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, Field, Note, Panel, Select, cn, report, toast } from "@/components/ui";
 import { INGREDIENTS, ingredientById, itemById, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
@@ -42,8 +43,8 @@ type Group = "ingredients" | "dishes" | "glass";
 export function WasteLogger({ propertyId }: { propertyId: string }) {
   const user = useUser()!;
   const ctx = useCtx();
-  const lang = useDemo((s) => s.lang);
-  const setLang = useDemo((s) => s.setLang);
+  // The kiosk has its own Arabic wording. German and Italian come from the app-wide translation.
+  const lang = useLanguage((s) => s.lang) === "ar" ? "ar" : "en";
   const offline = useDemo((s) => s.offline);
   const setOffline = useDemo((s) => s.setOffline);
   const logWaste = useDemo((s) => s.logWaste);
@@ -148,9 +149,6 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
           </div>
           <div className="flex items-center gap-1.5">
             {offline && <Badge tone="warn"><CloudOff size={12} /> {t.offline}</Badge>}
-            <button type="button" onClick={() => setLang(lang === "en" ? "ar" : "en")} className="flex h-10 items-center gap-1.5 rounded-full border border-line px-3 text-sm hover:bg-mist" aria-label="Switch language between English and Arabic">
-              <Languages size={16} aria-hidden /> {lang === "en" ? "العربية" : "English"}
-            </button>
           </div>
         </div>
 
@@ -325,7 +323,7 @@ function EntryRow({ w, money }: { w: WasteLog & { byUser?: string; at?: string }
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span>
           <span className={cn("num text-ink", effective === 0 && "line-through")}>{fmtQty(effective, u)} {u === "each" ? "× " : ""}{name}</span>
-          {latest && <span className="ml-2 text-xs text-steel">{effective === 0 ? "cancelled" : `corrected from ${fmtQty(w.qty, u)}`}: {latest.reason}</span>}
+          {latest && <span className="ms-2 text-xs text-steel">{effective === 0 ? "cancelled" : `corrected from ${fmtQty(w.qty, u)}`}: {latest.reason}</span>}
           <span className="block text-xs text-steel">{REASON_LABEL[w.reason].en} · {outletById[w.outletId].name} · {personName(w.byUser ?? w.by)}{w.at ? ` · ${w.at.slice(0, 16).replace("T", " ")}` : ""}{w.periodId ? " · late entry" : ""}</span>
         </span>
         <span className="flex items-center gap-3">

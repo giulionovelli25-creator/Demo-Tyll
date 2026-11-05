@@ -81,7 +81,7 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
         <div className="flex flex-wrap items-end gap-2 px-5 pb-4 sm:px-6">
           <Segmented label="Show" value={show} onChange={setShow} options={[{ value: "flagged", label: "Needs a look" }, { value: "all", label: "All counted items" }]} />
           <Segmented label="Kind" value={kind} onChange={setKind} options={[{ value: "all", label: "All" }, { value: "food", label: "Food" }, { value: "beverage", label: "Beverage" }]} />
-          <p className="num ml-auto pb-2 text-[13px] text-steel">{propertyById[propertyId].name}, {visible.length} item{visible.length === 1 ? "" : "s"}</p>
+          <p className="num ms-auto pb-2 text-[13px] text-steel">{propertyById[propertyId].name}, {visible.length} item{visible.length === 1 ? "" : "s"}</p>
         </div>
         {error ? <div className="px-6 pb-6"><EmptyState title="The stock records could not be loaded">{error}</EmptyState></div>
           : !data ? <div className="px-6 pb-6"><EmptyState title="Loading the stock records" /></div>
@@ -106,7 +106,7 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
                       {g.rows.map(({ p, v, c }) => (
                       <tr key={p.id} className={cn(rowClass, "cursor-pointer")} onClick={() => open(p.id)}>
                         <Td>
-                          <button type="button" className="text-left text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); open(p.id); }}>{ingredientById[p.ingredientId].name}</button>
+                          <button type="button" className="text-start text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); open(p.id); }}>{ingredientById[p.ingredientId].name}</button>
                           <span className="block text-xs text-steel">{outletById[p.outletId].name}</span>
                         </Td>
                         <Td align="right"><Amount p={p} n={v.expected} /></Td>

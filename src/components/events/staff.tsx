@@ -59,7 +59,7 @@ export function StaffFinder({ propertyId, skill, date, start, end, toDeptId, nee
                 <div className="flex flex-wrap items-center gap-3">
                   <input type="checkbox" className="h-5 w-5 accent-[var(--color-accent)]" aria-label={`Ask for ${c.name}`} checked={on} disabled={!on && picked.length >= need}
                     onChange={() => setPicked(on ? picked.filter((x) => x !== c.employeeId) : [...picked, c.employeeId])} />
-                  <button type="button" aria-expanded={open === c.employeeId} onClick={() => setOpen(open === c.employeeId ? null : c.employeeId)} className="flex flex-1 items-center gap-2 text-left">
+                  <button type="button" aria-expanded={open === c.employeeId} onClick={() => setOpen(open === c.employeeId ? null : c.employeeId)} className="flex flex-1 items-center gap-2 text-start">
                     <ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open === c.employeeId && "rotate-180")} aria-hidden />
                     <span><span className="text-sm text-ink">{c.name}</span><span className="block text-xs text-steel">{c.title}, {c.deptName}</span></span>
                   </button>
@@ -67,7 +67,7 @@ export function StaffFinder({ propertyId, skill, date, start, end, toDeptId, nee
                   <Badge className="!py-0">free {toHm(start)} to {toHm(end)}</Badge>
                 </div>
                 {open === c.employeeId && (
-                  <ul className="mt-2 space-y-1 pl-12 text-[13px] text-graphite">
+                  <ul className="mt-2 space-y-1 ps-12 text-[13px] text-graphite">
                     {c.why.map((w, i) => <li key={i} className="flex gap-2"><Check size={14} className="mt-0.5 shrink-0 text-pos" aria-hidden />{w}</li>)}
                     <li className="text-steel">Proposed: {SKILL_LABEL[skill].toLowerCase()} for {deptById[toDeptId].name}, {fmtDate(date, true)}, {toHm(start)} to {toHm(end)}.</li>
                   </ul>
@@ -118,7 +118,7 @@ function SupportHome() {
     const confirmed = r.items.filter((i) => i.status === "approved").length;
     return (
       <li key={r.id}>
-        <button type="button" onClick={() => router.push(`/events?tab=support&request=${r.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-left hover:bg-cloud">
+        <button type="button" onClick={() => router.push(`/events?tab=support&request=${r.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-start hover:bg-cloud">
           <span className="flex-1"><span className="text-sm text-ink">{r.count} {skillWord(r.skill, r.count)} for {deptById[r.toDeptId].name}</span><span className="block text-xs text-steel">{fmtDate(r.date, true)}, {toHm(r.start)} to {toHm(r.end)} · {r.id}</span></span>
           {r.priority === "urgent" && <Badge tone="warn" className="!py-0">urgent</Badge>}
           <Badge tone={r.status === "filled" ? "pos" : r.status === "cancelled" ? "neutral" : "warn"} className="!py-0">{r.status === "cancelled" ? "Withdrawn" : `${confirmed} of ${r.count} confirmed`}</Badge>
@@ -130,12 +130,12 @@ function SupportHome() {
     <div className="space-y-5">
       <div className="grid gap-3 md:grid-cols-2">
         {can(user, "staff.request") && (data?.canRequestFor.length ?? 0) > 0 && (
-          <button type="button" onClick={() => router.push("/events?tab=support&mode=new")} className="rounded-panel border border-line bg-paper p-6 text-left shadow-panel transition-colors hover:border-fog">
+          <button type="button" onClick={() => router.push("/events?tab=support&mode=new")} className="rounded-panel border border-line bg-paper p-6 text-start shadow-panel transition-colors hover:border-fog">
             <span className="block text-xl tracking-[-0.02em]">Request extra help</span><span className="mt-1 block text-sm text-steel">Ask another department for people with the right skill.</span>
           </button>
         )}
         {(data?.manages.length ?? 0) > 0 && (
-          <button type="button" onClick={() => router.push("/events?tab=support&mode=schedule")} className="rounded-panel border border-line bg-paper p-6 text-left shadow-panel transition-colors hover:border-fog">
+          <button type="button" onClick={() => router.push("/events?tab=support&mode=schedule")} className="rounded-panel border border-line bg-paper p-6 text-start shadow-panel transition-colors hover:border-fog">
             <span className="block text-xl tracking-[-0.02em]">Team schedule</span><span className="mt-1 block text-sm text-steel">Who is working, lent out or borrowed on a day.</span>
           </button>
         )}

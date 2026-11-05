@@ -121,10 +121,10 @@ export function BreakageFlow({ onDone, only, wide }: { onDone: () => void; only?
     const step = g.unit === "each" ? 1 : 0.5;
     return (
       <div className={cn(wide && "max-w-[560px]")}>
-        <button type="button" onClick={() => { setItem(null); setCustom(null); setReason(undefined); }} className="flex w-full items-center gap-3 rounded-[var(--radius-control)] bg-cloud p-3 text-left text-[15px] font-medium text-ink">
+        <button type="button" onClick={() => { setItem(null); setCustom(null); setReason(undefined); }} className="flex w-full items-center gap-3 rounded-[var(--radius-control)] bg-cloud p-3 text-start text-[15px] font-medium text-ink">
           <span className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-control)] bg-accent-soft text-accent-ink"><ItemIcon g={g} size={20} /></span>
           {g.name}
-          <span className="ml-auto text-[13px] font-normal text-steel">Change</span>
+          <span className="ms-auto text-[13px] font-normal text-steel">Change</span>
         </button>
         <p className="mt-4 text-[13px] text-steel">What happened? Optional.</p>
         <div className="mt-2 grid grid-cols-3 gap-2">
@@ -171,8 +171,8 @@ export function BreakageFlow({ onDone, only, wide }: { onDone: () => void; only?
         {found?.length === 0 && <p className="col-span-full py-4 text-center text-sm text-steel">Nothing matches that. Try another word.</p>}
       </div>
       <div className="relative mt-3">
-        <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
-        <input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Search for something else" aria-label="Search for something else" className="h-11 w-full rounded-full border border-line bg-paper pl-9 pr-3 text-sm text-ink placeholder:text-steel" />
+        <Search size={15} className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
+        <input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Search for something else" aria-label="Search for something else" className="h-11 w-full rounded-full border border-line bg-paper ps-9 pe-3 text-sm text-ink placeholder:text-steel" />
       </div>
     </div>
   );
@@ -217,7 +217,7 @@ export function BreakageSheet() {
 export function BreakageFab({ desktopOnly }: { desktopOnly?: boolean }) {
   const set = useBreakageSheet((s) => s.set);
   return (
-    <button type="button" onClick={() => set(true)} className={cn("no-print fixed bottom-6 right-6 z-30 h-14 items-center gap-2 rounded-full bg-accent pl-4 pr-5 text-[15px] font-medium text-on-accent shadow-float transition-colors duration-150 hover:bg-accent-hover", desktopOnly ? "hidden md:flex" : "flex")}>
+    <button type="button" onClick={() => set(true)} className={cn("no-print fixed bottom-6 end-6 z-30 h-14 items-center gap-2 rounded-full bg-accent ps-4 pe-5 text-[15px] font-medium text-on-accent shadow-float transition-colors duration-150 hover:bg-accent-hover", desktopOnly ? "hidden md:flex" : "flex")}>
       <Trash2 size={20} aria-hidden /> Log waste
     </button>
   );

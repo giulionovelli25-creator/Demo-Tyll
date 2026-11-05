@@ -157,7 +157,7 @@ export function DemoPicker({ user, onClose }: { user: User; onClose: () => void 
         <ul className="mt-4 space-y-2">
           {!more && (
             <li>
-              <button type="button" onClick={() => { setTour(true, 0); onClose(); }} className="flex w-full items-start gap-3 rounded-2xl border border-line px-4 py-3 text-left hover:bg-cloud">
+              <button type="button" onClick={() => { setTour(true, 0); onClose(); }} className="flex w-full items-start gap-3 rounded-2xl border border-line px-4 py-3 text-start hover:bg-cloud">
                 <PlayCircle size={18} className="mt-0.5 shrink-0" aria-hidden />
                 <span><span className="block text-[15px] text-ink">Five-minute owner tour</span><span className="block text-[13px] text-steel">The owner spots a problem, the manager investigates, the owner sees the result.</span></span>
               </button>
@@ -165,7 +165,7 @@ export function DemoPicker({ user, onClose }: { user: User; onClose: () => void 
           )}
           {list.map((sc, i) => (
             <li key={sc.id}>
-              <button type="button" onClick={() => start(sc)} className="flex w-full items-start gap-3 rounded-2xl border border-line px-4 py-3 text-left hover:bg-cloud">
+              <button type="button" onClick={() => start(sc)} className="flex w-full items-start gap-3 rounded-2xl border border-line px-4 py-3 text-start hover:bg-cloud">
                 <span className="num mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-mist text-xs">{i + 1}</span>
                 <span><span className="block text-[15px] text-ink">{sc.title}</span><span className="block text-[13px] text-steel">{sc.summary} · {sc.steps.length} steps</span></span>
               </button>
@@ -193,13 +193,13 @@ export function DemoGuide({ user }: { user: User }) {
   const canReset = user.role === "owner" || user.role === "gm";
   if (min) {
     return (
-      <button type="button" onClick={() => set({ min: false })} className="no-print fixed bottom-20 right-4 md:bottom-4 z-40 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2.5 text-sm shadow-float">
+      <button type="button" onClick={() => set({ min: false })} className="no-print fixed bottom-20 end-4 md:bottom-4 z-40 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2.5 text-sm shadow-float">
         <PlayCircle size={16} aria-hidden /> {sc.title} · step {at + 1} of {sc.steps.length}
       </button>
     );
   }
   return (
-    <section aria-label="Guided demo" className="no-print fixed inset-x-3 bottom-20 md:bottom-3 z-40 rounded-2xl border border-line bg-paper p-4 shadow-float sm:inset-x-auto sm:right-4 sm:w-[380px]">
+    <section aria-label="Guided demo" className="no-print fixed inset-x-3 bottom-20 md:bottom-3 z-40 rounded-2xl border border-line bg-paper p-4 shadow-float sm:inset-x-auto sm:end-4 sm:w-[380px]">
       <div className="flex items-start justify-between gap-2">
         <p className="text-[12px] text-steel">{sc.title} · Step {at + 1} of {sc.steps.length}</p>
         <span className="flex">

@@ -113,7 +113,7 @@ function OutletTasks() {
               const unit = w.ingredientId ? ingredientById[w.ingredientId].unit : "each";
               return (
                 <li key={w.id} className="flex items-center justify-between gap-3 py-3 text-sm">
-                  <span className="num text-ink">{fmtQty(w.qty, unit)} {unit === "each" ? "× " : ""}{name}<span className="ml-2 text-xs text-steel">{REASON_LABEL[w.reason].en}</span></span>
+                  <span className="num text-ink">{fmtQty(w.qty, unit)} {unit === "each" ? "× " : ""}{name}<span className="ms-2 text-xs text-steel">{REASON_LABEL[w.reason].en}</span></span>
                   {w.synced ? <Badge tone="pos">Saved</Badge> : <Badge tone="warn">Waiting to sync</Badge>}
                 </li>
               );

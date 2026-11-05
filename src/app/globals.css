@@ -133,3 +133,9 @@ body::before {
 
 /* Recharts: keep focus outlines off the SVG surface, the wrapper is not interactive. */
 .recharts-wrapper:focus, .recharts-surface:focus { outline: none; }
+
+/* Languages. Hidden only for the moment the first translation loads. Arabic reads right to left, charts and figures stay left to right. */
+html[data-translating] body { visibility: hidden; }
+html[lang="ar"] body { font-family: var(--font-arabic), var(--font-inter), system-ui, sans-serif; }
+[dir="rtl"] .lucide-arrow-left, [dir="rtl"] .lucide-arrow-right, [dir="rtl"] .lucide-chevron-left, [dir="rtl"] .lucide-chevron-right { transform: scaleX(-1); }
+[dir="rtl"] .recharts-wrapper { direction: ltr; }

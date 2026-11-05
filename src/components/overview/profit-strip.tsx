@@ -57,7 +57,7 @@ export function ProfitStrip({ c, money, onOpen, partialDay }: { c: Compared; mon
           const estimate = m.key === "operatingProfit" || m.key === "labor" || m.key === "opex";
           return (
             <li key={m.key} className={cn("min-w-0", m.key === "operatingProfit" && "col-span-2 2xl:col-span-1")}>
-              <button type="button" disabled={!available || !onOpen} onClick={() => onOpen?.(m.key)} title={m.help} className="group -m-2 block w-[calc(100%+1rem)] rounded-xl p-2 text-left transition-colors duration-200 ease-tyll enabled:hover:bg-mist">
+              <button type="button" disabled={!available || !onOpen} onClick={() => onOpen?.(m.key)} title={m.help} className="group -m-2 block w-[calc(100%+1rem)] rounded-xl p-2 text-start transition-colors duration-200 ease-tyll enabled:hover:bg-mist">
                 <span className="flex items-center gap-1.5 text-[13px] text-steel">
                   {m.kind === "deduction" && <span aria-hidden>−</span>}
                   {m.label}

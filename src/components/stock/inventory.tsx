@@ -71,9 +71,9 @@ export function Inventory({ propertyId }: { propertyId: string }) {
       <Panel title="Items" flush>
         <div className="flex flex-wrap items-center gap-2 px-5 pb-4 sm:px-6">
           <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm"><input type="checkbox" className="accent-[var(--color-accent)]" checked={priority} onChange={(e) => setPriority(e.target.checked)} /> Priority items only</label>
-          <div className="relative ml-auto w-full sm:w-[240px]">
-            <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find an item" aria-label="Find an item" className="h-10 w-full rounded-full border border-line bg-paper pl-9 pr-3 text-sm placeholder:text-fog hover:border-fog" />
+          <div className="relative ms-auto w-full sm:w-[240px]">
+            <Search size={15} className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find an item" aria-label="Find an item" className="h-10 w-full rounded-full border border-line bg-paper ps-9 pe-3 text-sm placeholder:text-fog hover:border-fog" />
           </div>
         </div>
         {!data ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Loading stock" /></div> : visible.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No items match" /></div> : (
@@ -104,14 +104,14 @@ export function Inventory({ propertyId }: { propertyId: string }) {
                   return (
                     <Fragment key={r.ingredientId}>
                     <tr id={`item-${r.ingredientId}`} className={cn(rowClass, "cursor-pointer scroll-mt-40")} onClick={() => setOpen(open === r.ingredientId ? null : r.ingredientId)}>
-                      <Td><button type="button" aria-expanded={open === r.ingredientId} className="inline-flex items-center gap-1.5 text-left text-ink" onClick={(e) => { e.stopPropagation(); setOpen(open === r.ingredientId ? null : r.ingredientId); }}><ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open === r.ingredientId && "rotate-180")} aria-hidden />{g.name}</button>{g.priority && <Badge className="ml-2 !py-0">priority</Badge>}{r.store && <Badge className="ml-2 !py-0">{outletById[r.store].name} store</Badge>}<span className="block text-xs text-steel">{supplierById[g.supplierId].name}</span></Td>
+                      <Td><button type="button" aria-expanded={open === r.ingredientId} className="inline-flex items-center gap-1.5 text-start text-ink" onClick={(e) => { e.stopPropagation(); setOpen(open === r.ingredientId ? null : r.ingredientId); }}><ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open === r.ingredientId && "rotate-180")} aria-hidden />{g.name}</button>{g.priority && <Badge className="ms-2 !py-0">priority</Badge>}{r.store && <Badge className="ms-2 !py-0">{outletById[r.store].name} store</Badge>}<span className="block text-xs text-steel">{supplierById[g.supplierId].name}</span></Td>
                       <Td align="right">{fmtQty(r.baselineQty, g.unit)}<span className="block text-xs text-steel">{fmtDate(r.baselineDate)}</span></Td>
                       <Td align="right">{r.received ? `+${fmtQty(r.received, g.unit)}` : "None"}</Td>
                       <Td align="right">{r.usage ? `−${fmtQty(r.usage, g.unit)}` : "None"}</Td>
                       <Td align="right">{r.waste + r.breakage ? `−${fmtQty(r.waste + r.breakage, g.unit)}` : "None"}</Td>
                       <Td align="right">{net ? `${net > 0 ? "+" : "−"}${fmtQty(Math.abs(net), g.unit)}` : "None"}</Td>
                       <Td align="right" className={cn("text-ink", r.estimated < 0 && "text-neg")}>{fmtQty(r.estimated, g.unit)}</Td>
-                      <Td align="right">{r.daysCover === null ? "None" : <span className={cn(low && "text-warn")}>{fmtNum(Math.max(0, r.daysCover), 1)}{low && <Badge tone="warn" className="ml-2 !py-0">low</Badge>}</span>}</Td>
+                      <Td align="right">{r.daysCover === null ? "None" : <span className={cn(low && "text-warn")}>{fmtNum(Math.max(0, r.daysCover), 1)}{low && <Badge tone="warn" className="ms-2 !py-0">low</Badge>}</span>}</Td>
                       <Td align="right">{money(r.value)}</Td>
                     </tr>
                     {open === r.ingredientId && (
@@ -160,7 +160,7 @@ function ItemDetail({ row, propertyId, money, cases, mayCount, mayLog }: {
     return () => ro.disconnect();
   }, []);
   return (
-    <div ref={ref} style={{ width }} className="sticky left-0 grid gap-6 px-5 py-5 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
+    <div ref={ref} style={{ width }} className="sticky start-0 grid gap-6 px-5 py-5 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
       <div>
         <h3 className="text-[15px]">Recent counts</h3>
         {history.length === 0 ? <p className="mt-2 text-sm text-steel">Not counted yet.</p> : (
@@ -194,7 +194,7 @@ function ItemDetail({ row, propertyId, money, cases, mayCount, mayLog }: {
           <div>
             <h3 className="text-[15px]">Cases</h3>
             <ul className="mt-2 space-y-1.5 text-sm">
-              {cases.map((c) => <li key={c.id}><Link href={`/investigations/${c.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{c.headline}</Link> <Badge className="ml-1 !py-0">{STATUS_LABEL[c.status]}</Badge></li>)}
+              {cases.map((c) => <li key={c.id}><Link href={`/investigations/${c.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{c.headline}</Link> <Badge className="ms-1 !py-0">{STATUS_LABEL[c.status]}</Badge></li>)}
             </ul>
           </div>
         )}

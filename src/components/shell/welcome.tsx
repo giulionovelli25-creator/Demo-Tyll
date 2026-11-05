@@ -25,7 +25,7 @@ export function Welcome() {
   };
   return (
     <div className="grid min-h-screen bg-paper lg:grid-cols-[1.05fr_1fr]">
-      <section className="waves waves-full hidden flex-col justify-between overflow-hidden border-r border-line p-12 lg:sticky lg:top-0 lg:flex lg:h-screen">
+      <section className="waves waves-full hidden flex-col justify-between overflow-hidden border-e border-line p-12 lg:sticky lg:top-0 lg:flex lg:h-screen">
         <TyllLogo height={44} priority />
         <div>
           <p className="max-w-[20ch] text-[40px] leading-[1.08] tracking-[-0.035em] text-ink">Find problems. Explain them. Help fix them. Protect profits.</p>

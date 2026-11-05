@@ -45,9 +45,9 @@ export function MenuTable({ rows, money }: { rows: ItemRow[]; money: (n: number,
           <option value="all">All categories</option>
           {categories.map((c) => <option key={c}>{c}</option>)}
         </Select>
-        <div className="relative ml-auto w-full sm:w-[220px]">
-          <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a dish or drink" aria-label="Find a dish or drink" className="h-10 w-full rounded-full border border-line bg-paper pl-9 pr-3 text-sm placeholder:text-fog hover:border-fog" />
+        <div className="relative ms-auto w-full sm:w-[220px]">
+          <Search size={15} className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a dish or drink" aria-label="Find a dish or drink" className="h-10 w-full rounded-full border border-line bg-paper ps-9 pe-3 text-sm placeholder:text-fog hover:border-fog" />
         </div>
       </div>
       {visible.length === 0 ? (
@@ -76,7 +76,7 @@ export function MenuTable({ rows, money }: { rows: ItemRow[]; money: (n: number,
                 return (
                   <tr key={r.itemId} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/menu/${r.itemId}`)}>
                     <Td>
-                      <button type="button" className="text-left text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/menu/${r.itemId}`); }}>{it.name}</button>
+                      <button type="button" className="text-start text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/menu/${r.itemId}`); }}>{it.name}</button>
                       <span className="mt-0.5 flex items-center gap-2 text-xs text-steel">{it.category}{!r.hasRecipe && <Badge className="!py-0">standard cost</Badge>}</span>
                     </Td>
                     <Td align="right">{fmtNum(r.units)}<span className="block"><Delta value={pctChange(r.units, r.unitsBefore)} /></span></Td>

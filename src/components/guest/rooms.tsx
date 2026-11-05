@@ -44,9 +44,9 @@ export function RoomReadiness() {
             const [label, tone] = RISK[a.risk];
             return (
               <li key={r.roomId}>
-                <button type="button" onClick={() => router.push(`/rooms?tab=readiness&room=${r.roomId}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5 text-left hover:bg-cloud sm:px-6">
+                <button type="button" onClick={() => router.push(`/rooms?tab=readiness&room=${r.roomId}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5 text-start hover:bg-cloud sm:px-6">
                   <span className="num w-14 text-lg tracking-[-0.02em] text-ink">{r.number}</span>
-                  <span className="min-w-[160px] flex-1"><span className="text-sm text-ink">{a.guest}{a.vip && <Star size={13} className="ml-1 inline text-warn" aria-label="VIP" />}</span><span className="block text-xs text-steel">Arriving {hm(a.etaMin)} · {r.type}</span></span>
+                  <span className="min-w-[160px] flex-1"><span className="text-sm text-ink">{a.guest}{a.vip && <Star size={13} className="ms-1 inline text-warn" aria-label="VIP" />}</span><span className="block text-xs text-steel">Arriving {hm(a.etaMin)} · {r.type}</span></span>
                   <span className="text-xs text-steel">{HK_LABEL[r.status].label}{r.estimate.readyAt !== null && r.status !== "ready" ? ` · ready about ${hm(r.estimate.readyAt)}` : ""}</span>
                   <Badge tone={tone} className="!py-0">{label}{a.delay && a.delay > 0 && a.risk !== "ready" ? `, ${a.delay} min` : ""}</Badge>
                 </button>
@@ -198,7 +198,7 @@ export function HousekeepingBoard() {
           <ul className="divide-y divide-hair border-t border-hair">
             {g.rooms.map((r) => (
               <li key={r.roomId} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3 sm:px-6">
-                <button type="button" onClick={() => router.push(`/rooms?tab=housekeeping&room=${r.roomId}`)} className="flex min-w-[200px] flex-1 items-center gap-3 text-left">
+                <button type="button" onClick={() => router.push(`/rooms?tab=housekeeping&room=${r.roomId}`)} className="flex min-w-[200px] flex-1 items-center gap-3 text-start">
                   <span className="num w-14 text-lg text-ink">{r.number}</span>
                   <span className="text-sm"><span className="text-ink">{r.housekeeperName ?? "Not assigned"}</span><span className="block text-xs text-steel">{r.type}{r.arrival ? ` · arrival ${hm(r.arrival.etaMin)}` : ""}{r.estimate.readyAt !== null ? ` · ready about ${hm(r.estimate.readyAt)}` : ""}</span></span>
                 </button>
@@ -217,7 +217,7 @@ export function HousekeepingBoard() {
       ))}
       {problems.length > 0 && (
         <Panel title="Reported problems">
-          <ul className="space-y-2 text-sm">{problems.map((r) => <li key={r.roomId}><button type="button" className="text-left underline-offset-4 hover:underline" onClick={() => router.push(`/rooms?tab=housekeeping&room=${r.roomId}`)}>Room {r.number}: {r.issues.filter((i) => !i.resolved).map((i) => i.text).join("; ")}</button></li>)}</ul>
+          <ul className="space-y-2 text-sm">{problems.map((r) => <li key={r.roomId}><button type="button" className="text-start underline-offset-4 hover:underline" onClick={() => router.push(`/rooms?tab=housekeeping&room=${r.roomId}`)}>Room {r.number}: {r.issues.filter((i) => !i.resolved).map((i) => i.text).join("; ")}</button></li>)}</ul>
         </Panel>
       )}
     </div>
@@ -241,8 +241,8 @@ export function MyRooms() {
         <ul className="divide-y divide-hair rounded-2xl border border-line">
           {rooms.map((r, i) => (
             <li key={r.roomId} className={cn("flex flex-wrap items-center gap-3 px-4 py-3", i === 0 && "bg-cloud")}>
-              <button type="button" onClick={() => router.push(`/tasks?room=${r.roomId}`)} className="flex-1 text-left">
-                <span className="num text-xl text-ink">{r.number}</span>{r.priority && <Badge tone="warn" className="ml-2 !py-0">Priority</Badge>}
+              <button type="button" onClick={() => router.push(`/tasks?room=${r.roomId}`)} className="flex-1 text-start">
+                <span className="num text-xl text-ink">{r.number}</span>{r.priority && <Badge tone="warn" className="ms-2 !py-0">Priority</Badge>}
                 <span className="block text-xs text-steel">{r.type} · {HK_LABEL[r.status].label}{r.arrival ? ` · guest arriving ${hm(r.arrival.etaMin)}` : ""}</span>
               </button>
               {r.status === "vacant_dirty" && <Button variant="primary" onClick={() => step(r.roomId, r.status, "start", `Room ${r.number}: cleaning started.`)}>Start</Button>}

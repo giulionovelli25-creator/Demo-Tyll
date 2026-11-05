@@ -205,10 +205,12 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     expect(where(proxy(req("/forecast?tab=buy")))).toBe("/login?next=%2Fforecast%3Ftab%3Dbuy");
   });
 
-  it("sends new visitors to the welcome screen instead of sign-in", () => {
-    expect(where(proxy(req("/")))).toBe("/welcome");
-    expect(where(proxy(req("/login")))).toBe("/welcome");
-    expect(where(proxy(req("/welcome")))).toBeNull();
+  it("opens straight into the demo, with no entry page or sign-in", () => {
+    const first = proxy(req("/"));
+    expect(where(first)).toBe("/");
+    expect(cookieOf(first)).toBeTruthy();
+    expect(where(proxy(req("/login")))).toBe("/");
+    expect(where(proxy(req("/welcome")))).toBe("/");
   });
 
   it("enters as the Purchasing Manager with no PIN, and switches only between allowed roles", async () => {

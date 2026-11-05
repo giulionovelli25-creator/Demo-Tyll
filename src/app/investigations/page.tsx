@@ -122,7 +122,7 @@ export default function MoneyBackListPage() {
             <option value="none">Unassigned</option>
             {assignees.map((a) => <option key={a} value={a}>{personName(a)}</option>)}
           </Select>
-          <p className="num ml-auto pb-2 text-[13px] text-steel">{rows.length} case{rows.length === 1 ? "" : "s"}</p>
+          <p className="num ms-auto pb-2 text-[13px] text-steel">{rows.length} case{rows.length === 1 ? "" : "s"}</p>
         </div>
         {mayAssign && pickedCases.length > 0 && (
           <form className="mx-5 mb-4 flex flex-wrap items-end gap-3 rounded-2xl border border-line bg-cloud px-4 py-3 sm:mx-6" onSubmit={(e) => { e.preventDefault(); assignPicked(); }}>
@@ -163,7 +163,7 @@ export default function MoneyBackListPage() {
                       <tr key={i.id} className={cn(rowClass, "cursor-pointer", picked.includes(i.id) && "bg-cloud")} onClick={() => router.push(`/investigations/${i.id}`)}>
                         {mayAssign && <Td className="w-10">{i.status !== "closed" && <input type="checkbox" aria-label={`Select ${i.headline}`} className="accent-[var(--color-accent)]" checked={picked.includes(i.id)} onClick={(e) => e.stopPropagation()} onChange={() => togglePick(i.id)} />}</Td>}
                         <Td className="max-w-[360px]">
-                          <button type="button" className="text-left text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/investigations/${i.id}`); }}>{i.headline}</button>
+                          <button type="button" className="text-start text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/investigations/${i.id}`); }}>{i.headline}</button>
                           <span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]} · {i.id.replace("EX-", "")}</span>
                         </Td>
                         <Td>{i.outletId ? outletLabel(i.outletId) : <span className="text-steel">{propertyById[i.propertyId].name}</span>}</Td>

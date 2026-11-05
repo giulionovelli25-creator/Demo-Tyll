@@ -51,7 +51,7 @@ function RequestsHome() {
     const late = !closed(r.status) && r.status !== "confirmed" && data.now - r.createdMin > (SERVICE_TARGETS.request[r.kind] ?? 30);
     return (
       <li key={r.id}>
-        <button type="button" onClick={() => router.push(`/rooms?tab=requests&request=${r.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-left hover:bg-cloud sm:px-6">
+        <button type="button" onClick={() => router.push(`/rooms?tab=requests&request=${r.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-start hover:bg-cloud sm:px-6">
           <span className="flex-1"><span className="text-sm text-ink">Room {r.room} · {KIND[r.kind]}</span><span className="block text-xs text-steel">{r.details} · for {hm(r.forMin)} · {r.id}</span></span>
           {r.priority === "urgent" && <Badge tone="neg" className="!py-0">urgent</Badge>}
           {late && <Badge tone="neg" className="!py-0">waiting {data.now - r.createdMin} min</Badge>}
@@ -179,7 +179,7 @@ function GcList({ rows, base }: { rows: GcRow[]; base: string }) {
     <ul className="divide-y divide-hair border-t border-hair">
       {rows.map((r) => (
         <li key={r.id}>
-          <button type="button" onClick={() => router.push(`${base}&request=${r.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-left hover:bg-cloud sm:px-6">
+          <button type="button" onClick={() => router.push(`${base}&request=${r.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-start hover:bg-cloud sm:px-6">
             <span className="flex-1"><span className="text-sm text-ink">{r.venueName} · {r.party} at {hm(r.timeMin)}{r.date !== DEMO_TODAY ? " tomorrow" : ""}</span><span className="block text-xs text-steel">Room {r.room} · {r.id}{r.proposedMin !== undefined ? ` · suggested ${hm(r.proposedMin)}` : ""}</span></span>
             <Badge tone={GC_STATUS[r.status].tone} className="!py-0">{GC_STATUS[r.status].label}</Badge>
           </button>
@@ -400,7 +400,7 @@ export function GuestStrip() {
       <span><span className="num text-ink">{t.roomsOnTime.done ? `${t.roomsOnTime.onTime} of ${t.roomsOnTime.done}` : "No"}</span> <span className="text-steel">rooms ready by arrival</span></span>
       <span><span className="num text-ink">{t.requestsInTarget.done ? `${t.requestsInTarget.inTarget} of ${t.requestsInTarget.done}` : "No"}</span> <span className="text-steel">requests within target</span></span>
       <span><span className={open.roomsAtRisk ? "num text-warn" : "num text-ink"}>{open.roomsAtRisk}</span> <span className="text-steel">arrivals at risk now</span></span>
-      <Link href="/rooms?tab=service" className="ml-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Service performance <ArrowRight size={14} /></Link>
+      <Link href="/rooms?tab=service" className="ms-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Service performance <ArrowRight size={14} /></Link>
     </section>
   );
 }

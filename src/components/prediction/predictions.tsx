@@ -112,9 +112,9 @@ function AllRecommended({ rows, plan }: { rows: PlanItem[]; plan: MonthPlanOut }
     <>
       <div className="flex flex-wrap items-center gap-2 p-4 sm:px-6">
         <Segmented label="Part of the order" value={area} onChange={setArea} options={STOCK_AREAS.map((a) => ({ value: a.id, label: a.name }))} />
-        <div className="relative ml-auto w-full sm:w-[220px]">
-          <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find an item" aria-label="Find an item" className="h-10 w-full rounded-full border border-line bg-paper pl-9 pr-3 text-sm text-ink placeholder:text-steel" />
+        <div className="relative ms-auto w-full sm:w-[220px]">
+          <Search size={15} className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find an item" aria-label="Find an item" className="h-10 w-full rounded-full border border-line bg-paper ps-9 pe-3 text-sm text-ink placeholder:text-steel" />
         </div>
       </div>
       <div className="flex flex-wrap gap-2 px-4 pb-3 text-[13px] text-steel sm:px-6">

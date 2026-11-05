@@ -17,7 +17,7 @@ Open **http://localhost:3210**. (Plain `npm run dev` uses port 3000.) Node.js 20
 
 ## Public demo (demo.tyll.ai)
 
-Set `TYLL_PUBLIC_DEMO=on` (for local use, in `.env.local`) and restart. Visitors see one welcome screen with **Enter demo**, which opens the **Overview** as the F&B Director. No password or PIN. A role switcher in the top bar changes instantly between Purchasing Manager, F&B Director, Head Chef and Financial Controller. Any deep link, such as `/stock`, `/money?tab=pour` or `/forecast?tab=buy`, opens directly as a role that can see it. Shared records return to their starting state at most once an hour, when someone enters.
+Set `TYLL_PUBLIC_DEMO=on` (for local use, in `.env.local`) and restart. Visitors go straight into the demo as the F&B Director, with no sign-in or entry page. The language picker is in the top bar: English, German, Italian and Arabic. No password or PIN. A role switcher in the top bar changes instantly between Purchasing Manager, F&B Director, Head Chef and Financial Controller. Any deep link, such as `/stock`, `/money?tab=pour` or `/forecast?tab=buy`, opens directly as a role that can see it. Shared records return to their starting state at most once an hour, when someone enters.
 
 The sidebar is **Overview**, then **Log waste, Stock, Predictions, Revenue, Drinks control, Alerts, Reports and settings**. The profile menu holds More tools, What's new, light or dark mode, and Settings. **More tools** separates Available now from Coming soon (Events and Staffing, Rooms and Guest Experience, Sales and Performance), which carry a Preview badge and a banner. A 5 step **Guided path**, offered on More tools and restartable from the sidebar, sits in the page and closes with ×.
 

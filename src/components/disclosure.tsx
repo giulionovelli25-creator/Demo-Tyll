@@ -41,7 +41,7 @@ function useNeedsFullLoad(href: string) {
   return inDemo && !(user && demoRoleFits(user, moduleOfPath(href.split("?")[0])));
 }
 
-const ROW = "flex w-full items-center gap-3 rounded-panel px-4 py-3.5 text-left transition-colors duration-150 ease-tyll hover:bg-cloud sm:px-6";
+const ROW = "flex w-full items-center gap-3 rounded-panel px-4 py-3.5 text-start transition-colors duration-150 ease-tyll hover:bg-cloud sm:px-6";
 
 function RowText({ title, summary }: { title: ReactNode; summary: ReactNode }) {
   return (
@@ -90,7 +90,7 @@ export function SectionLink({ href, title, summary, className }: { href: string;
 export function RowLink({ href, title, summary }: { href: string; title: ReactNode; summary: ReactNode }) {
   const publicDemo = useNeedsFullLoad(href);
   const style = "flex min-h-11 items-center justify-between gap-3 px-4 py-2.5 transition-colors duration-150 ease-tyll hover:bg-cloud sm:px-6";
-  const body = <><span className="text-sm font-medium text-ink">{title}</span><span className="flex min-w-0 items-center gap-2 text-right text-[13px] text-steel"><span className="hidden sm:inline">{summary}</span><ChevronRight size={16} className="shrink-0" aria-hidden /></span></>;
+  const body = <><span className="text-sm font-medium text-ink">{title}</span><span className="flex min-w-0 items-center gap-2 text-end text-[13px] text-steel"><span className="hidden sm:inline">{summary}</span><ChevronRight size={16} className="shrink-0" aria-hidden /></span></>;
   return publicDemo ? <a href={href} className={style}>{body}</a> : <Link href={href} className={style}>{body}</Link>;
 }
 

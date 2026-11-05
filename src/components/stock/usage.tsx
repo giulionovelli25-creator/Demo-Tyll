@@ -34,7 +34,7 @@ function Qty({ p, n, sign }: { p: UsagePeriod; n: number; sign?: "+" | "−" | "
   return (
     <span className="num">
       {s}{s && " "}{q}
-      {isWine(p) && Math.abs(n) > 0 && <span className="ml-1.5 text-xs text-steel">{bottles(Math.abs(n))} bottle{bottles(Math.abs(n)) === 1 ? "" : "s"}</span>}
+      {isWine(p) && Math.abs(n) > 0 && <span className="ms-1.5 text-xs text-steel">{bottles(Math.abs(n))} bottle{bottles(Math.abs(n)) === 1 ? "" : "s"}</span>}
     </span>
   );
 }
@@ -62,10 +62,10 @@ export function UsageFigures({ p, v }: { p: UsagePeriod; v: Variance }) {
         <div>
           <h3 className="text-[15px]">From the stock counts</h3>
           <dl className="mt-2 text-sm">
-            <Line label="Opening count" sub={when(p.from.date, p.from.min)}><Qty p={p} n={v.opening} />{v.openingWas !== undefined && <span className="ml-2 text-xs text-steel line-through">{qtyWords(v.openingWas, p.ingredientId)}</span>}</Line>
+            <Line label="Opening count" sub={when(p.from.date, p.from.min)}><Qty p={p} n={v.opening} />{v.openingWas !== undefined && <span className="ms-2 text-xs text-steel line-through">{qtyWords(v.openingWas, p.ingredientId)}</span>}</Line>
             <Line label="Received from the main storeroom"><Qty p={p} n={v.received} sign="+" /></Line>
             {v.transfers !== 0 && <Line label="Transfers"><Qty p={p} n={v.transfers} sign="±" /></Line>}
-            <Line label="Closing count" sub={when(p.to.date, p.to.min)}><Qty p={p} n={v.closing} sign="−" />{v.closingWas !== undefined && <span className="ml-2 text-xs text-steel line-through">{qtyWords(v.closingWas, p.ingredientId)}</span>}</Line>
+            <Line label="Closing count" sub={when(p.to.date, p.to.min)}><Qty p={p} n={v.closing} sign="−" />{v.closingWas !== undefined && <span className="ms-2 text-xs text-steel line-through">{qtyWords(v.closingWas, p.ingredientId)}</span>}</Line>
             <Line label="Actual use" strong><Qty p={p} n={v.actual} /></Line>
           </dl>
         </div>
@@ -87,7 +87,7 @@ export function UsageFigures({ p, v }: { p: UsagePeriod; v: Variance }) {
           <p className="num text-[26px] tracking-[-0.02em] text-ink"><Qty p={p} n={v.unexplained} sign={v.unexplained < 0 ? "−" : undefined} /></p>
           <p className="text-xs text-steel">Actual use less the use the records explain. Counting can be out by up to {qtyWords(v.tolerance, p.ingredientId)}.</p>
         </div>
-        <div className="text-right">
+        <div className="text-end">
           <p className="text-[13px] text-steel">Estimated cost at today&rsquo;s price</p>
           <p className={cn("num text-[22px]", v.significant && v.unexplained > 0 && "text-warn")}>{money(Math.max(0, v.value))}</p>
           <p className="text-xs text-steel">{money(p.unitCost)} {unitWord}. Not a confirmed loss.</p>
@@ -114,7 +114,7 @@ export function UsageCauses({ p, causes }: { p: UsagePeriod; causes: Cause[] }) 
           const isOpen = open === c.id;
           return (
             <li key={c.id}>
-              <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : c.id)} className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-cloud">
+              <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : c.id)} className="flex w-full items-center gap-3 px-4 py-3 text-start text-sm hover:bg-cloud">
                 <span className="flex-1 text-ink">{c.title}</span>
                 {c.upTo !== undefined && c.upTo > 0 && <span className="num hidden text-xs text-steel sm:inline">up to {qtyWords(c.upTo, p.ingredientId)}</span>}
                 <Badge tone={STATUS[c.status].tone} className="!py-0">{STATUS[c.status].label}</Badge>
@@ -141,7 +141,7 @@ function Section({ title, count, children }: { title: string; count: ReactNode; 
   const [open, setOpen] = useState(false);
   return (
     <div className="border-t border-hair first:border-t-0">
-      <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="flex w-full items-center gap-3 py-3 text-left text-sm hover:text-ink">
+      <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="flex w-full items-center gap-3 py-3 text-start text-sm hover:text-ink">
         <span className="flex-1 text-ink">{title}</span>
         <span className="num text-xs text-steel">{count}</span>
         <ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform duration-200", open && "rotate-180")} aria-hidden />
@@ -186,14 +186,14 @@ export function UsageRecords({ p, v }: { p: UsagePeriod; v: Variance }) {
       </Section>
       <Section title="Sales recorded in the POS" count={`${v.soldUnits} sold`}>
         <table className="w-full">
-          <thead><tr className="text-left text-xs text-steel"><th className="py-1 font-medium">Item</th><th className="py-1 text-right font-medium">Sold</th><th className="py-1 text-right font-medium">Complimentary</th><th className="py-1 text-right font-medium">Expected use</th></tr></thead>
+          <thead><tr className="text-start text-xs text-steel"><th className="py-1 font-medium">Item</th><th className="py-1 text-end font-medium">Sold</th><th className="py-1 text-end font-medium">Complimentary</th><th className="py-1 text-end font-medium">Expected use</th></tr></thead>
           <tbody>
             {[...byItem].map(([itemId, x]) => (
               <tr key={itemId} className="num border-t border-hair">
                 <td className="py-1.5"><Link href={`/menu/${itemId}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{itemById[itemId].name}</Link></td>
-                <td className="py-1.5 text-right">{x.units}</td>
-                <td className="py-1.5 text-right">{x.comped || "None"}</td>
-                <td className="py-1.5 text-right">{q(x.qty)}</td>
+                <td className="py-1.5 text-end">{x.units}</td>
+                <td className="py-1.5 text-end">{x.comped || "None"}</td>
+                <td className="py-1.5 text-end">{q(x.qty)}</td>
               </tr>
             ))}
           </tbody>

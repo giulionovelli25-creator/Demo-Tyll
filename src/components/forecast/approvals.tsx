@@ -203,7 +203,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
                     <Td align="right">
                       {editableBy ? (
                         <span className="inline-flex flex-col items-end gap-1">
-                          <span className="flex items-center gap-1.5"><input aria-label={`Quantity of ${ingredientById[g].name}`} type="number" min={0} step="any" value={qty} onChange={(e) => setEdits({ ...edits, [g]: { ...edits[g], qty: Math.max(0, Number(e.target.value)) } })} className="num h-9 w-24 rounded-xl border border-line px-2 text-right hover:border-fog" /><span className="w-8 text-left text-xs text-steel">{unitOf(g)}</span></span>
+                          <span className="flex items-center gap-1.5"><input aria-label={`Quantity of ${ingredientById[g].name}`} type="number" min={0} step="any" value={qty} onChange={(e) => setEdits({ ...edits, [g]: { ...edits[g], qty: Math.max(0, Number(e.target.value)) } })} className="num h-9 w-24 rounded-xl border border-line px-2 text-end hover:border-fog" /><span className="w-8 text-start text-xs text-steel">{unitOf(g)}</span></span>
                           {editableBy === "purchasing" && changed && <input aria-label={`Reason for changing ${ingredientById[g].name}`} placeholder="Reason for the change" value={edits[g]?.reason ?? ""} onChange={(e) => setEdits({ ...edits, [g]: { ...edits[g], reason: e.target.value } })} className="h-8 w-48 rounded-lg border border-warn/40 px-2 text-xs" />}
                         </span>
                       ) : <span className="num">{fmtQty(l.qty, ingredientById[g].unit)}</span>}
@@ -223,7 +223,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
             </tbody>
           </table>
         </TableWrap>
-        {showMoney && <p className="px-6 py-4 text-right text-sm text-graphite">Expected total <span className="num ml-2 text-[20px] text-ink">{money(liveTotal)}</span></p>}
+        {showMoney && <p className="px-6 py-4 text-end text-sm text-graphite">Expected total <span className="num ms-2 text-[20px] text-ink">{money(liveTotal)}</span></p>}
       </Panel>
 
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1fr_1fr]">

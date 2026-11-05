@@ -65,7 +65,7 @@ function OppList({ propertyId, setPropertyId, props }: { propertyId: string; set
           <ul className="divide-y divide-hair border-t border-hair">
             {list.map((o) => (
               <li key={o.id}>
-                <button type="button" onClick={() => router.push(`/events?tab=opportunities&opp=${o.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-left hover:bg-cloud sm:px-6">
+                <button type="button" onClick={() => router.push(`/events?tab=opportunities&opp=${o.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-start hover:bg-cloud sm:px-6">
                   <span className="min-w-[200px] flex-1"><span className="text-sm text-ink">{o.customer} · {o.type}</span><span className="block text-xs text-steel">{o.id} · {o.expectedDate} · {o.guests} guests · {o.ownerName}{o.nextAction ? ` · Next: ${o.nextAction}${o.nextActionDue ? ` by ${o.nextActionDue}` : ""}` : ""}</span></span>
                   <span className="num text-sm">{o.value ? money(o.value) : "No value"}</span>
                   <Badge tone={OPP_STATUS[o.status].tone} className="!py-0">{OPP_STATUS[o.status].label}</Badge>
@@ -180,7 +180,7 @@ export function Proposals() {
           <ul className="divide-y divide-hair border-t border-hair">
             {rows.map(({ o, p }) => (
               <li key={p.id}>
-                <button type="button" onClick={() => router.push(`/events?tab=proposals&opp=${o.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-left hover:bg-cloud sm:px-6">
+                <button type="button" onClick={() => router.push(`/events?tab=proposals&opp=${o.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-start hover:bg-cloud sm:px-6">
                   <span className="min-w-[200px] flex-1"><span className="text-sm text-ink">{o.customer} · {p.guests} guests · {p.date}</span><span className="block text-xs text-steel">{p.id} v{p.version} · valid until {p.validUntil}{p.discountPct ? ` · ${p.discountPct}% discount` : ""}</span></span>
                   <span className="num text-sm">{money(p.costing.price, o.currency)}</span>
                   <Badge tone={PRP_STATUS[p.status].tone} className="!py-0">{PRP_STATUS[p.status].label}</Badge>
@@ -367,7 +367,7 @@ export function BusinessStrip() {
       <span className="text-steel">Confirmed new business, October</span>
       {rows.map((r) => <span key={r.propertyId}><span className="num text-ink">{fmtMoney(r.value, r.currency)}</span> <span className="text-steel">{propertyById[r.propertyId].name.replace("Grand Resort ", "")}, {r.count} deal{r.count === 1 ? "" : "s"}</span></span>)}
       <span className="text-xs text-steel">Contract value, not yet revenue</span>
-      <Link href="/events?tab=confirmed" className="ml-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Confirmed business <ArrowRight size={14} /></Link>
+      <Link href="/events?tab=confirmed" className="ms-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Confirmed business <ArrowRight size={14} /></Link>
     </section>
   );
 }

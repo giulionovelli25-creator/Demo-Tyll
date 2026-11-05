@@ -95,7 +95,7 @@ export function OwnerOverview() {
         <span><span className="num text-pos">{money(t.recovered)}</span> <span className="text-steel">revenue recovered</span></span>
         <span><span className="num text-neg">{money(t.confirmedLoss)}</span> <span className="text-steel">confirmed losses</span></span>
         <span><span className="num text-ink">{open.length}</span> <span className="text-steel">still unresolved</span></span>
-        <Link href="/investigations" className="ml-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} /></Link>
+        <Link href="/investigations" className="ms-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} /></Link>
       </section>
 
       <GuestStrip />
@@ -110,16 +110,16 @@ export function OwnerOverview() {
 function CompRow({ label, sub, now, before, spark, issues, onClick, strong, tag, money }: { money: (n: number, o?: { compact?: boolean }) => string; label: string; sub?: string; now: Totals; before: Totals; spark?: number[]; issues: number; onClick: () => void; strong?: boolean; tag?: React.ReactNode }) {
   return (
     <li className={cn("border-t border-hair", strong && "bg-cloud")}>
-      <button type="button" onClick={onClick} className="grid w-full grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))_88px_64px_16px] items-center gap-3 px-5 py-3 text-left text-sm transition-colors duration-200 hover:bg-mist sm:px-6">
+      <button type="button" onClick={onClick} className="grid w-full grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))_88px_64px_16px] items-center gap-3 px-5 py-3 text-start text-sm transition-colors duration-200 hover:bg-mist sm:px-6">
         <span className="min-w-0">
           <span className={cn("block truncate", strong ? "text-ink" : "text-graphite")}>{label}</span>
           <span className="flex items-center gap-1.5 text-xs text-steel">{sub}{tag}</span>
         </span>
-        <span className="num text-right">{money(now.net, { compact: true })}<span className="block"><Delta value={pctChange(now.net, before.net)} /></span></span>
-        <span className="num text-right text-graphite">{money(expensesOf(now), { compact: true })}</span>
-        <span className="num text-right">{fmtPct(gross(now))}<span className="block"><Delta value={(gross(now) - gross(before)) * 100} kind="pts" /></span></span>
+        <span className="num text-end">{money(now.net, { compact: true })}<span className="block"><Delta value={pctChange(now.net, before.net)} /></span></span>
+        <span className="num text-end text-graphite">{money(expensesOf(now), { compact: true })}</span>
+        <span className="num text-end">{fmtPct(gross(now))}<span className="block"><Delta value={(gross(now) - gross(before)) * 100} kind="pts" /></span></span>
         <span className="flex justify-center">{spark ? <Spark values={spark} width={72} height={22} /> : null}</span>
-        <span className={cn("num text-right", issues > 0 ? "text-ink" : "text-fog")}>{issues}</span>
+        <span className={cn("num text-end", issues > 0 ? "text-ink" : "text-fog")}>{issues}</span>
         <ChevronRight size={15} className="text-fog" aria-hidden />
       </button>
     </li>

@@ -35,7 +35,6 @@ interface Persisted {
   scopes: Record<string, Scope>;
   preset: RangePreset;
   custom: DateRange;
-  lang: "en" | "ar";
   seq: number;
   investigations: Record<string, InvestigationState>;
   /** Cases opened by hand from a stock count shortfall. */
@@ -70,7 +69,6 @@ interface Actions {
   setScope(scope: Partial<Scope>): void;
   setPreset(preset: RangePreset): void;
   setCustom(range: DateRange): Result;
-  setLang(lang: "en" | "ar"): void;
   assignInvestigation(id: string, assigneeId: string, deadline: string): Result;
   addNote(id: string, text: string): Result;
   startReview(id: string): Result;
@@ -115,7 +113,6 @@ const initial = (): Persisted => ({
   scopes: {},
   preset: "week",
   custom: { from: addDays(DEMO_TODAY, -13), to: DEMO_TODAY },
-  lang: "en",
   seq: 0,
   investigations: {},
   stockCases: [],
@@ -230,9 +227,6 @@ export const useDemo = create<DemoState>()(
           if (range.to > DEMO_TODAY) return fail("The end date cannot be in the future.");
           set({ custom: range, preset: "custom" });
           return OK;
-        },
-        setLang(lang) {
-          set({ lang });
         },
 
         assignInvestigation(id, assigneeId, deadline) {

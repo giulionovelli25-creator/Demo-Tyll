@@ -78,7 +78,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
                       </span>
                     ) : (
                       <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); submit(g.id, entered[g.id] ?? ""); }}>
-                        <input aria-label={`Counted quantity of ${g.name}`} type="number" inputMode="decimal" min="0" step={g.unit === "each" ? 1 : 0.01} value={entered[g.id] ?? ""} onChange={(e) => setEntered((x) => ({ ...x, [g.id]: e.target.value }))} placeholder="0" className="num h-11 w-28 rounded-xl border border-line px-3 text-right text-base hover:border-fog" />
+                        <input aria-label={`Counted quantity of ${g.name}`} type="number" inputMode="decimal" min="0" step={g.unit === "each" ? 1 : 0.01} value={entered[g.id] ?? ""} onChange={(e) => setEntered((x) => ({ ...x, [g.id]: e.target.value }))} placeholder="0" className="num h-11 w-28 rounded-xl border border-line px-3 text-end text-base hover:border-fog" />
                         <Button type="submit" variant="primary">Record</Button>
                       </form>
                     )}

@@ -25,7 +25,7 @@ export function AlertRow({ alert, money, userId, state, compact }: { alert: Feed
         <p className="text-[15px] font-medium text-ink">{alert.what}</p>
         <p className="mt-1 text-sm text-graphite">{compact ? <><OutletDot id={alert.outletId} />{alert.where}</> : alert.why}</p>
       </div>
-      {alert.amount !== null && <p className="shrink-0 sm:w-32 sm:text-right"><span className="num text-lg font-medium text-money">{money(alert.amount)}</span> <span className="text-xs text-steel sm:block">{alert.amountWord}</span></p>}
+      {alert.amount !== null && <p className="shrink-0 sm:w-32 sm:text-end"><span className="num text-lg font-medium text-money">{money(alert.amount)}</span> <span className="text-xs text-steel sm:block">{alert.amountWord}</span></p>}
       <div className="flex shrink-0 flex-wrap items-center gap-1">
         <Link href={alert.next.href} className={cn("inline-flex h-10 items-center rounded-full px-4 text-[13px] font-medium transition-colors duration-200", "bg-accent-soft text-accent-ink hover:bg-line")}>{alert.next.label}</Link>
         {userId && state === "open" && (

@@ -40,7 +40,7 @@ export function MyEvents() {
         <ul className="grid gap-3 md:grid-cols-2">
           {events.map((e) => (
             <li key={e.id}>
-              <button type="button" onClick={() => router.push(`/events?tab=events&event=${e.id}`)} className="w-full rounded-panel border border-line bg-paper p-5 text-left shadow-panel transition-colors hover:border-fog">
+              <button type="button" onClick={() => router.push(`/events?tab=events&event=${e.id}`)} className="w-full rounded-panel border border-line bg-paper p-5 text-start shadow-panel transition-colors hover:border-fog">
                 <span className="flex flex-wrap items-center justify-between gap-2"><span className="text-lg tracking-[-0.02em] text-ink">{e.name}</span><Badge tone={STATUS[e.status].tone}>{STATUS[e.status].label}</Badge></span>
                 <span className="mt-1 block text-sm text-steel">{e.type} · {fmtDate(e.date, true)}, {toHm(e.start)} to {toHm(e.end)} · {e.guests} guests · {e.venue}</span>
               </button>
@@ -170,9 +170,9 @@ function FoodStep({ event, editable, onSaved }: { event: EventRecord; editable: 
                 <li key={it.itemId} className="flex flex-wrap items-center gap-3 text-sm">
                   <span className="min-w-[160px] flex-1 text-ink">{itemById[it.itemId].name}</span>
                   <label className="flex items-center gap-2"><span className="sr-only">Per guest</span>
-                    <input type="number" min={0} step={0.1} value={it.perGuest} disabled={!editable} onChange={(e) => patch(s.id, (x) => ({ ...x, items: x.items.map((y, j) => (j === k ? { ...y, perGuest: Math.max(0, Number(e.target.value)) } : y)) }))} className="num h-9 w-20 rounded-xl border border-line px-2 text-right" />
+                    <input type="number" min={0} step={0.1} value={it.perGuest} disabled={!editable} onChange={(e) => patch(s.id, (x) => ({ ...x, items: x.items.map((y, j) => (j === k ? { ...y, perGuest: Math.max(0, Number(e.target.value)) } : y)) }))} className="num h-9 w-20 rounded-xl border border-line px-2 text-end" />
                     <span className="text-steel">per guest</span></label>
-                  <span className="num w-24 text-right text-graphite">{Math.ceil(s.guests * it.perGuest - 1e-9)} {itemById[it.itemId].dept === "food" ? "portions" : "servings"}</span>
+                  <span className="num w-24 text-end text-graphite">{Math.ceil(s.guests * it.perGuest - 1e-9)} {itemById[it.itemId].dept === "food" ? "portions" : "servings"}</span>
                   {editable && <button type="button" aria-label={`Remove ${itemById[it.itemId].name}`} onClick={() => patch(s.id, (x) => ({ ...x, items: x.items.filter((_, j) => j !== k) }))} className="rounded-full p-1.5 text-steel hover:bg-mist"><Trash2 size={14} /></button>}
                 </li>
               ))}
@@ -211,7 +211,7 @@ function RequirementsStep({ d, editable, onNext }: { d: EventDetail; editable: b
   const row = (p: EventDetail["portions"][number]) => (
     <li key={p.itemId}>
       <div className="flex flex-wrap items-center gap-3 px-4 py-2.5">
-        <button type="button" aria-expanded={open === p.itemId} onClick={() => setOpen(open === p.itemId ? null : p.itemId)} className="flex flex-1 items-center gap-2 text-left text-sm text-ink">
+        <button type="button" aria-expanded={open === p.itemId} onClick={() => setOpen(open === p.itemId ? null : p.itemId)} className="flex flex-1 items-center gap-2 text-start text-sm text-ink">
           <ChevronDown size={14} className={cn("shrink-0 text-steel transition-transform", open === p.itemId && "rotate-180")} aria-hidden />{itemById[p.itemId].name}
         </button>
         {mayKitchen && itemById[p.itemId].dept === "food" ? (
@@ -316,7 +316,7 @@ function StaffingStep({ d, editable, onNext }: { d: EventDetail; editable: boole
         <Panel title="Support requests" flush>
           <ul className="divide-y divide-hair border-t border-hair">
             {d.requests.map((r) => (
-              <li key={r.id}><button type="button" onClick={() => router.push(`/events?tab=support&request=${r.id}`)} className="flex w-full flex-wrap justify-between gap-2 px-5 py-3 text-left text-sm hover:bg-cloud sm:px-6">
+              <li key={r.id}><button type="button" onClick={() => router.push(`/events?tab=support&request=${r.id}`)} className="flex w-full flex-wrap justify-between gap-2 px-5 py-3 text-start text-sm hover:bg-cloud sm:px-6">
                 <span className="text-ink">{r.count} {SKILL_LABEL[r.skill as keyof typeof SKILL_LABEL].toLowerCase()}{r.count === 1 ? "" : "s"} · {r.id}</span>
                 <span className="text-graphite">{r.status === "cancelled" ? "Withdrawn" : `${r.items.filter((i) => i.status === "approved").length} of ${r.count} confirmed`}</span>
               </button></li>
@@ -324,14 +324,14 @@ function StaffingStep({ d, editable, onNext }: { d: EventDetail; editable: boole
           </ul>
         </Panel>
       )}
-      <Panel title={<button type="button" aria-expanded={showTeam} onClick={() => setShowTeam(!showTeam)} className="flex items-center gap-2 text-left"><ChevronDown size={16} className={cn("transition-transform", showTeam && "rotate-180")} /> Confirmed people ({d.staff.filter((s) => s.status === "confirmed").length})</button>}>
+      <Panel title={<button type="button" aria-expanded={showTeam} onClick={() => setShowTeam(!showTeam)} className="flex items-center gap-2 text-start"><ChevronDown size={16} className={cn("transition-transform", showTeam && "rotate-180")} /> Confirmed people ({d.staff.filter((s) => s.status === "confirmed").length})</button>}>
         {showTeam ? (
           <ul className="space-y-1.5 text-sm">
             {d.staff.map((s) => <li key={s.id} className={cn("flex flex-wrap justify-between gap-2", s.status === "cancelled" && "text-steel line-through")}><span>{s.name}, {SKILL_LABEL[s.skill as keyof typeof SKILL_LABEL].toLowerCase()}</span><span className="text-graphite">{s.deptName} · {toHm(s.start)} to {toHm(s.end)}{s.cancelledReason ? ` · ${s.cancelledReason}` : ""}</span></li>)}
           </ul>
         ) : <p className="text-sm text-steel">The event&rsquo;s own team and anyone lent by other departments.</p>}
       </Panel>
-      <Panel title={<button type="button" aria-expanded={showRatios} onClick={() => setShowRatios(!showRatios)} className="flex items-center gap-2 text-left"><ChevronDown size={16} className={cn("transition-transform", showRatios && "rotate-180")} /> Staffing assumptions</button>}>
+      <Panel title={<button type="button" aria-expanded={showRatios} onClick={() => setShowRatios(!showRatios)} className="flex items-center gap-2 text-start"><ChevronDown size={16} className={cn("transition-transform", showRatios && "rotate-180")} /> Staffing assumptions</button>}>
         {showRatios ? (
           <div className="space-y-4">
             <p className="text-[13px] text-steel">Demo planning assumptions: guests per person, rounded up. Not universal hospitality rules. 0 means the role is not needed.</p>
@@ -387,7 +387,7 @@ function SummaryStep({ d, editable, onEdit }: { d: EventDetail; editable: boolea
             {risks.length === 0 ? <p className="mt-2 text-sm text-pos">Nothing outstanding.</p> : (
               <ul className="mt-2 space-y-2">{risks.map((r, k) => <li key={k} className="flex flex-wrap items-center justify-between gap-2 text-sm"><span className="text-graphite">{r.text}</span><Button size="sm" variant="ghost" onClick={r.go}>{r.action}</Button></li>)}</ul>
             )}
-            {d.purchaseIds.length > 0 && <p className="mt-3 text-sm text-graphite">Purchase requests: {d.purchaseIds.map((id) => <button key={id} type="button" className="num mr-2 underline underline-offset-4" onClick={() => router.push(`/forecast?tab=approvals&request=${id}`)}>{id}</button>)}</p>}
+            {d.purchaseIds.length > 0 && <p className="mt-3 text-sm text-graphite">Purchase requests: {d.purchaseIds.map((id) => <button key={id} type="button" className="num me-2 underline underline-offset-4" onClick={() => router.push(`/forecast?tab=approvals&request=${id}`)}>{id}</button>)}</p>}
           </div>
         </div>
       </Panel>

@@ -13,6 +13,7 @@ import { api, goToLogin, lockLocally, reloadTo, useSession } from "@/lib/api";
 import { MODULE_TONE, OUTLET_TONE } from "@/components/theme";
 import { backTarget, isMainPage } from "@/lib/back";
 import { useLook } from "@/lib/look";
+import { LanguageLayer, LanguagePicker } from "./language";
 import { LookPicker } from "./look-picker";
 import { AlertFeedProvider, useAlertFeed } from "@/lib/alert-feed";
 import type { Snapshot } from "@/lib/server/snapshot";
@@ -89,7 +90,7 @@ function SideItem({ m, active, reload, count }: { m: ModuleId; active: boolean; 
   const { icon: Icon, label, short } = NAV[m];
   const className = cn(
     "relative flex items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink",
-    "flex-col gap-1 px-1 py-2 text-center text-[11px] leading-tight xl:flex-row xl:gap-3 xl:px-3 xl:py-2.5 xl:text-left xl:text-sm",
+    "flex-col gap-1 px-1 py-2 text-center text-[11px] leading-tight xl:flex-row xl:gap-3 xl:px-3 xl:py-2.5 xl:text-start xl:text-sm",
     active && "bg-nav-active font-medium text-nav-ink shadow-panel hover:bg-nav-active",
   );
   const body = (
@@ -97,7 +98,7 @@ function SideItem({ m, active, reload, count }: { m: ModuleId; active: boolean; 
       <Icon size={18} className={active ? "text-accent-ink" : undefined} aria-hidden />
       <span className="min-w-0 xl:hidden">{short ?? label}</span>
       <span className="hidden min-w-0 xl:inline">{label}</span>
-      {count && <span className="num absolute right-1 top-1 min-w-[18px] rounded-full bg-neg-soft px-1 text-center text-[11px] font-medium leading-[18px] text-neg xl:static xl:ml-auto"><span aria-hidden>{count.n}</span><span className="sr-only">{count.label}</span></span>}
+      {count && <span className="num absolute end-1 top-1 min-w-[18px] rounded-full bg-neg-soft px-1 text-center text-[11px] font-medium leading-[18px] text-neg xl:static xl:ms-auto"><span aria-hidden>{count.n}</span><span className="sr-only">{count.label}</span></span>}
     </>
   );
   return (
@@ -110,13 +111,12 @@ function SideItem({ m, active, reload, count }: { m: ModuleId; active: boolean; 
 
 const subscribe = () => () => {};
 
-/** Ends the session. In the public demo, the visitor goes back to the welcome screen. */
+/** Ends the session. The public demo has no sign-in, so it has nothing to leave. */
 async function leaveTyll(signOut: () => void) {
-  const publicDemo = !!useSession.getState().demoRoles;
   await api("/api/auth/logout", { method: "POST", body: {} }).catch(() => undefined);
   signOut();
   clearDataset();
-  reloadTo(publicDemo ? "/welcome" : "/login");
+  reloadTo("/login");
 }
 
 /** Public demo: switch to another fictional role at once, then open that role's landing page. */
@@ -163,7 +163,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (!hydrated) return <BrandLoader />;
   if (pathname === "/login") return <Login />;
   if (pathname === "/welcome") return <Welcome />;
-  return <Authed>{children}</Authed>;
+  return <><LanguageLayer /><Authed>{children}</Authed></>;
 }
 
 /**
@@ -254,7 +254,8 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
           <TakeTourButton user={user} label="Tour" className="border-0 px-2" />
           <NotificationBell />
           {others.length > 0 && <Link href={MODULE_PATH[others[0]]} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Full Tyll</Link>}
-          <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">{publicDemo ? "Leave demo" : "Sign out"}</button>
+          <LanguagePicker />
+          {!publicDemo && <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Sign out</button>}
         </span>
       </header>
       <main className="mx-auto w-full max-w-md px-4 pb-24 pt-5">{publicDemo ? <GuidedPath /> : <TourOffer user={user} />}{children}</main>
@@ -339,7 +340,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
   return (
     <AlertFeedProvider>
     <div className="flex min-h-screen">
-      <a href="#main" className="no-print sr-only rounded-full bg-accent px-4 py-2 text-sm font-medium text-on-accent focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80]">Skip to content</a>
+      <a href="#main" className="no-print sr-only rounded-full bg-accent px-4 py-2 text-sm font-medium text-on-accent focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[80]">Skip to content</a>
       <Sidebar user={user} active={current} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar user={user} />
@@ -385,7 +386,7 @@ function Sidebar({ user, active }: { user: User; active: ModuleId }) {
   const footButton = "flex w-full items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink flex-col gap-1 px-1 py-2 text-[11px] xl:h-10 xl:flex-row xl:gap-3 xl:px-3 xl:py-0 xl:text-sm";
   return (
     <>
-      <aside className="no-print sticky top-0 z-30 hidden h-screen w-[88px] shrink-0 flex-col border-r border-nav-line bg-nav backdrop-blur-xl md:flex xl:w-[232px]">
+      <aside className="no-print sticky top-0 z-30 hidden h-screen w-[88px] shrink-0 flex-col border-e border-nav-line bg-nav backdrop-blur-xl md:flex xl:w-[232px]">
         <div className="flex h-16 items-center justify-center gap-2 px-2 xl:justify-start xl:px-5">
           <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center rounded-md">
             <span className="hidden xl:block"><TyllLogo height={24} priority /></span>
@@ -441,7 +442,7 @@ function PhoneBar({ user, active }: { user: User; active: ModuleId }) {
           const body = (
             <>
               <span className={cn("flex h-7 w-10 items-center justify-center rounded-full", m === "waste" && logs ? "bg-accent text-on-accent" : lit === m && "bg-accent-soft")}><Icon size={18} aria-hidden /></span>
-              {counts[m] && <span className="num absolute right-[calc(50%-22px)] top-1.5 min-w-[16px] rounded-full bg-neg-soft px-1 text-center text-[10px] font-medium leading-4 text-neg"><span aria-hidden>{counts[m].n}</span><span className="sr-only">{counts[m].label}</span></span>}
+              {counts[m] && <span className="num absolute end-[calc(50%-22px)] top-1.5 min-w-[16px] rounded-full bg-neg-soft px-1 text-center text-[10px] font-medium leading-4 text-neg"><span aria-hidden>{counts[m].n}</span><span className="sr-only">{counts[m].label}</span></span>}
               <span className="max-w-full truncate px-0.5">{short ?? label}</span>
             </>
           );
@@ -505,7 +506,7 @@ function ScopeControl({ user }: { user: User }) {
 
 function ScopePanel({ onClose, children }: { onClose: () => void; children: ReactNode }) {
   const ref = useDismiss(onClose);
-  return <div ref={ref} role="dialog" aria-label="Choose outlet and department" className="animate-rise absolute left-0 top-11 z-40 w-[280px] space-y-3 rounded-panel border border-line bg-paper p-4 shadow-float">{children}</div>;
+  return <div ref={ref} role="dialog" aria-label="Choose outlet and department" className="animate-rise absolute start-0 top-11 z-40 w-[280px] space-y-3 rounded-panel border border-line bg-paper p-4 shadow-float">{children}</div>;
 }
 
 function Topbar({ user }: { user: User }) {
@@ -542,7 +543,7 @@ function Topbar({ user }: { user: User }) {
         {showScope ? (
           <div className="order-last flex min-w-0 basis-full flex-wrap items-center gap-2 lg:order-none lg:basis-auto lg:flex-nowrap">
             <ScopeControl user={user} />
-            <span className="ml-auto lg:hidden"><RoleSwitcher user={user} /></span>
+            <span className="ms-auto lg:hidden"><RoleSwitcher user={user} /></span>
             <div className={cn("relative min-w-0 max-lg:order-last max-lg:basis-full", !dated && "hidden")}>
               <Segmented size="sm" label="Date range" value={preset} onChange={(v) => (v === "custom" ? setPanel("dates") : (setPreset(v), setPanel(null)))} options={PRESETS.map((p) => (p.value === "custom" && preset === "custom" ? { ...p, label: fmtRange(custom) } : p))} />
               {panel === "dates" && <DatePanel onClose={() => setPanel(null)} />}
@@ -551,14 +552,15 @@ function Topbar({ user }: { user: User }) {
         ) : (
           <p className="hidden min-w-0 truncate text-sm text-steel sm:block">{allowedOutlets(user)[0] ? `${outletById[allowedOutlets(user)[0]].name}, ` : ""}{propertyById[props[0]].name}</p>
         )}
-        <div className="ml-auto flex min-w-0 items-center gap-1">
+        <div className="ms-auto flex min-w-0 items-center gap-1">
+          <LanguagePicker />
           <button type="button" data-tour="search" onClick={() => setPalette(true)} aria-label="Search items, outlets and actions" className="flex h-10 items-center gap-2 rounded-full px-3 text-[13px] text-graphite transition-colors duration-200 hover:bg-mist min-[90rem]:border min-[90rem]:border-line">
             <Search size={17} aria-hidden /><span className="hidden min-[90rem]:inline">Search</span><kbd className="hidden rounded-md border border-line px-1.5 text-[11px] text-steel min-[90rem]:inline">{/Mac|iPhone|iPad/.test(navigator.userAgent) ? "Cmd K" : "Ctrl K"}</kbd>
           </button>
           <AlertsButton user={user} />
           <span className={showScope ? "hidden lg:block" : undefined}><RoleSwitcher user={user} /></span>
           <div className="relative shrink-0">
-            <button type="button" onClick={() => toggle("profile")} aria-label="Your profile and settings" aria-expanded={panel === "profile"} aria-haspopup="menu" className="ml-1 flex items-center rounded-full transition-opacity duration-200 hover:opacity-85">
+            <button type="button" onClick={() => toggle("profile")} aria-label="Your profile and settings" aria-expanded={panel === "profile"} aria-haspopup="menu" className="ms-1 flex items-center rounded-full transition-opacity duration-200 hover:opacity-85">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-xs font-medium text-paper" aria-hidden>{user.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
             </button>
             {panel === "profile" && <ProfileMenu user={user} onClose={() => setPanel(null)} onNews={() => setNews(true)} theme={theme} onTheme={toggleTheme} />}
@@ -598,7 +600,7 @@ function DatePanel({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState("");
   const ref = useDismiss(onClose);
   return (
-    <div ref={ref} className="animate-rise absolute right-0 top-12 z-40 w-[300px] rounded-2xl border border-line bg-paper p-4 shadow-float">
+    <div ref={ref} className="animate-rise absolute end-0 top-12 z-40 w-[300px] rounded-2xl border border-line bg-paper p-4 shadow-float">
       <form
         className="space-y-3"
         onSubmit={(e) => {
@@ -632,27 +634,29 @@ function ProfileMenu({ user, onClose, onNews, theme, onTheme }: { user: User; on
   };
   const leave = () => leaveTyll(signOut);
   return (
-    <div ref={ref} role="menu" className="animate-rise absolute right-0 top-12 z-40 w-[280px] rounded-2xl border border-line bg-paper p-2 shadow-float">
+    <div ref={ref} role="menu" className="animate-rise absolute end-0 top-12 z-40 w-[280px] rounded-2xl border border-line bg-paper p-2 shadow-float">
       <div className="px-3 py-2.5">
         <p className="text-sm text-ink">{user.name}</p>
         <p className="text-xs text-steel">{user.title}</p>
       </div>
       <div className="border-t border-hair pt-1">
         <div className="px-1 py-1" onClick={onClose}><TakeTourButton user={user} here label="Tour this page" className="w-full border-0 px-2 py-2 text-sm" /></div>
-        <button role="menuitem" type="button" onClick={() => { onClose(); onNews(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist"><Sparkles size={16} strokeWidth={1.7} /> What&apos;s new</button>
-        <button role="menuitem" type="button" onClick={onTheme} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />} {theme === "dark" ? "Light mode" : "Dark mode"}</button>
-        <button role="menuitem" type="button" onClick={() => { onClose(); openLook(true); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist"><Palette size={16} /> Try a look</button>
+        <button role="menuitem" type="button" onClick={() => { onClose(); onNews(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist"><Sparkles size={16} strokeWidth={1.7} /> What&apos;s new</button>
+        <button role="menuitem" type="button" onClick={onTheme} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist">{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />} {theme === "dark" ? "Light mode" : "Dark mode"}</button>
+        <button role="menuitem" type="button" onClick={() => { onClose(); openLook(true); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist"><Palette size={16} /> Try a look</button>
         <Link role="menuitem" href="/reports" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist md:hidden"><FileText size={16} /> Reports and settings</Link>
         <Link role="menuitem" href="/more" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><LayoutGrid size={16} /> More tools</Link>
         <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} /> Settings</Link>
         {pinRequired && !publicDemo && (
-          <button role="menuitem" type="button" onClick={lock} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">
+          <button role="menuitem" type="button" onClick={lock} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist">
             <LockKeyhole size={16} strokeWidth={1.7} /> Lock now
           </button>
         )}
-        <button role="menuitem" type="button" onClick={leave} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-sm text-graphite hover:bg-mist">
-          <LogOut size={16} strokeWidth={1.7} /> {publicDemo ? "Leave demo" : "Sign out"}
-        </button>
+        {!publicDemo && (
+          <button role="menuitem" type="button" onClick={leave} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist">
+            <LogOut size={16} strokeWidth={1.7} /> Sign out
+          </button>
+        )}
       </div>
     </div>
   );

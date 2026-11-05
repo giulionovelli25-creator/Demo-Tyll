@@ -145,9 +145,9 @@ function InvoiceDetail({ id }: { id: string }) {
                   <Td>{l.name}</Td>
                   <Td align="right"><span className="num">{l.ordered} {l.unit}</span></Td>
                   <Td align="right"><span className={cn("num", l.received !== l.ordered && "text-warn")}>{l.received} {l.unit}</span></Td>
-                  <Td align="right">{fix ? <input aria-label={`Corrected quantity, ${l.name}`} className="w-20 rounded-lg border border-line px-2 py-1 text-right" value={fix[l.ingredientId].qty} onChange={(e) => setFix({ ...fix, [l.ingredientId]: { ...fix[l.ingredientId], qty: e.target.value } })} /> : <span className={cn("num", l.invoiced > l.received && "text-warn")}>{l.invoiced} {l.unit}</span>}</Td>
+                  <Td align="right">{fix ? <input aria-label={`Corrected quantity, ${l.name}`} className="w-20 rounded-lg border border-line px-2 py-1 text-end" value={fix[l.ingredientId].qty} onChange={(e) => setFix({ ...fix, [l.ingredientId]: { ...fix[l.ingredientId], qty: e.target.value } })} /> : <span className={cn("num", l.invoiced > l.received && "text-warn")}>{l.invoiced} {l.unit}</span>}</Td>
                   <Td align="right"><span className="num">{money(l.poPrice)}</span></Td>
-                  <Td align="right">{fix ? <input aria-label={`Corrected price, ${l.name}`} className="w-24 rounded-lg border border-line px-2 py-1 text-right" value={fix[l.ingredientId].unitPrice} onChange={(e) => setFix({ ...fix, [l.ingredientId]: { ...fix[l.ingredientId], unitPrice: e.target.value } })} /> : <span className={cn("num", l.invoicePrice > l.poPrice && "text-warn")}>{money(l.invoicePrice)}</span>}</Td>
+                  <Td align="right">{fix ? <input aria-label={`Corrected price, ${l.name}`} className="w-24 rounded-lg border border-line px-2 py-1 text-end" value={fix[l.ingredientId].unitPrice} onChange={(e) => setFix({ ...fix, [l.ingredientId]: { ...fix[l.ingredientId], unitPrice: e.target.value } })} /> : <span className={cn("num", l.invoicePrice > l.poPrice && "text-warn")}>{money(l.invoicePrice)}</span>}</Td>
                   <Td>{l.issues.length ? <span className="text-xs text-graphite">{l.issues.map((x) => ISSUE[x]).join("; ")}{l.issues.includes("invoiced_not_delivered") ? `: ${Math.round((l.invoiced - l.received) * 1000) / 1000} ${l.unit} more invoiced than received` : ""}</span> : <span className="text-xs text-steel">None</span>}</Td>
                 </tr>
               ))}
@@ -211,8 +211,8 @@ function RecordInvoice({ requestId, supplierId }: { requestId: string; supplierI
                   <Td>{ingredientById[l.ingredientId]?.name ?? l.ingredientId}</Td>
                   <Td align="right">{l.qty}</Td>
                   <Td align="right">{l.received ?? 0}</Td>
-                  <Td align="right"><input aria-label="Invoiced quantity" className="w-20 rounded-lg border border-line px-2 py-1 text-right" value={vals[l.ingredientId].qty} onChange={(e) => setLines({ ...vals, [l.ingredientId]: { ...vals[l.ingredientId], qty: e.target.value } })} /></Td>
-                  <Td align="right"><input aria-label="Invoice price" className="w-24 rounded-lg border border-line px-2 py-1 text-right" value={vals[l.ingredientId].unitPrice} onChange={(e) => setLines({ ...vals, [l.ingredientId]: { ...vals[l.ingredientId], unitPrice: e.target.value } })} /></Td>
+                  <Td align="right"><input aria-label="Invoiced quantity" className="w-20 rounded-lg border border-line px-2 py-1 text-end" value={vals[l.ingredientId].qty} onChange={(e) => setLines({ ...vals, [l.ingredientId]: { ...vals[l.ingredientId], qty: e.target.value } })} /></Td>
+                  <Td align="right"><input aria-label="Invoice price" className="w-24 rounded-lg border border-line px-2 py-1 text-end" value={vals[l.ingredientId].unitPrice} onChange={(e) => setLines({ ...vals, [l.ingredientId]: { ...vals[l.ingredientId], unitPrice: e.target.value } })} /></Td>
                 </tr>
               ))}
             </tbody>
@@ -253,7 +253,7 @@ export function Reports() {
       <div className="space-y-5">
         <ul className="grid gap-3 sm:grid-cols-2">
           {REPORTS.map((r) => (
-            <li key={r.id}><button type="button" onClick={() => router.push(`/finance?tab=reports&report=${r.id}&propertyId=${propertyId}`)} className="w-full rounded-panel border border-line bg-paper p-5 text-left shadow-panel transition-colors duration-200 ease-tyll hover:border-fog"><span className="block text-[17px] text-ink">{r.title}</span><span className="mt-1 block text-[13px] text-steel">{r.detail}</span></button></li>
+            <li key={r.id}><button type="button" onClick={() => router.push(`/finance?tab=reports&report=${r.id}&propertyId=${propertyId}`)} className="w-full rounded-panel border border-line bg-paper p-5 text-start shadow-panel transition-colors duration-200 ease-tyll hover:border-fog"><span className="block text-[17px] text-ink">{r.title}</span><span className="mt-1 block text-[13px] text-steel">{r.detail}</span></button></li>
           ))}
         </ul>
         <Note>Budgets and the non-F&amp;B spending history are simulated planning figures. F&amp;B spending comes from the dataset&rsquo;s supplier invoices and Tyll&rsquo;s own orders. Each hotel is shown in its own currency.</Note>
@@ -365,7 +365,7 @@ function CommitmentReport({ data, money }: { data: ReportData; money: (n: number
             <p className="flex justify-between px-6 pt-4 text-sm text-ink"><span>{STAGE[st]} ({rows.length})</span><span className="num">{money(rows.reduce((t, e) => t + e.amount, 0))}</span></p>
             <ul className="divide-y divide-hair pb-2">
               {rows.slice(0, 25).map((e) => (
-                <li key={e.id}><button type="button" disabled={!e.href} onClick={() => e.href && router.push(e.href)} className="flex w-full flex-wrap justify-between gap-2 px-6 py-2 text-left text-sm hover:bg-cloud"><span>{e.ref} · {e.supplier}<span className="block text-xs text-steel">{FIN_DEPT_LABEL[e.dept]} · {e.description}</span></span><span className="num">{money(e.amount)}</span></button></li>
+                <li key={e.id}><button type="button" disabled={!e.href} onClick={() => e.href && router.push(e.href)} className="flex w-full flex-wrap justify-between gap-2 px-6 py-2 text-start text-sm hover:bg-cloud"><span>{e.ref} · {e.supplier}<span className="block text-xs text-steel">{FIN_DEPT_LABEL[e.dept]} · {e.description}</span></span><span className="num">{money(e.amount)}</span></button></li>
               ))}
             </ul>
           </div>
@@ -419,7 +419,7 @@ function ExceptionReport({ data, money, propertyId }: { data: ReportData; money:
         {data.exceptions.length === 0 ? <p className="px-6 pb-6 text-sm text-steel">None open.</p> : (
           <ul className="divide-y divide-hair border-t border-hair">
             {data.exceptions.map((x) => (
-              <li key={x.id}><button type="button" onClick={() => router.push(`/finance?tab=invoices&invoice=${x.id}&propertyId=${propertyId}`)} className="flex w-full flex-wrap items-center justify-between gap-2 px-6 py-3 text-left text-sm hover:bg-cloud"><span>{x.supplier} · {x.poNumber}<span className="block text-xs text-steel">{x.date} · {x.issues.map((k) => ISSUE[k]).join("; ")}</span></span><span className="flex items-center gap-3"><Badge tone={INV_STATUS[x.status].tone} className="!py-0">{INV_STATUS[x.status].label}</Badge><span className="num text-warn">{money(x.amount)}</span></span></button></li>
+              <li key={x.id}><button type="button" onClick={() => router.push(`/finance?tab=invoices&invoice=${x.id}&propertyId=${propertyId}`)} className="flex w-full flex-wrap items-center justify-between gap-2 px-6 py-3 text-start text-sm hover:bg-cloud"><span>{x.supplier} · {x.poNumber}<span className="block text-xs text-steel">{x.date} · {x.issues.map((k) => ISSUE[k]).join("; ")}</span></span><span className="flex items-center gap-3"><Badge tone={INV_STATUS[x.status].tone} className="!py-0">{INV_STATUS[x.status].label}</Badge><span className="num text-warn">{money(x.amount)}</span></span></button></li>
             ))}
           </ul>
         )}
@@ -427,7 +427,7 @@ function ExceptionReport({ data, money, propertyId }: { data: ReportData; money:
       <Panel title={`Unresolved stock variances (${stock.length})`} description="Potential impact from open stock investigations. Estimates until verified; not recorded as losses or expenses." flush>
         {stock.length === 0 ? <p className="px-6 pb-6 text-sm text-steel">None open.</p> : (
           <ul className="divide-y divide-hair border-t border-hair">
-            {stock.map((i) => <li key={i.id}><button type="button" onClick={() => router.push(`/investigations/${i.id}`)} className="flex w-full justify-between gap-2 px-6 py-3 text-left text-sm hover:bg-cloud"><span>{i.headline}<span className="block text-xs text-steel">{i.id} · {i.status}</span></span><span className="num">{money(i.exposure)} potential</span></button></li>)}
+            {stock.map((i) => <li key={i.id}><button type="button" onClick={() => router.push(`/investigations/${i.id}`)} className="flex w-full justify-between gap-2 px-6 py-3 text-start text-sm hover:bg-cloud"><span>{i.headline}<span className="block text-xs text-steel">{i.id} · {i.status}</span></span><span className="num">{money(i.exposure)} potential</span></button></li>)}
           </ul>
         )}
       </Panel>

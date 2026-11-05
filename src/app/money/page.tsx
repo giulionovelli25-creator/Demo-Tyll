@@ -271,9 +271,9 @@ function Orders() {
         <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm">
           <input type="checkbox" className="accent-[var(--color-accent)]" checked={onlyChanged} onChange={(e) => setOnlyChanged(e.target.checked)} /> Only orders whose bill differs from the order
         </label>
-        <div className="relative ml-auto w-full sm:w-[260px]">
-          <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Order number, table or login" aria-label="Search orders" className="h-10 w-full rounded-full border border-line bg-paper pl-9 pr-3 text-sm placeholder:text-fog hover:border-fog" />
+        <div className="relative ms-auto w-full sm:w-[260px]">
+          <Search size={15} className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Order number, table or login" aria-label="Search orders" className="h-10 w-full rounded-full border border-line bg-paper ps-9 pe-3 text-sm placeholder:text-fog hover:border-fog" />
         </div>
       </div>
       {fetched === undefined ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Loading orders" /></div> : list.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No orders match">Clear the search, or untick the filter to see every order of the day.</EmptyState></div> : (
@@ -309,7 +309,7 @@ function Orders() {
           </TableWrap>
           <p className="num border-t border-hair px-6 py-3 text-xs text-steel">
             Showing {Math.min(shown, list.length)} of {list.length} orders. Amounts in {[...new Set(sel.outletIds.map((id) => propertyById[outletById[id].propertyId].currency))].join(" and ")}.
-            {list.length > shown && <button type="button" className="ml-3 underline underline-offset-4 hover:text-ink" onClick={() => setShown((n) => n + 40)}>Show 40 more</button>}
+            {list.length > shown && <button type="button" className="ms-3 underline underline-offset-4 hover:text-ink" onClick={() => setShown((n) => n + 40)}>Show 40 more</button>}
           </p>
         </>
       )}
@@ -440,7 +440,7 @@ function Tips() {
                     return (
                       <tr key={s.id} className={rowClass}>
                         <Td>{s.name}<span className="block text-xs capitalize text-steel">{s.role}</span></Td>
-                        <Td align="right"><input aria-label={`Hours for ${s.name}`} type="number" min="0" max="80" value={hours[s.id]} onChange={(e) => { setHours((x) => ({ ...x, [s.id]: e.target.value })); setApproved(false); }} className="num h-9 w-20 rounded-lg border border-line px-2 text-right" /></Td>
+                        <Td align="right"><input aria-label={`Hours for ${s.name}`} type="number" min="0" max="80" value={hours[s.id]} onChange={(e) => { setHours((x) => ({ ...x, [s.id]: e.target.value })); setApproved(false); }} className="num h-9 w-20 rounded-lg border border-line px-2 text-end" /></Td>
                         <Td align="right">{fmtPct(total ? h / total : 0)}</Td>
                         <Td align="right" className="text-ink">{fmtMoney(total ? (poolN * h) / total : 0, currency, { decimals: true })}</Td>
                       </tr>

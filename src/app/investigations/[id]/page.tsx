@@ -79,7 +79,7 @@ export default function InvestigationPage() {
           const g = ingredientById[s.ingredientId];
           return (
             <li key={s.ingredientId} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 px-4 py-3">
-              <span>{g.name}<span className="ml-2 text-xs text-steel">counted {fmtDate(s.count.date)} by {personName(s.count.by)}</span></span>
+              <span>{g.name}<span className="ms-2 text-xs text-steel">counted {fmtDate(s.count.date)} by {personName(s.count.by)}</span></span>
               <span className="num text-graphite">expected {fmtQty(s.count.expected, g.unit)}, counted {fmtQty(s.count.counted, g.unit)}</span>
               <span className={cn("num", s.variance < 0 ? "text-warn" : "text-steel")}>{s.variance < 0 ? `${fmtQty(Math.abs(s.variance), g.unit)} short, ${money(Math.abs(s.value))}` : "no shortfall"}</span>
             </li>

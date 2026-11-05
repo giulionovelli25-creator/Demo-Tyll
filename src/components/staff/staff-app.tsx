@@ -43,7 +43,7 @@ export function staffActions(user: User): Action[] {
 function Screen({ title, back = "/staff", children }: { title: string; back?: string; children: ReactNode }) {
   return (
     <div className="space-y-4">
-      <Link href={back} className="inline-flex h-11 items-center gap-2 rounded-full pr-3 text-[15px] text-graphite hover:text-ink"><ArrowLeft size={18} /> Back</Link>
+      <Link href={back} className="inline-flex h-11 items-center gap-2 rounded-full pe-3 text-[15px] text-graphite hover:text-ink"><ArrowLeft size={18} /> Back</Link>
       <h1 className="text-[26px] leading-tight tracking-[-0.02em]">{title}</h1>
       {children}
     </div>
@@ -183,7 +183,7 @@ function QuickLog({ kind }: { kind: "waste" | "breakage" }) {
       )}
       {kind === "waste" && <Field label="Find an item" value={term} onChange={(e) => setTerm(e.target.value)} placeholder="For example: chicken" />}
       <ul className="grid grid-cols-2 gap-2">
-        {shown.map((i) => <li key={`${i.kind}-${i.id}`}><button type="button" onClick={() => setPick(i)} className="flex min-h-16 w-full items-center rounded-2xl border border-line bg-paper px-4 py-3 text-left text-[15px] hover:border-fog">{i.name}</button></li>)}
+        {shown.map((i) => <li key={`${i.kind}-${i.id}`}><button type="button" onClick={() => setPick(i)} className="flex min-h-16 w-full items-center rounded-2xl border border-line bg-paper px-4 py-3 text-start text-[15px] hover:border-fog">{i.name}</button></li>)}
       </ul>
       {shown.length === 0 && <p className="text-[15px] text-steel">No item matches. Try another word.</p>}
     </Screen>
@@ -332,7 +332,7 @@ function RequestsMobile() {
           const next = REQ_NEXT[r.status];
           return (
             <li key={r.id} className="rounded-2xl border border-line bg-paper p-4">
-              <button type="button" className="w-full text-left" onClick={() => setOpen(open === r.id ? null : r.id)} aria-expanded={open === r.id}>
+              <button type="button" className="w-full text-start" onClick={() => setOpen(open === r.id ? null : r.id)} aria-expanded={open === r.id}>
                 <span className="block text-[17px] text-ink">Room {r.room} · {r.details}</span>
                 <span className="block text-[13px] text-steel">{r.id} · {r.status.replace(/_/g, " ")}{r.priority === "urgent" ? " · urgent" : ""}</span>
               </button>
@@ -380,7 +380,7 @@ function CountMobile() {
     <Screen title="Stock count">
       <p className="-mt-2 text-[15px] text-steel">{propertyById[propertyId].name}, main store</p>
       <Field label="Find an item" value={term} onChange={(e) => setTerm(e.target.value)} />
-      <ul className="grid grid-cols-2 gap-2">{items.map((g) => <li key={g.id}><button type="button" onClick={() => setPick(g.id)} className="flex min-h-16 w-full items-center rounded-2xl border border-line px-4 py-3 text-left text-[15px]">{g.name}</button></li>)}</ul>
+      <ul className="grid grid-cols-2 gap-2">{items.map((g) => <li key={g.id}><button type="button" onClick={() => setPick(g.id)} className="flex min-h-16 w-full items-center rounded-2xl border border-line px-4 py-3 text-start text-[15px]">{g.name}</button></li>)}</ul>
     </Screen>
   );
   const g = ingredientById[pick];
@@ -418,7 +418,7 @@ function ReceiveMobile() {
       <p className="-mt-2 text-[15px] text-steel">Approved orders expected at your hotel.</p>
       {!data ? <p className="text-steel">Loading</p> : orders.length === 0 ? <EmptyState title="No deliveries expected" /> : (
         <ul className="space-y-2">
-          {orders.map((r) => <li key={r.id}><button type="button" onClick={() => router.push(`/staff?do=receive&order=${r.id}`)} className="flex min-h-16 w-full items-center gap-3 rounded-2xl border border-line bg-paper px-4 py-3 text-left"><span className="flex-1"><span className="block text-[17px] text-ink">{r.poNumber}</span><span className="block text-[13px] text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"} · {r.lines.map((l) => ingredientById[l.ingredientId].name).slice(0, 2).join(", ")}</span></span><Badge className="!py-0">Expected</Badge></button></li>)}
+          {orders.map((r) => <li key={r.id}><button type="button" onClick={() => router.push(`/staff?do=receive&order=${r.id}`)} className="flex min-h-16 w-full items-center gap-3 rounded-2xl border border-line bg-paper px-4 py-3 text-start"><span className="flex-1"><span className="block text-[17px] text-ink">{r.poNumber}</span><span className="block text-[13px] text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"} · {r.lines.map((l) => ingredientById[l.ingredientId].name).slice(0, 2).join(", ")}</span></span><Badge className="!py-0">Expected</Badge></button></li>)}
         </ul>
       )}
     </Screen>

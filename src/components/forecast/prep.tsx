@@ -117,7 +117,7 @@ export function WhatToPrep() {
                                 <button type="button" aria-label={`More ${itemById[id].name}`} onClick={() => update({ portions: { ...draft.portions, [id]: n + 5 } })} className="flex h-9 w-9 items-center justify-center rounded-full border border-line hover:bg-mist"><Plus size={14} /></button>
                               </span>
                             ) : <span className="num text-sm">{n}</span>}
-                            <span className="w-14 text-right text-xs text-steel">portions</span>
+                            <span className="w-14 text-end text-xs text-steel">portions</span>
                           </li>
                         );
                       })}
@@ -178,7 +178,7 @@ function AdjustDemand({ prep, draft, update }: { prep: NonNullable<ReturnType<ty
   const values = { ...prep.assumptions, ...Object.fromEntries(Object.entries(draft.assumptions).filter(([, v]) => v !== undefined)) } as Assumptions;
   const sources = { ...prep.sources, ...Object.fromEntries(Object.keys(draft.assumptions).filter((k) => draft.assumptions[k as keyof Assumptions] !== undefined).map((k) => [k, "manual"])) } as typeof prep.sources;
   return (
-    <Panel title={<button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="text-left">Change expected guests</button>} description={open ? "New figures change Tyll's suggestion. Portions you typed stay as they are." : undefined}>
+    <Panel title={<button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="text-start">Change expected guests</button>} description={open ? "New figures change Tyll's suggestion. Portions you typed stay as they are." : undefined}>
       {open ? <DemandInputs baseline={prep.baseline} values={values} sources={sources} onChange={(patch) => update({ assumptions: { ...draft.assumptions, ...patch } })} /> : (
         <button type="button" onClick={() => setOpen(true)} className="text-[13px] text-steel underline underline-offset-4 hover:text-ink">Reservations, walk-ins, occupancy and events</button>
       )}
@@ -203,7 +203,7 @@ export function Checklist({ plan, assignees, onBack, eventNames = {} }: { plan: 
         {plan.tasks.slice().sort((a, b) => Number(a.done) - Number(b.done) || b.portions - a.portions).map((t) => (
           <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
             <input type="checkbox" className="h-5 w-5 accent-[var(--color-accent)]" aria-label={`Done: ${itemById[t.itemId].name}`} checked={t.done} disabled={!can(user, "prep.complete")} onChange={(e) => act(t.id, { op: "complete", done: e.target.checked })} />
-            <span className={cn("flex-1 text-[15px]", t.done ? "text-steel line-through" : "text-ink")}>Prepare {t.portions} {itemById[t.itemId].name.toLowerCase()} portion{t.portions === 1 ? "" : "s"}{t.eventId && <span className="ml-2 text-[13px] text-steel">for {eventNames[t.eventId] ?? "an event"}</span>}
+            <span className={cn("flex-1 text-[15px]", t.done ? "text-steel line-through" : "text-ink")}>Prepare {t.portions} {itemById[t.itemId].name.toLowerCase()} portion{t.portions === 1 ? "" : "s"}{t.eventId && <span className="ms-2 text-[13px] text-steel">for {eventNames[t.eventId] ?? "an event"}</span>}
               {(t.done || t.startedAt || t.issue) && <span className="block text-xs text-steel no-underline">{t.done && t.doneBy ? `Done by ${personName(t.doneBy)}${t.doneAt ? ` at ${t.doneAt.slice(11, 16)}` : ""}` : t.startedAt ? `Started at ${t.startedAt.slice(11, 16)}` : ""}{t.issue ? ` · Problem reported by ${personName(t.issue.by)}: ${t.issue.note}` : ""}</span>}</span>
             {can(user, "prep.plan") ? (
               <select aria-label={`Who prepares ${itemById[t.itemId].name}`} value={t.assigneeId ?? ""} onChange={(e) => act(t.id, { op: "assign", assigneeId: e.target.value })} className="h-9 rounded-full border border-line bg-paper px-3 text-[13px] hover:border-fog">
@@ -233,7 +233,7 @@ function EventPortions({ events, mayPlan }: { events: PrepOut["events"]; mayPlan
                 <li key={d.itemId} className="flex items-center gap-3 px-4 py-2.5 text-sm">
                   <span className="flex-1 text-ink">{itemById[d.itemId].name}{d.portions !== d.calculated && <span className="block text-xs text-steel">event plan says {d.calculated}</span>}</span>
                   {mayPlan ? <input aria-label={`Event portions of ${itemById[d.itemId].name}`} type="number" min={0} value={edits[e.id]?.[d.itemId] ?? d.portions} onChange={(ev) => setEdits({ ...edits, [e.id]: { ...edits[e.id], [d.itemId]: Math.max(0, Math.round(Number(ev.target.value))) } })} className="num h-9 w-20 rounded-xl border border-line text-center" /> : <span className="num">{d.portions}</span>}
-                  <span className="w-14 text-right text-xs text-steel">portions</span>
+                  <span className="w-14 text-end text-xs text-steel">portions</span>
                 </li>
               ))}
             </ul>

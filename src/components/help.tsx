@@ -50,9 +50,9 @@ export function Help({ text, label = "What is this?", className }: { text: strin
         <HelpCircle size={15} strokeWidth={1.8} aria-hidden />
       </button>
       {open && (
-        <span id={id} role="note" className="animate-rise absolute left-1/2 top-7 z-50 w-[min(280px,80vw)] -translate-x-1/2 rounded-2xl border border-line bg-paper p-3 pr-8 text-left text-[13px] font-normal leading-relaxed tracking-normal text-graphite shadow-float">
+        <span id={id} role="note" className="animate-rise absolute start-1/2 top-7 z-50 w-[min(280px,80vw)] -translate-x-1/2 rounded-2xl border border-line bg-paper p-3 pe-8 text-start text-[13px] font-normal leading-relaxed tracking-normal text-graphite shadow-float">
           {text}
-          <button type="button" aria-label="Close" onClick={(e) => { e.stopPropagation(); setOpen(false); }} className="absolute right-2 top-2 rounded-full p-1 text-steel hover:bg-mist"><X size={13} /></button>
+          <button type="button" aria-label="Close" onClick={(e) => { e.stopPropagation(); setOpen(false); }} className="absolute end-2 top-2 rounded-full p-1 text-steel hover:bg-mist"><X size={13} /></button>
         </span>
       )}
     </span>

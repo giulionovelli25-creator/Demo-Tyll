@@ -80,7 +80,7 @@ export function Login() {
 
   return (
     <div className="grid min-h-screen bg-paper lg:grid-cols-[1.05fr_1fr]">
-      <section className="waves waves-full hidden flex-col justify-between overflow-hidden border-r border-line p-12 lg:sticky lg:top-0 lg:flex lg:h-screen">
+      <section className="waves waves-full hidden flex-col justify-between overflow-hidden border-e border-line p-12 lg:sticky lg:top-0 lg:flex lg:h-screen">
         <TyllLogo height={44} priority />
         <div>
           <p className="max-w-[20ch] text-[40px] leading-[1.08] tracking-[-0.035em] text-ink">Find problems. Explain them. Help fix them. Protect profits.</p>
@@ -113,7 +113,7 @@ export function Login() {
                         const u = userById[a.userId];
                         return (
                           <li key={a.userId} className="border-t border-hair first:border-t-0">
-                            <button type="button" onClick={() => choose(a, true)} aria-pressed={picked === a.userId} className={cn("flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors duration-200 ease-tyll hover:bg-mist", picked === a.userId && "bg-mist")}>
+                            <button type="button" onClick={() => choose(a, true)} aria-pressed={picked === a.userId} className={cn("flex w-full items-center gap-3 px-4 py-2.5 text-start transition-colors duration-200 ease-tyll hover:bg-mist", picked === a.userId && "bg-mist")}>
                               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-paper text-[11px] font-medium text-graphite ring-1 ring-line" aria-hidden>{u.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
                               <span className="min-w-0 flex-1">
                                 <span className="block text-sm text-ink">{u.name}</span>

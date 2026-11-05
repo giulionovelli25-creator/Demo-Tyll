@@ -76,9 +76,9 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
       <p className="px-4 pt-4 text-[13px] text-steel sm:px-6">{area === "inventory" ? "Glassware, china and hotel supplies, which are reused until they break or run out. On hand is an estimate from the last count, deliveries and breakage." : "On hand is an estimate from the last count, deliveries and sales. Critical means an order placed today would arrive too late."}</p>
       <div className="flex flex-wrap items-center gap-2 px-4 py-4 sm:px-6">
         <Segmented size="sm" label="Show items" value={show} onChange={setShow} options={[{ value: "all", label: `All ${plan.items.length}` }, { value: "critical", label: `Critical ${count("critical")}` }, { value: "low", label: `Low ${count("low")}` }, { value: "fine", label: `Fine ${count("fine")}` }]} />
-        <div className="relative ml-auto w-full sm:w-[220px]">
-          <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find an item" aria-label="Find an item" className="h-10 w-full rounded-full border border-line bg-paper pl-9 pr-3 text-sm text-ink placeholder:text-steel" />
+        <div className="relative ms-auto w-full sm:w-[220px]">
+          <Search size={15} className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find an item" aria-label="Find an item" className="h-10 w-full rounded-full border border-line bg-paper ps-9 pe-3 text-sm text-ink placeholder:text-steel" />
         </div>
       </div>
       {rows.length === 0 ? <div className="px-4 pb-6 sm:px-6"><EmptyState title={q ? `No item matches "${q}"` : "No items here right now"}>Try another name, or show all items.</EmptyState></div> : (
@@ -105,7 +105,7 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
                 <Th sortKey="health" sort={sort} onSort={toggle}>Status</Th>
               </tr></thead>
               <tbody>
-                {groups.map((g) => <Fragment key={g.id}><tr><td colSpan={5} className="border-t border-hair bg-cloud px-5 py-2 sm:px-6"><span className="text-[13px] font-semibold text-ink">{g.name}</span> <span className="ml-1 text-xs text-steel">{note(g.rows)}</span></td></tr>{g.rows.map((r) => (
+                {groups.map((g) => <Fragment key={g.id}><tr><td colSpan={5} className="border-t border-hair bg-cloud px-5 py-2 sm:px-6"><span className="text-[13px] font-semibold text-ink">{g.name}</span> <span className="ms-1 text-xs text-steel">{note(g.rows)}</span></td></tr>{g.rows.map((r) => (
                   <tr key={r.ingredientId} className={cn(rowClass, r.health === "critical" && "bg-neg-soft/40")}>
                     <Td><Link href={`/stock?tab=inventory&item=${r.ingredientId}`} className="text-ink underline-offset-4 hover:underline">{name(r)}</Link></Td>
                     <Td align="right"><span className="text-ink">{fmtQty(r.onHand, r.unit)}</span></Td>

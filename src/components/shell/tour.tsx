@@ -87,7 +87,7 @@ export function Tour() {
   };
 
   return (
-    <aside aria-label="Guided owner demo" className="no-print animate-rise fixed bottom-5 right-5 z-40 w-[min(92vw,22.5rem)] rounded-panel border border-line bg-paper p-5 shadow-float">
+    <aside aria-label="Guided owner demo" className="no-print animate-rise fixed bottom-5 end-5 z-40 w-[min(92vw,22.5rem)] rounded-panel border border-line bg-paper p-5 shadow-float">
       <div className="flex items-center justify-between gap-3">
         <p className="text-[13px] text-steel">Owner demo, step {step + 1} of {TOUR_STEPS.length}</p>
         <button type="button" onClick={() => setTour(false)} aria-label="Close the guided demo" className="rounded-full p-1 text-steel hover:bg-mist hover:text-ink"><X size={16} /></button>

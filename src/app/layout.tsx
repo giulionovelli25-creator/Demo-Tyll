@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${arabic.variable} h-full`}>
       <head>
         {/* Applies a saved theme and look before first paint, so the page never flashes the wrong colours. */}
-        <script dangerouslySetInnerHTML={{ __html: `try{var r=document.documentElement.dataset;if(localStorage.getItem("tyll-theme-v2")==="dark")r.theme="dark";var l=(JSON.parse(localStorage.getItem("tyll-look-v1")||"{}").state)||{};if(l.waves)r.waves=l.waves;if(l.colour&&l.colour!=="sections"){r.look="one";if(l.colour==="outlets"){r.outlets="on";r.tone="indigo"}else{r.tone=l.colour}}}catch(e){}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try{var r=document.documentElement.dataset;if(localStorage.getItem("tyll-theme-v2")==="dark")r.theme="dark";var l=(JSON.parse(localStorage.getItem("tyll-look-v1")||"{}").state)||{};if(l.waves)r.waves=l.waves;if(l.colour&&l.colour!=="sections"){r.look="one";if(l.colour==="outlets"){r.outlets="on";r.tone="indigo"}else{r.tone=l.colour}}var g=(JSON.parse(localStorage.getItem("tyll-lang-v1")||"{}").state||{}).lang;if(g&&g!=="en"){document.documentElement.lang=g;document.documentElement.dir=g==="ar"?"rtl":"ltr";r.translating="1"}}catch(e){}` }} />
       </head>
       <body className="min-h-full">
         <Suspense fallback={<BrandLoader />}>

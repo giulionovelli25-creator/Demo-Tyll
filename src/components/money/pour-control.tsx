@@ -61,7 +61,7 @@ export function PourByItem({ family }: { family: Family }) {
                     const f = r.periods[period];
                     return (
                       <tr key={r.skuId} className={rowClass}>
-                        <Td><span className="text-ink">{r.name}</span>{f.flagged && <StatusPill rag="amber" className="ml-2 !py-0">Over pouring</StatusPill>}</Td>
+                        <Td><span className="text-ink">{r.name}</span>{f.flagged && <StatusPill rag="amber" className="ms-2 !py-0">Over pouring</StatusPill>}</Td>
                         <Td align="right">{fmtBottles(f.opened)}</Td>
                         <Td align="right">{fmtNum(f.sold)}</Td>
                         <Td align="right">{r.perBottle}</Td>

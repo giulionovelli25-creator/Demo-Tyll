@@ -4,7 +4,7 @@ Only real people can tell whether the demo is clear. Run this with two or three 
 
 ## How to run it
 
-1. Open the demo at the welcome screen. Press **Enter demo** for them.
+1. Open the demo. It starts straight on the Overview, with no sign-in.
 2. Say: "This is an early version with made up numbers. Please think out loud. If you get stuck, that is our problem, not yours."
 3. Read one task at a time. Do not point or hint. Time each task, and count the wrong taps.
 4. Reset the demo afterwards: Settings, then **Reset demo data**.

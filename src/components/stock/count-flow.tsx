@@ -100,7 +100,7 @@ export function CountFlow() {
             <p className="mt-1 text-[13px] text-steel">Set it once, in the order you walk. Everyone counting here uses it.</p>
             <ol className="mt-3 space-y-2">
               {liveRoute.map((id, i) => (
-                <li key={id} className="flex items-center gap-2 rounded-[var(--radius-control)] border border-line bg-paper p-2 pl-3 text-sm text-ink shadow-panel">
+                <li key={id} className="flex items-center gap-2 rounded-[var(--radius-control)] border border-line bg-paper p-2 ps-3 text-sm text-ink shadow-panel">
                   <span className="num w-5 text-steel">{i + 1}</span>
                   <span className="min-w-0 flex-1">{locationName(id)}</span>
                   <button type="button" aria-label={`Move ${locationName(id)} earlier`} disabled={i === 0} onClick={() => setRoute(swap(liveRoute, i, i - 1))} className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-control)] text-graphite hover:bg-mist disabled:opacity-40"><ArrowUp size={18} aria-hidden /></button>
@@ -123,13 +123,13 @@ export function CountFlow() {
         ) : (
           <>
             {draft && (
-              <button type="button" onClick={() => setChoosing(false)} className="mt-6 flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] border border-accent-ink bg-accent-soft p-4 text-left">
+              <button type="button" onClick={() => setChoosing(false)} className="mt-6 flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] border border-accent-ink bg-accent-soft p-4 text-start">
                 <span><span className="block text-[15px] font-semibold text-accent-ink">Carry on with {SCOPE_NAME[draft.scope]}</span><span className="num block text-[13px] text-graphite">{Math.min(draft.index + 1, draft.order.length)} of {draft.order.length}</span></span>
                 <ArrowRight size={20} className="text-accent-ink" aria-hidden />
               </button>
             )}
             <div className="mt-6 space-y-3">
-              <button type="button" onClick={() => start("full")} className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] bg-accent p-4 text-left text-on-accent shadow-float hover:bg-accent-hover">
+              <button type="button" onClick={() => start("full")} className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] bg-accent p-4 text-start text-on-accent shadow-float hover:bg-accent-hover">
                 <span><span className="block text-[17px] font-semibold">Total check</span><span className="block text-[13px]">All {ordered("full").length} items, in walking order</span></span>
                 <Play size={22} aria-hidden />
               </button>
@@ -142,7 +142,7 @@ export function CountFlow() {
                   </button>
                 ))}
               </div>
-              <button type="button" onClick={() => start("key")} className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] border border-line bg-paper p-4 text-left shadow-panel transition-colors duration-150 hover:bg-cloud">
+              <button type="button" onClick={() => start("key")} className="flex w-full items-center justify-between gap-3 rounded-[var(--radius-panel)] border border-line bg-paper p-4 text-start shadow-panel transition-colors duration-150 hover:bg-cloud">
                 <span><span className="block text-[15px] font-semibold text-ink">Key items only</span><span className="block text-[13px] text-steel">{ordered("key").length} items that matter most</span></span>
                 <Play size={20} className="text-accent-ink" aria-hidden />
               </button>
@@ -203,7 +203,7 @@ export function CountFlow() {
             const g = ingredientById[d.id];
             return (
               <li key={d.id} className="border-t border-hair first:border-t-0">
-                <button type="button" onClick={() => save({ ...draft, index: draft.order.indexOf(d.id) })} className="flex min-h-14 w-full items-center justify-between gap-3 px-4 py-2 text-left">
+                <button type="button" onClick={() => save({ ...draft, index: draft.order.indexOf(d.id) })} className="flex min-h-14 w-full items-center justify-between gap-3 px-4 py-2 text-start">
                   <span className="min-w-0"><span className="block text-sm text-ink">{g.name}</span><span className="block text-xs text-steel">Counted {fmtQty(draft.values[d.id], g.unit)}, expected {fmtQty(expectedOf(d.id), g.unit)}</span></span>
                   <span className={cn("num shrink-0 text-sm", d.value < 0 ? "text-money" : "text-ink")}>{d.value < 0 ? "−" : "+"}{local(Math.abs(d.value))}</span>
                 </button>
@@ -265,7 +265,7 @@ export function CountFlow() {
       <div className="flex h-11 items-center justify-between gap-2">
         {ExitButton}
         <p className="num text-sm font-medium text-ink" aria-live="polite">{draft.index + 1} of {total}</p>
-        <button type="button" disabled={draft.index === 0} onClick={() => go({ index: draft.index - 1 })} className="inline-flex h-11 items-center gap-1 pl-2 text-sm text-graphite disabled:opacity-40"><ArrowLeft size={16} aria-hidden /> Previous</button>
+        <button type="button" disabled={draft.index === 0} onClick={() => go({ index: draft.index - 1 })} className="inline-flex h-11 items-center gap-1 ps-2 text-sm text-graphite disabled:opacity-40"><ArrowLeft size={16} aria-hidden /> Previous</button>
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={draft.index}><div className="h-full rounded-full bg-accent transition-[width] duration-200" style={{ width: `${(draft.index / total) * 100}%` }} /></div>
 

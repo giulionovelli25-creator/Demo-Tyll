@@ -40,15 +40,15 @@ export function LookPicker({ user }: { user: User }) {
     return () => window.removeEventListener("keydown", key);
   }, [open, setOpen]);
   if (!open) return null;
-  const row = (active: boolean) => cn("flex w-full items-center gap-3 rounded-[var(--radius-control)] border p-2.5 text-left transition-colors duration-150", active ? "border-ink bg-cloud" : "border-line hover:bg-cloud");
+  const row = (active: boolean) => cn("flex w-full items-center gap-3 rounded-[var(--radius-control)] border p-2.5 text-start transition-colors duration-150", active ? "border-ink bg-cloud" : "border-line hover:bg-cloud");
   return (
-    <div role="dialog" aria-label="Try a look" className="no-print animate-rise fixed bottom-20 left-4 z-40 max-h-[calc(100vh-7rem)] w-[calc(100vw-2rem)] max-w-[340px] overflow-y-auto overscroll-contain rounded-panel border border-line bg-paper p-4 shadow-float md:bottom-6 md:left-[104px] xl:left-[248px]">
+    <div role="dialog" aria-label="Try a look" className="no-print animate-rise fixed bottom-20 start-4 z-40 max-h-[calc(100vh-7rem)] w-[calc(100vw-2rem)] max-w-[340px] overflow-y-auto overscroll-contain rounded-panel border border-line bg-paper p-4 shadow-float md:bottom-6 md:start-[104px] xl:start-[248px]">
       <div className="flex items-start justify-between gap-2">
         <div>
           <h2 className="text-section font-medium text-ink">Try a look</h2>
           <p className="text-xs text-steel">Changes only this browser. Keep clicking around while it is open.</p>
         </div>
-        <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="-mr-1 -mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-steel transition-colors duration-150 hover:bg-mist hover:text-ink"><X size={18} aria-hidden /></button>
+        <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="-me-1 -mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-steel transition-colors duration-150 hover:bg-mist hover:text-ink"><X size={18} aria-hidden /></button>
       </div>
 
       <div role="radiogroup" aria-label="Colours" className="mt-3 space-y-2">

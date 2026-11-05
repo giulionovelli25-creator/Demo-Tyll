@@ -15,7 +15,7 @@ export function Choice<T extends string>({ label, value, options, onChange }: { 
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button key={o.value} type="button" aria-pressed={value === o.value} onClick={() => onChange(o.value)}
-            className={cn("min-h-11 rounded-full border px-5 py-2 text-left text-sm transition-colors duration-200", value === o.value ? "border-accent bg-accent text-on-accent" : "border-line bg-paper text-ink hover:border-fog")}>
+            className={cn("min-h-11 rounded-full border px-5 py-2 text-start text-sm transition-colors duration-200", value === o.value ? "border-accent bg-accent text-on-accent" : "border-line bg-paper text-ink hover:border-fog")}>
             {o.label}
             {o.sub && <span className={cn("block text-xs", value === o.value ? "text-on-accent" : "text-steel")}>{o.sub}</span>}
           </button>
@@ -73,9 +73,9 @@ export function AssumptionField({ label, unit, value, source, original, onChange
       </div>
       <div className="mt-3 flex items-center gap-2">
         <input id={id} type="number" inputMode="decimal" min={0} max={max} step={step} value={Number.isFinite(value) ? value : ""} onChange={(e) => onChange(Number(e.target.value))}
-          className="num h-11 w-32 rounded-xl border border-line px-3 text-right text-base hover:border-fog" />
+          className="num h-11 w-32 rounded-xl border border-line px-3 text-end text-base hover:border-fog" />
         <span className="text-sm text-steel">{unit}</span>
-        {source === "manual" && <button type="button" onClick={onReset} className="ml-auto text-[13px] text-steel underline underline-offset-4 hover:text-ink">Use Tyll&rsquo;s figure ({original}{unit === "%" ? "%" : ""})</button>}
+        {source === "manual" && <button type="button" onClick={onReset} className="ms-auto text-[13px] text-steel underline underline-offset-4 hover:text-ink">Use Tyll&rsquo;s figure ({original}{unit === "%" ? "%" : ""})</button>}
       </div>
       {hint && <p className="mt-2 text-xs text-steel">{hint}</p>}
     </div>

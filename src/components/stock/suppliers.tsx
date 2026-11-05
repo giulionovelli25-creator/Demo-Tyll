@@ -75,21 +75,21 @@ export function Suppliers({ propertyId }: { propertyId: string }) {
                       <tr key={`${d.id}-lines`} className="border-t border-hair bg-cloud">
                         <td colSpan={5} className="px-6 pb-5 pt-2">
                           <table className="w-full text-[13px]">
-                            <thead><tr className="text-left text-xs text-steel"><th className="py-1.5 font-medium">Item</th><th className="py-1.5 text-right font-medium">Ordered</th><th className="py-1.5 text-right font-medium">Delivered</th><th className="py-1.5 text-right font-medium">Invoiced</th><th className="py-1.5 text-right font-medium">Order price</th><th className="py-1.5 text-right font-medium">Invoice price</th></tr></thead>
+                            <thead><tr className="text-start text-xs text-steel"><th className="py-1.5 font-medium">Item</th><th className="py-1.5 text-end font-medium">Ordered</th><th className="py-1.5 text-end font-medium">Delivered</th><th className="py-1.5 text-end font-medium">Invoiced</th><th className="py-1.5 text-end font-medium">Order price</th><th className="py-1.5 text-end font-medium">Invoice price</th></tr></thead>
                             <tbody>
                               {lines.map(({ line, issues: li }) => {
                                 const g = ingredientById[line.ingredientId];
                                 return (
                                   <tr key={line.ingredientId} className="num border-t border-hair">
                                     <td className="py-1.5 text-ink">{g.name}</td>
-                                    <td className="py-1.5 text-right">{fmtQty(line.ordered, g.unit)}</td>
-                                    <td className={cn("py-1.5 text-right", li.includes("short_delivery") && "text-warn")}>
+                                    <td className="py-1.5 text-end">{fmtQty(line.ordered, g.unit)}</td>
+                                    <td className={cn("py-1.5 text-end", li.includes("short_delivery") && "text-warn")}>
                                       {fmtQty(line.delivered, g.unit)}
                                       {(() => { const was = ctx.data.deliveries.find((x) => x.id === d.id)?.lines.find((l) => l.ingredientId === line.ingredientId)?.delivered; return was !== undefined && was !== line.delivered ? <span className="block text-xs text-steel line-through">{fmtQty(was, g.unit)}</span> : null; })()}
                                     </td>
-                                    <td className={cn("py-1.5 text-right", li.includes("invoiced_not_delivered") && "text-warn")}>{fmtQty(line.invoiced, g.unit)}</td>
-                                    <td className="py-1.5 text-right">{money(line.poPrice)}</td>
-                                    <td className={cn("py-1.5 text-right", li.includes("price_above_po") && "text-warn")}>{money(line.invoicePrice)}</td>
+                                    <td className={cn("py-1.5 text-end", li.includes("invoiced_not_delivered") && "text-warn")}>{fmtQty(line.invoiced, g.unit)}</td>
+                                    <td className="py-1.5 text-end">{money(line.poPrice)}</td>
+                                    <td className={cn("py-1.5 text-end", li.includes("price_above_po") && "text-warn")}>{money(line.invoicePrice)}</td>
                                   </tr>
                                 );
                               })}

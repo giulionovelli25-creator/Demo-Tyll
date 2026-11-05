@@ -88,7 +88,7 @@ export function OutletFinance() {
             <ul className="md:hidden">
               {sorted.map((r) => (
                 <li key={r.outletId} className="border-t border-hair">
-                  <button type="button" onClick={() => setOpen(open === r.outletId ? null : r.outletId)} aria-expanded={open === r.outletId} className="w-full px-4 py-4 text-left">
+                  <button type="button" onClick={() => setOpen(open === r.outletId ? null : r.outletId)} aria-expanded={open === r.outletId} className="w-full px-4 py-4 text-start">
                     <span className="flex items-center justify-between gap-2"><span className="text-sm font-medium text-ink"><OutletDot id={r.outletId} />{outletById[r.outletId].name}</span><StatusPill rag={ragOf(r)}>{fmtPct(r.now.gpMargin)} margin</StatusPill></span>
                     <span className="mt-2 grid grid-cols-3 gap-2 text-table">
                       <span><span className="block text-xs text-steel">Revenue</span><span className="num text-ink">{money(r.now.net, { compact: true })}</span></span>

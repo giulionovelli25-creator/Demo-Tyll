@@ -27,9 +27,9 @@ export function OrderVersusBill({ order }: { order: Order }) {
               <li key={i} className="flex items-baseline justify-between gap-3 py-2">
                 <span className={cn(gone && "text-steel")}>
                   {l.qty} × {itemById[l.itemId].name}
-                  {l.state === "removed_post" && !order.voided && <Badge tone="warn" className="ml-2 !py-0">removed after dispatch</Badge>}
-                  {l.state === "removed_pre" && <Badge className="ml-2 !py-0">removed before dispatch</Badge>}
-                  {l.state === "comped" && <Badge className="ml-2 !py-0">complimentary</Badge>}
+                  {l.state === "removed_post" && !order.voided && <Badge tone="warn" className="ms-2 !py-0">removed after dispatch</Badge>}
+                  {l.state === "removed_pre" && <Badge className="ms-2 !py-0">removed before dispatch</Badge>}
+                  {l.state === "comped" && <Badge className="ms-2 !py-0">complimentary</Badge>}
                 </span>
                 <span className="num">{money(lineValue(l))}</span>
               </li>

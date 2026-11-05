@@ -19,7 +19,7 @@ export function WhatsNew({ open, onClose }: { open: boolean; onClose: () => void
     <Drawer open={open} onClose={onClose} title="What's new" description="Tyll is in early access. New features are added regularly.">
       <ol className="space-y-5">
         {whatsNew.entries.map((e) => (
-          <li key={e.date + e.title} className="border-l border-line pl-4">
+          <li key={e.date + e.title} className="border-s border-line ps-4">
             <p className="text-xs text-steel">{fmtDate(e.date)}</p>
             <p className="mt-0.5 text-[15px] text-ink">{e.title}</p>
             <p className="mt-1 text-sm leading-relaxed text-graphite">{e.text}</p>
@@ -98,10 +98,10 @@ export function GuidedPath({ offer = false }: { offer?: boolean }) {
           <p className="mt-0.5 text-[15px] text-ink">{step.title}</p>
           <p className="mt-0.5 text-sm text-graphite">{step.text}</p>
         </div>
-        <button type="button" onClick={close} aria-label="Close the guided path" className="-mr-1 shrink-0 rounded-full p-2 text-steel hover:bg-mist hover:text-ink"><X size={16} /></button>
+        <button type="button" onClick={close} aria-label="Close the guided path" className="-me-1 shrink-0 rounded-full p-2 text-steel hover:bg-mist hover:text-ink"><X size={16} /></button>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <ol className="mr-auto flex gap-1.5" aria-hidden>
+        <ol className="me-auto flex gap-1.5" aria-hidden>
           {GUIDED_PATH.map((s, i) => <li key={s.href} className={cn("h-1.5 w-6 rounded-full", i <= at ? "bg-accent" : "bg-line")} />)}
         </ol>
         {at > 0 && <Button size="sm" variant="ghost" onClick={() => go(at - 1)}><ArrowLeft size={14} aria-hidden /> Back</Button>}

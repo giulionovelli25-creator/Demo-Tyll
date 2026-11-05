@@ -38,7 +38,7 @@ export function Recipes() {
                 return [
                   <tr key={item.id} className={cn(rowClass, "cursor-pointer", isOpen && "bg-cloud")} onClick={() => setOpen(isOpen ? null : item.id)}>
                     <Td>
-                      <button type="button" aria-expanded={isOpen} className="flex items-center gap-2 text-left text-ink" onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : item.id); }}>
+                      <button type="button" aria-expanded={isOpen} className="flex items-center gap-2 text-start text-ink" onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : item.id); }}>
                         <ChevronDown size={15} className={cn("shrink-0 text-steel transition-transform duration-200 ease-tyll", isOpen && "rotate-180")} aria-hidden />
                         {item.name}
                       </button>
@@ -89,12 +89,12 @@ export function Recipes() {
                 return (
                   <tr key={g.id} className={rowClass}>
                     <Td>
-                      <span className="text-ink">{g.name}</span>{changed && <Badge tone="ink" className="ml-2 !py-0">changed today</Badge>}
+                      <span className="text-ink">{g.name}</span>{changed && <Badge tone="ink" className="ms-2 !py-0">changed today</Badge>}
                       <span className="block text-xs text-steel">{supplierById[g.supplierId].name} · per {g.unit === "each" ? "unit" : g.unit} · in {used} recipe{used === 1 ? "" : "s"}</span>
                     </Td>
                     <Td align="right">
                       {mayEdit ? (
-                        <input aria-label={`Price of ${g.name}`} type="number" min="0.01" step="0.01" inputMode="decimal" value={draft ?? current} onChange={(e) => setDrafts((d) => ({ ...d, [g.id]: e.target.value }))} className="num h-9 w-24 rounded-lg border border-line px-2 text-right hover:border-fog" />
+                        <input aria-label={`Price of ${g.name}`} type="number" min="0.01" step="0.01" inputMode="decimal" value={draft ?? current} onChange={(e) => setDrafts((d) => ({ ...d, [g.id]: e.target.value }))} className="num h-9 w-24 rounded-lg border border-line px-2 text-end hover:border-fog" />
                       ) : aed(current)}
                     </Td>
                     {mayEdit && (

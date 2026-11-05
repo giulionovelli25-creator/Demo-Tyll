@@ -123,7 +123,7 @@ function OutletBuy() {
               <DemandInputs baseline={plan.baseline} values={values} sources={sources} onChange={(patch) => update({ assumptions: { ...draft.assumptions, ...patch }, picks: {} })} />
               <Choice label="Safety stock" value={String(values.safetyDays)} options={[{ value: "0", label: "None" }, { value: "0.5", label: "Half a day" }, { value: "1", label: "One day" }, { value: "2", label: "Two days" }]}
                 onChange={(v) => update({ assumptions: { ...draft.assumptions, safetyDays: Number(v) } })} />
-              <p className="text-sm text-graphite">Expected guests: <span className="num text-ink">{Math.round(plan.guests.reservations + plan.guests.walkIns + plan.guests.eventGuests)}</span> ({Math.round(plan.guests.reservations)} booked, {Math.round(plan.guests.walkIns)} walk-in, {Math.round(plan.guests.eventGuests)} from the event){loading && <span className="ml-2 text-steel">recalculating…</span>}</p>
+              <p className="text-sm text-graphite">Expected guests: <span className="num text-ink">{Math.round(plan.guests.reservations + plan.guests.walkIns + plan.guests.eventGuests)}</span> ({Math.round(plan.guests.reservations)} booked, {Math.round(plan.guests.walkIns)} walk-in, {Math.round(plan.guests.eventGuests)} from the event){loading && <span className="ms-2 text-steel">recalculating…</span>}</p>
               <div className="flex flex-wrap gap-2">
                 <Button variant="ghost" onClick={() => update({ step: 1 })}><ArrowLeft size={15} /> Back</Button>
                 <Button variant="primary" onClick={() => update({ step: 3 })}>Calculate what to buy <ArrowRight size={15} /></Button>
@@ -158,7 +158,7 @@ function OutletBuy() {
 
           <Panel title="Purchase request">
             <div className="space-y-4">
-              <p className="text-sm text-graphite"><span className="num text-[22px] text-ink">{money(total)}</span><span className="ml-2">for {chosen.length} item{chosen.length === 1 ? "" : "s"}, at the suppliers&rsquo; quoted prices</span></p>
+              <p className="text-sm text-graphite"><span className="num text-[22px] text-ink">{money(total)}</span><span className="ms-2">for {chosen.length} item{chosen.length === 1 ? "" : "s"}, at the suppliers&rsquo; quoted prices</span></p>
               <TextArea label="Comment for purchasing" value={draft.comment} onChange={(e) => update({ comment: e.target.value })} placeholder="For example: conference on Thursday, order early" />
               <div className="flex flex-wrap gap-2">
                 <Button variant="primary" disabled={busy} onClick={() => create(true)}>Send to Purchasing</Button>
@@ -184,7 +184,7 @@ function BuyRow({ x, money, open, onOpen, onPick }: {
     <li className={cn("px-5 py-4 sm:px-6", open && "bg-cloud/60")}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <input type="checkbox" className="h-5 w-5 accent-[var(--color-accent)]" aria-label={`Include ${g.name}`} checked={x.selected} onChange={(e) => onPick({ selected: e.target.checked })} />
-        <button type="button" aria-expanded={open} onClick={onOpen} className="flex min-w-[180px] flex-1 items-center gap-2 text-left">
+        <button type="button" aria-expanded={open} onClick={onOpen} className="flex min-w-[180px] flex-1 items-center gap-2 text-start">
           <ChevronDown size={15} className={cn("shrink-0 text-steel transition-transform duration-200", open && "rotate-180")} aria-hidden />
           <span>
             <span className="text-ink">{g.name}</span>
@@ -194,13 +194,13 @@ function BuyRow({ x, money, open, onOpen, onPick }: {
         <Badge tone={risk.tone} className="!py-0">{risk.label}</Badge>
         <label className="flex items-center gap-2 text-sm">
           <span className="sr-only">Quantity of {g.name}</span>
-          <input type="number" inputMode="decimal" min={0} step={l.pack} value={x.qty} onChange={(e) => onPick({ qty: Math.max(0, Number(e.target.value)), selected: true })} className="num h-10 w-24 rounded-xl border border-line px-2 text-right hover:border-fog" />
+          <input type="number" inputMode="decimal" min={0} step={l.pack} value={x.qty} onChange={(e) => onPick({ qty: Math.max(0, Number(e.target.value)), selected: true })} className="num h-10 w-24 rounded-xl border border-line px-2 text-end hover:border-fog" />
           <span className="w-8 text-steel">{l.unit}</span>
         </label>
-        <span className="num w-28 text-right text-ink">{money(x.qty * x.quote.unitPrice)}</span>
+        <span className="num w-28 text-end text-ink">{money(x.qty * x.quote.unitPrice)}</span>
       </div>
       {open && (
-        <div className="mt-4 grid gap-6 pl-8 lg:grid-cols-[1.3fr_1fr]">
+        <div className="mt-4 grid gap-6 ps-8 lg:grid-cols-[1.3fr_1fr]">
           <div>
             <h3 className="text-[13px] font-medium text-graphite">How the suggestion is worked out</h3>
             <dl className="mt-2 text-sm">
@@ -220,7 +220,7 @@ function BuyRow({ x, money, open, onOpen, onPick }: {
               {x.quotes.map((s) => (
                 <label key={s.supplierId} className={cn("flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-sm", x.quote.supplierId === s.supplierId ? "border-ink bg-paper" : "border-line hover:border-fog")}>
                   <input type="radio" name={`sup-${l.ingredientId}`} className="accent-[var(--color-accent)]" checked={x.quote.supplierId === s.supplierId} onChange={() => onPick({ supplierId: s.supplierId })} />
-                  <span className="flex-1">{s.name}{s.usual && <span className="ml-1 text-xs text-steel">usual</span>}<span className="block text-xs text-steel">{s.leadDays} day{s.leadDays === 1 ? "" : "s"} lead time</span></span>
+                  <span className="flex-1">{s.name}{s.usual && <span className="ms-1 text-xs text-steel">usual</span>}<span className="block text-xs text-steel">{s.leadDays} day{s.leadDays === 1 ? "" : "s"} lead time</span></span>
                   <span className="num">{money(s.unitPrice)} / {l.unit === "units" ? "unit" : l.unit}</span>
                 </label>
               ))}
@@ -297,7 +297,7 @@ function EventBuy({ eventId }: { eventId: string }) {
       </Panel>
       {lines.length > 0 && (
         <Panel title="Purchase request">
-          <p className="text-sm text-graphite"><span className="num text-[22px] text-ink">{money(chosen.reduce((t, x) => t + x.qty * x.quote.unitPrice, 0))}</span><span className="ml-2">for {chosen.length} item{chosen.length === 1 ? "" : "s"}</span></p>
+          <p className="text-sm text-graphite"><span className="num text-[22px] text-ink">{money(chosen.reduce((t, x) => t + x.qty * x.quote.unitPrice, 0))}</span><span className="ms-2">for {chosen.length} item{chosen.length === 1 ? "" : "s"}</span></p>
           <TextArea className="mt-3" label="Comment for purchasing" value={comment} onChange={(e) => setComment(e.target.value)} />
           <div className="mt-3 flex flex-wrap gap-2"><Button variant="primary" disabled={busy} onClick={() => create(true)}>Send to Purchasing</Button><Button disabled={busy} onClick={() => create(false)}>Save draft</Button></div>
           <Note className="mt-3">Stock rises only when the delivery is received. Nothing is sent to a supplier from this demo.</Note>

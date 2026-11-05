@@ -117,9 +117,9 @@ export function KpiDrawer({ kpi, onClose, c, rows, ctx, sel, investigations, mon
               <H>Rising as a share of sales</H>
               <ul className="divide-y divide-hair border-y border-hair">
                 {movers.map((m) => (
-                  <li key={m.key}><button type="button" onClick={() => { onOutlet(m.outletId); onClose(); }} className="flex w-full items-center justify-between gap-3 py-2.5 text-left text-sm hover:bg-cloud">
+                  <li key={m.key}><button type="button" onClick={() => { onOutlet(m.outletId); onClose(); }} className="flex w-full items-center justify-between gap-3 py-2.5 text-start text-sm hover:bg-cloud">
                     <span><span className="text-ink">{m.what}</span><span className="block text-xs text-steel">{outletLabel(m.outletId)} · {fmtPct(m.now)} of sales</span></span>
-                    <span className="text-right"><Delta value={m.move} kind="pts" goodWhen="down" /><span className="num block text-xs text-steel">about {money(m.impact)}</span></span>
+                    <span className="text-end"><Delta value={m.move} kind="pts" goodWhen="down" /><span className="num block text-xs text-steel">about {money(m.impact)}</span></span>
                   </button></li>
                 ))}
               </ul>

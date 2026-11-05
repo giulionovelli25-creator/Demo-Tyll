@@ -51,10 +51,14 @@ Stages 1–7 are complete. Stage 7 was the final planned stage: integration, not
 The public demo sends a shorter list of flags (`lib/data/demo-cases.ts`, applied in `lib/server/snapshot.ts`): the worked examples, the largest open case at each outlet and recent closed cases. Every other mode keeps the full set.
 Coca-Cola at The Terrace (8 cans unexplained), house wine at Lobby Lounge (750 ml; 250 ml at 175 ml), wagyu beef (1.8 kg), the hero order TRC-1013-198, VIP suite 1211 predicted late, EVT-DXB-0001 short of staff, invoice MEAT-1011 (chicken invoiced beyond delivery). Tests in `src/lib/__tests__` pin these numbers; keep them passing.
 
+## Languages
+English, German, Italian and Arabic, chosen in the top bar (`components/shell/language.tsx`). Screens stay written in English: `lib/i18n/dom.ts` translates text as it renders and `lib/i18n/translate.ts` looks it up in `lib/i18n/messages.json`. Figures, dates, codes and names are lifted out first, so `{0} items` covers every count. Text with no entry shows in English; `window.__tyllMissing` lists it. Use logical classes (`ms-`, `pe-`, `start-`, `text-end`), never `ml-`, `pr-`, `left-` or `text-right`, so Arabic mirrors.
+
 ## Brand
 Inter and Noto Sans Arabic, regular weight titles with tight tracking, pill buttons, ease `cubic-bezier(.22,1,.36,1)`, white and black with silver waves, one accent per section. The logo is the supplied artwork; the wordmark shows "Tyll" (`public/brand/tyll-lockup-ink-tyll.png`). Never redraw it.
 
 ## Working rules
 - Show the owner the production build (preview config `tyll-platform`, `next start`), rebuilt with `npm run check`. Live reload on the dev server (`tyll-dev`) can send open tabs into a reload loop, so use dev only while editing, with one tab open.
 - Make focused changes; keep the design. Run `npm run check` and test in a browser before reporting. Do not run a build while the dev server is running without restarting the dev server after. `USER_TEST.md` is the script for testing with hotel managers. Never claim a test passed unless it ran.
+- The public demo has no entry page or sign-in: any address opens directly as a role that may see it. `/welcome` only shows if the demo cannot start.
 - Do not deploy publicly, connect real systems, or commit secrets. Do not ask for GitHub tokens; the owner pushes with `git push origin main`.

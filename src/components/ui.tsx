@@ -119,7 +119,7 @@ export function PageHeader({ title, question, lead, children, crumbs }: { title:
 /** An outlet's colour, beside its name. Only shows in the By outlet look. */
 export function OutletDot({ id, className }: { id?: string; className?: string }) {
   if (!id || !OUTLET_TONE[id]) return null;
-  return <span aria-hidden className={cn("outlet-dot mr-1.5 h-2.5 w-2.5 shrink-0 rounded-full align-[0.05em]", className)} style={{ background: `var(--color-outlet-${OUTLET_TONE[id].mark})` }} />;
+  return <span aria-hidden className={cn("outlet-dot me-1.5 h-2.5 w-2.5 shrink-0 rounded-full align-[0.05em]", className)} style={{ background: `var(--color-outlet-${OUTLET_TONE[id].mark})` }} />;
 }
 
 /** The key numbers under a page header. Always a row of the same quiet cards. */
@@ -212,10 +212,10 @@ export function Select({ label, className, children, hideLabel, ...props }: Sele
     <div className={cn("relative min-w-0", className)}>
       <label htmlFor={id} className={hideLabel ? "sr-only" : "mb-1.5 block text-[13px] font-medium text-graphite"}>{label}</label>
       <div className="relative">
-        <select id={id} className="h-10 w-full appearance-none truncate rounded-full border border-line bg-paper pl-4 pr-9 text-sm text-ink transition-colors duration-200 ease-tyll hover:border-fog" {...props}>
+        <select id={id} className="h-10 w-full appearance-none truncate rounded-full border border-line bg-paper ps-4 pe-9 text-sm text-ink transition-colors duration-200 ease-tyll hover:border-fog" {...props}>
           {children}
         </select>
-        <ChevronDown size={15} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
+        <ChevronDown size={15} className="pointer-events-none absolute end-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
       </div>
     </div>
   );
@@ -231,10 +231,10 @@ export function Field({ label, hint, error, className, suffix, ...props }: Input
           id={id}
           aria-invalid={!!error}
           aria-describedby={error || hint ? `${id}-help` : undefined}
-          className={cn("num h-10 w-full rounded-xl border bg-paper px-3 text-sm text-ink transition-colors duration-200 ease-tyll placeholder:text-fog", error ? "border-neg" : "border-line hover:border-fog", suffix && "pr-12")}
+          className={cn("num h-10 w-full rounded-xl border bg-paper px-3 text-sm text-ink transition-colors duration-200 ease-tyll placeholder:text-fog", error ? "border-neg" : "border-line hover:border-fog", suffix && "pe-12")}
           {...props}
         />
-        {suffix && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-steel">{suffix}</span>}
+        {suffix && <span className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-xs text-steel">{suffix}</span>}
       </div>
       {(error || hint) && <p id={`${id}-help`} className={cn("mt-1 text-xs", error ? "text-neg" : "text-steel")}>{error ?? hint}</p>}
     </div>
@@ -308,7 +308,7 @@ export function Th<K extends string>({ children, sortKey, sort, onSort, align = 
   const active = sortKey && sort?.key === sortKey;
   const Icon = !active ? ChevronsUpDown : sort!.dir === "asc" ? ChevronUp : ChevronDown;
   return (
-    <th scope="col" aria-sort={active ? (sort!.dir === "asc" ? "ascending" : "descending") : undefined} className={cn("whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-graphite first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6", align === "right" ? "text-right" : "text-left", className)}>
+    <th scope="col" aria-sort={active ? (sort!.dir === "asc" ? "ascending" : "descending") : undefined} className={cn("whitespace-nowrap px-3 py-2.5 text-xs font-semibold text-graphite first:ps-5 last:pe-5 sm:first:ps-6 sm:last:pe-6", align === "right" ? "text-end" : "text-start", className)}>
       {sortKey && onSort ? (
         <button type="button" onClick={() => onSort(sortKey)} className={cn("inline-flex items-center gap-1 hover:text-ink", active && "text-ink", align === "right" && "flex-row-reverse")}>
           {children}
@@ -322,7 +322,7 @@ export function Th<K extends string>({ children, sortKey, sort, onSort, align = 
 }
 
 export function Td({ children, align = "left", className }: { children: ReactNode; align?: "left" | "right"; className?: string }) {
-  return <td className={cn("px-3 py-3 align-middle first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6", align === "right" && "num whitespace-nowrap text-right", className)}>{children}</td>;
+  return <td className={cn("px-3 py-3 align-middle first:ps-5 last:pe-5 sm:first:ps-6 sm:last:pe-6", align === "right" && "num whitespace-nowrap text-end", className)}>{children}</td>;
 }
 
 export function TableWrap({ children, className }: { children: ReactNode; className?: string }) {
@@ -399,7 +399,7 @@ export function report(result: { ok: true } | { ok: false; error: string }, succ
 export function Toaster() {
   const { toasts, drop } = useToasts();
   return (
-    <div className="no-print pointer-events-none fixed bottom-20 left-1/2 z-[70] md:bottom-5 flex w-[min(92vw,26rem)] -translate-x-1/2 flex-col gap-2" role="status" aria-live="polite">
+    <div className="no-print pointer-events-none fixed bottom-20 start-1/2 z-[70] md:bottom-5 flex w-[min(92vw,26rem)] -translate-x-1/2 flex-col gap-2" role="status" aria-live="polite">
       {toasts.map((t) => (
         <div key={t.id} className={cn("animate-rise pointer-events-auto flex items-start justify-between gap-3 rounded-2xl border bg-paper px-4 py-3 text-sm shadow-float", t.tone === "pos" ? "border-pos/25" : "border-neg/30")}>
           <span className="flex items-start gap-2.5">
@@ -424,7 +424,7 @@ export function Stat({ label, value, delta, sub, onClick, tone }: { label: strin
     </>
   );
   return onClick ? (
-    <button type="button" onClick={onClick} className="group -m-2 block rounded-xl p-2 text-left transition-colors duration-200 ease-tyll hover:bg-mist">{body}</button>
+    <button type="button" onClick={onClick} className="group -m-2 block rounded-xl p-2 text-start transition-colors duration-200 ease-tyll hover:bg-mist">{body}</button>
   ) : (
     <div>{body}</div>
   );

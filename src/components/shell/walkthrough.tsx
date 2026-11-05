@@ -250,11 +250,11 @@ export function Walkthrough() {
           style={{ top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2, boxShadow: "0 0 0 9999px var(--color-spotlight)" }} />
       ) : <div aria-hidden className="pointer-events-none fixed inset-0 z-[60] bg-scrim" />}
       <div ref={box} tabIndex={-1} role="dialog" aria-modal="false" aria-label={`Tour, step ${at + 1} of ${steps.length}: ${step.title}`} aria-live="polite"
-        className={cn("fixed z-[61] w-auto rounded-2xl border border-line bg-paper p-4 shadow-float outline-none sm:w-[360px]", narrow || !rect ? "inset-x-3 bottom-3 sm:inset-x-auto sm:right-4" : "")}
+        className={cn("fixed z-[61] w-auto rounded-2xl border border-line bg-paper p-4 shadow-float outline-none sm:w-[360px]", narrow || !rect ? "inset-x-3 bottom-3 sm:inset-x-auto sm:end-4" : "")}
         style={cardStyle}>
         <div className="flex items-start justify-between gap-3">
           <p className="text-[12px] text-steel">Step {at + 1} of {steps.length}</p>
-          <button type="button" onClick={stop} aria-label="Exit tour" className="-mr-1 -mt-1 rounded-full p-1.5 text-steel hover:bg-mist"><X size={15} /></button>
+          <button type="button" onClick={stop} aria-label="Exit tour" className="-me-1 -mt-1 rounded-full p-1.5 text-steel hover:bg-mist"><X size={15} /></button>
         </div>
         <p className="mt-1 text-[16px] tracking-[-0.01em] text-ink">{step.title}</p>
         <p className="mt-1 text-[14px] leading-snug text-graphite">{rect ? step.text : "Opening the page…"}</p>

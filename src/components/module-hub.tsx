@@ -37,8 +37,8 @@ function Cards<T extends string>({ choices, onPick, tour }: { choices: HubChoice
     <ul data-tour={tour} className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {choices.map(({ value, title, detail, icon: Icon, badge, help }) => (
         <li key={value} className="relative">
-          {help && <Help text={help} label={`What is ${title}?`} className="absolute bottom-4 right-4 z-10" />}
-          <button type="button" onClick={() => onPick(value)} className="group flex h-full w-full flex-col justify-between rounded-panel border border-line bg-paper p-5 text-left shadow-panel transition-[box-shadow,border-color,transform] duration-200 ease-tyll hover:-translate-y-0.5 hover:shadow-lift">
+          {help && <Help text={help} label={`What is ${title}?`} className="absolute bottom-4 end-4 z-10" />}
+          <button type="button" onClick={() => onPick(value)} className="group flex h-full w-full flex-col justify-between rounded-panel border border-line bg-paper p-5 text-start shadow-panel transition-[box-shadow,border-color,transform] duration-200 ease-tyll hover:-translate-y-0.5 hover:shadow-lift">
             <span className="flex items-center justify-between">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-soft text-accent-ink"><Icon size={22} strokeWidth={1.7} aria-hidden /></span>
               <span className="flex items-center gap-2">

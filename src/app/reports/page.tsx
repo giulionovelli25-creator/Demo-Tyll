@@ -84,7 +84,7 @@ export default function ReportsPage() {
 
   const Row = ({ l }: { l: Line }) => (
     <tr className={cn(rowClass, l.kind === "total" && "border-t-line")}>
-      <Td className={cn(l.kind === "total" ? "text-ink" : "!pl-10 text-graphite")}>{l.label}{l.note && <span className="ml-2 text-xs text-steel">{l.note}</span>}</Td>
+      <Td className={cn(l.kind === "total" ? "text-ink" : "!ps-10 text-graphite")}>{l.label}{l.note && <span className="ms-2 text-xs text-steel">{l.note}</span>}</Td>
       <Td align="right" className={cn(l.kind === "total" && "text-ink")}>{l.now === null ? "not split by department" : money(l.now)}</Td>
       <Td align="right">{l.before === null ? "None" : money(l.before)}</Td>
       <Td align="right">{l.now === null || l.before === null ? "None" : <Delta value={pctChange(l.now, l.before)} goodWhen={l.goodWhen ?? "none"} />}</Td>
@@ -149,7 +149,7 @@ export default function ReportsPage() {
             <h2 className="mt-4 text-[26px] tracking-[-0.03em]">{scopeName}</h2>
             <p className="text-sm text-steel">Management report, {fmtRange(sel.range)}{sel.range.to === DEMO_TODAY ? ", today to 8:55 PM" : ""}. Compared with the previous {sel.range.from === sel.range.to ? "day at the same time" : "period of the same length"}. Amounts in {currency}.</p>
           </div>
-          <dl className="num grid grid-cols-3 gap-x-8 text-right text-sm">
+          <dl className="num grid grid-cols-3 gap-x-8 text-end text-sm">
             <div><dt className="text-xs text-steel">Gross margin</dt><dd className="text-lg">{fmtPct(t.gpMargin)}</dd></div>
             <div><dt className="text-xs text-steel">Orders</dt><dd className="text-lg">{fmtNum(t.orders)}</dd></div>
             <div><dt className="text-xs text-steel">Guests</dt><dd className="text-lg">{fmtNum(t.covers)}</dd></div>
@@ -176,7 +176,7 @@ export default function ReportsPage() {
                   <tr key={r.outletId} className={rowClass}>
                     <Td className="text-ink">{outletLabel(r.outletId)}</Td>
                     <Td align="right">{money(r.now.net)}</Td>
-                    <Td align="right">{fmtPct(r.now.gpMargin)} <Delta value={(r.now.gpMargin - r.before.gpMargin) * 100} kind="pts" className="ml-1" /></Td>
+                    <Td align="right">{fmtPct(r.now.gpMargin)} <Delta value={(r.now.gpMargin - r.before.gpMargin) * 100} kind="pts" className="ms-1" /></Td>
                     <Td align="right">{r.now.operatingProfit === null ? "None" : money(r.now.operatingProfit)}</Td>
                     <Td align="right">{r.now.adjustments}</Td>
                     <Td align="right">{r.now.openCases}</Td>

@@ -36,7 +36,7 @@ function BellHome() {
   const mayRequest = can(user, "fo.desk") || can(user, "bell.dispatch") || can(user, "concierge");
   const row = (t: BellRow) => (
     <li key={t.id}>
-      <button type="button" onClick={() => router.push(`/rooms?tab=bell&task=${t.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-left hover:bg-cloud sm:px-6">
+      <button type="button" onClick={() => router.push(`/rooms?tab=bell&task=${t.id}`)} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 text-start hover:bg-cloud sm:px-6">
         <span className="flex-1"><span className="text-sm text-ink">Room {t.room} · {KIND[t.kind]}</span><span className="block text-xs text-steel">{t.from} to {t.to} · {t.bags} bag{t.bags === 1 ? "" : "s"} · {t.assigneeName ?? "not assigned"} · {t.id}</span></span>
         {t.overdue && <Badge tone="neg" className="!py-0">overdue, {t.age} min</Badge>}
         <Badge tone={BELL_STATUS[t.status].tone} className="!py-0">{BELL_STATUS[t.status].label}</Badge>
@@ -158,7 +158,7 @@ export function MyBellTasks() {
             const next = NEXT[t.status];
             return (
               <li key={t.id} className={cn("flex flex-wrap items-center gap-3 px-4 py-3", t.overdue && "bg-warn-soft")}>
-                <button type="button" onClick={() => router.push(`/tasks?task=${t.id}`)} className="flex-1 text-left">
+                <button type="button" onClick={() => router.push(`/tasks?task=${t.id}`)} className="flex-1 text-start">
                   <span className="text-[15px] text-ink">Room {t.room} · {KIND[t.kind]}</span>
                   <span className="block text-xs text-steel">{t.from} to {t.to} · {t.bags} bags · {BELL_STATUS[t.status].label}</span>
                 </button>
