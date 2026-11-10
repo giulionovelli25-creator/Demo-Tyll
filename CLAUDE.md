@@ -24,7 +24,7 @@ Stages 1–7 are complete. Stage 7 was the final planned stage: integration, not
 - Frontline staff use `/staff` (phone-first). `/count` is a full screen flow with no sidebar.
 
 ## Design rules
-- The look comes from the brand artwork: black logo, white cards, the supplied silver waves behind every page (`--wave-image`), and a glass sidebar. Primary actions are black. Light is the default; dark is an optional toggle in the profile menu.
+- The look comes from the brand artwork: black logo, white cards, the supplied silver waves behind every page (`--wave-image`, drawn as a vector in `public/brand/tyll-waves.svg` so it stays sharp), and a glass sidebar. Primary actions are black. Light is the default; dark is an optional toggle in the profile menu.
 - Each section has one accent, set with `data-mod` (`MODULE_TONE` in `components/theme.ts`, values in `tokens.css`): teal for Log waste and Stock, violet for Predictions, blue for Revenue, indigo for Overview and Alerts, plum for Reports. Links, labels, quiet buttons and money figures inside follow it, so never pick a colour by hand.
 - Try a look (`components/shell/look-picker.tsx`, `lib/look.ts`) lets the owner switch colours live: by section, by outlet, or one signature colour, and how strong the waves are. It is a decision tool. Once a look is chosen, make it the default and remove the panel.
 - All colours, type sizes, radii and shadows are tokens in `src/app/tokens.css`. Red, amber and green only for status. Chart colours are validated separately (`--chart-a`, `--chart-b`).

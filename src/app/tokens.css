@@ -128,8 +128,8 @@
   --color-outlet-violet: #6b4fc8;
   --color-outlet-rose: #b0326a;
 
-  /* The supplied wave artwork */
-  --wave-image: url("/brand/tyll-waves.webp");
+  /* The supplied wave artwork, redrawn as vectors so it stays sharp on large screens (tyll-waves.webp is the original) */
+  --wave-image: url("/brand/tyll-waves.svg");
   --wave-filter: brightness(0.8) contrast(1.6);
 }
 
