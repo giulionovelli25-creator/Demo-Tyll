@@ -68,6 +68,12 @@ export function startTranslating(root: Element, t: Translator) {
 
   walk(root);
   observer.observe(root, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: [...ATTRS] });
+  // The browser tab title lives outside the page body.
+  const title = document.querySelector("title");
+  if (title) {
+    element(title);
+    observer.observe(title, { subtree: true, childList: true, characterData: true });
+  }
 
   return () => {
     observer.disconnect();
@@ -82,5 +88,6 @@ export function startTranslating(root: Element, t: Translator) {
     };
     restore(root);
     root.querySelectorAll("*").forEach(restore);
+    if (title) restore(title);
   };
 }

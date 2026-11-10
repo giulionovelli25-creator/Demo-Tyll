@@ -29,7 +29,7 @@ const DATE = `(?:(?:${DAYS.join("|")}) )?\\d{1,2} (?:${MONTHS.join("|")})(?: \\d
 const TIME = "\\d{1,2}:\\d{2} (?:AM|PM)\\b";
 const FIGURE = "\\d(?:[\\d,.]*\\d)?";
 const MONEY = `[−-]?(?:AED|QAR|USD) ?[−-]?${FIGURE}[kKmM]?\\b`;
-const CODE = "\\b[A-Z]{2,5}-[A-Za-z0-9-]*\\d[A-Za-z0-9-]*\\b";
+const CODE = "\\b[A-Z]{2,8}-[A-Za-z0-9-]*\\d[A-Za-z0-9-]*\\b";
 const QTY = `[−+-]?${FIGURE} ?(?:kg|ml|g|l)\\b`;
 const NUMBER = `[−+-]?${FIGURE}%?`;
 
@@ -92,10 +92,11 @@ export class Translator {
     let out = text;
     if (/[A-Za-z]/.test(body)) {
       const whole = this.sentence(body);
-      // A line made of several sentences can be translated one sentence at a time.
-      const parts = whole ? [whole] : body.split(/(?<=[.?!:]) /).map((s) => this.sentence(s));
+      // A line made of several sentences, or of facts joined by " · " or "; ", is translated piece by piece.
+      const pieces = whole ? [whole] : body.split(/((?<=[.?!:]) | · |; )/);
+      const parts = pieces.map((s, i) => (whole || i % 2 ? s : this.sentence(s)));
       // German months can end in a full stop just before the sentence does.
-      if (parts.every(Boolean)) out = text.replace(body, () => parts.join(" ").replace(/\.\./g, "."));
+      if (parts.every((p) => p !== undefined)) out = text.replace(body, () => parts.join("").replace(/\.\./g, "."));
       else this.missing.add(body.replace(this.token, "{}"));
     }
     this.cache.set(text, out);

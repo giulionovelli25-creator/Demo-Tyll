@@ -131,6 +131,11 @@
   /* The supplied wave artwork, redrawn as vectors so it stays sharp on large screens (tyll-waves.webp is the original) */
   --wave-image: url("/brand/tyll-waves.svg");
   --wave-filter: brightness(0.8) contrast(1.6);
+  /* The website's moving wave: fine silver lines, stronger in the middle of the ribbon */
+  --color-silver: #c8cdd4;
+  --color-silver-mid: #a3a9b2;
+  --color-silver-deep: #a3a9b2;
+  --wave-opacity: 0.8;
 }
 
 /* One section, one colour. Links, labels, quiet buttons and money figures inside follow it. */
@@ -217,6 +222,8 @@
 
     --wave-image: none;
     --wave-filter: none;
+    --color-silver-mid: #eef0f3;
+    --wave-opacity: 0.8;
 
     --color-pos: #68d3a0;
     --color-pos-soft: #16322a;
@@ -253,8 +260,10 @@
 }
 
 /* How strongly the waves show. Medium is the default. */
-[data-waves="soft"] { --wave-filter: none; }
-[data-waves="strong"] { --wave-filter: brightness(0.76) contrast(1.9); }
+[data-waves="soft"] { --wave-filter: none; --wave-opacity: 0.5; }
+[data-waves="strong"] { --wave-filter: brightness(0.76) contrast(1.9); --wave-opacity: 1; }
+[data-theme="dark"][data-waves="soft"] { --wave-opacity: 0.55; }
+[data-theme="dark"][data-waves="strong"] { --wave-opacity: 1; }
 
 /* Outlet marks only appear in the By outlet look. */
 .outlet-dot { display: none; }

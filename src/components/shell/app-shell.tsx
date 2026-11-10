@@ -14,6 +14,7 @@ import { MODULE_TONE, OUTLET_TONE } from "@/components/theme";
 import { backTarget, isMainPage } from "@/lib/back";
 import { useLook } from "@/lib/look";
 import { LanguageLayer, LanguagePicker } from "./language";
+import { SilverWave } from "./silver-wave";
 import { LookPicker } from "./look-picker";
 import { AlertFeedProvider, useAlertFeed } from "@/lib/alert-feed";
 import type { Snapshot } from "@/lib/server/snapshot";
@@ -163,7 +164,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (!hydrated) return <BrandLoader />;
   if (pathname === "/login") return <Login />;
   if (pathname === "/welcome") return <Welcome />;
-  return <><LanguageLayer /><Authed>{children}</Authed></>;
+  return <><LanguageLayer /><SilverWave /><Authed>{children}</Authed></>;
 }
 
 /**
@@ -539,7 +540,8 @@ function Topbar({ user }: { user: User }) {
         <Link href={homePath(user)} aria-label="Tyll home" className="-my-2.5 flex items-center gap-2 rounded-md py-2.5 md:hidden">
           <TyllLogo height={20} priority />
         </Link>
-        <span className="md:hidden"><EarlyAccessBadge /></span>
+        {/* On a phone the badge would push the actions onto a row of their own. */}
+        <span className="hidden sm:inline md:hidden"><EarlyAccessBadge /></span>
         {showScope ? (
           <div className="order-last flex min-w-0 basis-full flex-wrap items-center gap-2 lg:order-none lg:basis-auto lg:flex-nowrap">
             <ScopeControl user={user} />

@@ -24,11 +24,11 @@ Stages 1–7 are complete. Stage 7 was the final planned stage: integration, not
 - Frontline staff use `/staff` (phone-first). `/count` is a full screen flow with no sidebar.
 
 ## Design rules
-- The look comes from the brand artwork: black logo, white cards, the supplied silver waves behind every page (`--wave-image`, drawn as a vector in `public/brand/tyll-waves.svg` so it stays sharp), and a glass sidebar. Primary actions are black. Light is the default; dark is an optional toggle in the profile menu.
+- The look comes from the brand artwork: black logo, white cards, the website's moving silver wave behind every page in light and dark (`SilverWave`, `lib/wave.ts` copied from the website; brand panels keep the still artwork in `public/brand/tyll-waves.svg`), and a glass sidebar. Primary actions are black. Light is the default; dark is an optional toggle in the profile menu.
 - Each section has one accent, set with `data-mod` (`MODULE_TONE` in `components/theme.ts`, values in `tokens.css`): teal for Log waste and Stock, violet for Predictions, blue for Revenue, indigo for Overview and Alerts, plum for Reports. Links, labels, quiet buttons and money figures inside follow it, so never pick a colour by hand.
 - Try a look (`components/shell/look-picker.tsx`, `lib/look.ts`) lets the owner switch colours live: by section, by outlet, or one signature colour, and how strong the waves are. It is a decision tool. Once a look is chosen, make it the default and remove the panel.
 - All colours, type sizes, radii and shadows are tokens in `src/app/tokens.css`. Red, amber and green only for status. Chart colours are validated separately (`--chart-a`, `--chart-b`).
-- Motion is 150 to 200 ms and only answers a person's action. No dashes as punctuation in copy.
+- Motion is 150 to 200 ms and only answers a person's action. The one exception is the slow background wave, which the owner asked for; it stops with reduced motion and while the tab is hidden. No dashes as punctuation in copy.
 
 ## Stock prediction and Pour Control
 - Item lists sit under hotel categories (`STOCK_GROUPS`, `groupByStock` in `lib/data/locations.ts`). Stock, Predictions and Log waste are split into Food, Beverage and Inventory (`stockAreaOf` in `lib/data/locations.ts`). Inventory is glassware, china and hotel supplies. Waste and breakage share one record system; only the views are separate. Build order still makes one draft across all three.
@@ -52,7 +52,7 @@ The public demo sends a shorter list of flags (`lib/data/demo-cases.ts`, applied
 Coca-Cola at The Terrace (8 cans unexplained), house wine at Lobby Lounge (750 ml; 250 ml at 175 ml), wagyu beef (1.8 kg), the hero order TRC-1013-198, VIP suite 1211 predicted late, EVT-DXB-0001 short of staff, invoice MEAT-1011 (chicken invoiced beyond delivery). Tests in `src/lib/__tests__` pin these numbers; keep them passing.
 
 ## Languages
-English, German, Italian and Arabic, chosen in the top bar (`components/shell/language.tsx`). Screens stay written in English: `lib/i18n/dom.ts` translates text as it renders and `lib/i18n/translate.ts` looks it up in `lib/i18n/messages.json`. Figures, dates, codes and names are lifted out first, so `{0} items` covers every count. Text with no entry shows in English; `window.__tyllMissing` lists it. Use logical classes (`ms-`, `pe-`, `start-`, `text-end`), never `ml-`, `pr-`, `left-` or `text-right`, so Arabic mirrors.
+English, German, Italian and Arabic, chosen in the top bar (`components/shell/language.tsx`). Screens stay written in English: `lib/i18n/dom.ts` translates text as it renders and `lib/i18n/translate.ts` looks it up in `lib/i18n/messages.json`. Figures, dates, codes and names are lifted out first, so `{0} items` covers every count. Text with no entry shows in English; `window.__tyllMissing` lists it. Add entries with `python3 scripts/i18n-add.py lines.txt` (one line per text: English | Deutsch | Italiano | العربية, `{}` for each figure, date or name). Translated so far: the main features and Reconciliation; Events, Rooms, Flow, My tasks, the Staff app and the tours are still English. Use logical classes (`ms-`, `pe-`, `start-`, `text-end`), never `ml-`, `pr-`, `left-` or `text-right`, so Arabic mirrors.
 
 ## Brand
 Inter and Noto Sans Arabic, regular weight titles with tight tracking, pill buttons, ease `cubic-bezier(.22,1,.36,1)`, white and black with silver waves, one accent per section. The logo is the supplied artwork; the wordmark shows "Tyll" (`public/brand/tyll-lockup-ink-tyll.png`). Never redraw it.

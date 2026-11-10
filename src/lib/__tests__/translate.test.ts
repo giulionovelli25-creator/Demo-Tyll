@@ -30,6 +30,9 @@ describe("translation", () => {
   it("translates sentence by sentence", () => {
     expect(t("de").translate("Check before concluding. Check before concluding.")).toBe("Vor einem Schluss prüfen. Vor einem Schluss prüfen.");
   });
+  it("translates facts joined by a middle dot one by one", () => {
+    expect(t("it").translate("Stock · 63 items")).toBe("Scorte · 63 articoli");
+  });
   it("leaves text it does not know in English and notes it", () => {
     const de = t("de");
     expect(de.translate("Nothing like this 4")).toBe("Nothing like this 4");

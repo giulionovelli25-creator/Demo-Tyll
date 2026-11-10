@@ -129,6 +129,16 @@
 "Rettifiche",
 "التعديلات"
 ],
+"Agreed price": [
+"Vereinbarter Preis",
+"Prezzo concordato",
+"السعر المتفق عليه"
+],
+"Air-conditioning filter replacement (simulated history)": [
+"Austausch Klimaanlagenfilter (simulierter Verlauf)",
+"Sostituzione filtri aria condizionata (storico simulato)",
+"استبدال فلاتر التكييف (سجل محاكاة)"
+],
 "Alerts": [
 "Warnungen",
 "Avvisi",
@@ -138,6 +148,11 @@
 "Zurückgestellte Warnungen erscheinen hier und können jederzeit zurückgeholt werden.",
 "Gli avvisi messi da parte appaiono qui e puoi riprenderli quando vuoi.",
 "تظهر هنا التنبيهات التي أجّلتها، ويمكنك إعادتها في أي وقت."
+],
+"Alerts, Tyll demo": [
+"Warnungen, Tyll Demo",
+"Avvisi, demo Tyll",
+"التنبيهات، عرض Tyll"
 ],
 "All": [
 "Alle",
@@ -174,6 +189,11 @@
 "Tutti gli hotel",
 "جميع الفنادق"
 ],
+"All invoices": [
+"Alle Rechnungen",
+"Tutte le fatture",
+"جميع الفواتير"
+],
 "All items": [
 "Alle Artikel",
 "Tutti gli articoli",
@@ -208,6 +228,11 @@
 "Alle Muster",
 "Tutti gli schemi",
 "جميع الأنماط"
+],
+"All reports": [
+"Alle Berichte",
+"Tutti i report",
+"جميع التقارير"
 ],
 "All room charges": [
 "Alle Zimmerbelastungen",
@@ -284,6 +309,11 @@
 "Applica date",
 "طبّق التواريخ"
 ],
+"Approvals": [
+"Freigaben",
+"Approvazioni",
+"الموافقات"
+],
 "Approve distribution": [
 "Verteilung freigeben",
 "Approva distribuzione",
@@ -293,6 +323,11 @@
 "Einkaufsvorschläge freigeben",
 "Approva suggerimenti d'acquisto",
 "الموافقة على اقتراحات الشراء"
+],
+"Approved or delivered, not yet a recorded expense.": [
+"Freigegeben oder geliefert, noch keine erfasste Ausgabe.",
+"Approvati o consegnati, non ancora spesa registrata.",
+"معتمدة أو مسلّمة، وليست مصروفًا مسجلًا بعد."
 ],
 "Arborio rice": [
 "Arborio-Reis",
@@ -574,6 +609,36 @@
 "Bronzo",
 "برونزي"
 ],
+"Budget": [
+"Budget",
+"Budget",
+"الميزانية"
+],
+"Budget against recorded expenses. Invoices awaiting review and approved orders are shown separately, never added to recorded spending.": [
+"Budget gegen erfasste Ausgaben. Rechnungen in Prüfung und freigegebene Bestellungen werden separat gezeigt und nie zu den erfassten Ausgaben addiert.",
+"Budget rispetto alle spese registrate. Fatture in revisione e ordini approvati sono mostrati a parte e mai sommati alle spese registrate.",
+"الميزانية مقابل المصروفات المسجلة. تُعرض الفواتير قيد المراجعة والطلبات المعتمدة منفصلة ولا تضاف أبدًا إلى المصروفات المسجلة."
+],
+"Budget vs. actual": [
+"Budget und Ist",
+"Budget e consuntivo",
+"الميزانية مقابل الفعلي"
+],
+"Budget vs. actual, October {0}": [
+"Budget und Ist, Oktober {0}",
+"Budget e consuntivo, ottobre {0}",
+"الميزانية مقابل الفعلي، أكتوبر {0}"
+],
+"Budgets & Reports": [
+"Budgets und Berichte",
+"Budget e report",
+"الميزانيات والتقارير"
+],
+"Budgets and the non-F&B spending history are simulated planning figures. F&B spending comes from the dataset’s supplier invoices and Tyll’s own orders. Each hotel is shown in its own currency.": [
+"Budgets und die Ausgaben außerhalb F&B sind simulierte Planzahlen. F&B-Ausgaben stammen aus den Lieferantenrechnungen der Daten und Tylls eigenen Bestellungen. Jedes Hotel wird in seiner Währung gezeigt.",
+"Budget e storico spese non F&B sono cifre di pianificazione simulate. Le spese F&B vengono dalle fatture fornitore dei dati e dagli ordini di Tyll. Ogni hotel è mostrato nella propria valuta.",
+"الميزانيات وتاريخ المصروفات خارج الأغذية والمشروبات أرقام تخطيط محاكاة. مصروفات الأغذية والمشروبات من فواتير الموردين في البيانات وطلبات Tyll. يُعرض كل فندق بعملته."
+],
 "Build order": [
 "Bestellung erstellen",
 "Crea ordine",
@@ -658,6 +723,11 @@
 "Nach Wert. Glas und Porzellan.",
 "Per valore. Bicchieri e porcellana.",
 "حسب القيمة. الزجاج والخزف."
+],
+"CSV": [
+"CSV",
+"CSV",
+"CSV"
 ],
 "Calculate what to buy": [
 "Einkauf berechnen",
@@ -1119,6 +1189,11 @@
 "Variazione costo",
 "تغير التكلفة"
 ],
+"Cost exceptions": [
+"Kostenabweichungen",
+"Eccezioni di costo",
+"استثناءات التكلفة"
+],
 "Cost of recorded waste per day.": [
 "Kosten des erfassten Abfalls pro Tag.",
 "Costo degli scarti registrati al giorno.",
@@ -1294,6 +1369,11 @@
 "Accordi sulla protezione dei dati, sede di hosting e regole di conservazione per paese.",
 "اتفاقيات حماية البيانات وموقع الاستضافة وقواعد الاحتفاظ لكل دولة."
 ],
+"Date": [
+"Datum",
+"Data",
+"التاريخ"
+],
 "Date range": [
 "Zeitraum",
 "Periodo",
@@ -1374,6 +1454,26 @@
 "Dati demo",
 "البيانات التجريبية"
 ],
+"Demo history, before Tyll": [
+"Demoverlauf, vor Tyll",
+"Storico demo, prima di Tyll",
+"سجل تجريبي، قبل Tyll"
+],
+"Department": [
+"Abteilung",
+"Reparto",
+"القسم"
+],
+"Department spending": [
+"Ausgaben nach Abteilung",
+"Spese per reparto",
+"مصروفات الأقسام"
+],
+"Description": [
+"Beschreibung",
+"Descrizione",
+"الوصف"
+],
 "Desserts": [
 "Desserts",
 "Dessert",
@@ -1394,6 +1494,11 @@
 "Differenza dall'ordine originale",
 "الفرق عن الطلب الأصلي"
 ],
+"Difference to check": [
+"Zu prüfende Differenz",
+"Differenza da verificare",
+"فرق للتحقق"
+],
 "Dinner": [
 "Abendessen",
 "Cena",
@@ -1403,6 +1508,11 @@
 "Speiseteller",
 "Piatti piani",
 "أطباق عشاء"
+],
+"Direct costs: food and drink used": [
+"Direkte Kosten: verbrauchte Speisen und Getränke",
+"Costi diretti: cibo e bevande usati",
+"التكاليف المباشرة: الأطعمة والمشروبات المستخدمة"
 ],
 "Discount limit": [
 "Rabattlimit",
@@ -1428,6 +1538,11 @@
 "Schließen",
 "Chiudi",
 "إغلاق"
+],
+"Doha (QAR)": [
+"Doha (QAR)",
+"Doha (QAR)",
+"الدوحة (ريال قطري)"
 ],
 "Download as CSV": [
 "Als CSV herunterladen",
@@ -1459,6 +1574,11 @@
 "Controllo bevande",
 "مراقبة المشروبات"
 ],
+"Drinks control, Tyll demo": [
+"Getränkekontrolle, Tyll Demo",
+"Controllo bevande, demo Tyll",
+"مراقبة المشروبات، عرض Tyll"
+],
 "Drinks served but not entered in the POS, or removed from the bill": [
 "Getränke serviert, aber nicht im POS erfasst oder von der Rechnung entfernt",
 "Bevande servite ma non inserite nel POS o rimosse dal conto",
@@ -1489,6 +1609,11 @@
 "Prodotti secchi, restano {0}, finisce tra {1} giorni",
 "مواد جافة، متبقٍ {0}، ينفد خلال {1} أيام"
 ],
+"Dubai (AED)": [
+"Dubai (AED)",
+"Dubai (AED)",
+"دبي (درهم)"
+],
 "Dubai, all outlets": [
 "Dubai, alle Outlets",
 "Dubai, tutti i punti vendita",
@@ -1514,6 +1639,11 @@
 "Ogni voce riduce le scorte stimate e si somma ai dati sugli scarti in Panoramica, nei Report e nelle analisi.",
 "كل إدخال يخفض المخزون التقديري ويضاف إلى أرقام الهدر في نظرة عامة والتقارير وتحليلات الهدر."
 ],
+"Each invoice is compared with the purchase order and what was received.": [
+"Jede Rechnung wird mit der Bestellung und dem Wareneingang verglichen.",
+"Ogni fattura è confrontata con l'ordine e con quanto ricevuto.",
+"تُقارن كل فاتورة بأمر الشراء وبما تم استلامه."
+],
 "Each outlet counts its own bar and kitchen stock. Tyll compares what left between two counts with what the POS sold and what was logged as waste.": [
 "Jedes Outlet zählt seinen eigenen Bar- und Küchenbestand. Tyll vergleicht den Abgang zwischen zwei Zählungen mit den POS-Verkäufen und dem erfassten Abfall.",
 "Ogni punto vendita conta le proprie scorte di bar e cucina. Tyll confronta ciò che è uscito tra due conteggi con le vendite POS e gli scarti registrati.",
@@ -1523,6 +1653,11 @@
 "Jede Quelle liegt hinter einer typisierten Adapter-Schnittstelle in",
 "Ogni fonte è dietro un'interfaccia adattatore tipizzata in",
 "يقع كل مصدر خلف واجهة موائم محددة النوع في"
+],
+"Each supplier invoice is checked three ways: what was ordered, what arrived and what was billed. A difference is a fact to check, not proof of wrongdoing.": [
+"Jede Lieferantenrechnung wird dreifach geprüft: was bestellt wurde, was ankam und was berechnet wurde. Eine Differenz ist ein zu prüfender Fakt, kein Beweis für Fehlverhalten.",
+"Ogni fattura fornitore è verificata in tre modi: cosa è stato ordinato, cosa è arrivato e cosa è stato fatturato. Una differenza è un fatto da verificare, non la prova di un illecito.",
+"تُفحص كل فاتورة مورد بثلاث طرق: ما طُلب وما وصل وما فُوتر. الفرق حقيقة للتحقق وليس دليلًا على مخالفة."
 ],
 "Early access": [
 "Früher Zugang",
@@ -1559,6 +1694,11 @@
 "Smeraldo",
 "زمردي"
 ],
+"Engineering & maintenance": [
+"Technik und Instandhaltung",
+"Manutenzione tecnica",
+"الهندسة والصيانة"
+],
 "Enter to open": [
 "Enter zum Öffnen",
 "Invio per aprire",
@@ -1578,6 +1718,11 @@
 "Eingegeben",
 "Inserito",
 "أُدخل"
+],
+"Entries ({0})": [
+"Einträge ({0})",
+"Voci ({0})",
+"الإدخالات ({0})"
 ],
 "Equal rate per hour worked": [
 "Gleicher Satz pro Arbeitsstunde",
@@ -1629,6 +1774,11 @@
 "Valore stimato delle scorte",
 "القيمة التقديرية للمخزون"
 ],
+"Estimated total": [
+"Geschätzt gesamt",
+"Totale stimato",
+"الإجمالي التقديري"
+],
 "Estimates from the last count, deliveries and sales. Simulated data.": [
 "Schätzung aus letzter Zählung, Lieferungen und Verkäufen. Simulierte Daten.",
 "Stime da ultimo conteggio, consegne e vendite. Dati simulati.",
@@ -1639,6 +1789,11 @@
 "Sera",
 "المساء"
 ],
+"Event": [
+"Event",
+"Evento",
+"الفعالية"
+],
 "Events": [
 "Events",
 "Eventi",
@@ -1648,6 +1803,11 @@
 "Events und Personal",
 "Eventi e personale",
 "الفعاليات والموظفون"
+],
+"Events and Staffing, Tyll demo": [
+"Events und Personal, Tyll Demo",
+"Eventi e personale, demo Tyll",
+"الفعاليات والموظفون، عرض Tyll"
 ],
 "Events manager": [
 "Eventleitung",
@@ -1809,6 +1969,11 @@
 "Meno {0}",
 "أقل من {0}"
 ],
+"Filter by department or category": [
+"Nach Abteilung oder Kategorie filtern",
+"Filtra per reparto o categoria",
+"صفِّ حسب القسم أو الفئة"
+],
 "Final bill": [
 "Endrechnung",
 "Conto finale",
@@ -1914,6 +2079,11 @@
 "Farina",
 "طحين"
 ],
+"Flowers, {0} October gala (simulated history)": [
+"Blumen, Gala am {0}. Oktober (simulierter Verlauf)",
+"Fiori, gala del {0} ottobre (storico simulato)",
+"زهور، حفل {0} أكتوبر (سجل محاكاة)"
+],
 "Follow a {0} step guided path through what Tyll does today.": [
 "Folgen Sie einem geführten Rundgang in {0} Schritten durch das, was Tyll heute kann.",
 "Segui un percorso guidato in {0} passi per scoprire cosa fa Tyll oggi.",
@@ -1923,6 +2093,11 @@
 "Speisen",
 "Cibo",
 "الأطعمة"
+],
+"Food & beverage stores": [
+"F&B-Lager",
+"Magazzino cibo e bevande",
+"مخازن الأغذية والمشروبات"
 ],
 "Food and drink cost": [
 "Waren- und Getränkekosten",
@@ -2029,10 +2204,20 @@
 "Dai dati di prenotazione",
 "من سجلات الحجز"
 ],
+"From each event plan. Estimates, not recorded spending; actual costs are recorded only when invoiced.": [
+"Aus jedem Eventplan. Schätzungen, keine erfassten Ausgaben; tatsächliche Kosten werden erst bei Rechnung erfasst.",
+"Da ogni piano evento. Stime, non spese registrate; i costi reali si registrano solo alla fattura.",
+"من كل خطة فعالية. تقديرات وليست مصروفات مسجلة؛ تُسجل التكاليف الفعلية عند الفوترة فقط."
+],
 "From sales and recipes": [
 "Aus Verkäufen und Rezepten",
 "Da vendite e ricette",
 "من المبيعات والوصفات"
+],
+"From the same sales and cost records as the Overview.": [
+"Aus denselben Verkaufs- und Kostendaten wie die Übersicht.",
+"Dagli stessi dati di vendite e costi della Panoramica.",
+"من سجلات المبيعات والتكاليف نفسها في نظرة عامة."
 ],
 "From the stock counts": [
 "Aus den Bestandszählungen",
@@ -2138,6 +2323,11 @@
 "Gäste-Amenity-Sets",
 "Kit di cortesia",
 "أطقم ضيافة"
+],
+"Guest amenity restock (simulated history)": [
+"Nachschub Gästeartikel (simulierter Verlauf)",
+"Rifornimento kit di cortesia (storico simulato)",
+"إعادة تزويد مستلزمات الضيوف (سجل محاكاة)"
 ],
 "Guest bill postings, occupancy, arrivals, room status": [
 "Buchungen auf Gästerechnungen, Auslastung, Anreisen, Zimmerstatus",
@@ -2274,6 +2464,11 @@
 "Vino della casa, calice",
 "نبيذ"
 ],
+"Housekeeping": [
+"Housekeeping",
+"Housekeeping",
+"التدبير الفندقي"
+],
 "Housekeeping manager": [
 "Hausdamenleitung",
 "Responsabile housekeeping",
@@ -2333,6 +2528,11 @@
 "Wie wurde es festgestellt?",
 "Come è stato rilevato?",
 "كيف اكتُشف ذلك؟"
+],
+"If all open items are spent": [
+"Wenn alles Offene ausgegeben wird",
+"Se tutte le voci aperte vengono spese",
+"إذا صُرفت كل البنود المفتوحة"
 ],
 "In review": [
 "In Prüfung",
@@ -2394,6 +2594,21 @@
 "Verifica nuova · {0} coinvolti",
 "تحقيق جديد · {0} معنية"
 ],
+"Invoice": [
+"Rechnung",
+"Fattura",
+"الفاتورة"
+],
+"Invoice differences ({0})": [
+"Rechnungsdifferenzen ({0})",
+"Differenze di fattura ({0})",
+"فروق الفواتير ({0})"
+],
+"Invoice differences and unresolved stock differences.": [
+"Rechnungsdifferenzen und offene Bestandsdifferenzen.",
+"Differenze di fattura e differenze di scorte non risolte.",
+"فروق الفواتير وفروق المخزون غير المحلولة."
+],
 "Invoice price": [
 "Rechnungspreis",
 "Prezzo fattura",
@@ -2403,6 +2618,26 @@
 "Rechnungspreis über dem Bestellpreis",
 "Prezzo fattura superiore al prezzo d'ordine",
 "سعر الفاتورة أعلى من سعر الطلب"
+],
+"Invoice reconciliation": [
+"Rechnungsabgleich",
+"Riconciliazione fatture",
+"مطابقة الفواتير"
+],
+"Invoice total": [
+"Rechnungsbetrag",
+"Totale fattura",
+"إجمالي الفاتورة"
+],
+"Invoice {0}": [
+"Rechnung {0}",
+"Fattura {0}",
+"فاتورة {0}"
+],
+"Invoice, not yet an expense ({0})": [
+"Rechnung, noch keine Ausgabe ({0})",
+"Fattura, non ancora spesa ({0})",
+"فاتورة، ليست مصروفًا بعد ({0})"
 ],
 "Invoiced": [
 "Berechnet",
@@ -2414,10 +2649,35 @@
 "Fatturato oltre la consegna o il prezzo concordato",
 "فوترة تتجاوز التوريد أو السعر المتفق عليه"
 ],
+"Invoiced beyond received": [
+"Mehr berechnet als erhalten",
+"Fatturato oltre il ricevuto",
+"فوترة تتجاوز المستلم"
+],
+"Invoiced beyond what was received at the agreed price, not yet resolved.": [
+"Über das zum vereinbarten Preis Erhaltene hinaus berechnet, noch nicht geklärt.",
+"Fatturato oltre quanto ricevuto al prezzo concordato, non ancora risolto.",
+"فوترة تتجاوز ما استُلم بالسعر المتفق عليه، ولم تُحل بعد."
+],
 "Invoiced for goods not delivered": [
 "Nicht gelieferte Ware berechnet",
 "Fatturata merce non consegnata",
 "فوترة بضائع لم تُسلم"
+],
+"Invoiced for more than was received": [
+"Mehr berechnet als erhalten",
+"Fatturato più di quanto ricevuto",
+"فوترة أكثر مما استُلم"
+],
+"Invoices awaiting review": [
+"Rechnungen in Prüfung",
+"Fatture in revisione",
+"فواتير قيد المراجعة"
+],
+"Invoices for earlier orders come from the demo dataset; matching ones were recorded before Tyll. A difference is a fact to check with the supplier, not proof of wrongdoing. Tyll does not record payments.": [
+"Rechnungen früherer Bestellungen stammen aus den Demodaten; passende wurden vor Tyll erfasst. Eine Differenz ist mit dem Lieferanten zu klären und kein Beweis für Fehlverhalten. Tyll erfasst keine Zahlungen.",
+"Le fatture degli ordini precedenti vengono dai dati demo; quelle corrispondenti sono state registrate prima di Tyll. Una differenza va chiarita con il fornitore e non è prova di illecito. Tyll non registra pagamenti.",
+"فواتير الطلبات السابقة من البيانات التجريبية، والمطابقة منها سُجلت قبل Tyll. الفرق يُتحقق منه مع المورد وليس دليلًا على مخالفة. لا يسجل Tyll المدفوعات."
 ],
 "Is the bar over pouring, and are any drinks missing?": [
 "Wird an der Bar zu viel ausgeschenkt, und fehlen Getränke?",
@@ -2549,6 +2809,11 @@
 "Manodopera",
 "العمالة"
 ],
+"Labour": [
+"Personal",
+"Manodopera",
+"العمالة"
+],
 "Lamb chops": [
 "Lammkoteletts",
 "Costolette d'agnello",
@@ -2619,6 +2884,11 @@
 "Lavanderia",
 "الغسيل"
 ],
+"Laundry chemicals (simulated history)": [
+"Wäschereichemikalien (simulierter Verlauf)",
+"Prodotti per lavanderia (storico simulato)",
+"مواد الغسيل الكيميائية (سجل محاكاة)"
+],
 "Least profitable items": [
 "Am wenigsten profitable Artikel",
 "Articoli meno redditizi",
@@ -2649,6 +2919,11 @@
 "Meno",
 "أقل"
 ],
+"Less delivered than ordered": [
+"Weniger geliefert als bestellt",
+"Consegnato meno dell'ordinato",
+"تم تسليم أقل من المطلوب"
+],
 "Light mode": [
 "Heller Modus",
 "Modalità chiara",
@@ -2658,6 +2933,11 @@
 "Limetten",
 "Lime",
 "ليمون أخضر"
+],
+"Linen rental, first week (simulated history)": [
+"Wäschemiete, erste Woche (simulierter Verlauf)",
+"Noleggio biancheria, prima settimana (storico simulato)",
+"استئجار البياضات، الأسبوع الأول (سجل محاكاة)"
 ],
 "Linguine": [
 "Linguine",
@@ -2679,6 +2959,11 @@
 "Caricamento di Tyll",
 "جارٍ تحميل Tyll"
 ],
+"Loading invoices": [
+"Rechnungen werden geladen",
+"Caricamento fatture",
+"جارٍ تحميل الفواتير"
+],
 "Loading orders": [
 "Bestellungen werden geladen",
 "Caricamento ordini",
@@ -2698,6 +2983,11 @@
 "Bestand wird geladen",
 "Caricamento scorte",
 "جارٍ تحميل المخزون"
+],
+"Loading the invoice": [
+"Rechnung wird geladen",
+"Caricamento della fattura",
+"جارٍ تحميل الفاتورة"
 ],
 "Loading the latest counts.": [
 "Letzte Zählungen werden geladen.",
@@ -2768,6 +3058,11 @@
 "Vergessenen Abfall erfassen",
 "Registra scarti dimenticati",
 "سجل الهدر الذي فات"
+],
+"Log waste, Tyll demo": [
+"Abfall erfassen, Tyll Demo",
+"Registra scarti, demo Tyll",
+"تسجيل الهدر، عرض Tyll"
 ],
 "Log with more detail": [
 "Mit mehr Details erfassen",
@@ -2879,6 +3174,11 @@
 "Segna tutto come letto",
 "تعليم الكل كمقروء"
 ],
+"Matched and recorded as an expense": [
+"Abgeglichen und als Ausgabe erfasst",
+"Abbinata e registrata come spesa",
+"طوبقت وسُجلت كمصروف"
+],
 "Mayonnaise and sauces": [
 "Mayonnaise und Saucen",
 "Maionese e salse",
@@ -2989,6 +3289,11 @@
 "Lista recuperi",
 "قائمة استرداد الأموال"
 ],
+"Money Back List, Tyll demo": [
+"Rückholliste, Tyll Demo",
+"Lista recuperi, demo Tyll",
+"قائمة استرداد الأموال، عرض Tyll"
+],
 "Money at risk": [
 "Gefährdetes Geld",
 "Denaro a rischio",
@@ -3044,6 +3349,11 @@
 "Altri strumenti",
 "أدوات أخرى"
 ],
+"More tools, Tyll demo": [
+"Weitere Tools, Tyll Demo",
+"Altri strumenti, demo Tyll",
+"أدوات أخرى، عرض Tyll"
+],
 "More {0}": [
 "Mehr {0}",
 "Più {0}",
@@ -3079,6 +3389,11 @@
 "Le mie bozze ({0})",
 "مسوداتي ({0})"
 ],
+"My tasks": [
+"Meine Aufgaben",
+"Le mie attività",
+"مهامي"
+],
 "Name": [
 "Name",
 "Nome",
@@ -3108,6 +3423,11 @@
 "Nettogewinn, geschätzt",
 "Profitto netto, stima",
 "صافي الربح، تقديري"
+],
+"Net revenue (F&B outlets)": [
+"Nettoumsatz (F&B-Outlets)",
+"Ricavi netti (punti vendita F&B)",
+"صافي الإيرادات (منافذ الأغذية والمشروبات)"
 ],
 "Net sales": [
 "Nettoumsatz",
@@ -3339,6 +3659,11 @@
 "Nulla in attesa",
 "لا شيء بانتظار"
 ],
+"Nothing waiting.": [
+"Nichts wartet.",
+"Nulla in attesa.",
+"لا شيء بانتظار."
+],
 "Notifications": [
 "Benachrichtigungen",
 "Notifiche",
@@ -3373,6 +3698,16 @@
 "Sie sehen die Demo jetzt als {0}.",
 "Ora vedi la demo come {0}.",
 "تعرض النسخة الآن بصفة {0}."
+],
+"October to date": [
+"Oktober bis heute",
+"Ottobre a oggi",
+"أكتوبر حتى اليوم"
+],
+"October {0}. Recorded expenses only.": [
+"Oktober {0}. Nur erfasste Ausgaben.",
+"Ottobre {0}. Solo spese registrate.",
+"أكتوبر {0}. المصروفات المسجلة فقط."
 ],
 "Offline entries stay on this device, out of stock and reports, until the connection returns. They are then saved on the Tyll server once, so every device and manager sees the same entry. Two devices correcting the same entry are both recorded; the latest correction applies.": [
 "Offline-Einträge bleiben auf diesem Gerät, außerhalb von Bestand und Berichten, bis die Verbindung zurück ist. Dann werden sie einmal auf dem Tyll-Server gespeichert, sodass alle denselben Eintrag sehen. Korrigieren zwei Geräte denselben Eintrag, werden beide erfasst; es gilt die letzte Korrektur.",
@@ -3519,6 +3854,11 @@
 "Apri in Ordini e storico",
 "افتح في الطلبات والسجل"
 ],
+"Open orders": [
+"Offene Bestellungen",
+"Ordini aperti",
+"طلبات مفتوحة"
+],
 "Open orders and history": [
 "Bestellungen und Verlauf öffnen",
 "Apri ordini e storico",
@@ -3664,6 +4004,11 @@
 "Ordinato",
 "المطلوب"
 ],
+"Ordered (PO)": [
+"Bestellt (Bestellung)",
+"Ordinato (ordine)",
+"المطلوب (أمر الشراء)"
+],
 "Orders": [
 "Bestellungen",
 "Ordini",
@@ -3773,6 +4118,16 @@
 "Übersicht",
 "Panoramica",
 "نظرة عامة"
+],
+"Overview, Tyll demo": [
+"Übersicht, Tyll Demo",
+"Panoramica, demo Tyll",
+"نظرة عامة، عرض Tyll"
+],
+"PO price": [
+"Bestellpreis",
+"Prezzo d'ordine",
+"سعر أمر الشراء"
 ],
 "POS login": [
 "POS-Login",
@@ -3894,6 +4249,11 @@
 "Previsto. Flow usa comande simulate.",
 "مخطط له. يستخدم Flow تذاكر مباشرة محاكاة."
 ],
+"Plumbing parts (simulated history)": [
+"Sanitärteile (simulierter Verlauf)",
+"Ricambi idraulici (storico simulato)",
+"قطع السباكة (سجل محاكاة)"
+],
 "Point of sale": [
 "Kassensystem",
 "Punto cassa",
@@ -3903,6 +4263,11 @@
 "Poolbar",
 "Bar a bordo piscina",
 "بار المسبح"
+],
+"Pool pump service (simulated history)": [
+"Wartung Poolpumpe (simulierter Verlauf)",
+"Manutenzione pompa piscina (storico simulato)",
+"صيانة مضخة المسبح (سجل محاكاة)"
 ],
 "Portions of food, based on the same expected guests.": [
 "Essensportionen, basierend auf denselben erwarteten Gästen.",
@@ -3938,6 +4303,11 @@
 "Kartoffeln",
 "Patate",
 "بطاطس"
+],
+"Potential impact from open stock investigations. Estimates until verified; not recorded as losses or expenses.": [
+"Mögliche Wirkung offener Bestandsprüfungen. Schätzungen bis zur Bestätigung; nicht als Verlust oder Ausgabe erfasst.",
+"Impatto potenziale delle verifiche aperte sulle scorte. Stime fino a conferma; non registrate come perdite o spese.",
+"الأثر المحتمل لتحقيقات المخزون المفتوحة. تقديرات حتى التحقق، ولا تُسجل كخسائر أو مصروفات."
 ],
 "Potential losses, open": [
 "Mögliche Verluste, offen",
@@ -3983,6 +4353,11 @@
 "Prognosen bis Monatsende",
 "Previsioni a fine mese",
 "التوقعات حتى نهاية الشهر"
+],
+"Predictions, Tyll demo": [
+"Prognosen, Tyll Demo",
+"Previsioni, demo Tyll",
+"التوقعات، عرض Tyll"
 ],
 "Preparation ticket printed": [
 "Zubereitungsbon gedruckt",
@@ -4089,6 +4464,11 @@
 "Ordini d'acquisto, consegne, fatture fornitore, conteggi",
 "أوامر الشراء والتوريدات وفواتير الموردين والجرد"
 ],
+"Purchase requests waiting for a decision. Each step (purchasing, accounting, and the general manager for large amounts) reviews the items and costs before the order goes ahead.": [
+"Bestellanfragen, die auf eine Entscheidung warten. Jede Stufe (Einkauf, Buchhaltung und bei großen Beträgen der General Manager) prüft Artikel und Kosten, bevor die Bestellung weitergeht.",
+"Richieste d'acquisto in attesa di decisione. Ogni passaggio (acquisti, contabilità e, per importi elevati, il direttore generale) verifica articoli e costi prima che l'ordine proceda.",
+"طلبات شراء بانتظار قرار. تراجع كل مرحلة (المشتريات والمحاسبة والمدير العام للمبالغ الكبيرة) الأصناف والتكاليف قبل المضي في الطلب."
+],
 "Purchasing": [
 "Einkauf",
 "Acquisti",
@@ -4098,6 +4478,11 @@
 "Einkaufsleitung",
 "Responsabile acquisti",
 "مدير المشتريات"
+],
+"Purchasing commitments": [
+"Einkaufsverpflichtungen",
+"Impegni d'acquisto",
+"التزامات الشراء"
 ],
 "Quantities for {0}, valued at today’s cost in AED. Expected usage covers the first {1} recipes. Items sold at a standard cost do not draw down stock yet.": [
 "Mengen für {0}, bewertet zu heutigen Kosten in AED. Der erwartete Verbrauch umfasst die ersten {1} Rezepte. Zu Standardkosten verkaufte Artikel mindern den Bestand noch nicht.",
@@ -4184,6 +4569,11 @@
 "Riconciliazione dei totali Tyll con i sistemi di riferimento, per struttura.",
 "مطابقة إجماليات Tyll مع أنظمة السجلات لكل فندق."
 ],
+"Reconciliation, Tyll demo": [
+"Abgleich, Tyll Demo",
+"Riconciliazione, demo Tyll",
+"المطابقة، عرض Tyll"
+],
 "Record": [
 "Erfassen",
 "Registra",
@@ -4223,6 +4613,26 @@
 "Bestätigte Ursache und Korrekturmaßnahme erfassen, dann den Fall abschließen.",
 "Registra la causa verificata e l'eventuale azione correttiva, poi risolvi il caso.",
 "سجل السبب المؤكد وأي إجراء تصحيحي، ثم أغلق الحالة."
+],
+"Recorded": [
+"Erfasst",
+"Registrato",
+"المسجل"
+],
+"Recorded expense": [
+"Erfasste Ausgabe",
+"Spesa registrata",
+"مصروف مسجل"
+],
+"Recorded expenses are counted against the budget. Invoices awaiting review and open orders are shown separately, never added to recorded spending.": [
+"Erfasste Ausgaben zählen gegen das Budget. Rechnungen in Prüfung und offene Bestellungen werden separat gezeigt und nie zu den erfassten Ausgaben addiert.",
+"Le spese registrate si contano sul budget. Fatture in revisione e ordini aperti sono mostrati a parte e mai sommati alle spese registrate.",
+"تُحتسب المصروفات المسجلة من الميزانية. تُعرض الفواتير قيد المراجعة والطلبات المفتوحة منفصلة ولا تضاف أبدًا إلى المصروفات المسجلة."
+],
+"Recorded expenses by department": [
+"Erfasste Ausgaben nach Abteilung",
+"Spese registrate per reparto",
+"المصروفات المسجلة حسب القسم"
 ],
 "Recorded offline on this device.": [
 "Offline auf diesem Gerät erfasst.",
@@ -4279,6 +4689,11 @@
 "Rimborsi oltre {0} del conto, tardivi o non spiegati.",
 "مبالغ مستردة تتجاوز {0} من الفاتورة، أو متأخرة، أو غير مفسرة."
 ],
+"Regional sales conference dinner": [
+"Abendessen zur regionalen Vertriebskonferenz",
+"Cena della conferenza vendite regionale",
+"عشاء مؤتمر المبيعات الإقليمي"
+],
 "Regional sales conference dinner, {0}, {1} guests": [
 "Abendessen zur regionalen Vertriebskonferenz, {0}, {1} Gäste",
 "Cena della conferenza vendite regionale, {0}, {1} ospiti",
@@ -4293,6 +4708,11 @@
 "Seite neu laden und erneut versuchen.",
 "Ricarica la pagina per riprovare.",
 "أعد تحميل الصفحة للمحاولة مجددًا."
+],
+"Remaining": [
+"Verbleibend",
+"Residuo",
+"المتبقي"
 ],
 "Removed": [
 "Entfernt",
@@ -4354,10 +4774,20 @@
 "Report e impostazioni",
 "التقارير والإعدادات"
 ],
+"Reports and settings, Tyll demo": [
+"Berichte und Einstellungen, Tyll Demo",
+"Report e impostazioni, demo Tyll",
+"التقارير والإعدادات، عرض Tyll"
+],
 "Request missing ingredients": [
 "Fehlende Zutaten anfordern",
 "Richiedi ingredienti mancanti",
 "اطلب المكونات الناقصة"
+],
+"Requested, approved, delivered or invoiced, but not yet a recorded expense. Each order is counted once, at its current stage.": [
+"Angefordert, freigegeben, geliefert oder berechnet, aber noch keine erfasste Ausgabe. Jede Bestellung zählt einmal, in ihrer aktuellen Stufe.",
+"Richiesti, approvati, consegnati o fatturati, ma non ancora spesa registrata. Ogni ordine conta una volta, nella fase attuale.",
+"مطلوبة أو معتمدة أو مسلّمة أو مفوترة، وليست مصروفًا مسجلًا بعد. يُحتسب كل طلب مرة واحدة في مرحلته الحالية."
 ],
 "Requests are stored on the Tyll server, so every department sees the same record. No order is sent to a real supplier.": [
 "Anfragen liegen auf dem Tyll-Server, sodass jede Abteilung denselben Datensatz sieht. Es geht keine Bestellung an echte Lieferanten.",
@@ -4368,6 +4798,11 @@
 "Anfragen an Sie erscheinen bei der Glocke. Wichtige Übergaben können auch per E-Mail gehen. In dieser Demo ist kein E-Mail-Dienst eingerichtet, E-Mails werden daher nur vorbereitet und angezeigt, nicht gesendet.",
 "Le richieste per te appaiono nella campanella. I passaggi importanti possono arrivare anche via email. In questa demo non c'è un servizio email: le email sono preparate e mostrate qui ma non inviate.",
 "تظهر الطلبات الموجهة إليك في الجرس. ويمكن إرسال المهام المهمة بالبريد أيضًا. لا يوجد مزود بريد في هذه النسخة، لذا تُعد الرسائل وتُعرض هنا دون إرسال."
+],
+"Requests waiting for financial review.": [
+"Anfragen, die auf die Finanzprüfung warten.",
+"Richieste in attesa di revisione finanziaria.",
+"طلبات بانتظار المراجعة المالية."
 ],
 "Reservations, walk-ins, occupancy and events": [
 "Reservierungen, Laufkundschaft, Auslastung und Events",
@@ -4454,6 +4889,11 @@
 "Ricavi recuperati",
 "إيرادات مستردة"
 ],
+"Revenue, Tyll demo": [
+"Umsatz, Tyll Demo",
+"Ricavi, demo Tyll",
+"الإيرادات، عرض Tyll"
+],
 "Revenue, cost and profit": [
 "Umsatz, Kosten und Gewinn",
 "Ricavi, costi e profitto",
@@ -4463,6 +4903,11 @@
 "Umsatz, Kosten und Gewinn pro Outlet",
 "Ricavi, costi e profitto per punto vendita",
 "الإيرادات والتكلفة والربح لكل منفذ"
+],
+"Revenue, direct costs and estimated contribution.": [
+"Umsatz, direkte Kosten und geschätzter Beitrag.",
+"Ricavi, costi diretti e contributo stimato.",
+"الإيرادات والتكاليف المباشرة والمساهمة التقديرية."
 ],
 "Review case": [
 "Fall prüfen",
@@ -4478,6 +4923,11 @@
 "Lagerzugang und Ausgabeprozess mit der Outlet-Leitung besprechen.",
 "Rivedi accessi al magazzino e processo di uscita con il responsabile.",
 "راجع الوصول إلى المخزن وآلية الصرف مع مدير المنفذ."
+],
+"Review this month's spending.": [
+"Ausgaben dieses Monats prüfen.",
+"Rivedi le spese di questo mese.",
+"راجع مصروفات هذا الشهر."
 ],
 "Review {0} flags": [
 "{0} Hinweise prüfen",
@@ -4574,6 +5024,11 @@
 "Camere ed esperienza ospiti",
 "الغرف وتجربة الضيوف"
 ],
+"Rooms and Guest Experience, Tyll demo": [
+"Zimmer und Gästeerlebnis, Tyll Demo",
+"Camere ed esperienza ospiti, demo Tyll",
+"الغرف وتجربة الضيوف، عرض Tyll"
+],
 "Rose": [
 "Rosé",
 "Rosé",
@@ -4618,6 +5073,16 @@
 "Salatgemüse",
 "Verdure da insalata",
 "خضار السلطة"
+],
+"Sales & operational summary": [
+"Verkauf und Betriebsübersicht",
+"Sintesi vendite e operazioni",
+"ملخص المبيعات والعمليات"
+],
+"Sales & operational summary, October to date": [
+"Verkauf und Betriebsübersicht, Oktober bis heute",
+"Sintesi vendite e operazioni, ottobre a oggi",
+"ملخص المبيعات والعمليات، أكتوبر حتى اليوم"
 ],
 "Sales and Performance": [
 "Verkauf und Leistung",
@@ -4824,6 +5289,11 @@
 "Seleziona tutti i casi aperti mostrati",
 "حدد جميع الحالات المفتوحة المعروضة"
 ],
+"Selected operating expenses (labour and allocated overheads, estimates)": [
+"Ausgewählte Betriebsausgaben (Personal und umgelegte Gemeinkosten, geschätzt)",
+"Spese operative selezionate (manodopera e spese generali ripartite, stime)",
+"مصروفات تشغيلية مختارة (العمالة والنفقات العامة الموزعة، تقديرية)"
+],
 "Selling price": [
 "Verkaufspreis",
 "Prezzo di vendita",
@@ -4868,6 +5338,11 @@
 "Einstellungen und Tools",
 "Impostazioni e strumenti",
 "الإعدادات والأدوات"
+],
+"Settings, Tyll demo": [
+"Einstellungen, Tyll Demo",
+"Impostazioni, demo Tyll",
+"الإعدادات، عرض Tyll"
 ],
 "Share": [
 "Anteil",
@@ -5139,6 +5614,11 @@
 "Ordina per",
 "ترتيب حسب"
 ],
+"Sound and screens, {0} October gala (simulated history)": [
+"Ton und Bildschirme, Gala am {0}. Oktober (simulierter Verlauf)",
+"Audio e schermi, gala del {0} ottobre (storico simulato)",
+"الصوت والشاشات، حفل {0} أكتوبر (سجل محاكاة)"
+],
 "Soup bowls": [
 "Suppenschalen",
 "Fondine",
@@ -5344,6 +5824,11 @@
 "Scorte uscite senza una vendita che lo spieghi",
 "مخزون خرج دون بيع يفسره"
 ],
+"Stock, Tyll demo": [
+"Bestand, Tyll Demo",
+"Scorte, demo Tyll",
+"المخزون، عرض Tyll"
+],
 "Stock, money and waste": [
 "Bestand, Geld und Abfall",
 "Scorte, denaro e scarti",
@@ -5379,10 +5864,20 @@
 "Fornitore",
 "المورد"
 ],
+"Supplier invoices": [
+"Lieferantenrechnungen",
+"Fatture fornitore",
+"فواتير الموردين"
+],
 "Supplier invoices checked against orders and deliveries.": [
 "Lieferantenrechnungen, geprüft gegen Bestellungen und Lieferungen.",
 "Fatture fornitore verificate con ordini e consegne.",
 "فواتير الموردين مطابقة مع الطلبات والتوريدات."
+],
+"Supplier invoices, expenses and differences.": [
+"Lieferantenrechnungen, Ausgaben und Differenzen.",
+"Fatture fornitore, spese e differenze.",
+"فواتير الموردين والمصروفات والفروق."
 ],
 "Supplier, {0}": [
 "Lieferant, {0}",
@@ -5403,6 +5898,11 @@
 "System",
 "Sistema",
 "النظام"
+],
+"Table linen hire (simulated history)": [
+"Tischwäschemiete (simulierter Verlauf)",
+"Noleggio tovagliato (storico simulato)",
+"استئجار مفارش الطاولات (سجل محاكاة)"
 ],
 "Table {0}": [
 "Tisch {0}",
@@ -5549,6 +6049,11 @@
 "Questa è una dimostrazione. Ecco i lavori principali per arrivare a un sistema di produzione.",
 "هذا عرض توضيحي. هذه أهم الأعمال المتبقية للوصول إلى نظام إنتاج."
 ],
+"This is not net profit. Tyll does not hold the hotel’s full accounts: rooms revenue, depreciation, rent, financing and taxes are not included.": [
+"Das ist kein Nettogewinn. Tyll hat nicht die vollständige Buchhaltung des Hotels: Zimmerumsatz, Abschreibung, Miete, Finanzierung und Steuern fehlen.",
+"Questo non è il profitto netto. Tyll non ha la contabilità completa dell'hotel: ricavi camere, ammortamenti, affitto, finanziamenti e tasse sono esclusi.",
+"هذا ليس صافي الربح. لا يملك Tyll حسابات الفندق الكاملة: إيرادات الغرف والإهلاك والإيجار والتمويل والضرائب غير مشمولة."
+],
 "This module is in development and not yet part of our pilots.": [
 "Dieses Modul ist in Entwicklung und noch nicht Teil unserer Pilotprojekte.",
 "Questo modulo è in sviluppo e non fa ancora parte dei nostri progetti pilota.",
@@ -5603,6 +6108,11 @@
 "Zu klären",
 "Da chiarire",
 "للاستفسار"
+],
+"To review ({0})": [
+"Zu prüfen ({0})",
+"Da rivedere ({0})",
+"للمراجعة ({0})"
 ],
 "Today": [
 "Heute",
@@ -5668,6 +6178,11 @@
 "Gesamter Bruttogewinn",
 "Profitto lordo totale",
 "إجمالي الربح الكلي"
+],
+"Total recorded:": [
+"Gesamt erfasst:",
+"Totale registrato:",
+"إجمالي المسجل:"
 ],
 "Total revenue": [
 "Gesamtumsatz",
@@ -5749,10 +6264,20 @@
 "Due giorni",
 "يومان"
 ],
+"Tyll": [
+"Tyll",
+"Tyll",
+"Tyll"
+],
 "Tyll Flow": [
 "Tyll Flow",
 "Tyll Flow",
 "Tyll Flow"
+],
+"Tyll Flow, Tyll demo": [
+"Tyll Flow, Tyll Demo",
+"Tyll Flow, demo Tyll",
+"Tyll Flow، عرض Tyll"
 ],
 "Tyll Staff": [
 "Tyll Staff",
@@ -5763,6 +6288,11 @@
 "Tyll Staff Startseite",
 "Home di Tyll Staff",
 "صفحة Tyll Staff الرئيسية"
+],
+"Tyll Staff, Tyll demo": [
+"Tyll Staff, Tyll Demo",
+"Tyll Staff, demo Tyll",
+"Tyll Staff، عرض Tyll"
 ],
 "Tyll expects": [
 "Tyll erwartet",
@@ -5864,6 +6394,11 @@
 "Bevande omaggio non registrate",
 "مشروبات مجانية غير مسجلة"
 ],
+"Unresolved stock variances ({0})": [
+"Offene Bestandsdifferenzen ({0})",
+"Differenze di scorte non risolte ({0})",
+"فروق مخزون غير محلولة ({0})"
+],
 "Unusual discount": [
 "Ungewöhnlicher Rabatt",
 "Sconto insolito",
@@ -5888,6 +6423,11 @@
 "Pfeiltasten zum Bewegen",
 "Frecce su e giù per spostarti",
 "الأسهم للتنقل"
+],
+"Upcoming events: operational cost estimates": [
+"Kommende Events: geschätzte Betriebskosten",
+"Prossimi eventi: stime dei costi operativi",
+"الفعاليات القادمة: تقديرات التكاليف التشغيلية"
 ],
 "Update draft order": [
 "Bestellentwurf aktualisieren",
@@ -6149,6 +6689,11 @@
 "Quanto sono costati gli scarti di cibo",
 "تكلفة هدر الأطعمة"
 ],
+"What happened": [
+"Was geschah",
+"Cosa è successo",
+"ما حدث"
+],
 "What happened, in order": [
 "Was der Reihe nach geschah",
 "Cosa è successo, in ordine",
@@ -6158,6 +6703,21 @@
 "Was ist passiert? Optional.",
 "Cosa è successo? Facoltativo.",
 "ماذا حدث؟ اختياري."
+],
+"What is Approvals?": [
+"Was sind Freigaben?",
+"Cosa sono le Approvazioni?",
+"ما الموافقات؟"
+],
+"What is Budgets & Reports?": [
+"Was sind Budgets und Berichte?",
+"Cosa sono Budget e report?",
+"ما الميزانيات والتقارير؟"
+],
+"What is Invoice reconciliation?": [
+"Was ist der Rechnungsabgleich?",
+"Cos'è la riconciliazione fatture?",
+"ما مطابقة الفواتير؟"
 ],
 "What is connected, who can see what, and the change log.": [
 "Was verbunden ist, wer was sieht, und das Änderungsprotokoll.",
@@ -6269,10 +6829,20 @@
 "Dove il consumo supera le scorte, senza un nuovo ordine lo scaffale è vuoto. La linea tratteggiata è la data limite.",
 "عندما يتجاوز الاستخدام المخزون، يفرغ الرف دون طلب جديد. الخط المتقطع هو آخر موعد للطلب."
 ],
+"Where the money went, by department and category.": [
+"Wohin das Geld ging, nach Abteilung und Kategorie.",
+"Dove sono andati i soldi, per reparto e categoria.",
+"أين ذهبت الأموال، حسب القسم والفئة."
+],
 "Where you are": [
 "Sie sind hier",
 "Dove ti trovi",
 "موقعك"
+],
+"Which departments are over or under their budget.": [
+"Welche Abteilungen über oder unter ihrem Budget liegen.",
+"Quali reparti sono sopra o sotto il budget.",
+"الأقسام التي تتجاوز ميزانيتها أو تقل عنها."
 ],
 "White rum": [
 "Weißer Rum",
@@ -6464,6 +7034,11 @@
 "dopo il conteggio iniziale",
 "بعد الجرد الافتتاحي"
 ],
+"assigned": [
+"zugewiesen",
+"assegnato",
+"مُسند"
+],
 "at cost.": [
 "zum Einstandspreis.",
 "al costo.",
@@ -6579,6 +7154,11 @@
 "entrate meno uscite",
 "الوارد ناقص الصادر"
 ],
+"invoice {0}": [
+"Rechnung {0}",
+"fattura {0}",
+"فاتورة {0}"
+],
 "kg": [
 "kg",
 "kg",
@@ -6628,6 +7208,11 @@
 "mehr Abfall",
 "scarti in più",
 "هدر أكثر"
+],
+"new": [
+"neu",
+"nuovo",
+"جديد"
 ],
 "no earlier data": [
 "keine früheren Daten",
@@ -6703,6 +7288,11 @@
 "Gewinn, geschätzt",
 "profitto, stima",
 "ربح، تقديري"
+],
+"purchase order {0}": [
+"Bestellung {0}",
+"ordine d'acquisto {0}",
+"أمر شراء {0}"
 ],
 "recovered {0}": [
 "zurückgewonnen {0}",
@@ -6913,6 +7503,11 @@
 "{0} Rabatt, über dem Limit von {1}",
 "Sconto {0}, oltre il limite di {1}",
 "خصم {0}، فوق حد السياسة {1}"
+],
+"{0} each": [
+"je {0}",
+"{0} cad.",
+"{0} للواحدة"
 ],
 "{0} entered": [
 "{0} eingegeben",
@@ -7149,6 +7744,11 @@
 "{0} al litro. Non è una perdita confermata.",
 "{0} للتر. ليست خسارة مؤكدة."
 ],
+"{0} potential": [
+"{0} möglich",
+"{0} potenziali",
+"{0} محتمل"
+],
 "{0} profit, estimate": [
 "{0} Gewinn, geschätzt",
 "{0} di profitto, stima",
@@ -7224,6 +7824,16 @@
 "magazzino {0}",
 "مخزن {0}"
 ],
+"{0} supplier invoices need checking.": [
+"{0} Lieferantenrechnungen müssen geprüft werden.",
+"{0} fatture fornitore richiedono un controllo.",
+"{0} فواتير موردين تحتاج إلى تحقق."
+],
+"{0} supplier invoices to check.": [
+"{0} Lieferantenrechnungen zu prüfen.",
+"{0} fatture fornitore da controllare.",
+"{0} فواتير موردين للتحقق."
+],
 "{0} things need you today.": [
 "{0} Dinge brauchen heute Ihre Aufmerksamkeit.",
 "{0} cose richiedono la tua attenzione oggi.",
@@ -7274,6 +7884,11 @@
 "Consumo di {0} a {1} superiore di {2} alle ricette",
 "استخدام {0} في {1} أعلى بمقدار {2} من الوصفات"
 ],
+"{0} used": [
+"{0} genutzt",
+"{0} utilizzato",
+"{0} مستخدم"
+],
 "{0} waiting for approval, {1} on the way, {2} draft of yours.": [
 "{0} warten auf Freigabe, {1} unterwegs, {2} Entwurf von Ihnen.",
 "{0} in attesa di approvazione, {1} in arrivo, {2} tua bozza.",
@@ -7303,6 +7918,11 @@
 "{0} Weine. {1} Gläser diese Woche nicht berechnet, {2}",
 "{0} vini. {1} calici non fatturati questa settimana, {2}",
 "{0} أنواع نبيذ. {1} كأس غير مفوترة هذا الأسبوع، {2}"
+],
+"{0} · invoice {1}": [
+"{0} · Rechnung {1}",
+"{0} · fattura {1}",
+"{0} · فاتورة {1}"
 ],
 "{0} · per kg · in {1} recipe": [
 "{0} · pro kg · in {1} Rezept",

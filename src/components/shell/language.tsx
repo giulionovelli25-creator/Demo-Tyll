@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { INGREDIENTS, MENU_ITEMS, OUTLETS, PROPERTIES, STAFF, SUPPLIERS, USERS } from "@/lib/data/catalog";
+import { HISTORY_EXPENSES } from "@/lib/data/finance-rules";
 import { startTranslating } from "@/lib/i18n/dom";
 import { LANGS, Translator, type Lang, type Messages } from "@/lib/i18n/translate";
 
@@ -27,7 +28,7 @@ export function LanguageLayer() {
       if (cancelled) return;
       const translator = new Translator(lang, m.default as unknown as Messages, {
         items: [...INGREDIENTS, ...MENU_ITEMS].map((x) => x.name),
-        names: [...OUTLETS, ...PROPERTIES, ...SUPPLIERS, ...STAFF, ...USERS].map((x) => x.name),
+        names: [...[...OUTLETS, ...PROPERTIES, ...SUPPLIERS, ...STAFF, ...USERS].map((x) => x.name), ...HISTORY_EXPENSES.map((x) => x.supplier)],
       });
       (window as unknown as { __tyllMissing?: Set<string> }).__tyllMissing = translator.missing;
       stop = startTranslating(document.body, translator);
