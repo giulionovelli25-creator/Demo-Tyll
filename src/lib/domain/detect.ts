@@ -18,7 +18,7 @@ export const POLICY = {
 };
 
 export const TYPE_LABEL: Record<ExceptionType, string> = {
-  removed_after_dispatch: "Removed after dispatch",
+  removed_after_dispatch: "Removed after it was sent",
   prepared_not_charged: "Prepared, not charged",
   bill_mismatch: "Order and bill differ",
   unusual_discount: "Unusual discount",

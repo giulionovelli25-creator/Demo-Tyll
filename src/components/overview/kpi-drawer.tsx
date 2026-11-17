@@ -158,7 +158,7 @@ export function KpiDrawer({ kpi, onClose, c, rows, ctx, sel, investigations, mon
           <Stat label="Value involved in open cases" value={money(openByType.reduce((s, [, v]) => s + v.v, 0))} sub="Not confirmed. A case becomes a loss only when a manager records it." />
           <H>Open cases by type</H>
           {openByType.length === 0 ? <p className="text-sm text-steel">No open cases.</p> : (
-            <BarList tone="warn" format={(n) => money(n)} rows={openByType.map(([type, v]) => ({ key: type, label: TYPE_LABEL[type], sub: `${v.n} open`, value: v.v, onClick: () => router.push(`/investigations?type=${type}`) }))} />
+            <BarList format={(n) => money(n)} rows={openByType.map(([type, v]) => ({ key: type, label: TYPE_LABEL[type], sub: `${v.n} open`, value: v.v, onClick: () => router.push(`/investigations?type=${type}`) }))} />
           )}
           <H>Recorded outcomes in this period</H>
           <Lines money={money} rows={[["Confirmed losses", t.confirmedLoss, "/investigations?status=closed&outcome=confirmed_loss"], ["Revenue recovered", t.recovered, "/investigations?status=closed&outcome=recovered"]]} />

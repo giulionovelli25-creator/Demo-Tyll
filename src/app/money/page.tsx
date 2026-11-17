@@ -4,40 +4,31 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { BarList } from "@/components/charts";
+import { BarList, StripTrend } from "@/components/charts";
+import { byDay, versus, weekSums } from "@/lib/domain/trends";
+import { useDailyTotals } from "@/lib/strip-data";
 import { Section, SectionLink } from "@/components/disclosure";
 import { OutletFinance } from "@/components/finance/outlets";
 import type { ChartPoint } from "@/components/home/chart";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
-import { Badge, Button, Delta, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, Tabs, Td, Th, cn, rowClass, textLink } from "@/components/ui";
+import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
-import { can, canSeeOutlet } from "@/lib/domain/access";
+import { canSeeOutlet } from "@/lib/domain/access";
 import { POLICY, ROOM_TYPES, TYPE_LABEL, detectOrderException } from "@/lib/domain/detect";
-import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet, type Compared } from "@/lib/domain/metrics";
+import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/hooks";
 import { SOURCE_LABEL, STATUS_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
 import type { ChargeSource, ExceptionType, Order } from "@/lib/types";
-import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
+import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
 
 type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips";
 
 const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charges", tips: "Tips (preview)" };
 const RevenueProfitChart = dynamic(() => import("@/components/home/chart").then((m) => m.RevenueProfitChart), { ssr: false, loading: () => <div className="h-[264px] animate-pulse rounded-[var(--radius-control)] bg-mist" /> });
-
-/** One period: revenue with its change, and the profit next to it. */
-function periodItem(label: string, c: Compared, money: (n: number, o?: { compact?: boolean }) => string) {
-  const change = pctChange(c.now.net, c.before.net);
-  const profit = c.now.operatingProfit ?? c.now.grossProfit;
-  return {
-    label,
-    value: money(c.now.net, { compact: true }),
-    note: <><Delta value={change} /> <span className="block sm:inline">{money(profit, { compact: true })} {c.now.operatingProfit !== null ? "profit, estimate" : "gross profit"}</span></>,
-  };
-}
 
 /** The period for the detail below it. The top of the page always shows today, 7 days and 30 days. */
 function Period() {
@@ -48,14 +39,13 @@ function Period() {
 
 /** Revenue: today, this week and this month first. Flags, outlets and transactions are one click away. */
 export default function MoneyPage() {
-  const [tab, setTab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips"], null);
-  const { sel, user, money, currency } = useView();
+  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips"], null);
+  const { sel, money, currency } = useView();
   const ctx = useCtx();
   const router = useRouter();
   const investigations = useInvestigations();
   const { pour } = useAlertFeed();
   const t = useMemo(() => computeTotals(ctx, sel), [ctx, sel]);
-  const dayC = useMemo(() => compare(ctx, { ...sel, range: presetRange("today") }), [ctx, sel]);
   const weekC = useMemo(() => compare(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
   const monthC = useMemo(() => compare(ctx, { ...sel, range: presetRange("month") }), [ctx, sel]);
   const days = useMemo(() => eachDay(presetRange("month")).slice(-14), []);
@@ -67,17 +57,32 @@ export default function MoneyPage() {
   const flags = useMemo(() => investigations.filter((i) => i.status !== "closed" && exceptionInSel(i, sel)), [investigations, sel]);
   const flagValue = sum(flags, (i) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency));
   const rate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
-  const wineWeek = pour ? pour.wine.totals.week.gapValue * rate : 0;
   const pourWeek = pour ? (pour.wine.totals.week.gapValue + pour.spirits.totals.week.gapValue) * rate : 0;
   const onFlags = tab === "flags" || tab === "mistakes" || tab === "pour";
-  const profitName = monthC.now.operatingProfit !== null ? "Net profit" : "Gross profit";
+  const profitName = monthC.now.operatingProfit !== null ? "Estimated operating contribution" : "Gross profit";
+  const daily = useDailyTotals();
+  const revenueDaily = daily.map(({ date, t: d }) => ({ date, value: Math.round(d.net) }));
+  const revenueSeries = [
+    { id: "guests", label: "Guests", axis: "guests", goodWhen: "up" as const, format: (n: number) => fmtNum(n), points: daily.map(({ date, t: d }) => ({ date, value: d.covers })), explain: "Covers served." },
+    { id: "bill", label: "Average bill", axis: "bill", goodWhen: "up" as const, format: (n: number) => money(n), points: daily.map(({ date, t: d }) => ({ date, value: d.orders ? Math.round(d.net / d.orders) : null })), explain: "Net sales per bill." },
+  ];
+  const inSel = useMemo(() => investigations.filter((i) => exceptionInSel(i, sel)), [investigations, sel]);
+  const valueOf = (i: (typeof inSel)[number]) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency);
+  const flagDaily = byDay(inSel, (i) => i.date, valueOf);
+  const newFlags = weekSums(inSel.filter((i) => !ROOM_TYPES.includes(i.type)), (i) => i.date, () => 1);
+  const pastDeadline = inSel.filter((i) => i.status !== "closed" && i.deadline && i.deadline < DEMO_TODAY).length;
+  const weekOutlets = useMemo(() => totalsByOutlet(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
+  const best = [...weekOutlets].sort((x, y) => y.now.net - x.now.net)[0];
+  const weakest = [...weekOutlets].filter((o) => o.before.net > 0).sort((x, y) => x.now.net / x.before.net - y.now.net / y.before.net)[0];
+  const changeWords = (o: (typeof weekOutlets)[number]) => versus(o.now.net, o.before.net, "up", "the week before").text.toLowerCase();
+  const openOutlets = () => document.getElementById("outlets")?.scrollIntoView({ block: "start", behavior: "smooth" });
 
   // Pour Control moved to Drinks control. Old links still land in the right place.
   useEffect(() => { if (tab === "pour") router.replace("/drinks"); }, [tab, router]);
   const sub = tab ? SUB_PAGE[tab] : undefined;
   if (sub) {
     return (
-      <div className="space-y-5">
+      <div className="space-y-6">
         <PageHeader title={sub} />
         {tab === "orders" && <><Period /><Orders /></>}
         {tab === "rooms" && <RoomCharges />}
@@ -87,42 +92,57 @@ export default function MoneyPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <PageHeader title="Revenue" question={onFlags ? "Where is money going missing?" : "How much did we make?"} lead="Simulated data." />
+    <div className="space-y-6">
+      <PageHeader title={tab === "outlets" ? "Outlet performance" : onFlags ? "Flagged transactions" : "Revenue"} question={onFlags ? "Where is money going missing?" : tab === "outlets" ? "Which outlets are doing better or worse?" : "How much did we make?"} lead={onFlags ? "Voids, refunds, discounts and items removed from bills that broke a rule. A flag is a prompt to check, not a finding. Simulated data." : "Last 7 days against the 7 before. Profit is an estimate. Simulated data."} />
       {onFlags ? (
         <SummaryBar
           items={[
-            { label: "Money at risk", value: money(flagValue + pourWeek, { compact: true }), tone: "money" },
-            { label: "Open flags", value: flags.length, tone: flags.length ? "warn" : "pos" },
-            { label: "Recovered", value: money(t.recovered, { compact: true }), tone: "pos" },
+            { label: "Open flags", value: flags.length, tone: flags.length ? "warn" : "pos", compare: { text: `${pastDeadline} past their deadline`, good: pastDeadline ? false : true }, href: "/investigations?status=open" },
+            { label: "Value at risk", value: money(flagValue, { compact: true }), tone: "money", compare: { text: "Open flags, until checked", good: null }, href: "/investigations?status=open" },
+            { label: "New this week", value: newFlags.now, compare: versus(newFlags.now, newFlags.before, "down"), href: "/investigations?status=all" },
+            { label: "Recovered", value: money(sum(inSel.filter((i) => i.status === "closed"), (i) => i.recovered * fxRate(propertyById[i.propertyId].currency, sel.currency)), { compact: true }), tone: "pos", compare: { text: "All time, as on the Money Back List", good: null }, href: "/investigations?status=closed" },
           ]}
+          trend={<StripTrend goodWhen="down" title="Flagged value per day, last 30 days" points={flagDaily} format={(n) => money(n)} explain="The value of transactions that broke a rule, by the day they happened." series={[{ id: "count", label: "Flags raised", axis: "count", goodWhen: "down", format: (n) => `${Math.round(n)}`, points: byDay(inSel, (i) => i.date, () => 1), explain: "How many transactions were flagged each day." }]} summary={`Value of flagged transactions by the day they happened. Open now ${money(flagValue)}.`} note="by the day it happened" />}
           action={<Link href="/investigations" className={linkButton("primary")}>Review {flags.length} flags</Link>}
+        />
+      ) : tab === "outlets" ? (
+        <SummaryBar
+          items={[
+            { label: "Best outlet", value: best ? outletLabel(best.outletId) : "None", compare: best ? { text: `${money(best.now.net, { compact: true })}, ${changeWords(best)}`, good: best.now.net >= best.before.net } : undefined, onClick: openOutlets },
+            { label: "Weakest change", value: weakest ? outletLabel(weakest.outletId) : "None", compare: weakest ? { text: changeWords(weakest), good: weakest.now.net >= weakest.before.net } : undefined, onClick: openOutlets },
+            { label: "Average bill", value: money(weekC.now.orders ? weekC.now.net / weekC.now.orders : 0), compare: versus(weekC.now.orders ? weekC.now.net / weekC.now.orders : 0, weekC.before.orders ? weekC.before.net / weekC.before.orders : 0, "up", "the week before"), href: "/money?tab=orders" },
+            { label: "Outlets up", value: `${weekOutlets.filter((o) => o.now.net >= o.before.net).length} of ${weekOutlets.length}`, compare: { text: "Revenue against the week before", good: null }, onClick: openOutlets },
+          ]}
+          trend={<StripTrend goodWhen="up" title="Revenue per day, last 30 days" points={revenueDaily} format={(n) => money(n)} summary={`Net revenue per day for the selected outlets.`} note={currency} explain="Net sales each day for the outlets in view." series={revenueSeries} />}
         />
       ) : (
         <SummaryBar
-          items={[periodItem("Today so far", dayC, money), periodItem("Last 7 days", weekC, money), periodItem("Last 30 days", monthC, money)]}
+          items={[
+            { label: "Revenue, 7 days", value: money(weekC.now.net, { compact: true }), compare: versus(weekC.now.net, weekC.before.net, "up", "the week before"), href: "/money?tab=orders" },
+            { label: "Operating contribution, 7 days", value: money(weekC.now.operatingProfit ?? weekC.now.grossProfit, { compact: true }), compare: versus(weekC.now.operatingProfit ?? weekC.now.grossProfit, weekC.before.operatingProfit ?? weekC.before.grossProfit, "up", "the week before"), href: "/reports" },
+            { label: "Guests, 7 days", value: fmtNum(weekC.now.covers), compare: versus(weekC.now.covers, weekC.before.covers, "up", "the week before"), href: "/money?tab=orders" },
+            { label: "At risk, flags and drinks", value: money(flagValue + pourWeek, { compact: true }), tone: "money", compare: { text: "Flags and drinks, this week", good: null }, href: "/money?tab=flags" },
+          ]}
+          trend={<StripTrend goodWhen="up" title="Revenue per day, last 30 days" points={revenueDaily} format={(n) => money(n)} summary={`Net revenue per day. Last 7 days ${money(weekC.now.net)}.`} note={currency} explain="Net sales each day. Switch on guests and the average bill to see whether a change came from more people or bigger bills." series={revenueSeries} />}
           action={<Link href="/money?tab=orders" className={linkButton("primary")}>See transactions</Link>}
         />
       )}
-      <Tabs value={onFlags ? "flags" : "revenue"} onChange={(v) => setTab(v === "flags" ? "flags" : null)} tabs={[{ value: "revenue", label: "Revenue" }, { value: "flags", label: "Flags", count: flags.length }]} />
       {onFlags ? (
         <>
-          <SectionLink href="/drinks" title="Over pouring and missing drinks" summary={pour ? `${pour.wine.totals.week.gap} glasses of wine not billed this week, ${money(wineWeek)}. See Drinks control.` : "See Drinks control."} />
-          <Section id="revenue.flagged" defaultOpen forceOpen={tab === "mistakes"} title="Voids, refunds and removed items" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
+          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds and removed items" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
             <Mistakes />
           </Section>
         </>
       ) : (
         <>
-          <Panel title={`Revenue and ${monthC.now.operatingProfit !== null ? "estimated profit" : "gross profit"}, last ${days.length} days`}>
+          <Section id="revenue.chart" title={`Revenue and ${monthC.now.operatingProfit !== null ? "estimated operating contribution" : "gross profit"}, last ${days.length} days`} summary={`${money(weekC.now.net, { compact: true })} revenue in the last 7 days, ${money(weekC.now.operatingProfit ?? weekC.now.grossProfit, { compact: true })} ${profitName.toLowerCase()}. ${fmtDate(DEMO_TODAY)} is today so far.`}>
             <RevenueProfitChart points={points} format={(n) => money(n)} axisFormat={fmtShort} profitName={profitName} summary={`Revenue and ${profitName} per day for the last ${days.length} days, in ${currency}.`} />
-          </Panel>
-          <Section id="revenue.outlets" forceOpen={tab === "outlets"} title="By outlet" summary={outlets[0] ? `${outlets.length} ${outlets.length === 1 ? "outlet" : "outlets"}, ${fmtRange(sel.range)}. ${outletLabel(outlets[0].outletId)} leads with ${money(outlets[0].now.net, { compact: true })}.` : "No outlets in your selection"}>
+          </Section>
+          <div id="outlets" className="scroll-mt-24"><Section id="revenue.outlets" forceOpen={tab === "outlets"} title="Outlet performance" summary={outlets[0] ? `${outlets.length} ${outlets.length === 1 ? "outlet" : "outlets"}, ${fmtRange(sel.range)}. ${outletLabel(outlets[0].outletId)} leads with ${money(outlets[0].now.net, { compact: true })}.` : "No outlets in your selection"}>
             <Period />
             <OutletFinance />
-          </Section>
+          </Section></div>
           <SectionLink href="/money?tab=orders" title="All transactions" summary={`${fmtNum(t.orders)} transactions, ${fmtRange(sel.range)}. Filter by day and search.`} />
-          {can(user, "finance.view") && <p><Link href="/finance?tab=invoices" className={textLink}>Supplier invoices and reconciliation</Link></p>}
         </>
       )}
     </div>
@@ -156,8 +176,9 @@ function Mistakes() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {hero && canSeeOutlet(user, "dxb-terrace") && (
+        <Section id="flags.example" title="Worked example: a Coke removed after it was sent to the bar" summary="Tonight at The Terrace. How one flag is found, step by step.">
         <Panel title="Tonight at The Terrace: an item removed after it was sent to the bar" description="A worked example of what Tyll looks for. The order below is in tonight's records." action={<Badge tone={hero.status === "closed" ? "neutral" : "warn"}>{STATUS_LABEL[hero.status]}</Badge>}>
           <ol className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {steps.map(([time, title, detail], i) => (
@@ -170,18 +191,19 @@ function Mistakes() {
           </ol>
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
             <p className="max-w-[70ch] text-sm text-graphite">Tyll flags that the Coke was removed after its ticket went to the bar. It does not conclude why. The investigation shows the evidence and what to check.</p>
-            <Button variant="primary" onClick={() => router.push(`/investigations/${HERO_EXCEPTION_ID}`)}>Open the investigation <ArrowRight size={15} /></Button>
+            <Button onClick={() => router.push(`/investigations/${HERO_EXCEPTION_ID}`)}>Open the investigation <ArrowRight size={15} /></Button>
           </div>
         </Panel>
+        </Section>
       )}
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <Panel title="Flagged by type" description="Value involved in the period. Choose a type to see its cases.">
           {byType.length === 0 ? <EmptyState title="Nothing flagged in this period" /> : (
-            <BarList tone="warn" format={(n) => money(n)} rows={byType.map((t) => ({ key: t.type, label: TYPE_LABEL[t.type], sub: `${t.n} case${t.n === 1 ? "" : "s"}`, value: t.value, onClick: () => router.push(`/investigations?type=${t.type}&status=all`) }))} />
+            <BarList format={(n) => money(n)} rows={byType.map((t) => ({ key: t.type, label: TYPE_LABEL[t.type], sub: `${t.n} case${t.n === 1 ? "" : "s"}`, value: t.value, onClick: () => router.push(`/investigations?type=${t.type}&status=all`) }))} />
           )}
         </Panel>
-        <Panel title="Adjustment rate by outlet" description="Flagged orders per 1,000 orders, so busy and quiet outlets compare fairly.">
+        <Panel title="Flags per 1,000 orders, by outlet" description="So busy and quiet outlets compare fairly.">
           <BarList format={(n) => n.toFixed(1)} rows={[...rows].sort((a, b) => adjustmentRate(b.now) - adjustmentRate(a.now)).map((r) => ({ key: r.outletId, outletId: r.outletId, label: outletLabel(r.outletId), sub: `${r.now.adjustments} of ${fmtNum(r.now.orders)} orders`, value: adjustmentRate(r.now) }))} />
         </Panel>
         <Panel title="What Tyll checks" description="Rules agreed with the hotel. A flag means a rule was met, nothing more.">
@@ -191,12 +213,13 @@ function Mistakes() {
             <li>Discounts above {POLICY.discountMaxPct}%, or with no reason or approval.</li>
             <li>Complimentary items above {POLICY.compMaxValue} per order, or with no reason.</li>
             <li>Refunds above {Math.round(POLICY.refundMaxShare * 100)}% of a bill, late, or unexplained.</li>
-            <li>Whole orders voided after dispatch.</li>
+            <li>Whole orders cancelled after they were sent to the kitchen or bar.</li>
           </ul>
         </Panel>
       </div>
 
-      <Panel title="Repeated patterns" description={`Unapproved removals in the last ${POLICY.patternWindowDays} days that cluster under one POS login.`}>
+      {patterns.length === 0 ? <p className="px-1 text-[13px] text-steel">No repeated pattern under one till login in the last {POLICY.patternWindowDays} days.</p> : (
+      <Panel title="Repeated patterns" description={`Removals without approval in the last ${POLICY.patternWindowDays} days that cluster under one till login.`}>
         {patterns.length === 0 ? (
           <EmptyState title="No repeated pattern in this selection">Tyll looks for {POLICY.patternMinCases} or more cases under one login making up at least {Math.round(POLICY.patternMinShare * 100)}% of an outlet&rsquo;s removals.</EmptyState>
         ) : (
@@ -209,6 +232,10 @@ function Mistakes() {
                     <p className="text-xs text-steel">{fmtPct(p.share, 0)} of the outlet&rsquo;s cases · {fmtPct(p.eveningShare, 0)} after 6 PM · {fmtMoney(p.value, propertyById[outletById[p.outletId].propertyId].currency)} involved</p>
                   </div>
                   <Link href={`/investigations/${p.exceptionIds[0]}`} className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Open the latest case <ArrowRight size={14} /></Link>
+                  <div className="grid w-full gap-3 rounded-[var(--radius-control)] bg-cloud p-3 text-[13px] md:grid-cols-2">
+                    <div><p className="font-medium text-ink">Possible reasons</p><ul className="mt-1 list-disc space-y-0.5 ps-4 text-graphite">{p.eveningShare >= 0.6 && <li>Mostly after 6 PM, when the section is busiest.</li>}<li>The login may be shared at the terminal.</li><li>The removal approval step may not be known by everyone on this section.</li></ul></div>
+                    <div><p className="font-medium text-ink">How to help</p><ol className="mt-1 list-decimal space-y-0.5 ps-4 text-graphite"><li>Give each person their own till login.</li><li>Remind the section that removing an item after it is sent needs a manager&rsquo;s approval.</li></ol></div>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -216,19 +243,20 @@ function Mistakes() {
           </>
         )}
       </Panel>
+      )}
 
-      <Panel title="Latest flagged orders" action={<Link href="/investigations" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} /></Link>} flush>
+      <Panel title="Flagged orders" description="Open flags first, largest amount first. Closed ones follow." action={<Link href="/investigations" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} /></Link>} flush>
         {inPeriod.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No flagged orders in this period" /></div> : (
           <TableWrap>
             <table className="w-full min-w-[820px] text-sm">
               <thead><tr><Th>What Tyll found</Th><Th>Outlet</Th><Th>When</Th><Th align="right">Value involved</Th><Th>Status</Th></tr></thead>
               <tbody>
-                {inPeriod.slice(0, 8).map((i) => (
+                {[...inPeriod].sort((a, b) => Number(a.status === "closed") - Number(b.status === "closed") || toDisplay(b.propertyId, b.exposure) - toDisplay(a.propertyId, a.exposure)).slice(0, 8).map((i) => (
                   <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
                     <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}</span></Td>
                     <Td>{i.outletId ? outletLabel(i.outletId) : "None"}</Td>
                     <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
-                    <Td align="right">{money(toDisplay(i.propertyId, i.exposure), { decimals: true })}</Td>
+                    <Td align="right">{money(toDisplay(i.propertyId, i.exposure))}</Td>
                     <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
                   </tr>
                 ))}
@@ -343,7 +371,7 @@ function RoomCharges() {
   const posted = sum(bySource, (s) => s.posted);
   const outletSales = sum(bySource.filter((s) => s.source === "restaurant" || s.source === "room_service"), (s) => s.expected);
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <Panel title="Charges to guest rooms" description="Each charge recorded at an outlet or by housekeeping is matched to the line on the guest bill in the property management system.">
         <div className="grid grid-cols-2 gap-x-6 gap-y-6 lg:grid-cols-4">
           <Stat label="Charges checked" value={fmtNum(charges.length)} />
@@ -392,7 +420,7 @@ function RoomCharges() {
                     <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}</span></Td>
                     <Td>{propertyById[i.propertyId].name}</Td>
                     <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
-                    <Td align="right">{money(i.exposure * rate(i.propertyId), { decimals: true })}</Td>
+                    <Td align="right">{money(i.exposure * rate(i.propertyId))}</Td>
                     <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
                   </tr>
                 ))}
@@ -417,7 +445,7 @@ function Tips() {
   const total = sum(team, (s) => Number(hours[s.id]) || 0);
   const poolN = Math.max(0, Number(pool) || 0);
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <Panel title="Tip distribution" description="A preview of a planned feature. You can try the calculation here, but nothing on this tab is saved or sent to payroll." action={<Badge>Planned</Badge>}>
         <div className="grid gap-6 lg:grid-cols-[1fr_1.6fr] [&>*]:min-w-0">
           <div className="space-y-4">

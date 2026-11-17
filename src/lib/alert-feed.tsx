@@ -133,12 +133,14 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
     }
     if (pour) {
       const rate = fxRate(propertyById[pour.propertyId].currency, sel.currency);
-      // The two largest wine patterns, so the list stays readable. The rest are on Pour Control.
+      // The two largest wine patterns, so the list stays readable. The rest are on Over pouring.
       for (const f of pour.wine.flags.slice(0, 2)) {
-        out.push({ id: f.id, kind: "pour", rag: "amber", what: `Check pouring at ${outletById[f.outletId].name}`, why: f.text, where: outletById[f.outletId].name, outletId: f.outletId, amount: f.figures.gapValue * rate, amountWord: "not billed", next: { label: "See over pouring", href: "/drinks" } });
+        out.push({ id: f.id, kind: "pour", rag: "amber", what: `Check pouring at ${outletById[f.outletId].name}, ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][f.weekday]} ${f.shift} shift`, why: f.text, where: outletById[f.outletId].name, outletId: f.outletId, amount: f.figures.gapValue * rate, amountWord: "not billed", next: { label: "See over pouring", href: "/drinks" } });
       }
     }
-    out.sort((a, b) => (b.amount ?? -1) - (a.amount ?? -1));
+    // Most urgent first, then the most money inside each level.
+    const RANK = { red: 0, amber: 1, green: 2 } as const;
+    out.sort((a, b) => RANK[a.rag as keyof typeof RANK] - RANK[b.rag as keyof typeof RANK] || (b.amount ?? -1) - (a.amount ?? -1));
     const state = (a: FeedAlert): AlertState => memory?.[a.id] ?? "open";
     return {
       alerts: out, open: out.filter((a) => state(a) === "open"), snoozed: out.filter((a) => state(a) === "snoozed"), resolved: out.filter((a) => state(a) === "resolved"),

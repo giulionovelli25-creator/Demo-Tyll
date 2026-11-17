@@ -25,7 +25,7 @@ export const OUTCOME_HELP: Record<Outcome, string> = {
 };
 
 export const REASON_LABEL: Record<WasteReason, { en: string; ar: string }> = {
-  waste: { en: "Waste", ar: "هدر" },
+  waste: { en: "Unused or dropped", ar: "هدر" },
   breakage: { en: "Breakage", ar: "كسر" },
   spoilage: { en: "Spoilage", ar: "تلف" },
   damaged: { en: "Damaged goods", ar: "بضاعة تالفة" },

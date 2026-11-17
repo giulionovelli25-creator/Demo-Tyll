@@ -132,8 +132,11 @@ export const pctChange = (now: number, before: number): number | null =>
 export function fmtQty(qty: number, unit: string): string {
   if (unit === "each") return fmtNum(qty, qty % 1 === 0 || Math.abs(qty) >= 10 ? 0 : 1);
   if (qty !== 0 && Math.abs(qty) < 1) return `${fmtNum(qty * 1000)} ${unit === "kg" ? "g" : "ml"}`;
-  return `${fmtNum(qty, 1)} ${unit}`;
+  return `${fmtNum(qty, 1)} ${unitLabel(unit)}`;
 }
+
+/** Units as people write them: a capital L for litres, so it never reads as a 1. */
+export const unitLabel = (unit: string) => (unit === "l" ? "L" : unit);
 
 export const sum = <T,>(arr: readonly T[], f: (t: T) => number) => arr.reduce((s, x) => s + f(x), 0);
 

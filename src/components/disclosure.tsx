@@ -68,7 +68,8 @@ export function Section({ id, title, summary, children, forceOpen, defaultOpen, 
         <RowText title={title} summary={summary} />
         <ChevronDown size={18} className={cn("shrink-0 text-steel transition-transform duration-200 ease-tyll", open && "rotate-180")} aria-hidden />
       </button>
-      {open && <div id={bodyId} className={cn("animate-rise border-t border-hair print:border-0", !flush && "space-y-4 p-4 sm:p-6")}>{children}</div>}
+      {/* Cards inside an open section lose their own frame: never more than two levels of card. */}
+      {open && <div id={bodyId} className={cn("animate-rise border-t border-hair print:border-0 [&_.rounded-panel]:rounded-none [&_.rounded-panel]:border-0 [&_.rounded-panel]:bg-transparent [&_.rounded-panel]:shadow-none [&_section.rounded-panel+section.rounded-panel]:border-t [&_section.rounded-panel+section.rounded-panel]:border-hair", !flush && "space-y-4 p-4 sm:p-6 [&_section.rounded-panel>header]:px-0 [&_section.rounded-panel>header]:pt-0 [&_section.rounded-panel>div]:px-0")}>{children}</div>}
     </section>
   );
 }

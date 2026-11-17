@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, EmptyState, Field, Note, Panel, TableWrap, Td, Th, TextArea, cn, rowClass, toast } from "@/components/ui";
 import { ingredientById, outletById, propertyById } from "@/lib/data/catalog";
 import { supplierName } from "@/lib/data/purchasing-rules";
@@ -52,6 +52,11 @@ function RequestList({ base }: { base: string }) {
   const requests = useMemo(() => data?.requests ?? [], [data]);
   const preferred: Queue = (params.get("queue") as Queue) ?? (can(user, "purchase.review") ? "purchasing" : can(user, "purchase.approveFinance") ? "accounting" : "all");
   const [queue, setQueue] = useState<Queue>(preferred);
+  // A number at the top of Orders opens its queue.
+  const asked = params.get("queue") as Queue | null;
+  const [seen, setSeen] = useState(asked);
+  if (asked !== seen) { setSeen(asked); if (asked) setQueue(asked); }
+  useEffect(() => { if (asked) requestAnimationFrame(() => document.getElementById("order-list")?.scrollIntoView({ block: "start", behavior: "smooth" })); }, [asked]);
   const count = (q: Queue) => requests.filter((r) => inQueue(r, q, user)).length;
   const queues: { value: Queue; label: string }[] = [
     { value: "all", label: `All (${count("all")})` },
@@ -64,9 +69,11 @@ function RequestList({ base }: { base: string }) {
     ...(can(user, "purchase.create") ? [{ value: "drafts" as Queue, label: `My drafts (${count("drafts")})` }] : []),
   ];
   const shown = requests.filter((r) => inQueue(r, queue, user));
+  // Empty filters stay out of the way. All, and whichever filter is chosen, always show.
+  const usefulQueues = queues.filter((q) => q.value === "all" || q.value === queue || count(q.value) > 0);
   return (
-    <div className="space-y-5">
-      <Choice label="Show" value={queue} options={queues} onChange={setQueue} />
+    <div id="order-list" className="scroll-mt-24 space-y-5">
+      {usefulQueues.length > 1 && <Choice label="Show" value={queue} options={usefulQueues} onChange={setQueue} />}
       <Panel flush>
         {error ? <div className="p-6"><EmptyState title="Requests could not be loaded">{error}</EmptyState></div>
           : !data ? <div className="p-6"><EmptyState title="Loading requests" /></div>
@@ -80,7 +87,7 @@ function RequestList({ base }: { base: string }) {
                         <Td><button type="button" className="num text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`${base}&request=${r.id}`); }}>{r.id}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
                         <Td>{where(r)}<span className="block text-xs text-steel">{fmtDate(r.period.from)}{r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to)}` : ""}</span></Td>
                         <Td>{personName(r.createdBy)}</Td>
-                        <Td align="right">{fmtMoney(total(r), propertyById[r.propertyId].currency, { decimals: true })}</Td>
+                        <Td align="right">{fmtMoney(total(r), propertyById[r.propertyId].currency)}</Td>
                         <Td><Badge tone={STATUS[r.status].tone}>{STATUS[r.status].label}</Badge></Td>
                         <Td className="text-graphite">{new Date(r.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</Td>
                       </tr>

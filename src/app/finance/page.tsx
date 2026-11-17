@@ -5,12 +5,13 @@ import { Approvals } from "@/components/forecast/approvals";
 import { HELP } from "@/components/help";
 import { ModuleHub, useSection } from "@/components/module-hub";
 import { StockAlert } from "@/components/overview/stock-alert";
-import { PageHeader, Tabs } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
+import { PurchasingTabs } from "@/components/finance/purchasing-tabs";
 import { can } from "@/lib/domain/access";
 import { useView } from "@/lib/hooks";
 
 type Tab = "approvals" | "invoices" | "reports";
-const LABEL: Record<Tab, string> = { approvals: "Approvals", invoices: "Invoice reconciliation", reports: "Budgets & Reports" };
+const LABEL: Record<Tab, string> = { approvals: "Order approvals", invoices: "Invoice approval", reports: "Budgets and reports" };
 
 /** Three choices. The owner and general manager see budgets and reports; accounting also reviews and approves. */
 export default function FinancePage() {
@@ -21,9 +22,9 @@ export default function FinancePage() {
   const { data } = useFinanceHome(propertyId);
   const n = (k: number, one: string, many: string) => (k === 0 ? "Nothing waiting" : `${k} ${k === 1 ? one : many}`);
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PageHeader
-        title={tab ? LABEL[tab] : "Reconciliation"}
+        title={tab ? LABEL[tab] : "Invoices and budgets"}
         lead={tab ? undefined : data ? `${n(data.invoices, "supplier invoice to check", "supplier invoices to check")}${data.overBudget.length ? `. Over budget: ${data.overBudget.join(", ")}.` : "."}` : "Supplier invoices checked against orders and deliveries."}
       />
       {tab === null && <StockAlert where="finance" />}
@@ -38,7 +39,7 @@ export default function FinancePage() {
           }))}
         />
       )}
-      {tab !== null && tabs.length > 1 && <Tabs value={tab} onChange={setTab} tabs={tabs.map((t) => ({ value: t, label: LABEL[t] }))} />}
+      {tab !== null && <PurchasingTabs here={tab} />}
       {tab === "approvals" && <Approvals base="/finance?tab=approvals" />}
       {tab === "invoices" && <Invoices />}
       {tab === "reports" && <Reports />}

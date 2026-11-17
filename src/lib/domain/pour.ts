@@ -1,7 +1,8 @@
 // Pour Control: how many glasses each bottle really gave, by wine, outlet and shift.
+import { rostered } from "./rota";
 // Glasses sold are the recorded POS lines. Bottles opened are SIMULATED for this demo, because the POS does not record them:
 // each outlet and shift pours a set amount per glass, which gives the bottles it would have got through.
-// Nothing here looks at individual staff. A low yield is a prompt to check, not a finding about anyone.
+// The rota (simulated, lib/domain/rota.ts) shows who was on; a low yield is a prompt to check, not a finding about anyone.
 import { itemById, outletById } from "../data/catalog";
 import type { Order } from "../types";
 import { DEMO_TODAY, addDays, rng, sum } from "../util";
@@ -58,8 +59,14 @@ const PROFILE: Record<string, Partial<Record<Shift, number>>> = {
   "dxb-terrace": { evening: 1.06, late: 1.14 },
   "doh-sky": { evening: 1.12, late: 1.24 },
 };
+/**
+ * The demo's one person-level story: at Lobby Lounge the heavy pours happen mostly when its bartender is on (simulated rota).
+ * The outlet's overall level stays as before, so the house wine worked example is unchanged.
+ */
+const PERSON: Record<string, { staffId: string; on: number; off: number }> = { "dxb-lobby": { staffId: "LBY-S5", on: 1.38, off: 1.12 } };
 const pourFactor = (outletId: string, shift: Shift, family: PourFamily, date: string) => {
-  const base = PROFILE[outletId]?.[shift] ?? 1.01;
+  const who = PERSON[outletId];
+  const base = who ? (rostered(outletId, date, shift).includes(who.staffId) ? who.on : who.off) : PROFILE[outletId]?.[shift] ?? 1.01;
   const weekday = new Date(`${date}T00:00:00Z`).getUTCDay();
   const weekend = shift !== "day" && (weekday === 5 || weekday === 6) ? 0.04 : 0;
   // Spirits run closer to standard: a measure is easier to keep than a free pour of wine.
@@ -155,7 +162,52 @@ const DAY_NAME = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 const SHIFT_WORD: Record<Shift, string> = { day: "day shift", evening: "evening shift", late: "late shift" };
 export const weekdayOf = (date: string) => new Date(`${date}T00:00:00Z`).getUTCDay();
 
-export interface PourFlag { id: string; outletId: string; weekday: number; shift: Shift; figures: PourFigures; text: string }
+export interface PourTeam {
+  /** How many of these shifts were seen in the last four weeks. */
+  shifts: number;
+  /** People rostered on an average one of these shifts. */
+  perShift: number;
+  /** Everyone rostered on these shifts, most often first. Names only for managers who may see them. */
+  people: { staffId: string; role: string; name?: string; shifts: number }[];
+}
+
+export interface PourFlag { id: string; outletId: string; weekday: number; shift: Shift; figures: PourFigures; text: string; team?: PourTeam; reasons?: PourReasons }
+
+export interface PourReasons {
+  /** Possible reasons, worked out from the figures by fixed rules. To check, never proven. */
+  likely: string[];
+  /** What a manager can do this week. */
+  help: string[];
+}
+
+/** Possible reasons for a pattern and how to help, by fixed rules from the figures. Never about a person. */
+export function pourReasons(flag: { weekday: number; shift: Shift; figures: PourFigures }, family: PourFamily, team?: PourTeam): PourReasons {
+  const likely: string[] = [];
+  const help: string[] = [];
+  const busy = flag.shift !== "day" && (flag.weekday === 4 || flag.weekday === 5 || flag.weekday === 6);
+  const measure = family === "wine" ? "the 175 ml glass measure" : "the 25 ml spirit measure";
+  const lost = flag.figures.perBottle > 0 && flag.figures.yieldPer !== null ? Math.round((1 - flag.figures.yieldPer / flag.figures.perBottle) * 100) : 0;
+  if (busy) {
+    likely.push(`Busy ${DAY_NAME[flag.weekday]} ${SHIFT_WORD[flag.shift]}: pouring by eye when the bar is full.`);
+    help.push(`Put ${measure} at every station before the ${DAY_NAME[flag.weekday]} ${SHIFT_WORD[flag.shift]} starts.`);
+  }
+  if (team && team.people.length >= 5 && team.people.filter((p) => p.shifts >= Math.max(2, team.shifts - 1)).length <= 1) {
+    likely.push(`A different team most weeks (${team.people.length} people over ${team.shifts} shifts), so the house measure may not be known by everyone.`);
+    help.push("A ten minute refresher on the house measure at the start of this shift, for whoever is on.");
+  } else if (team && team.people.some((p) => p.shifts >= Math.max(2, team.shifts - 1))) {
+    likely.push("Mostly the same team each week: more likely a habit than a one off.");
+    help.push(`Show this shift's team the glasses per bottle figure (${(flag.figures.yieldPer ?? 0).toFixed(1)} against ${flag.figures.perBottle}) and check again next week.`);
+  }
+  if (family === "wine") {
+    likely.push("Glasses poured but not rung up, or poured large. The figures cannot tell these apart.");
+    help.push("Recount the open bottles at the end of the next one of these shifts, before anything is thrown away.");
+  } else {
+    likely.push("Measures poured but not rung up, or doubles rung as singles.");
+    help.push("Check that doubles have their own button on the till and are used.");
+  }
+  if (lost >= 15) help.push("If the gap stays above 15 percent after two weeks, review it with the bar manager.");
+  return { likely: likely.slice(0, 3), help: help.slice(0, 3) };
+}
 
 /** One plain line for a flagged pattern. Never names a person. */
 export function flagLine(outletId: string, weekday: number, shift: Shift, f: PourFigures, family: PourFamily, money: (n: number) => string): string {

@@ -1,8 +1,10 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ListChecks } from "lucide-react";
-import { Fragment, useMemo, useState } from "react";
-import { Badge, Button, EmptyState, Note, Panel, Segmented, TableWrap, Td, Th, cn, report, rowClass, useSort } from "@/components/ui";
+import { Fragment, useMemo, useState, type ReactNode } from "react";
+import { Badge, Button, EmptyState, Note, Panel, Segmented, SummaryBar, TableWrap, Td, Th, cn, report, rowClass, useSort } from "@/components/ui";
+import { StripTrend } from "@/components/charts";
+import { byDay } from "@/lib/domain/trends";
 import { ingredientById, outletById, propertyById } from "@/lib/data/catalog";
 import { STOCK_AREAS, groupByStock } from "@/lib/data/locations";
 import { can } from "@/lib/domain/access";
@@ -19,7 +21,7 @@ type Key = "item" | "expected" | "actual" | "unexplained" | "value";
 /** The case for a period, opened automatically or by a manager. */
 const caseOf = (cases: readonly Investigation[], p: UsagePeriod) => cases.find((c) => c.period?.id === p.id);
 
-export function WhereDidItGo({ propertyId }: { propertyId: string }) {
+export function WhereDidItGo({ propertyId, tabs }: { propertyId: string; tabs?: ReactNode }) {
   const router = useRouter();
   const params = useSearchParams();
   const { sel } = useView();
@@ -30,7 +32,7 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
   const [kind, setKind] = useState<"all" | "beverage" | "food">("all");
   const { sort, toggle } = useSort<Key>({ key: "value", dir: "desc" });
   const selectedId = params.get("period");
-  const money = (n: number) => fmtMoney(n, propertyById[propertyId].currency, { decimals: true });
+  const money = (n: number) => fmtMoney(n, propertyById[propertyId].currency);
 
   const rows = useMemo(() => {
     const outlets = new Set(sel.outletIds);
@@ -62,21 +64,32 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
       return sort.dir === "asc" ? d : -d;
     });
   const flagged = rows.filter((r) => r.v.significant && r.v.unexplained > 0);
+  const flaggedValue = flagged.reduce((n, r) => n + r.v.value, 0);
+  const largest = [...flagged].sort((x, y) => y.v.value - x.v.value)[0];
+  const looking = flagged.filter((r) => r.c && r.c.status !== "closed").length;
+  const byCount = byDay(flagged, (r) => r.p.to.date, (r) => r.v.value);
+  const focusList = () => requestAnimationFrame(() => document.getElementById("counted-items")?.scrollIntoView({ block: "start", behavior: "smooth" }));
   const areas = groupByStock(visible, (r) => r.p.ingredientId);
+  // A short list reads better without group headings.
+  const flat = visible.length <= 6;
 
   return (
-    <div className="space-y-5">
-      <Panel
-        title="Stock that left without a sale to explain it"
-        description="Each outlet counts its own bar and kitchen stock. Tyll compares what left between two counts with what the POS sold and what was logged as waste."
-      >
-        <p className="text-sm text-graphite">
-          {!data ? "Loading the latest counts." : flagged.length === 0 ? "Every counted item is within normal counting and portioning." : (
-            <>{flagged.length} item{flagged.length === 1 ? "" : "s"} used more than sales and waste explain, about <span className="num text-ink">{money(flagged.reduce((s, r) => s + r.v.value, 0))}</span> at cost.</>
-          )}
-        </p>
-      </Panel>
+    <div id="where-list" className="scroll-mt-24 space-y-6">
+      {data && (
+        <SummaryBar
+          items={[
+            { label: "Missing, needing a look", value: fmtMoney(flaggedValue, propertyById[propertyId].currency), tone: flaggedValue > 0 ? "warn" : "pos", compare: { text: `${flagged.length} ${flagged.length === 1 ? "item" : "items"} to check`, good: flagged.length ? false : true }, onClick: () => { setShow("flagged"); focusList(); } },
+            { label: "Largest gap", value: largest ? ingredientById[largest.p.ingredientId].name : "None", compare: { text: largest ? `${fmtMoney(largest.v.value, propertyById[propertyId].currency)} at ${outletById[largest.p.outletId].name}` : "Nothing short", good: null }, onClick: largest ? () => open(largest.p.id) : undefined },
+            { label: "Being looked into", value: looking, compare: { text: `of ${flagged.length} that need a look`, good: null }, href: "/investigations?status=open" },
+            { label: "Items counted", value: rows.length, compare: { text: "Each outlet counts its own stock", good: null }, onClick: () => { setShow("all"); focusList(); } },
+          ]}
+          trend={<StripTrend goodWhen="down" title="Missing at each count, last 30 days" points={byCount} format={money} summary={`Stock used without a sale or waste to explain it, by the date of the closing count. ${money(flaggedValue)} in total.`} note="days without a point had no gap" />}
+        />
+      )}
+      {tabs}
+      <p className="px-1 text-[13px] text-steel">Each outlet counts its own bar and kitchen stock. Tyll compares what left between two counts with what the till sold and what was logged as waste.</p>
 
+      <div id="counted-items" className="scroll-mt-24" />
       <Panel flush>
         <div className="flex flex-wrap items-end gap-2 px-5 pb-4 sm:px-6">
           <Segmented label="Show" value={show} onChange={setShow} options={[{ value: "flagged", label: "Needs a look" }, { value: "all", label: "All counted items" }]} />
@@ -100,9 +113,9 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
                   </thead>
                   <tbody>
                     {STOCK_AREAS.filter((area) => areas.some((g) => g.area === area.id)).map((area) => <Fragment key={area.id}>
-                      <tr><td colSpan={6} className="border-t border-line bg-mist px-5 py-2 text-[13px] font-semibold text-ink sm:px-6">{area.name}</td></tr>
+                      {!flat && <tr><td colSpan={6} className="border-t border-line bg-mist px-5 py-2 text-[13px] font-semibold text-ink sm:px-6">{area.name}</td></tr>}
                       {areas.filter((g) => g.area === area.id).map((g) => <Fragment key={g.id}>
-                      <tr><td colSpan={6} className="border-t border-hair bg-cloud px-5 py-1.5 text-xs font-semibold text-graphite sm:px-6">{g.name}</td></tr>
+                      {!flat && <tr><td colSpan={6} className="border-t border-hair bg-cloud px-5 py-1.5 text-xs font-semibold text-graphite sm:px-6">{g.name}</td></tr>}
                       {g.rows.map(({ p, v, c }) => (
                       <tr key={p.id} className={cn(rowClass, "cursor-pointer")} onClick={() => open(p.id)}>
                         <Td>
@@ -111,7 +124,7 @@ export function WhereDidItGo({ propertyId }: { propertyId: string }) {
                         </Td>
                         <Td align="right"><Amount p={p} n={v.expected} /></Td>
                         <Td align="right"><Amount p={p} n={v.actual} /></Td>
-                        <Td align="right" className={cn(v.significant && v.unexplained > 0 && "text-warn")}>
+                        <Td align="right" className={cn(v.significant && v.unexplained > 0 && "font-semibold text-ink")}>
                           {Math.abs(v.unexplained) < 1e-6 ? "None" : <>{v.unexplained < 0 ? "−" : ""}{qtyWords(v.unexplained, p.ingredientId)}</>}
                           {v.expected > 0 && Math.abs(v.unexplained) > 1e-6 && <span className="block text-xs text-steel">{Math.round(v.share * 100)}% of expected</span>}
                         </Td>
@@ -138,7 +151,7 @@ function Amount({ p, n }: { p: UsagePeriod; n: number }) {
 function PeriodDetail({ p, existing, onBack }: { p: UsagePeriod; existing?: Investigation; onBack: () => void }) {
   const { v, causes } = useUsage(p);
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="ghost" size="sm" onClick={onBack}><ArrowLeft size={15} /> All items</Button>
         <p className="text-sm text-steel">{periodPlace(p)}</p>

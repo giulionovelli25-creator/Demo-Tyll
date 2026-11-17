@@ -417,16 +417,18 @@ export function monthPlanFor(user: User, propertyId: string, entries: SessionEnt
 const BUILT_NOTE = "Built from the Stock page: the next delivery of each item, to reach month end with a safe buffer.";
 
 /** Build order: one draft purchase order, its lines grouped by supplier when shown. Building again updates the same draft. */
-export function buildMonthOrder(user: User, propertyId: string, entries: SessionEntries): Result<{ request: PurchaseRequest; lines: number; total: number }> {
+export function buildMonthOrder(user: User, propertyId: string, entries: SessionEntries, quantities: Record<string, number> = {}): Result<{ request: PurchaseRequest; lines: number; total: number }> {
   if (!can(user, "purchase.create")) return fail(403, "Your role cannot create purchase requests.");
   const res = monthPlanFor(user, propertyId, entries);
   if (!res.ok) return res;
-  const picked = res.plan.items.filter((i) => i.nextQty > 0);
+  // A quantity changed by hand replaces the suggestion; the suggestion is kept on the line beside it.
+  const qtyOf = (i: PlanItem) => (i.ingredientId in quantities ? quantities[i.ingredientId] : i.nextQty);
+  const picked = res.plan.items.filter((i) => i.nextQty > 0 && qtyOf(i) > 0);
   if (!picked.length) return fail(409, "Nothing needs ordering right now.");
   const draft = loadStore().requests.find((r) => r.createdBy === user.id && r.status === "draft" && r.comment === BUILT_NOTE && r.propertyId === propertyId);
   const saved = saveRequest(user, {
     id: draft?.id, propertyId, period: "custom", from: res.plan.period.from, to: res.plan.period.to, comment: BUILT_NOTE,
-    lines: picked.map((i) => ({ ingredientId: i.ingredientId, qty: i.nextQty, suggested: i.nextQty, requirement: i.predicted, available: i.onHand, incoming: i.incoming, safety: i.buffer, supplierId: i.supplierId })),
+    lines: picked.map((i) => ({ ingredientId: i.ingredientId, qty: qtyOf(i), suggested: i.nextQty, requirement: i.predicted, available: i.onHand, incoming: i.incoming, safety: i.buffer, supplierId: i.supplierId })),
   });
   if (!saved.ok) return saved;
   const request = mutateStore((s) => {
@@ -434,7 +436,7 @@ export function buildMonthOrder(user: User, propertyId: string, entries: Session
     r.period = res.plan.period;
     return r;
   });
-  return { ok: true, request, lines: picked.length, total: Math.round(sum(picked, (i) => i.nextCost) * 100) / 100 };
+  return { ok: true, request, lines: picked.length, total: Math.round(sum(picked, (i) => qtyOf(i) * i.unitPrice) * 100) / 100 };
 }
 
 /** Lines to buy for one event. Empty when the user cannot see the event's purchasing. */

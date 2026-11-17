@@ -95,7 +95,7 @@ export default function SettingsPage() {
         <TableWrap>
           <table className="w-full min-w-[900px] text-sm">
             <thead>
-              <tr><Th> </Th>{ROLES.map((r) => <Th key={r} className={cn("text-center", r === user.role && "text-ink")}>{ROLE_LABEL[r]}{r === user.role && <span className="block text-[11px] font-normal">you</span>}</Th>)}</tr>
+              <tr><Th> </Th>{ROLES.map((r) => <Th key={r} className={cn("text-center", r === user.role && "text-ink")}>{ROLE_LABEL[r]}{r === user.role && <span className="block text-xs font-normal">you</span>}</Th>)}</tr>
             </thead>
             <tbody>
               <tr className={rowClass}><Td className="text-steel">Sees</Td>{ROLES.map((r) => <Td key={r} className="text-center text-xs text-graphite">{sample(r).propertyIds === "all" ? "Both hotels" : sample(r).outletIds === "all" ? "Dubai, all outlets" : "The Terrace"}</Td>)}</tr>

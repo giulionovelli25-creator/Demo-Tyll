@@ -172,7 +172,7 @@ function ItemDetail({ row, propertyId, money, cases, mayCount, mayLog }: {
                 <li key={c.id} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3">
                   <span className="min-w-[150px]">{fmtDate(c.date, true)}<span className="block text-xs text-steel">{c.kind === "weekly" ? "weekly count" : "spot check"}, {personName(c.by)}</span></span>
                   <span className="num text-graphite">counted {fmtQty(c.counted, g.unit)} of {fmtQty(c.expected, g.unit)}</span>
-                  <span className={cn("num", value < -0.5 ? "text-warn" : "text-steel")}>{Math.abs(v) < 0.005 ? "matches" : `${v < 0 ? "−" : "+"}${money(Math.abs(value), true)}`}</span>
+                  <span className={cn("num", value < -0.5 ? "font-medium text-ink" : "text-steel")}>{Math.abs(v) < 0.005 ? "matches" : `${v < 0 ? "−" : "+"}${money(Math.abs(value), true)}`}</span>
                   {value < -0.5 && <OpenStockCase count={c} />}
                 </li>
               );

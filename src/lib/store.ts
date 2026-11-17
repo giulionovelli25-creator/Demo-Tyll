@@ -198,7 +198,8 @@ export const useDemo = create<DemoState>()(
             if (s.scopeOwner === userId) return { userId, scope: clampScope(user, s.scope) };
             // A different person: keep the previous person's selection for them, and start from this person's own.
             const scopes = s.scopeOwner ? { ...s.scopes, [s.scopeOwner]: s.scope } : s.scopes;
-            const fresh: Scope = { propertyId: "all", outletId: "all", dept: "all" };
+            // When the public demo changes role, stay on the hotel that was in view, so every page shows the same figures.
+            const fresh: Scope = { propertyId: s.scopeOwner ? s.scope.propertyId : "all", outletId: "all", dept: "all" };
             return { userId, scopeOwner: userId, scopes, scope: clampScope(user, scopes[userId] ?? fresh) };
           });
           log("Signed in", user.name);

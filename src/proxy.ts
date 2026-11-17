@@ -20,7 +20,9 @@ export function proxy(req: NextRequest) {
     // A live module needs a role that can do its main job: reconcile invoices, or plan what to buy.
     const fits = (u: Parameters<typeof canOpen>[0]) => demoRoleFits(u, mod);
     if (view && fits(view.user)) return NextResponse.next();
-    const userId = demoRoleFor(fits, PREFERRED[mod ?? ""] ?? "u-fnb");
+    // Deliveries and invoices sits under Purchasing, so a first visit opens it as purchasing, who sees the prices.
+    const preferred = pathname === "/stock" && req.nextUrl.searchParams.get("tab") === "suppliers" ? "u-buy" : PREFERRED[mod ?? ""] ?? "u-fnb";
+    const userId = demoRoleFor(fits, preferred);
     const started = userId ? startDemoSession(userId, req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local", req.cookies.get(SESSION_COOKIE)?.value) : null;
     if (!started?.ok) return pathname === "/welcome" ? NextResponse.next() : NextResponse.redirect(new URL("/welcome", req.url));
     freshenPublicDemo();

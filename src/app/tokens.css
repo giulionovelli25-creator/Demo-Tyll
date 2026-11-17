@@ -34,26 +34,27 @@
   /* The soft edge on a table that scrolls sideways */
   --color-edge: rgba(20, 22, 26, 0.12);
 
-  /* Primary actions: black, like the logo */
-  --color-accent: #14161a;
-  --color-accent-hover: #2d3036;
+  /* Primary actions, the selected page and focus rings: the deep indigo of tyll.ai. 8.8:1 on white, white text 8.8:1. */
+  --color-accent: #3b3f9c;
+  --color-accent-hover: #2f327e;
   --color-on-accent: #ffffff;
 
   /* Each section's own colour, for its links, labels and quiet buttons. Set by data-mod below. Indigo is the default. */
   --color-accent-ink: #3b3f9c;
-  --color-accent-soft: #ececf8;
+  --color-accent-soft: #ecedf6;
   --color-money: #3b3f9c;
-  --color-money-soft: #ececf8;
+  --color-money-soft: #ecedf6;
 
-  /* The accents, one per section */
+  /* The three sections, in deep, quiet shades: Stock and waste teal, Purchasing blue, Revenue and reconciliation violet.
+     On white they reach 7.6, 8.2 and 8.5 to 1; on their own tints 6.5, 6.9 and 7.2. Indigo is Overview and the primary colour. */
   --color-indigo: #3b3f9c;
-  --color-indigo-soft: #ececf8;
-  --color-teal: #0f6f74;
-  --color-teal-soft: #e2f2f2;
-  --color-violet: #4a3fb5;
-  --color-violet-soft: #efedfb;
-  --color-blue: #1f5aa6;
-  --color-blue-soft: #e6eefa;
+  --color-indigo-soft: #ecedf6;
+  --color-teal: #0f5e58;
+  --color-teal-soft: #e5efed;
+  --color-violet: #5e3a8c;
+  --color-violet-soft: #efeaf4;
+  --color-blue: #1f4f8f;
+  --color-blue-soft: #e7edf5;
   --color-plum: #5a4a8a;
   --color-plum-soft: #f0edf7;
   --color-terracotta: #a84525;
@@ -114,7 +115,7 @@
 
   /* Chart lines, checked for colour blindness with the validator. A touch brighter than the brand colours. */
   --chart-a: #2a5aa8;
-  --chart-b: #b85c1e;
+  --chart-b: #8a9099;
   --chart-grid: #eceef1;
   --chart-axis: #565c65;
 
@@ -176,9 +177,9 @@
     --color-spotlight: rgba(4, 6, 10, 0.7);
     --color-edge: rgba(0, 0, 0, 0.3);
 
-    --color-accent: #eef1f6;
-    --color-accent-hover: #d6dbe3;
-    --color-on-accent: #14161a;
+    --color-accent: #5a5fc8;
+    --color-accent-hover: #6a6fd3;
+    --color-on-accent: #ffffff;
     --color-accent-ink: #aeb2f3;
     --color-accent-soft: #25274a;
     --color-money: #aeb2f3;
@@ -186,12 +187,12 @@
 
     --color-indigo: #aeb2f3;
     --color-indigo-soft: #25274a;
-    --color-teal: #5cc6ca;
-    --color-teal-soft: #17302f;
-    --color-violet: #aaa2f2;
-    --color-violet-soft: #262347;
-    --color-blue: #7fb0ee;
-    --color-blue-soft: #1a2c47;
+    --color-teal: #7cc4bc;
+    --color-teal-soft: #17302e;
+    --color-violet: #bba6df;
+    --color-violet-soft: #2a2340;
+    --color-blue: #93bbe6;
+    --color-blue-soft: #18293d;
     --color-plum: #bfaeea;
     --color-plum-soft: #2a2542;
     --color-terracotta: #ee9a7c;
@@ -223,7 +224,7 @@
     --wave-image: none;
     --wave-filter: none;
     --color-silver-mid: #eef0f3;
-    --wave-opacity: 0.8;
+    --wave-opacity: 0.18;
 
     --color-pos: #68d3a0;
     --color-pos-soft: #16322a;
@@ -237,7 +238,7 @@
     --shadow-float: 0 24px 56px -16px rgba(0, 0, 0, 0.85), 0 2px 8px rgba(0, 0, 0, 0.4);
 
     --chart-a: #5f8ed8;
-    --chart-b: #cf7a3c;
+    --chart-b: #8b93a0;
     --chart-grid: #242b36;
     --chart-axis: #a3adbb;
 
@@ -262,7 +263,7 @@
 /* How strongly the waves show. Medium is the default. */
 [data-waves="soft"] { --wave-filter: none; --wave-opacity: 0.5; }
 [data-waves="strong"] { --wave-filter: brightness(0.76) contrast(1.9); --wave-opacity: 1; }
-[data-theme="dark"][data-waves="soft"] { --wave-opacity: 0.55; }
+[data-theme="dark"][data-waves="soft"] { --wave-opacity: 0.12; }
 [data-theme="dark"][data-waves="strong"] { --wave-opacity: 1; }
 
 /* Outlet marks only appear in the By outlet look. */

@@ -8,13 +8,14 @@ import { create } from "zustand";
 import { useRemembered } from "@/components/disclosure";
 import { Segmented, cn, textLink, toast } from "@/components/ui";
 import { api } from "@/lib/api";
-import { INGREDIENTS, ingredientById, outletById } from "@/lib/data/catalog";
+import { INGREDIENTS, ingredientById, outletById, propertyById } from "@/lib/data/catalog";
+import { wasteCost } from "@/lib/domain/inventory";
 import { STOCK_AREAS, stockAreaOf, type StockArea } from "@/lib/data/locations";
 import { allowedOutlets, can } from "@/lib/domain/access";
 import { useCtx, useView } from "@/lib/hooks";
 import { useShared } from "@/lib/shared-stock";
-import type { Ingredient, SharedWaste, SharedWasteCorrection, User, WasteReason } from "@/lib/types";
-import { fmtQty } from "@/lib/util";
+import type { Ingredient, SharedWaste, SharedWasteCorrection, User, WasteLog, WasteReason } from "@/lib/types";
+import { DEMO_TODAY, fmtMoney, fmtQty } from "@/lib/util";
 
 export const useBreakageSheet = create<{ open: boolean; set(open: boolean): void }>((set) => ({ open: false, set: (open) => set({ open }) }));
 
@@ -66,7 +67,9 @@ const save = (outletId: string, ingredientId: string, qty: number, reason: Reaso
       return null;
     });
   // The toast appears at once. Waiting for the server would only slow a busy person down.
-  toast.done(`Logged ${fmtQty(qty, g.unit)} ${g.name.toLowerCase()}, ${outletById[outletId].name}.`, {
+  const property = propertyById[outletById[outletId].propertyId];
+  const cost = wasteCost({ id: "preview", outletId, ingredientId, qty, date: DEMO_TODAY, reason: reason?.reason ?? FALLBACK[area], synced: true } as WasteLog);
+  toast.done(`Logged ${fmtQty(qty, g.unit)} ${g.name.toLowerCase()}, ${outletById[outletId].name}. Cost ${fmtMoney(cost, property.currency)}.`, {
     label: "Undo",
     run: () => {
       void pending.then((id) => {

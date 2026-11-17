@@ -11,6 +11,7 @@ import { adjustmentRate, compare, itemPerformance, totalsByOutlet } from "@/lib/
 import { useCtx, useView } from "@/lib/hooks";
 import { REASON_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
+import { versus } from "@/lib/domain/trends";
 import { DEMO_TODAY, downloadCsv, fmtNum, fmtPct, fmtRange, pctChange, type RangePreset } from "@/lib/util";
 
 interface Line {
@@ -44,7 +45,7 @@ export default function ReportsPage() {
     { label: "Net sales", now: t.net, before: b.net, kind: "total", goodWhen: "up" },
     { label: "Recipe cost of items sold", now: -t.theoCost, before: -b.theoCost, kind: "sub", goodWhen: "up" },
     { label: "Recorded waste", now: -t.waste, before: -b.waste, kind: "sub", goodWhen: "up" },
-    { label: "Stock missing at count", now: -t.variance, before: -b.variance, kind: "sub", goodWhen: "up" },
+    { label: "Stock missing at counts, all gaps", now: -t.variance, before: -b.variance, kind: "sub", goodWhen: "up" },
     { label: "Gross profit", now: t.grossProfit, before: b.grossProfit, kind: "total", goodWhen: "up" },
     { label: "Labor", now: t.labor === null ? null : -t.labor, before: b.labor === null ? null : -b.labor, kind: "sub", goodWhen: "up", note: "estimate" },
     { label: "Other operating costs", now: t.opex === null ? null : -t.opex, before: b.opex === null ? null : -b.opex, kind: "sub", goodWhen: "up", note: "estimate" },
@@ -87,24 +88,23 @@ export default function ReportsPage() {
       <Td className={cn(l.kind === "total" ? "text-ink" : "!ps-10 text-graphite")}>{l.label}{l.note && <span className="ms-2 text-xs text-steel">{l.note}</span>}</Td>
       <Td align="right" className={cn(l.kind === "total" && "text-ink")}>{l.now === null ? "not split by department" : money(l.now)}</Td>
       <Td align="right">{l.before === null ? "None" : money(l.before)}</Td>
-      <Td align="right">{l.now === null || l.before === null ? "None" : <Delta value={pctChange(l.now, l.before)} goodWhen={l.goodWhen ?? "none"} />}</Td>
-      <Td align="right">{l.now === null || t.net <= 0 ? "None" : fmtPct(Math.abs(l.now) / t.net)}</Td>
+      {/* A change against almost nothing reads as nonsense (+1700%), so it says so in words instead. */}
+      <Td align="right">{l.now === null || l.before === null ? "None" : Math.abs(l.before) < Math.abs(l.now) * 0.05 ? <span className="text-steel">New this period</span> : <Delta value={l.kind === "sub" && l.now < 0 ? pctChange(Math.abs(l.now), Math.abs(l.before)) : pctChange(l.now, l.before)} goodWhen={l.kind === "sub" && l.now < 0 ? (l.goodWhen === "up" ? "down" : l.goodWhen === "down" ? "up" : "none") : l.goodWhen ?? "none"} />}</Td>
+      <Td align="right">{l.now === null || t.net <= 0 || l.label === "Total revenue" ? "" : fmtPct(Math.abs(l.now) / t.net)}</Td>
     </tr>
   );
 
   const [, setReportOpen] = useRemembered<"open" | "closed">("section.reports.statement", "closed");
   // The printed page is the management report, so it opens first.
   const print = () => { setReportOpen("open"); setTimeout(() => window.print(), 80); };
+  // Records with no place of their own in the sidebar. Anything in the sidebar is not repeated here.
   const groups: { title: string; links: { m: ModuleId; href: string; title: string; summary: string }[] }[] = [
     { title: "Stock records", links: [
-      { m: "stock", href: "/stock?tab=suppliers", title: "Suppliers", summary: "Prices and delivery differences" },
       { m: "stock", href: "/stock?tab=recipes", title: "Recipes and costs", summary: "What each dish costs to make" },
       { m: "stock", href: "/stock?tab=inventory", title: "Item history", summary: "Deliveries, counts and use" },
-      { m: "stock", href: "/stock?tab=counts", title: "Count records", summary: "Every count and its review" },
     ] },
     { title: "Money records", links: [
-      { m: "investigations", href: "/investigations", title: "Money Back List", summary: "Every case, open and closed" },
-      { m: "finance", href: "/finance?tab=invoices", title: "Reconciliation", summary: "Invoices against deliveries" },
+      { m: "investigations", href: "/investigations", title: "Money Back List", summary: "Every flagged case, open and closed" },
       { m: "money", href: "/money?tab=rooms", title: "Room charges", summary: "Charges posted to rooms" },
       { m: "money", href: "/money?tab=tips", title: "Tips", summary: "By outlet. Preview" },
     ] },
@@ -112,18 +112,19 @@ export default function ReportsPage() {
       { m: "overview", href: "/menu", title: "Menu", summary: "What each dish sells and earns" },
       { m: "overview", href: "/performance", title: "Sales and performance", summary: "Outlets and trends. Preview" },
     ] },
-    { title: "Settings and tools", links: [
-      { m: "settings", href: "/settings", title: "Settings", summary: "Connections, access and change log" },
-      { m: "more", href: "/more", title: "More tools", summary: "Events, rooms and what is coming" },
-    ] },
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="no-print space-y-4">
-        <PageHeader title="Reports and settings" question="Where is the full detail?" lead={`${scopeName}, ${fmtRange(sel.range)}. Simulated data.`} />
+        <PageHeader title="Reports" question="Where is the full detail?" lead={`${scopeName}, ${fmtRange(sel.range)}. Simulated data.`} />
         <SummaryBar
-          items={[{ label: "Net sales, this period", value: money(t.net, { compact: true }) }, { label: "Gross margin", value: fmtPct(t.gpMargin) }, { label: "Orders", value: fmtNum(t.orders) }]}
+          items={[
+            { label: "Net sales, this period", value: money(t.net, { compact: true }), compare: versus(t.net, c.before.net, "up", "the period before"), href: "/money" },
+            { label: "Gross margin", value: fmtPct(t.gpMargin), compare: { text: `${fmtPct(c.before.gpMargin)} the period before`, good: t.gpMargin >= c.before.gpMargin }, href: "/menu" },
+            { label: "Orders", value: fmtNum(t.orders), compare: versus(t.orders, c.before.orders, "up", "the period before"), href: "/money?tab=orders" },
+            { label: "Waste and breakage", value: money(t.waste + t.breakage, { compact: true }), compare: versus(t.waste + t.breakage, c.before.waste + c.before.breakage, "down", "the period before"), href: "/waste" },
+          ]}
           action={<Button variant="primary" onClick={print}><Printer size={15} /> Print or save as PDF</Button>}
         />
         {mayExport && (
@@ -136,6 +137,17 @@ export default function ReportsPage() {
             </div>
           </Section>
         )}
+      </div>
+
+      <div className="no-print grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        {groups.map((g) => {
+          const links = g.links.filter((l) => canOpen(user, l.m));
+          return links.length === 0 ? null : (
+            <Panel key={g.title} title={g.title} flush>
+              <ul>{links.map((l) => <li key={l.href} className="border-t border-hair"><RowLink href={l.href} title={l.title} summary={l.summary} /></li>)}</ul>
+            </Panel>
+          );
+        })}
       </div>
 
       <Section id="reports.statement" title="Management report" summary={`Sales to profit, money at risk, outlets and menu. ${money(t.gross, { compact: true })} total revenue, ${t.orders ? fmtNum(t.covers) : 0} guests.`} flush>
@@ -190,7 +202,7 @@ export default function ReportsPage() {
       )}
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        {([["Most profitable items", top.slice(0, 5)], ["Least profitable items", top.slice(-5).reverse()]] as const).map(([title, list]) => (
+        {([["Highest gross profit", top.slice(0, 5)], ["Lowest gross profit", top.slice(-5).reverse()]] as const).map(([title, list]) => (
           <Panel key={title} title={title} flush>
             <TableWrap>
               <table className="w-full text-sm">
@@ -208,16 +220,6 @@ export default function ReportsPage() {
       </div>
       </Section>
 
-      <div className="no-print grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
-        {groups.map((g) => {
-          const links = g.links.filter((l) => canOpen(user, l.m));
-          return links.length === 0 ? null : (
-            <Panel key={g.title} title={g.title} flush>
-              <ul>{links.map((l) => <li key={l.href} className="border-t border-hair"><RowLink href={l.href} title={l.title} summary={l.summary} /></li>)}</ul>
-            </Panel>
-          );
-        })}
-      </div>
     </div>
   );
 }

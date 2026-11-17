@@ -4,7 +4,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Download } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Timeline } from "@/components/timeline";
-import { Badge, Button, EmptyState, Field, Note, Panel, Segmented, Select, Stat, TableWrap, Td, Th, cn, rowClass, toast, type Tone } from "@/components/ui";
+import { Badge, Button, EmptyState, Field, Note, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, textLink, Td, Th, cn, rowClass, toast, type Tone } from "@/components/ui";
+import { StripTrend } from "@/components/charts";
+import { useEarnPilot } from "@/lib/pilot";
+import { byDay, lastDays, versus, weekSums } from "@/lib/domain/trends";
 import { CATEGORY_LABEL, FIN_DEPTS, FIN_DEPT_LABEL } from "@/lib/data/finance-rules";
 import { ingredientById, propertyById } from "@/lib/data/catalog";
 import { allowedOutlets, allowedProperties, can } from "@/lib/domain/access";
@@ -14,7 +17,7 @@ import { personName, useCtx, useInvestigations, useView } from "@/lib/hooks";
 import { useMutate } from "@/lib/plan-hooks";
 import type { BudgetRow, InvoiceView, SpendEntry } from "@/lib/server/finance";
 import type { Currency, InvoiceStatus } from "@/lib/types";
-import { DEMO_TODAY, downloadCsv, fmtMoney, fmtPct } from "@/lib/util";
+import { DEMO_TODAY, downloadCsv, fmtDate, fmtMoney, fmtPct, sum } from "@/lib/util";
 
 export const INV_STATUS: Record<InvoiceStatus, { label: string; tone: Tone }> = {
   to_check: { label: "Difference to check", tone: "warn" }, matched: { label: "Matches order and delivery", tone: "ink" }, flagged: { label: "Difference flagged", tone: "neg" },
@@ -58,14 +61,30 @@ function InvoiceHome() {
   const { user } = useView();
   const { propertyId, setPropertyId, props, currency } = useFinanceProperty();
   const [show, setShow] = useState<"check" | "all">("check");
+  const [everything, setEverything] = useState(false);
   const { data, error } = useLiveGet<InvoiceList>(`/api/finance/invoices?propertyId=${propertyId}`);
-  const money = (n: number) => fmtMoney(n, currency, { decimals: true });
+  const money = (n: number) => fmtMoney(n, currency);
   if (!data) return <Panel><EmptyState title={error ?? "Loading invoices"} /></Panel>;
   const check = data.invoices.filter((i) => ["to_check", "flagged", "correction_requested", "matched", "approved"].includes(i.status));
-  const list = show === "check" ? check : data.invoices.slice(0, 60);
+  // The largest difference first; then the newest.
+  const list = [...(show === "check" ? check : data.invoices.slice(0, 60))].sort((a, b) => b.overcharge - a.overcharge || (a.date < b.date ? 1 : -1));
+  const oneStatus = new Set(list.map((i) => i.status)).size === 1;
+  const toReview = data.invoices.filter((i) => ["to_check", "flagged", "correction_requested"].includes(i.status));
+  const differ = data.invoices.filter((i) => i.overcharge > 0);
+  const rows = everything ? list : list.slice(0, 5);
+  const focus = (v: "check" | "all") => { setShow(v); setEverything(true); requestAnimationFrame(() => document.getElementById("invoice-list")?.scrollIntoView({ block: "start", behavior: "smooth" })); };
   return (
     <div className="space-y-5">
       <PropertyPicker value={propertyId} onChange={setPropertyId} props={props} />
+      <SummaryBar
+        items={[
+          { label: "Invoices to review", value: toReview.length, tone: toReview.length ? "warn" : "pos", compare: versus(weekSums(differ, (i) => i.date, () => 1).now, weekSums(differ, (i) => i.date, () => 1).before, "down", "the week before"), onClick: () => focus("check") },
+          { label: "Approved or recorded", value: data.invoices.filter((i) => i.status === "approved" || i.status === "posted").length, compare: { text: `of ${data.invoices.length} invoices`, good: null }, onClick: () => focus("all") },
+          { label: "Amount to query", value: money(sum(toReview, (i) => i.overcharge)), tone: "money", compare: { text: "Above delivery or price", good: null }, onClick: () => focus("check") },
+          { label: "Waiting for an invoice", value: data.toInvoice.length, compare: { text: data.toInvoice.length ? `${money(sum(data.toInvoice, (t) => t.receivedValue))} received` : "Nothing waiting", good: null } },
+        ]}
+        trend={<StripTrend goodWhen="none" explain="Supplier invoices received each day." series={[{ id: "diff", label: "Difference to query", axis: "money", format: money, points: byDay(differ.filter((i) => i.date >= lastDays(13)[0]), (i) => i.date, (i) => i.overcharge, lastDays(13)), goodWhen: "down" as const, explain: "Invoiced beyond delivery or order price." }]} title="Invoices received per day, last 13 days" points={byDay(data.invoices.filter((i) => i.date >= lastDays(13)[0]), (i) => i.date, () => 1, lastDays(13))} format={(n) => `${n} ${n === 1 ? "invoice" : "invoices"}`} summary="Supplier invoices received per day. Deliveries and invoices are held for the last 13 days." note="13 days held" />}
+      />
       {data.toInvoice.length > 0 && can(user, "finance.review") && (
         <Panel title={`Delivered, waiting for the supplier's invoice (${data.toInvoice.length})`} description="Tyll orders that have been received. Enter the invoice when it arrives." flush>
           <ul className="divide-y divide-hair border-t border-hair">
@@ -78,26 +97,27 @@ function InvoiceHome() {
           </ul>
         </Panel>
       )}
-      <Panel title="Supplier invoices" description="Each invoice is compared with the purchase order and what was received." action={<Segmented size="sm" label="Show" value={show} onChange={setShow} options={[{ value: "check", label: `To review (${check.length})` }, { value: "all", label: "All" }]} />} flush>
+      <div id="invoice-list" className="scroll-mt-24" />
+      <Panel title="Supplier invoices" description={`Compared with the purchase order and what was received. Largest difference first.${oneStatus && list[0] ? ` Every invoice here: ${INV_STATUS[list[0].status].label.toLowerCase()}.` : ""}`} action={<Segmented size="sm" label="Show" value={show} onChange={setShow} options={[{ value: "check", label: `To review (${check.length})` }, { value: "all", label: "All" }]} />} flush>
         {list.length === 0 ? <p className="px-6 pb-6 text-sm text-steel">Nothing to review.</p> : (
           <TableWrap>
             <table className="w-full text-sm">
-              <thead><tr><Th>Invoice</Th><Th>Supplier</Th><Th>Date</Th><Th align="right">Invoice total</Th><Th align="right">Difference</Th><Th>Status</Th></tr></thead>
+              <thead><tr><Th>Supplier</Th><Th>Date</Th><Th align="right">Invoice total</Th><Th align="right">Difference</Th>{!oneStatus && <Th>Status</Th>}</tr></thead>
               <tbody>
-                {list.map((i) => (
+                {rows.map((i) => (
                   <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/finance?tab=invoices&invoice=${i.id}&propertyId=${propertyId}`)}>
-                    <Td><span className="num text-ink">{i.supplierRef}</span><span className="block text-xs text-steel">{i.poNumber}</span></Td>
-                    <Td>{i.supplierName}</Td>
-                    <Td>{i.date}</Td>
+                    <Td><span className="text-ink">{i.supplierName}</span><span className="num block text-xs text-steel">Invoice {i.supplierRef}</span></Td>
+                    <Td className="num text-graphite">{fmtDate(i.date, true)}</Td>
                     <Td align="right"><span className="num">{money(i.total)}</span></Td>
-                    <Td align="right"><span className={cn("num", i.overcharge > 0 && "text-warn")}>{i.overcharge > 0 ? money(i.overcharge) : "None"}</span></Td>
-                    <Td><Badge tone={INV_STATUS[i.status].tone} className="!py-0">{INV_STATUS[i.status].label}</Badge></Td>
+                    <Td align="right"><span className={cn("num", i.overcharge > 0 && "font-medium text-ink")}>{i.overcharge > 0 ? money(i.overcharge) : "None"}</span></Td>
+                    {!oneStatus && <Td><Badge tone={INV_STATUS[i.status].tone} className="!py-0">{INV_STATUS[i.status].label}</Badge></Td>}
                   </tr>
                 ))}
               </tbody>
             </table>
           </TableWrap>
         )}
+        {list.length > 5 && <div className="border-t border-hair px-6 py-3"><button type="button" onClick={() => setEverything((v) => !v)} className={textLink}>{everything ? "Show the five largest" : `Show all ${list.length} invoices`}</button></div>}
       </Panel>
       <Note>Invoices for earlier orders come from the demo dataset; matching ones were recorded before Tyll. A difference is a fact to check with the supplier, not proof of wrongdoing. Tyll does not record payments.</Note>
     </div>
@@ -110,6 +130,7 @@ function InvoiceDetail({ id }: { id: string }) {
   const mutate = useMutate();
   const params = useSearchParams();
   const { data, error } = useLiveGet<{ invoice: InvoiceView }>(`/api/finance/invoices/${id}`);
+  useEarnPilot(!!data && data.invoice.overcharge > 0);
   const [note, setNote] = useState("");
   const [fix, setFix] = useState<Record<string, { qty: string; unitPrice: string }> | null>(null);
   const back = `/finance?tab=invoices${params.get("propertyId") ? `&propertyId=${params.get("propertyId")}` : ""}`;

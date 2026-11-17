@@ -50,7 +50,7 @@ export function MorePage() {
   const soon = shown(COMING);
   return (
     <div className="space-y-6">
-      <PageHeader title="More tools" question="What else is here, and what is coming next?" />
+      <PageHeader title="Other tools" question="What else is here, and what is coming next?" />
       {live.length > 0 && (
         <section aria-labelledby="available">
           <h2 id="available" className="mb-2 text-section font-medium text-ink">Available now</h2>

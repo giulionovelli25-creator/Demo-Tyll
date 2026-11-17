@@ -150,8 +150,8 @@ export function Counts({ propertyId }: { propertyId: string }) {
                           <Td className="text-ink">{g.name}</Td>
                           <Td align="right">{fmtQty(c.expected, g.unit)}</Td>
                           <Td align="right">{fmtQty(c.counted, g.unit)}</Td>
-                          <Td align="right" className={cn(v < -0.005 && "text-warn")}>{Math.abs(v) < 0.005 ? "None" : `${v < 0 ? "−" : "+"}${fmtQty(Math.abs(v), g.unit)}`}</Td>
-                          <Td align="right" className={cn(value < -0.5 && "text-warn")}>{Math.abs(value) < 0.5 ? "None" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
+                          <Td align="right" className={cn(v < -0.005 && "font-medium text-ink")}>{Math.abs(v) < 0.005 ? "None" : `${v < 0 ? "−" : "+"}${fmtQty(Math.abs(v), g.unit)}`}</Td>
+                          <Td align="right" className={cn(value < -0.5 && "font-medium text-ink")}>{Math.abs(value) < 0.5 ? "None" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
                           {mayOpen && <Td align="right">{value < -0.5 && <OpenStockCase count={c} />}</Td>}
                         </tr>
                       );
@@ -179,7 +179,7 @@ export function Counts({ propertyId }: { propertyId: string }) {
                       <Td className="text-ink">{g.name}</Td>
                       <Td align="right">{fmtQty(c.expected, g.unit)}</Td>
                       <Td align="right">{fmtQty(c.counted, g.unit)}</Td>
-                      <Td align="right" className={cn(value < -0.5 && "text-warn")}>{Math.abs(value) < 0.005 ? "None" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
+                      <Td align="right" className={cn(value < -0.5 && "font-medium text-ink")}>{Math.abs(value) < 0.005 ? "None" : `${value < 0 ? "−" : "+"}${money(Math.abs(value))}`}</Td>
                       <Td>{personName(c.by)}</Td>
                       {mayOpen && <Td align="right">{value < -0.5 && <OpenStockCase count={c} />}</Td>}
                     </tr>

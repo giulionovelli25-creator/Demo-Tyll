@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useEarnPilot } from "@/lib/pilot";
 import { useParams, useRouter } from "next/navigation";
 import { Check, CircleHelp, ListChecks, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -28,6 +29,7 @@ export default function InvestigationPage() {
   const patterns = usePatterns();
   const investigations = useInvestigations();
   const inv = investigations.find((i) => i.id === decodeURIComponent(id));
+  useEarnPilot(!!inv);
   const store = useDemo();
 
   const [assignee, setAssignee] = useState("");

@@ -1,24 +1,24 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ArrowLeft, Wine,
-  Banknote, Bell, BedDouble, CalendarDays, ChevronDown, ClipboardList, Eye, FileSearch, FileText, Landmark, LayoutDashboard, LayoutGrid, LockKeyhole, LogOut, Moon, Package, Palette, PlayCircle, Search, Settings, ShoppingCart, Smartphone, Sparkles, Sun, Trash2, UtensilsCrossed, type LucideIcon,
+import { ArrowLeft, CircleHelp, Menu, Wine,
+  Banknote, Bell, BedDouble, CalendarDays, ChevronDown, ClipboardList, Eye, FileSearch, FileText, Landmark, LayoutDashboard, LayoutGrid, LockKeyhole, LogOut, Moon, Package,  PlayCircle, Search, Settings, ShoppingCart, Smartphone, Sparkles, Sun, Trash2, UtensilsCrossed, type LucideIcon,
 } from "lucide-react";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, Fragment } from "react";
 import { BrandLoader, TyllLogo, TyllMark } from "@/components/brand";
-import { Badge, Button, EmptyState, Field, Segmented, Select, Toaster, cn, report, toast } from "@/components/ui";
+import { Badge, Button, Drawer, EmptyState, Field, Segmented, Select, Toaster, cn, report, toast } from "@/components/ui";
+import { useRemembered } from "@/components/disclosure";
+import { ALL_ITEMS, FOOT, PINNED, SECTIONS, activeItem, moduleOfItem, sectionOf, type NavItem } from "@/lib/nav";
 import { ROLE_LABEL, outletById, propertyById } from "@/lib/data/catalog";
 import { clearDataset, getDataset, hasDataset, hydrateDataset } from "@/lib/data/dataset";
 import { api, goToLogin, lockLocally, reloadTo, useSession } from "@/lib/api";
 import { MODULE_TONE, OUTLET_TONE } from "@/components/theme";
 import { backTarget, isMainPage } from "@/lib/back";
-import { useLook } from "@/lib/look";
 import { LanguageLayer, LanguagePicker } from "./language";
 import { SilverWave } from "./silver-wave";
-import { LookPicker } from "./look-picker";
 import { AlertFeedProvider, useAlertFeed } from "@/lib/alert-feed";
 import type { Snapshot } from "@/lib/server/snapshot";
-import { MODULE_PATH, allowedOutlets, demoRoleFits, allowedProperties, canOpen, clampScope, hasWholeProperty, homePath, moduleOfPath, modulesFor, type ModuleId } from "@/lib/domain/access";
+import { MODULE_PATH, allowedOutlets, can, demoRoleFits, allowedProperties, canOpen, clampScope, hasWholeProperty, homePath, moduleOfPath, modulesFor, type ModuleId } from "@/lib/domain/access";
 import { deliveryOvercharge } from "@/lib/domain/inventory";
 import { assessArrival } from "@/lib/domain/operations";
 import { useInvestigations, useUser } from "@/lib/hooks";
@@ -31,24 +31,25 @@ import { CommandPalette } from "./command-palette";
 import { CountFlow } from "@/components/stock/count-flow";
 import { Login } from "./login";
 import { Welcome } from "./welcome";
-import { EarlyAccessBadge, GuidedPath, WhatsNew, startGuidedPath } from "./early-access";
+import { GuidedPath, WhatsNew, startGuidedPath } from "./early-access";
 import { NotificationBell } from "./notifications";
 import { DemoGuide, DemoPicker } from "./demo-guide";
 import { TakeTourButton, TourOffer, Walkthrough } from "./walkthrough";
 import { SharedStockSync } from "@/lib/shared-stock";
 import { PinScreen } from "./pin";
 import { Tour } from "./tour";
+import { PILOT_URL, usePilot } from "@/lib/pilot";
 
 const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }> = {
   overview: { label: "Overview", icon: LayoutDashboard },
-  stock: { label: "Stock", icon: Package },
+  stock: { label: "Stock levels", icon: Package },
   forecast: { label: "Predictions", icon: ShoppingCart },
   money: { label: "Revenue", icon: Banknote },
-  drinks: { label: "Drinks control", short: "Drinks", icon: Wine },
+  drinks: { label: "Over pouring", short: "Pouring", icon: Wine },
   waste: { label: "Log waste", icon: Trash2 },
-  reports: { label: "Reports and settings", short: "Reports", icon: FileText },
+  reports: { label: "Reports", icon: FileText },
   alerts: { label: "Alerts", icon: Bell },
-  more: { label: "More tools", icon: LayoutGrid },
+  more: { label: "Other tools", icon: LayoutGrid },
   settings: { label: "Settings", icon: Settings },
   staff: { label: "Tyll Staff", icon: Smartphone },
   tasks: { label: "My tasks", icon: ClipboardList },
@@ -59,54 +60,142 @@ const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }>
   finance: { label: "Reconciliation", icon: Landmark },
 };
 
-/** The four main features, Drinks control, then Alerts and Reports and settings. Overview sits on its own above them. */
-const PRIMARY: ModuleId[] = ["waste", "stock", "forecast", "money", "drinks", "alerts", "reports"];
-/** Which sidebar item lights up on each screen. */
-const NAV_HOME: Partial<Record<ModuleId, ModuleId>> = { investigations: "money", finance: "money", settings: "reports", more: "reports" };
-
 /** Modules still being built. They work with demo data but are marked so nobody mistakes them for finished. */
 const IN_DEVELOPMENT: ModuleId[] = ["events", "rooms"];
 
 const PAGES = Object.fromEntries(Object.entries(NAV).map(([m, n]) => [m, n.label])) as Record<ModuleId, string>;
 
-/** The items this person gets, in order. In the public demo every area is open: the link changes role when it must. */
-function navFor(user: User, publicDemo: boolean): ModuleId[] {
-  const modules = modulesFor(user);
-  const home = moduleOfPath(homePath(user).split("?")[0]);
-  const lead = PRIMARY.includes(home) || home === "overview" ? [] : [home];
-  const main = PRIMARY.filter((m) => publicDemo || modules.includes(m));
-  // Roles without reports still need one way to their settings.
-  return [...lead, ...main, ...(main.includes("reports") ? [] : ["settings" as const])].slice(0, 7);
-}
+type NavCount = { n: number; label: string };
 
-/** How many things are waiting behind a sidebar item. */
-function useNavCounts(): Partial<Record<ModuleId, { n: number; label: string }>> {
+/** How many things are waiting behind a sidebar item. Amber: they need attention. */
+function useNavCounts(): Record<string, NavCount> {
   const { plan, open } = useAlertFeed();
   const critical = plan?.items.filter((i) => i.health === "critical").length ?? 0;
   const red = open.filter((a) => a.rag === "red").length;
   return { ...(critical ? { stock: { n: critical, label: `${critical} critical` } } : {}), ...(red ? { alerts: { n: red, label: `${red} to act on today` } } : {}) };
 }
 
-function SideItem({ m, active, reload, count }: { m: ModuleId; active: boolean; reload: boolean; count?: { n: number; label: string } }) {
-  const { icon: Icon, label, short } = NAV[m];
+/** In the public demo every area is open: the link changes role when it must. Otherwise only what the role may open. */
+function useMayOpen(user: User) {
+  const publicDemo = useSession((s) => !!s.demoRoles);
+  return useCallback((i: NavItem) => (!i.needs || i.needs.some((p) => can(user, p))) && (publicDemo || canOpen(user, moduleOfItem(i))), [publicDemo, user]);
+}
+
+function NavLink({ item, user, active, count, compact, onPick }: { item: NavItem; user: User; active: boolean; count?: NavCount; compact?: boolean; onPick?: () => void }) {
+  const publicDemo = useSession((s) => !!s.demoRoles);
+  const reload = publicDemo && !demoRoleFits(user, moduleOfItem(item));
+  const Icon = item.icon;
   const className = cn(
     "relative flex items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink",
-    "flex-col gap-1 px-1 py-2 text-center text-[11px] leading-tight xl:flex-row xl:gap-3 xl:px-3 xl:py-2.5 xl:text-start xl:text-sm",
+    compact ? "flex-col gap-1 px-1 py-2 text-center text-xs leading-tight" : "min-h-9 gap-3 px-3 py-1.5 text-[13.5px]",
     active && "bg-nav-active font-medium text-nav-ink shadow-panel hover:bg-nav-active",
   );
   const body = (
     <>
-      <Icon size={18} className={active ? "text-accent-ink" : undefined} aria-hidden />
-      <span className="min-w-0 xl:hidden">{short ?? label}</span>
-      <span className="hidden min-w-0 xl:inline">{label}</span>
-      {count && <span className="num absolute end-1 top-1 min-w-[18px] rounded-full bg-neg-soft px-1 text-center text-[11px] font-medium leading-[18px] text-neg xl:static xl:ms-auto"><span aria-hidden>{count.n}</span><span className="sr-only">{count.label}</span></span>}
+      {active && <span aria-hidden className={cn("absolute rounded-full bg-accent", compact ? "inset-x-3 top-0 h-[3px]" : "inset-y-2 start-0 w-[3px]")} />}
+      <Icon size={17} className={cn("shrink-0", active ? "text-accent" : "text-accent-ink")} aria-hidden />
+      <span className={cn("min-w-0", compact ? "truncate" : "leading-snug")}>{compact ? item.short ?? item.label : item.label}</span>
+      {count && <span className={cn("num rounded-full bg-warn-soft px-1.5 text-center text-xs font-medium leading-[18px] text-warn", compact ? "absolute end-1 top-1 min-w-[18px]" : "ms-auto min-w-[20px]")}><span aria-hidden>{count.n}</span><span className="sr-only">{count.label}</span></span>}
     </>
   );
+  // A full load lets the public demo change role on the server first.
+  return reload
+    ? <a href={item.href} aria-current={active ? "page" : undefined} className={className} onClick={onPick}>{body}</a>
+    : <Link href={item.href} prefetch={false} aria-current={active ? "page" : undefined} className={className} onClick={onPick}>{body}</Link>;
+}
+
+/** Overview and Alerts, then the three sections of tyll.ai. Each section is a title that opens its pages; only one is open at a time, starting with the one you are in. */
+function NavTree({ user, compact, onPick }: { user: User; compact?: boolean; onPick?: () => void }) {
+  const pathname = usePathname();
+  const tab = useSearchParams().get("tab");
+  const active = activeItem(pathname, tab);
+  const current = sectionOf(pathname, tab)?.id ?? null;
+  const [open, setOpen] = useState<string | null>(current);
+  // Moving to a page in another section opens that section.
+  const [seen, setSeen] = useState(current);
+  if (current !== seen) { setSeen(current); if (current) setOpen(current); }
+  const may = useMayOpen(user);
+  const counts = useNavCounts();
+  const item = (i: NavItem) => <li key={i.id}><NavLink item={i} user={user} active={active?.id === i.id} count={counts[i.id]} compact={compact} onPick={onPick} /></li>;
   return (
-    <li data-mod={MODULE_TONE[m]}>
-      {/* A full load lets the public demo change role on the server first. */}
-      {reload ? <a href={MODULE_PATH[m]} aria-current={active ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={active ? "page" : undefined} className={className}>{body}</Link>}
-    </li>
+    <>
+      <ul data-mod="indigo" className="space-y-0.5">{PINNED.filter(may).map(item)}</ul>
+      <div className={compact ? "mt-2 space-y-1" : "mt-3 space-y-1"}>
+        {SECTIONS.map((s) => {
+          const items = s.items.filter(may);
+          if (!items.length) return null;
+          const isOpen = open === s.id;
+          const waiting = items.reduce((n, i) => n + (counts[i.id]?.n ?? 0), 0);
+          const Icon = s.icon;
+          return (
+            <div key={s.id} data-mod={s.tone}>
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                onClick={() => setOpen(isOpen ? null : s.id)}
+                className={cn(
+                  "relative flex w-full items-center rounded-[var(--radius-control)] text-accent-ink transition-colors duration-150 ease-tyll hover:bg-nav-hover",
+                  compact ? "flex-col gap-1 px-1 py-2 text-center text-xs font-medium leading-tight" : "min-h-10 gap-3 px-3 py-2 text-start text-[13.5px] font-medium",
+                  isOpen && !compact && "bg-accent-soft/60",
+                )}
+              >
+                <Icon size={17} className="shrink-0" aria-hidden />
+                <span className={cn("min-w-0 flex-1", compact ? "truncate" : "leading-snug")}>{compact ? s.title.split(" ")[0] : s.title}</span>
+                {!isOpen && waiting > 0 && <span className={cn("num rounded-full bg-warn-soft px-1.5 text-xs leading-[18px] text-warn", compact && "absolute end-1 top-1")}><span aria-hidden>{waiting}</span><span className="sr-only">{waiting} waiting</span></span>}
+                {!compact && <ChevronDown size={15} className={cn("shrink-0 text-nav-quiet transition-transform duration-150 ease-tyll", isOpen && "rotate-180")} aria-hidden />}
+              </button>
+              {isOpen && <ul aria-label={s.title} className={cn("mt-0.5 space-y-0.5", !compact && "ms-[22px] border-s border-accent-ink/25 ps-2")}>{items.map(item)}</ul>}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+/** Settings and help, folded into one title at the foot. */
+function FootGroup({ user, compact, onPick }: { user: User; compact?: boolean; onPick?: () => void }) {
+  const publicDemo = useSession((s) => !!s.demoRoles);
+  const canTour = !publicDemo && user.role !== "employee" && user.role !== "storekeeper";
+  const [picking, setPicking] = useState(false);
+  const pathname = usePathname();
+  const may = useMayOpen(user);
+  const here = FOOT.some((i) => pathname === i.href);
+  const [state, setState] = useRemembered<"open" | "closed">("nav.foot", "closed");
+  const open = state === "open" || here;
+  const row = cn("flex w-full items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink", compact ? "flex-col gap-1 px-1 py-2 text-xs" : "min-h-9 gap-3 px-3 py-1.5 text-[13.5px]");
+  return (
+    <div data-mod="slate">
+      {!here && (
+        <button type="button" aria-expanded={open} onClick={() => setState(open ? "closed" : "open")} className={cn(row, !compact && "font-medium text-nav-ink")}>
+          <Settings size={17} aria-hidden /><span className="min-w-0 flex-1 text-start">{compact ? "Settings" : "Settings and help"}</span>
+          {!compact && <ChevronDown size={15} className={cn("shrink-0 transition-transform duration-150 ease-tyll", open && "rotate-180")} aria-hidden />}
+        </button>
+      )}
+      {open && (
+        <ul className={cn("space-y-0.5", !compact && !here && "ms-[22px] border-s border-nav-line ps-2")}>
+          {FOOT.filter(may).filter((i) => !(publicDemo && i.id === "more")).map((i) => <li key={i.id}><NavLink item={i} user={user} active={pathname === i.href} compact={compact} onPick={onPick} /></li>)}
+          <li>
+            {publicDemo ? (
+              <button type="button" onClick={() => { onPick?.(); startGuidedPath(); }} className={row}><CircleHelp size={17} aria-hidden /><span>Help and tour</span></button>
+            ) : <TakeTourButton user={user} className={cn(row, "!rounded-[var(--radius-control)] !border-0 !text-nav-quiet")} label="Help and tour" />}
+          </li>
+          {canTour && <li><button type="button" data-tour="guide" onClick={() => setPicking(true)} className={row}><PlayCircle size={17} aria-hidden /><span>Guided demo</span></button></li>}
+        </ul>
+      )}
+      {picking && <DemoPicker user={user} onClose={() => setPicking(false)} />}
+    </div>
+  );
+}
+
+/** The one quick way to log waste, at the top of the sidebar on every screen. It opens the logging sheet where you are. */
+function LogWasteButton({ user, compact }: { user: User; compact?: boolean }) {
+  const openLog = useBreakageSheet((b) => b.set);
+  if (!mayLogBreakage(user)) return null;
+  return (
+    <button type="button" onClick={() => openLog(true)} className={cn("flex w-full items-center justify-center rounded-full bg-accent font-medium text-on-accent shadow-panel transition-colors duration-150 ease-tyll hover:bg-accent-hover", compact ? "h-10 flex-col gap-0.5 text-xs" : "h-10 gap-2 text-sm")}>
+      <Trash2 size={compact ? 16 : 17} aria-hidden />{compact ? <span className="sr-only">Log waste</span> : "Log waste"}
+    </button>
   );
 }
 
@@ -270,8 +359,9 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
 
 /** Puts the chosen look on <html>, where tokens.css reads it. In the By outlet look the accent follows the outlet picked in the top bar. */
 function useLookSync(user: User) {
-  const colour = useLook((s) => s.colour);
-  const waves = useLook((s) => s.waves);
+  // The look is chosen: section colours and medium waves for everyone. A choice saved by the old Try a look panel no longer applies.
+  const colour = "sections" as string;
+  const waves = "medium";
   const rawScope = useDemo((s) => s.scope);
   const outletId = clampScope(user, rawScope).outletId;
   useEffect(() => {
@@ -306,7 +396,8 @@ function BackToMain({ user }: { user: User }) {
   const target = publicDemo || canOpen(user, moduleOfPath(wanted)) ? wanted : homePath(user);
   // Sent home because the role cannot open the main page, and already there.
   if (target !== wanted && target.split("?")[0] === pathname) return null;
-  const label = target === "/menu" ? "Menu performance" : NAV[moduleOfPath(target.split("?")[0])].label;
+  const [tPath, tQuery] = target.split("?");
+  const label = activeItem(tPath, tQuery ? new URLSearchParams(tQuery).get("tab") : null)?.label ?? NAV[moduleOfPath(tPath)].label;
   const style = "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-paper px-4 text-sm font-medium text-ink transition-colors duration-150 ease-tyll hover:bg-cloud";
   const body = <><ArrowLeft size={16} aria-hidden /> Back to {label}</>;
   return (
@@ -319,6 +410,7 @@ function BackToMain({ user }: { user: User }) {
 function Signed({ user, children }: { user: User; children: ReactNode }) {
   useLookSync(user);
   const pathname = usePathname();
+  const tab = useSearchParams().get("tab");
   const current = moduleOfPath(pathname);
   const allowed = canOpen(user, current);
   const publicDemo = useSession((s) => !!s.demoRoles);
@@ -342,10 +434,10 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
     <AlertFeedProvider>
     <div className="flex min-h-screen">
       <a href="#main" className="no-print sr-only rounded-full bg-accent px-4 py-2 text-sm font-medium text-on-accent focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[80]">Skip to content</a>
-      <Sidebar user={user} active={current} />
+      <Sidebar user={user} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar user={user} />
-        <main id="main" data-mod={MODULE_TONE[current]} tabIndex={-1} className={cn("mx-auto w-full max-w-[1500px] flex-1 px-4 pb-24 pt-6 outline-none sm:px-6 md:pb-10 lg:px-8", canBreak && "md:pb-24")}>
+        <main id="main" data-mod={sectionOf(pathname, tab)?.tone ?? MODULE_TONE[current]} tabIndex={-1} className={cn("mx-auto w-full max-w-[1500px] flex-1 px-4 pb-24 pt-6 outline-none sm:px-6 md:pb-10 lg:px-8", canBreak && "md:pb-24")}>
           {allowed && (publicDemo ? <GuidedPath offer={pathname === "/more"} /> : pathname === "/more" && <TourOffer user={user} />)}
           {allowed && preview && (
             <p className="mb-4 flex items-start gap-2 rounded-[var(--radius-control)] bg-accent-soft px-4 py-3 text-sm text-accent-ink">
@@ -361,9 +453,8 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
           )}
         </main>
       </div>
-      <PhoneBar user={user} active={current} />
-      {canBreak && <>{pathname !== "/waste" && <BreakageFab desktopOnly />}<BreakageSheet /></>}
-      <LookPicker user={user} />
+      <PhoneBar user={user} />
+      {canBreak && <BreakageSheet />}
       <Tour />
       <DemoGuide user={user} />
       <Walkthrough />
@@ -373,90 +464,87 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
   );
 }
 
-function Sidebar({ user, active }: { user: User; active: ModuleId }) {
-  const publicDemo = useSession((s) => !!s.demoRoles);
-  // The guided demo switches between many accounts, which the public demo does not offer.
-  const canTour = !publicDemo && user.role !== "employee" && user.role !== "storekeeper";
-  const [picking, setPicking] = useState(false);
-  const lit = NAV_HOME[active] ?? active;
-  const items = navFor(user, publicDemo);
-  const counts = useNavCounts();
-  const pathname = usePathname();
-  const lookOpen = useLook((l) => l.open);
-  const openLook = useLook((l) => l.setOpen);
-  const footButton = "flex w-full items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink flex-col gap-1 px-1 py-2 text-[11px] xl:h-10 xl:flex-row xl:gap-3 xl:px-3 xl:py-0 xl:text-sm";
+function Sidebar({ user }: { user: User }) {
   return (
-    <>
-      <aside className="no-print sticky top-0 z-30 hidden h-screen w-[88px] shrink-0 flex-col border-e border-nav-line bg-nav backdrop-blur-xl md:flex xl:w-[232px]">
-        <div className="flex h-16 items-center justify-center gap-2 px-2 xl:justify-start xl:px-5">
-          <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center rounded-md">
-            <span className="hidden xl:block"><TyllLogo height={24} priority /></span>
-            <span className="xl:hidden"><TyllMark size={22} /></span>
-          </Link>
-          <span className="hidden xl:inline"><EarlyAccessBadge /></span>
-        </div>
-        <nav data-tour="nav" aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-2 py-2 xl:px-3">
-          {(publicDemo || modulesFor(user).includes("overview")) && (
-            <ul className="mb-2 border-b border-nav-line pb-2"><SideItem m="overview" active={lit === "overview" && pathname === "/"} reload={publicDemo && !demoRoleFits(user, "overview")} /></ul>
-          )}
-          <ul className="space-y-1">
-            {items.map((m) => <Fragment key={m}>{m === "alerts" && <li aria-hidden className="!my-2 border-t border-nav-line" />}<SideItem m={m} active={lit === m} reload={publicDemo && !demoRoleFits(user, m)} count={counts[m]} /></Fragment>)}
-          </ul>
-        </nav>
-        <div className="space-y-1 border-t border-nav-line p-2 xl:p-3">
-          <button type="button" onClick={() => openLook(!lookOpen)} aria-expanded={lookOpen} className={footButton}>
-            <Palette size={18} aria-hidden /><span>Try a look</span>
-          </button>
-          {publicDemo ? (
-            <button type="button" onClick={() => startGuidedPath()} className={footButton}>
-              <PlayCircle size={18} aria-hidden /><span>Guided path</span>
-            </button>
-          ) : <TakeTourButton user={user} className={cn(footButton, "!rounded-[var(--radius-control)] !border-0 !text-nav-quiet")} label="Take a tour" />}
-          {canTour && (
-            <button type="button" data-tour="guide" onClick={() => setPicking(true)} title="Guided demo" className={footButton}>
-              <PlayCircle size={18} aria-hidden /><span>Guided demo</span>
-            </button>
-          )}
-          <p className="hidden px-3 pt-1 text-xs leading-relaxed text-nav-quiet xl:block">Simulated data. Business date {fmtDate(DEMO_TODAY, true)}, {fmtTime(DEMO_NOW_MIN)}.</p>
-        </div>
-      </aside>
-      {picking && <DemoPicker user={user} onClose={() => setPicking(false)} />}
-    </>
+    <aside className="no-print sticky top-0 z-30 hidden h-screen w-[88px] shrink-0 flex-col border-e border-nav-line bg-nav backdrop-blur-xl md:flex xl:w-[244px]">
+      <div className="flex h-16 shrink-0 items-center justify-center gap-2 px-2 xl:justify-start xl:px-5">
+        <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center rounded-md">
+          <span className="hidden xl:block"><TyllLogo height={24} priority /></span>
+          <span className="xl:hidden"><TyllMark size={22} /></span>
+        </Link>
+      </div>
+      <div className="shrink-0 px-2 pb-2 xl:px-3">
+        <div className="xl:hidden"><LogWasteButton user={user} compact /></div>
+        <div className="hidden xl:block"><LogWasteButton user={user} /></div>
+      </div>
+      <nav data-tour="nav" aria-label="Main" className="scroll-thin flex-1 overflow-y-auto px-2 pb-4 pt-1 xl:px-3">
+        <div className="xl:hidden"><NavTree user={user} compact /></div>
+        <div className="hidden xl:block"><NavTree user={user} /></div>
+      </nav>
+      <div className="shrink-0 border-t border-nav-line p-2 xl:p-3">
+        <div className="xl:hidden"><FootGroup user={user} compact /></div>
+        <div className="hidden xl:block"><FootGroup user={user} /></div>
+        <p className="hidden px-3 pt-2 text-xs leading-relaxed text-nav-quiet xl:block">Simulated data. Business date {fmtDate(DEMO_TODAY, true)}, {fmtTime(DEMO_NOW_MIN)}.</p>
+      </div>
+    </aside>
   );
 }
 
-/** On a phone the same places sit at the bottom, within reach of a thumb. */
-function PhoneBar({ user, active }: { user: User; active: ModuleId }) {
-  const publicDemo = useSession((s) => !!s.demoRoles);
-  const lit = NAV_HOME[active] ?? active;
-  // Six fit a thumb. Reports and settings is in the profile menu on a phone.
-  const items = navFor(user, publicDemo).filter((m) => m !== "reports");
+/** On a phone the most used places sit at the bottom, within reach of a thumb. More opens the full menu. */
+function PhoneBar({ user }: { user: User }) {
+  const pathname = usePathname();
+  const tab = useSearchParams().get("tab");
+  const section = sectionOf(pathname, tab)?.id ?? null;
   const logs = mayLogBreakage(user);
   const openLog = useBreakageSheet((b) => b.set);
   const counts = useNavCounts();
+  const may = useMayOpen(user);
+  const [menu, setMenu] = useState(false);
+  const closeMenu = useCallback(() => setMenu(false), []);
+  const find = (id: string) => ALL_ITEMS.find((i) => i.id === id)!;
+  const slots: { item: NavItem; lit: boolean; tone: string }[] = [
+    { item: find("overview"), lit: pathname === "/", tone: "indigo" },
+    { item: find("stock"), lit: section === "stock" && pathname !== "/waste", tone: "teal" },
+    { item: find("waste"), lit: pathname === "/waste", tone: "teal" },
+    { item: find("predictions"), lit: section === "purchasing", tone: "blue" },
+    { item: find("revenue"), lit: section === "revenue", tone: "violet" },
+  ].filter((s) => may(s.item));
+  const cell = "relative flex h-16 w-full flex-col items-center justify-center gap-1 text-xs text-steel transition-colors duration-150";
   return (
-    <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)] md:hidden">
-      <ul className="flex">
-        {items.map((m) => {
-          const { icon: Icon, label, short } = NAV[m];
-          const className = cn("relative flex h-16 w-full flex-col items-center justify-center gap-1 text-[11px] text-steel transition-colors duration-150", lit === m && "font-medium text-accent-ink");
-          const body = (
-            <>
-              <span className={cn("flex h-7 w-10 items-center justify-center rounded-full", m === "waste" && logs ? "bg-accent text-on-accent" : lit === m && "bg-accent-soft")}><Icon size={18} aria-hidden /></span>
-              {counts[m] && <span className="num absolute end-[calc(50%-22px)] top-1.5 min-w-[16px] rounded-full bg-neg-soft px-1 text-center text-[10px] font-medium leading-4 text-neg"><span aria-hidden>{counts[m].n}</span><span className="sr-only">{counts[m].label}</span></span>}
-              <span className="max-w-full truncate px-0.5">{short ?? label}</span>
-            </>
-          );
-          return (
-            <li key={m} data-mod={MODULE_TONE[m]} className="min-w-0 flex-1">
-              {/* Log waste opens where you stand: staff use it mid shift. */}
-              {m === "waste" && logs && lit !== "waste" ? <button type="button" onClick={() => openLog(true)} className={className}>{body}</button>
-                : publicDemo && !demoRoleFits(user, m) ? <a href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</a> : <Link href={MODULE_PATH[m]} aria-current={lit === m ? "page" : undefined} className={className}>{body}</Link>}
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <>
+      <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)] md:hidden">
+        <ul className="flex">
+          {slots.map(({ item, lit }) => {
+            const Icon = item.icon;
+            const isLog = item.id === "waste" && logs;
+            const body = (
+              <>
+                <span className={cn("flex h-7 w-10 items-center justify-center rounded-full", isLog ? "bg-accent text-on-accent" : lit ? "bg-indigo-soft text-accent" : "text-steel")}><Icon size={18} aria-hidden /></span>
+                {counts[item.id] && <span className="num absolute end-[calc(50%-22px)] top-1.5 min-w-[16px] rounded-full bg-warn-soft px-1 text-center text-xs font-medium leading-4 text-warn"><span aria-hidden>{counts[item.id].n}</span><span className="sr-only">{counts[item.id].label}</span></span>}
+                <span className={cn("max-w-full truncate px-0.5", lit && "font-medium text-ink")}>{item.short ?? item.label}</span>
+              </>
+            );
+            return (
+              <li key={item.id} className="min-w-0 flex-1">
+                {/* Log waste opens where you stand: staff use it mid shift. */}
+                {isLog && pathname !== "/waste" ? <button type="button" onClick={() => openLog(true)} className={cell}>{body}</button>
+                  : <Link href={item.href} aria-current={lit ? "page" : undefined} className={cell}>{body}</Link>}
+              </li>
+            );
+          })}
+          <li className="min-w-0 flex-1">
+            <button type="button" onClick={() => setMenu(true)} aria-expanded={menu} className={cell}>
+              <span className="flex h-7 w-10 items-center justify-center rounded-full text-graphite"><Menu size={18} aria-hidden /></span>
+              <span>More</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      <Drawer open={menu} onClose={closeMenu} title="Menu">
+        <nav aria-label="All pages" className="-mx-3"><NavTree user={user} onPick={closeMenu} /></nav>
+        <div className="-mx-3 mt-5 border-t border-hair pt-3"><FootGroup user={user} onPick={closeMenu} /></div>
+      </Drawer>
+    </>
   );
 }
 
@@ -521,7 +609,7 @@ function Topbar({ user }: { user: User }) {
   const [theme, toggleTheme] = useTheme();
   const pathname = usePathname();
   // Main pages show fixed periods, and the sections that follow a date choice carry their own switch.
-  const dated = !["/", "/waste", "/stock", "/forecast", "/alerts", "/money", "/reports", "/drinks"].includes(pathname);
+  const dated = !["/", "/waste", "/stock", "/forecast", "/alerts", "/money", "/reports", "/drinks", "/finance", "/investigations"].includes(pathname);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Ctrl+K or Cmd+K opens search from anywhere.
   useEffect(() => {
@@ -540,12 +628,11 @@ function Topbar({ user }: { user: User }) {
         <Link href={homePath(user)} aria-label="Tyll home" className="-my-2.5 flex items-center gap-2 rounded-md py-2.5 md:hidden">
           <TyllLogo height={20} priority />
         </Link>
-        {/* On a phone the badge would push the actions onto a row of their own. */}
-        <span className="hidden sm:inline md:hidden"><EarlyAccessBadge /></span>
         {showScope ? (
-          <div className="order-last flex min-w-0 basis-full flex-wrap items-center gap-2 lg:order-none lg:basis-auto lg:flex-nowrap">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 lg:flex-nowrap">
             <ScopeControl user={user} />
-            <span className="ms-auto lg:hidden"><RoleSwitcher user={user} /></span>
+            {/* On a phone the role switch lives in the profile menu, so the top bar stays one row. */}
+            <span className="hidden md:inline lg:hidden"><RoleSwitcher user={user} /></span>
             <div className={cn("relative min-w-0 max-lg:order-last max-lg:basis-full", !dated && "hidden")}>
               <Segmented size="sm" label="Date range" value={preset} onChange={(v) => (v === "custom" ? setPanel("dates") : (setPreset(v), setPanel(null)))} options={PRESETS.map((p) => (p.value === "custom" && preset === "custom" ? { ...p, label: fmtRange(custom) } : p))} />
               {panel === "dates" && <DatePanel onClose={() => setPanel(null)} />}
@@ -555,12 +642,13 @@ function Topbar({ user }: { user: User }) {
           <p className="hidden min-w-0 truncate text-sm text-steel sm:block">{allowedOutlets(user)[0] ? `${outletById[allowedOutlets(user)[0]].name}, ` : ""}{propertyById[props[0]].name}</p>
         )}
         <div className="ms-auto flex min-w-0 items-center gap-1">
-          <LanguagePicker />
+          <PilotLink />
+          <span className="hidden md:inline-flex"><LanguagePicker /></span>
           <button type="button" data-tour="search" onClick={() => setPalette(true)} aria-label="Search items, outlets and actions" className="flex h-10 items-center gap-2 rounded-full px-3 text-[13px] text-graphite transition-colors duration-200 hover:bg-mist min-[90rem]:border min-[90rem]:border-line">
-            <Search size={17} aria-hidden /><span className="hidden min-[90rem]:inline">Search</span><kbd className="hidden rounded-md border border-line px-1.5 text-[11px] text-steel min-[90rem]:inline">{/Mac|iPhone|iPad/.test(navigator.userAgent) ? "Cmd K" : "Ctrl K"}</kbd>
+            <Search size={17} aria-hidden /><span className="hidden min-[90rem]:inline">Search</span><kbd className="hidden rounded-md border border-line px-1.5 text-xs text-steel min-[90rem]:inline">{/Mac|iPhone|iPad/.test(navigator.userAgent) ? "Cmd K" : "Ctrl K"}</kbd>
           </button>
           <AlertsButton user={user} />
-          <span className={showScope ? "hidden lg:block" : undefined}><RoleSwitcher user={user} /></span>
+          <span className={showScope ? "hidden lg:block" : "hidden md:block"}><RoleSwitcher user={user} /></span>
           <div className="relative shrink-0">
             <button type="button" onClick={() => toggle("profile")} aria-label="Your profile and settings" aria-expanded={panel === "profile"} aria-haspopup="menu" className="ms-1 flex items-center rounded-full transition-opacity duration-200 hover:opacity-85">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-xs font-medium text-paper" aria-hidden>{user.name.split(" ").map((p) => p[0]).slice(0, 2).join("")}</span>
@@ -628,7 +716,6 @@ function ProfileMenu({ user, onClose, onNews, theme, onTheme }: { user: User; on
   const ref = useDismiss(onClose);
   const pinRequired = useSession((s) => s.pinExpiresAt !== null);
   const publicDemo = useSession((s) => !!s.demoRoles);
-  const openLook = useLook((l) => l.setOpen);
   const lock = async () => {
     onClose();
     await api("/api/auth/lock", { method: "POST", body: {} }).catch(() => undefined);
@@ -641,14 +728,14 @@ function ProfileMenu({ user, onClose, onNews, theme, onTheme }: { user: User; on
         <p className="text-sm text-ink">{user.name}</p>
         <p className="text-xs text-steel">{user.title}</p>
       </div>
+      <div className="space-y-2 border-t border-hair px-3 py-2 md:hidden">
+        <RoleSwitcher user={user} />
+        <LanguagePicker />
+      </div>
       <div className="border-t border-hair pt-1">
         <div className="px-1 py-1" onClick={onClose}><TakeTourButton user={user} here label="Tour this page" className="w-full border-0 px-2 py-2 text-sm" /></div>
         <button role="menuitem" type="button" onClick={() => { onClose(); onNews(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist"><Sparkles size={16} strokeWidth={1.7} /> What&apos;s new</button>
         <button role="menuitem" type="button" onClick={onTheme} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist">{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />} {theme === "dark" ? "Light mode" : "Dark mode"}</button>
-        <button role="menuitem" type="button" onClick={() => { onClose(); openLook(true); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist"><Palette size={16} /> Try a look</button>
-        <Link role="menuitem" href="/reports" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist md:hidden"><FileText size={16} /> Reports and settings</Link>
-        <Link role="menuitem" href="/more" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><LayoutGrid size={16} /> More tools</Link>
-        <Link role="menuitem" href="/settings" onClick={onClose} className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-graphite hover:bg-mist"><Settings size={16} /> Settings</Link>
         {pinRequired && !publicDemo && (
           <button role="menuitem" type="button" onClick={lock} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-start text-sm text-graphite hover:bg-mist">
             <LockKeyhole size={16} strokeWidth={1.7} /> Lock now
@@ -707,6 +794,17 @@ function useAlerts(user: User): Alert[] {
 function AlertsButton({ user }: { user: User }) {
   const alerts = useAlerts(user);
   return <NotificationBell attention={alerts} />;
+}
+
+/** The pilot offer, small and out of the way, once the visitor has seen something worth money. */
+function PilotLink() {
+  const earned = usePilot((s) => s.earned);
+  if (!earned) return null;
+  return (
+    <a href={PILOT_URL} target="_blank" rel="noopener noreferrer" className="animate-fade me-1 hidden h-9 items-center gap-1.5 rounded-full border border-accent/40 bg-paper px-3.5 text-[13px] font-medium text-accent transition-colors duration-150 hover:bg-accent-soft lg:inline-flex">
+      <Sparkles size={14} aria-hidden /> Start free 30 day pilot
+    </a>
+  );
 }
 
 /** Small banner pages use to say their figures come from simulated records. */

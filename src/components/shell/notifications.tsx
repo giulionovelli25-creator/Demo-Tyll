@@ -53,7 +53,7 @@ export function NotificationBell({ attention = [], align = "right" }: { attentio
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}
         className={cn("relative flex h-10 w-10 items-center justify-center rounded-full text-graphite transition-colors hover:bg-mist", open && "bg-mist text-ink")}>
         <Bell size={18} strokeWidth={1.7} />
-        {unread > 0 ? <span className="num absolute -end-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-ink px-1 text-[10px] text-paper ring-2 ring-paper">{unread > 9 ? "9+" : unread}</span>
+        {unread > 0 ? <span className="num absolute -end-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-ink px-1 text-xs text-paper ring-2 ring-paper">{unread > 9 ? "9+" : unread}</span>
           : count > 0 && <span className="absolute end-2 top-2 h-2 w-2 rounded-full bg-warn ring-2 ring-paper" aria-hidden />}
       </button>
       {open && (
@@ -71,7 +71,7 @@ export function NotificationBell({ attention = [], align = "right" }: { attentio
                     <span className="min-w-0">
                       <span className={cn("block text-sm", !n.read && !n.resolved ? "text-ink" : "text-graphite")}>{n.title}</span>
                       <span className="block text-xs text-steel">{n.body}</span>
-                      <span className="mt-0.5 block text-[11px] text-fog">{n.from ? `From ${personName(n.from)} · ` : ""}{ago(n.at)}{n.resolved ? " · done" : ""}</span>
+                      <span className="mt-0.5 block text-xs text-fog">{n.from ? `From ${personName(n.from)} · ` : ""}{ago(n.at)}{n.resolved ? " · done" : ""}</span>
                     </span>
                   </button>
                 </li>

@@ -37,7 +37,7 @@ const FIGURE = "min-w-0 rounded-[var(--radius-control)] bg-cloud px-3 py-2";
 
 export function MissingDrinks() {
   const { pid, unexplained, removed, loading } = useMissingDrinks();
-  const money = (n: number) => fmtMoney(n, propertyById[pid].currency, { decimals: true });
+  const money = (n: number) => fmtMoney(n, propertyById[pid].currency);
   if (loading) return <p className="px-4 pb-4 text-sm text-steel sm:px-6">Checking the counts.</p>;
   if (unexplained.length === 0 && removed.length === 0) return <div className="p-4 sm:p-6"><EmptyState title="No missing drinks right now">Drinks used match what was sold in your selection.</EmptyState></div>;
   const groups = groupByStock(unexplained, (r) => r.p.ingredientId);
@@ -58,7 +58,7 @@ export function MissingDrinks() {
                     <span className={FIGURE}><span className="block text-xs text-steel">Sold</span><span className="num block text-[17px] font-semibold text-ink">{qtyWords(v.expected, p.ingredientId)}</span></span>
                     <span className={FIGURE}><span className="block text-xs text-steel">Actually used</span><span className="num block text-[17px] font-semibold text-ink">{qtyWords(v.actual, p.ingredientId)}</span></span>
                     <span className={FIGURE}><span className="block text-xs text-steel">Not explained</span><span className="num block text-[17px] font-semibold text-neg">{qtyWords(v.unexplained, p.ingredientId)}</span></span>
-                    <span className={FIGURE}><span className="block text-xs text-steel">Worth</span><span className="num block text-[17px] font-semibold text-money">{money(value)}</span></span>
+                    <span className={FIGURE}><span className="block text-xs text-steel">Worth</span><span className="num block text-[17px] font-semibold text-ink">{money(value)}</span></span>
                   </span>
                 </Link>
               </li>
@@ -74,7 +74,7 @@ export function MissingDrinks() {
               <li key={c.id}>
                 <Link href={`/investigations/${c.id}`} className={ROW}>
                   <span className="min-w-0 text-sm font-medium text-ink">{c.headline}</span>
-                  <span className="num shrink-0 text-sm font-medium text-money">{money(c.exposure)}</span>
+                  <span className="num shrink-0 text-sm font-medium text-ink">{money(c.exposure)}</span>
                 </Link>
               </li>
             ))}

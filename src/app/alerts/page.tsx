@@ -35,6 +35,7 @@ export default function AlertsPage() {
   };
   const list = useMemo(() => (view === "open" ? feed.open : view === "snoozed" ? feed.snoozed : feed.resolved).filter((a) => inFilter(a.kind, filter)), [feed, view, filter]);
   const atRisk = sum(feed.open.filter((a) => inFilter(a.kind, filter)), (a) => a.amount ?? 0);
+  const atRiskLoss = sum(feed.open.filter((a) => inFilter(a.kind, filter) && a.amountWord !== "to order"), (a) => a.amount ?? 0);
   const red = feed.open.filter((a) => a.rag === "red" && inFilter(a.kind, filter)).length;
   const amber = feed.open.filter((a) => a.rag === "amber" && inFilter(a.kind, filter)).length;
 
@@ -43,13 +44,14 @@ export default function AlertsPage() {
   const totalAmber = feed.open.filter((a) => a.rag === "amber").length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <PageHeader title="Alerts" question="What needs a decision?" lead="Stock, money and waste together. Simulated data." />
       <SummaryBar
         items={[
-          { label: "Act today", value: totalRed, tone: totalRed ? "neg" : "pos" },
-          { label: "This week", value: totalAmber, tone: totalAmber ? "warn" : "pos" },
-          { label: "Money in these alerts", value: money(sum(feed.open.filter((a) => a.amountWord !== "to order"), (a) => a.amount ?? 0), { compact: true }), tone: "money" },
+          { label: "Act today", value: totalRed, tone: totalRed ? "neg" : "pos", compare: { text: totalRed ? "Waiting longer costs money" : "Nothing urgent", good: totalRed ? false : true }, href: "/alerts?view=open" },
+          { label: "This week", value: totalAmber, tone: totalAmber ? "warn" : "pos", compare: { text: "Can wait a day or two", good: null }, href: "/alerts?view=open" },
+          { label: "Money in these alerts", value: money(sum(feed.open.filter((a) => a.amountWord !== "to order"), (a) => a.amount ?? 0), { compact: true }), tone: "money", compare: { text: "Not counting orders to place", good: null }, href: "/alerts?kind=money" },
+          { label: "Resolved", value: feed.resolved.length, compare: { text: `${feed.snoozed.length} snoozed`, good: null }, href: "/alerts?view=resolved" },
         ]}
         action={first[0] ? <Link href={first[0].next.href} className={linkButton("primary")}>Open the first alert</Link> : undefined}
       />
@@ -66,15 +68,24 @@ export default function AlertsPage() {
           <Tabs value={view} onChange={(v) => go({ view: v })} tabs={[{ value: "open", label: "Open", count: feed.open.length }, { value: "snoozed", label: "Snoozed", count: feed.snoozed.length }, { value: "resolved", label: "Resolved", count: feed.resolved.length }]} />
           <Segmented size="sm" label="Show alerts about" value={filter} onChange={(v) => go({ kind: v })} options={FILTERS} />
         </div>
-        <p className="text-[13px] text-steel">{red} act today, {amber} this week, {money(atRisk)} involved, including orders to place.</p>
+        <p className="text-[13px] text-steel">{red} act today, {amber} this week. {money(atRiskLoss)} at risk, plus {money(atRisk - atRiskLoss)} of orders to place.</p>
         {list.length === 0 ? (
           <EmptyState title={view === "open" ? "Nothing needs you here" : view === "snoozed" ? "Nothing is snoozed" : "Nothing resolved yet"}>
             {view === "open" ? "Try another filter." : "Alerts you set aside show up here, and you can bring them back at any time."}
           </EmptyState>
         ) : (
-          <ul className="overflow-hidden rounded-panel border border-line bg-paper">
-            {list.map((a) => <AlertRow key={a.id} alert={a} money={(n) => money(n)} userId={user.id} state={view} />)}
-          </ul>
+          <div className="space-y-4">
+            {(["red", "amber", "green"] as const).map((rag) => {
+              const group = list.filter((a) => a.rag === rag);
+              if (!group.length) return null;
+              return (
+                <section key={rag}>
+                  <h3 className="mb-2 text-[13px] font-semibold text-ink">{rag === "red" ? "Act today" : rag === "amber" ? "This week" : "Can wait"} <span className="font-normal text-steel">{group.length}</span></h3>
+                  <ul className="overflow-hidden rounded-panel border border-line bg-paper">{group.map((a) => <AlertRow key={a.id} grouped alert={a} money={(n) => money(n)} userId={user.id} state={view} />)}</ul>
+                </section>
+              );
+            })}
+          </div>
         )}
       </Section>
     </div>

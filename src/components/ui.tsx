@@ -1,7 +1,8 @@
 "use client";
 // Shared interface primitives. One set of controls for every module.
 import clsx from "clsx";
-import { ArrowDownRight, ArrowUpRight, ChevronDown, ChevronUp, ChevronsUpDown, Minus, X } from "lucide-react";
+import { AlertTriangle, ArrowDownRight, ArrowUpRight, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ChevronsUpDown, Minus, X } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
 import { usePathname } from "next/navigation";
 import { create } from "zustand";
@@ -41,14 +42,13 @@ const TONE: Record<Tone, string> = {
   pos: "bg-pos-soft text-pos",
   warn: "bg-warn-soft text-warn",
   neg: "bg-neg-soft text-neg",
-  ink: "bg-accent text-on-accent",
+  ink: "bg-indigo-soft text-indigo",
   accent: "bg-accent-soft text-accent-ink",
 };
 
 export function Badge({ tone = "neutral", children, className }: { tone?: Tone; children: ReactNode; className?: string }) {
-  // Status badges carry a small dot so the colour is never the only signal.
-  const dot = tone === "pos" || tone === "warn" || tone === "neg";
-  return <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium", TONE[tone], className)}>{dot && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" aria-hidden />}{children}</span>;
+  // One badge style everywhere: a tinted pill with a dot, so the colour is never the only signal.
+  return <span className={cn("inline-flex h-[22px] items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-xs font-medium", TONE[tone], className)}><span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-80" aria-hidden />{children}</span>;
 }
 
 /** Marks figures that are estimates or come from simulated records. */
@@ -79,7 +79,7 @@ export function Delta({ value, kind = "pct", goodWhen = "up", className, versus 
 // ---- Layout -----------------------------------------------------------------
 export function Panel({ title, description, action, children, className, flush }: { title?: ReactNode; description?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; flush?: boolean }) {
   return (
-    <section className={cn("min-w-0 rounded-panel border border-line bg-paper shadow-panel transition-shadow duration-200 ease-tyll", className)}>
+    <section className={cn("min-w-0 rounded-panel border border-line bg-paper shadow-panel transition-shadow duration-200 ease-tyll", flush && "overflow-hidden", className)}>
       {(title || action) && (
         <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-5 pt-5 sm:px-6">
           <div className="min-w-0">
@@ -106,10 +106,10 @@ export function PageHeader({ title, question, lead, children, crumbs }: { title:
         {crumbs && <div className="mb-2">{crumbs}</div>}
         <div className="flex items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-accent-soft text-accent-ink"><Icon size={18} aria-hidden /></span>
-          <h1 className="text-[30px] font-semibold leading-tight tracking-[-0.025em] text-ink">{title}</h1>
+          <h1 className="text-[26px] font-medium leading-tight tracking-[-0.025em] text-ink sm:text-[32px]">{title}</h1>
         </div>
         {question && <p className="mt-2 text-[15px] font-medium text-accent-ink">{question}</p>}
-        {lead && <p className="mt-0.5 text-[13px] leading-relaxed text-steel">{lead}</p>}
+        {lead && <p className="mt-1 text-[13px] leading-relaxed text-steel">{lead}</p>}
       </div>
       {children && <div className="flex flex-wrap items-center gap-2 sm:pt-1">{children}</div>}
     </header>
@@ -137,21 +137,57 @@ export function KeyNumber({ label, value, tone, note, delta }: { label: string; 
   );
 }
 
-/** The top of a main page: a short row of numbers, then the one thing to do. */
-export function SummaryBar({ items, action }: { items: { label: string; value: ReactNode; tone?: "pos" | "warn" | "neg" | "money"; note?: ReactNode }[]; action?: ReactNode }) {
+export interface StripItem {
+  label: string;
+  value: ReactNode;
+  tone?: "pos" | "warn" | "neg" | "money";
+  note?: ReactNode;
+  /** A comparison, such as "12% less than last week". good colours it; null keeps it neutral. Never colour alone: the words say which way. */
+  compare?: { text: string; good: boolean | null };
+  /** Where the records behind the number are. */
+  href?: string;
+  onClick?: () => void;
+}
+
+/** The top of every page: three or four numbers, one trend, then the one thing to do. Each number opens the records behind it. */
+export function SummaryBar({ items, action, trend, header }: { items: StripItem[]; action?: ReactNode; trend?: ReactNode; header?: ReactNode }) {
   const tones = { pos: "text-pos", warn: "text-warn", neg: "text-neg", money: "text-money" };
+  const cols = items.length >= 4 ? "grid-cols-2 sm:grid-cols-4" : items.length === 3 ? "grid-cols-2 sm:grid-cols-3" : items.length === 2 ? "grid-cols-2" : "grid-cols-1";
   return (
-    <div className="flex flex-col gap-4 rounded-panel border border-line bg-paper p-4 shadow-panel sm:flex-row sm:items-center sm:justify-between sm:px-6">
-      <dl className={cn("grid min-w-0 flex-1 gap-3 sm:gap-6", items.length >= 3 ? "grid-cols-3" : items.length === 2 ? "grid-cols-2" : "grid-cols-1")}>
-        {items.map((i) => (
-          <div key={i.label} className="min-w-0">
-            <dt className="text-[13px] text-steel">{i.label}</dt>
-            <dd className={cn("num mt-0.5 whitespace-nowrap text-[17px] font-medium leading-tight tracking-[-0.02em] sm:text-[26px]", i.tone ? tones[i.tone] : "text-ink")}>{i.value}</dd>
-            {i.note && <dd className="mt-0.5 text-xs text-steel">{i.note}</dd>}
-          </div>
-        ))}
-      </dl>
-      {action && <div className="flex shrink-0 flex-col sm:items-end [&>*]:w-full sm:[&>*]:w-auto">{action}</div>}
+    <div className="rounded-panel border border-line bg-paper shadow-panel">
+      {header && <div className="border-b border-hair px-4 py-4 sm:px-6 sm:py-5">{header}</div>}
+      <div className={cn("flex flex-col", trend && "lg:flex-row")}>
+        <div className="flex min-w-0 flex-1 flex-col">
+        <dl className={cn("grid min-w-0 gap-1 p-2 sm:p-3", cols)}>
+          {items.map((i) => {
+            const inner = (
+              <>
+                <dt className="flex min-h-[36px] min-w-0 items-start gap-1 text-[13px] leading-[18px] text-steel" title={i.label}><span className="line-clamp-2">{i.label}</span>{(i.href || i.onClick) && <ChevronRight size={13} className="mt-[3px] shrink-0 text-fog transition-transform duration-150 ease-tyll group-hover:translate-x-0.5 rtl:rotate-180" aria-hidden />}</dt>
+                <dd className={cn("num mt-0.5 font-medium leading-tight tracking-[-0.02em]", "whitespace-nowrap", typeof i.value === "string" && i.value.length > 11 && !/\d/.test(i.value) ? "text-[18px] leading-[30px] sm:text-[20px]" : typeof i.value === "string" && i.value.length > 9 ? "text-[20px] leading-[30px] sm:text-[22px]" : "text-[22px] leading-[30px] sm:text-[26px]", i.tone ? tones[i.tone] : "text-ink")}>{i.value}</dd>
+                {i.compare && (
+                  <dd className={cn("mt-1 flex items-start gap-1 text-xs leading-snug", i.compare.good === null ? "text-graphite" : i.compare.good ? "text-pos" : "text-warn")}>
+                    {i.compare.good === null ? null : i.compare.good ? <CheckCircle2 size={13} className="shrink-0" aria-hidden /> : <AlertTriangle size={13} className="shrink-0" aria-hidden />}
+                    <span className="min-w-0">{i.compare.text}</span>
+                  </dd>
+                )}
+                {i.note && <dd className="mt-0.5 text-xs text-graphite">{i.note}</dd>}
+              </>
+            );
+            // Top aligned, so every figure in the row shares one line whatever the label or caption below it.
+            const box = "group flex h-full min-w-0 flex-col justify-start rounded-[var(--radius-control)] px-2 py-2 text-start sm:px-3";
+            return (
+              <div key={i.label} className="min-w-0">
+                {i.href ? <Link href={i.href} prefetch={false} className={cn(box, "transition-colors duration-150 hover:bg-cloud")}>{inner}</Link>
+                  : i.onClick ? <button type="button" onClick={i.onClick} className={cn(box, "w-full transition-colors duration-150 hover:bg-cloud")}>{inner}</button>
+                  : <div className={box}>{inner}</div>}
+              </div>
+            );
+          })}
+        </dl>
+        {action && <div className="mt-auto flex flex-col px-4 pb-4 sm:flex-row sm:items-center sm:px-5 [&>*]:w-full sm:[&>*]:w-auto">{action}</div>}
+        </div>
+        {trend && <div className="min-w-0 border-t border-hair px-4 pb-3 pt-3 lg:w-[340px] lg:shrink-0 lg:border-s lg:border-t-0 lg:px-5">{trend}</div>}
+      </div>
     </div>
   );
 }
@@ -288,6 +324,17 @@ export function Tabs<T extends string>({ value, onChange, tabs }: { value: T; on
         </button>
       ))}
     </div>
+  );
+}
+
+/** Tabs that are pages of their own: one sidebar item, several parts. A full load, because a part can need another demo role. */
+export function PageTabs({ tabs }: { tabs: { href: string; label: string; active: boolean }[] }) {
+  return (
+    <nav aria-label="Parts of this page" className="flex gap-6 overflow-x-auto overflow-y-hidden border-b border-line [scrollbar-width:none]">
+      {tabs.map((t) => (
+        <a key={t.href} href={t.href} aria-current={t.active ? "page" : undefined} className={cn("-mb-px flex items-center whitespace-nowrap border-b-2 pb-3.5 pt-2 text-sm transition-colors duration-200 ease-tyll", t.active ? "border-accent text-accent-ink" : "border-transparent text-steel hover:text-ink")}>{t.label}</a>
+      ))}
+    </nav>
   );
 }
 

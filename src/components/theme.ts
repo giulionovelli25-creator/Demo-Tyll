@@ -9,11 +9,13 @@ export const MODULE_ICON: Record<ModuleId, LucideIcon> = {
 
 export const MODULE_TONE: Record<ModuleId, string> = {
   overview: "indigo", alerts: "indigo", more: "indigo",
-  waste: "teal", stock: "teal",
-  forecast: "violet",
-  money: "blue", finance: "blue", investigations: "blue",
-  drinks: "rose",
-  reports: "plum", settings: "slate",
+  // Stock and waste
+  waste: "teal", stock: "teal", drinks: "teal",
+  // Purchasing
+  forecast: "blue", finance: "blue",
+  // Revenue and reconciliation
+  money: "violet", investigations: "violet", reports: "violet",
+  settings: "slate",
   events: "terracotta", rooms: "rose", flow: "brown", tasks: "cyan", staff: "cyan",
 };
 

@@ -32,7 +32,7 @@ export const RevenueProfitChart = memo(function RevenueProfitChart({ points, for
     <figure>
       <figcaption className="sr-only">{summary}</figcaption>
       <div className="mb-2 flex flex-wrap gap-x-4 text-xs text-graphite" aria-hidden>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-[var(--chart-a)]" />Revenue</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-accent-ink" />Revenue</span>
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-[var(--chart-b)]" />{profitName}</span>
       </div>
       <div className={small ? "h-[150px]" : "h-[240px]"}>
@@ -42,8 +42,8 @@ export const RevenueProfitChart = memo(function RevenueProfitChart({ points, for
             <XAxis dataKey="label" {...axis} minTickGap={24} />
             <YAxis {...axis} width={44} tickFormatter={axisFormat} />
             <Tooltip content={(p) => <Tip {...(p as object)} format={format} />} cursor={{ stroke: "var(--color-fog)", strokeDasharray: "3 3" }} />
-            <Line type="monotone" dataKey="revenue" name="Revenue" stroke="var(--chart-a)" strokeWidth={2} dot={false} isAnimationActive={false} label={pointLabel(points, "revenue", format)} />
-            <Line type="monotone" dataKey="profit" name={profitName} stroke="var(--chart-b)" strokeWidth={2} dot={false} isAnimationActive={false} label={pointLabel(points, "profit", format)} />
+            <Line type="linear" dataKey="revenue" name="Revenue" stroke="var(--color-accent-ink)" strokeWidth={2} dot={false} isAnimationActive={false} label={pointLabel(points, "revenue", format)} />
+            <Line type="linear" dataKey="profit" name={profitName} stroke="var(--chart-b)" strokeWidth={2} dot={false} isAnimationActive={false} label={pointLabel(points, "profit", format)} />
           </LineChart>
         </ResponsiveContainer>
       </div>

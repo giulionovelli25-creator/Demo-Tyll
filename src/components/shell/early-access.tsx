@@ -8,15 +8,10 @@ import { clearDataset } from "@/lib/data/dataset";
 import { useDemo } from "@/lib/store";
 import { fmtDate } from "@/lib/util";
 
-/** Small marker beside the logo: this is an early version that keeps growing. */
-export function EarlyAccessBadge() {
-  return <span className="whitespace-nowrap rounded-full border border-line bg-paper px-2 text-[11px] leading-[20px] text-graphite">Early access</span>;
-}
-
 /** The changelog, read from config/whats-new.json so it can be edited without touching code. */
 export function WhatsNew({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
-    <Drawer open={open} onClose={onClose} title="What's new" description="Tyll is in early access. New features are added regularly.">
+    <Drawer open={open} onClose={onClose} title="What's new" description="New features are added regularly.">
       <ol className="space-y-5">
         {whatsNew.entries.map((e) => (
           <li key={e.date + e.title} className="border-s border-line ps-4">
@@ -35,7 +30,7 @@ export const GUIDED_PATH = [
   { href: "/waste", userId: "u-fnb", title: "Log waste", text: "Tap the item, tap the number. Done in two taps, with Undo." },
   { href: "/stock", userId: "u-fnb", title: "Stock", text: "How much is left, with what is about to run out on top. Start count walks the storeroom in order." },
   { href: "/forecast", userId: "u-fnb", title: "Predictions", text: "What to order and how much to reach month end. Try Build order." },
-  { href: "/drinks", userId: "u-fnb", title: "Drinks control", text: "How many glasses each bottle really gave, and which drinks sales do not explain." },
+  { href: "/drinks", userId: "u-fnb", title: "Over pouring", text: "How many glasses each bottle really gave, and which drinks sales do not explain." },
   { href: "/more", userId: "u-fnb", title: "Coming soon", text: "Events, rooms and sales are in development. Have a look at where Tyll is heading." },
 ] as const;
 

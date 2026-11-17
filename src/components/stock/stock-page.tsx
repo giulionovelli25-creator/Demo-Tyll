@@ -1,9 +1,9 @@
 "use client";
 // Stock: how much is left. The counts and the critical items come first. Everything else is one click away.
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ClipboardCheck, Search } from "lucide-react";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Section, useRemembered } from "@/components/disclosure";
 import { useCountDraft } from "@/components/stock/count-flow";
 import { QuickCount } from "@/components/stock/quick-count";
@@ -15,15 +15,19 @@ import { can } from "@/lib/domain/access";
 import { countVariance, countVarianceValue } from "@/lib/domain/inventory";
 import { VARIANCE_RULES } from "@/lib/domain/variance";
 import { useCtx, useView } from "@/lib/hooks";
+import { StripTrend } from "@/components/charts";
+import { useDailyTotals, useUnexplained } from "@/lib/strip-data";
 import type { MonthPlanOut, PlanItem, StockHealth } from "@/lib/server/purchasing";
 import type { CountRecord } from "@/lib/types";
-import { fmtDate, fmtMoney, fmtPct, fmtQty, sum } from "@/lib/util";
+import { DEMO_TODAY, fmtDate, fmtMoney, fmtPct, fmtQty, sum } from "@/lib/util";
 
 const RAG: Record<StockHealth, Rag> = { critical: "red", low: "amber", fine: "green" };
 const WORD: Record<StockHealth, string> = { critical: "Critical", low: "Low", fine: "Fine" };
 const RANK: Record<StockHealth, number> = { critical: 0, low: 1, fine: 2 };
 
 const name = (i: { ingredientId: string }) => ingredientById[i.ingredientId].name;
+/** Why an item is not fine, in words, so a status never stands alone. */
+const why = (r: PlanItem) => (r.health === "critical" ? "Runs out before an order placed today can arrive" : r.health === "low" ? (r.par > 0 && r.onHand < r.par / 2 ? "Under half of target stock" : r.orderBy ? `Order by ${r.orderBy === DEMO_TODAY ? "today" : fmtDate(r.orderBy, true)} to avoid running out` : "Order soon") : "");
 const daysWords = (i: PlanItem, end: string) => (i.daysUntilOut === null ? (i.predicted > 0 ? `Lasts past ${fmtDate(end)}` : "Not used lately") : i.daysUntilOut === 0 ? "Today" : `${i.daysUntilOut} day${i.daysUntilOut === 1 ? "" : "s"}`);
 
 /** Only what is about to run out, split the way the stores are: food, drinks, inventory. */
@@ -51,14 +55,14 @@ function CriticalItems({ plan }: { plan: MonthPlanOut }) {
   );
 }
 
-function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
+function AllItems({ plan, area, initialShow = "all" }: { plan: MonthPlanOut; area: StockArea; initialShow?: "all" | StockHealth }) {
   const [q, setQ] = useState("");
-  const [show, setShow] = useState<"all" | StockHealth>("all");
-  const { sort, toggle: flip } = useSort<"name" | "onHand" | "par" | "days" | "health">({ key: "health", dir: "asc" });
-  const toggle = (k: typeof sort.key) => flip(k, k === "onHand" || k === "par" ? "desc" : "asc");
+  const [show, setShow] = useState<"all" | StockHealth>(initialShow);
+  const { sort, toggle: flip } = useSort<"name" | "onHand" | "par" | "value" | "days" | "health">({ key: "health", dir: "asc" });
+  const toggle = (k: typeof sort.key) => flip(k, k === "onHand" || k === "par" || k === "value" ? "desc" : "asc");
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase();
-    const value = (r: PlanItem): number | string => ({ name: name(r), onHand: r.onHand, par: r.par, days: r.daysUntilOut ?? 9999, health: RANK[r.health] })[sort.key];
+    const value = (r: PlanItem): number | string => ({ name: name(r), onHand: r.onHand, par: r.par, value: r.onHand * r.unitPrice, days: r.daysUntilOut ?? 9999, health: RANK[r.health] })[sort.key];
     return plan.items.filter((r) => (show === "all" || r.health === show) && (!term || name(r).toLowerCase().includes(term))).sort((a, b) => {
       // Critical items stay on top, whatever the sort.
       const pin = Number(b.health === "critical") - Number(a.health === "critical");
@@ -85,11 +89,12 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
         <>
           <ul className="md:hidden">
             {groups.map((g) => <Fragment key={g.id}><li className="border-t border-hair bg-cloud px-4 py-2"><span className="text-[13px] font-semibold text-ink">{g.name}</span> <span className="text-xs text-steel">{note(g.rows)}</span></li>{g.rows.map((r) => (
-              <li key={r.ingredientId} className={cn("border-t border-hair px-4 py-3", r.health === "critical" && "bg-neg-soft/40")}>
+              <li key={r.ingredientId} className="border-t border-hair px-4 py-3">
                 <div className="flex items-start justify-between gap-2"><span className="text-sm font-medium text-ink">{name(r)}</span><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill></div>
+                {why(r) && <p className="mt-0.5 text-xs text-steel">{why(r)}</p>}
                 <dl className="mt-2 grid grid-cols-3 gap-2 text-table">
                   <div><dt className="text-xs text-steel">On hand</dt><dd className="num text-ink">{fmtQty(r.onHand, r.unit)}</dd></div>
-                  <div><dt className="text-xs text-steel">Par level</dt><dd className="num text-ink">{fmtQty(r.par, r.unit)}</dd></div>
+                  <div><dt className="text-xs text-steel">Target stock</dt><dd className="num text-ink">{fmtQty(r.par, r.unit)}</dd></div>
                   <div><dt className="text-xs text-steel">Runs out in</dt><dd className="num text-ink">{daysWords(r, plan.period.to)}</dd></div>
                 </dl>
               </li>
@@ -100,18 +105,20 @@ function AllItems({ plan, area }: { plan: MonthPlanOut; area: StockArea }) {
               <thead><tr>
                 <Th sortKey="name" sort={sort} onSort={toggle}>Item</Th>
                 <Th sortKey="onHand" sort={sort} onSort={toggle} align="right">On hand</Th>
-                <Th sortKey="par" sort={sort} onSort={toggle} align="right">Par level</Th>
+                <Th sortKey="par" sort={sort} onSort={toggle} align="right">Target stock</Th>
+                <Th sortKey="value" sort={sort} onSort={toggle} align="right">Value on hand</Th>
                 <Th sortKey="days" sort={sort} onSort={toggle} align="right">Runs out in</Th>
                 <Th sortKey="health" sort={sort} onSort={toggle}>Status</Th>
               </tr></thead>
               <tbody>
-                {groups.map((g) => <Fragment key={g.id}><tr><td colSpan={5} className="border-t border-hair bg-cloud px-5 py-2 sm:px-6"><span className="text-[13px] font-semibold text-ink">{g.name}</span> <span className="ms-1 text-xs text-steel">{note(g.rows)}</span></td></tr>{g.rows.map((r) => (
-                  <tr key={r.ingredientId} className={cn(rowClass, r.health === "critical" && "bg-neg-soft/40")}>
+                {groups.map((g) => <Fragment key={g.id}><tr><td colSpan={6} className="border-t border-hair bg-cloud px-5 py-2 sm:px-6"><span className="text-[13px] font-semibold text-ink">{g.name}</span> <span className="ms-1 text-xs text-steel">{note(g.rows)}</span></td></tr>{g.rows.map((r) => (
+                  <tr key={r.ingredientId} className={rowClass}>
                     <Td><Link href={`/stock?tab=inventory&item=${r.ingredientId}`} className="text-ink underline-offset-4 hover:underline">{name(r)}</Link></Td>
                     <Td align="right"><span className="text-ink">{fmtQty(r.onHand, r.unit)}</span></Td>
                     <Td align="right">{fmtQty(r.par, r.unit)}</Td>
+                    <Td align="right">{fmtMoney(r.onHand * r.unitPrice, propertyById[plan.propertyId].currency)}</Td>
                     <Td align="right"><span className={r.health === "critical" ? "text-neg" : r.health === "low" ? "text-warn" : "text-ink"}>{daysWords(r, plan.period.to)}</span></Td>
-                    <Td><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill></Td>
+                    <Td><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill>{why(r) && <span className="mt-0.5 block text-xs text-steel">{why(r)}</span>}</Td>
                   </tr>
                 ))}</Fragment>)}
               </tbody>
@@ -174,8 +181,8 @@ function ExpectedVsActual({ propertyId, area }: { propertyId: string; area: Stoc
                       <Td><span className="text-ink">{g.name}</span></Td>
                       <Td align="right">{fmtQty(r.c.expected, g.unit)}</Td>
                       <Td align="right">{fmtQty(r.c.counted, g.unit)}</Td>
-                      <Td align="right"><span className={r.flagged ? "font-medium text-money" : undefined}><Words gap={r.gap} unit={g.unit} /></span></Td>
-                      <Td align="right"><span className={r.flagged ? "font-medium text-money" : undefined}>{r.gap < 0 ? money(-r.value) : "None"}</span></Td>
+                      <Td align="right"><span className={r.flagged ? "font-semibold text-ink" : undefined}><Words gap={r.gap} unit={g.unit} /></span></Td>
+                      <Td align="right"><span className={r.flagged ? "font-semibold text-ink" : undefined}>{r.gap < 0 ? money(-r.value) : "None"}</span></Td>
                       <Td>{fmtDate(r.c.date)}</Td>
                     </tr>
                   );
@@ -190,36 +197,53 @@ function ExpectedVsActual({ propertyId, area }: { propertyId: string; area: Stoc
 }
 
 export function StockPage() {
-  const { user } = useView();
+  const { user, sel } = useView();
   const router = useRouter();
+  const params = useSearchParams();
   const { plan, error } = useAlertFeed();
   const [tab, setTab] = useRemembered<"stock" | "analysis">("stock.tab", "stock");
   const [area, setArea] = useRemembered<StockArea>("stock.area", "food");
   const mayCount = can(user, "stock.count");
   const paused = useCountDraft((d) => d.byUser[user.id]);
   const count = (a: StockArea) => plan?.items.filter((i) => stockAreaOf(i.ingredientId) === a).length ?? 0;
-  const view = useMemo(() => plan && { ...plan, items: plan.items.filter((i) => stockAreaOf(i.ingredientId) === area) }, [plan, area]);
+  // A number at the top opens the full list already filtered.
+  const asked = params.get("show") as "all" | StockHealth | null;
+  const view = useMemo(() => plan && { ...plan, items: asked ? plan.items : plan.items.filter((i) => stockAreaOf(i.ingredientId) === area) }, [plan, area, asked]);
+  useEffect(() => { if (asked) { setTab("stock"); requestAnimationFrame(() => document.getElementById("all-items")?.scrollIntoView({ block: "start", behavior: "smooth" })); } }, [asked, setTab]);
   const by = (h: StockHealth) => plan?.items.filter((i) => i.health === h).length ?? 0;
   const areaSwitch = <Segmented label="Part of stock" value={area} onChange={setArea} options={STOCK_AREAS.map((a) => ({ value: a.id, label: a.name }))} />;
   const spotCheck = can(user, "stock.logWaste") && user.outletIds !== "all";
+  const daily = useDailyTotals();
+  const unexplained = useUnexplained(plan?.propertyId ?? null);
+  const currency = plan ? propertyById[plan.propertyId].currency : sel.currency;
+  const local = (n: number) => fmtMoney(n, currency, { compact: n >= 10000 });
+  const onHandValue = plan ? sum(plan.items, (i) => i.onHand * i.unitPrice) : 0;
+  const parValue = plan ? sum(plan.items, (i) => i.par * i.unitPrice) : 0;
+  const halfPar = plan?.items.filter((i) => i.par > 0 && i.onHand < i.par / 2).length ?? 0;
+  const used = daily.map(({ date, t }) => ({ date, value: Math.round(t.theoCost + t.waste + t.breakage) }));
 
   return (
-    <div className="space-y-4">
-      <PageHeader title="Stock" question="How much stock is left?" lead="Estimates from the last count, deliveries and sales. Simulated data." />
+    <div className="space-y-6">
+      <PageHeader title="Stock levels" question="How much stock is left?" lead="Estimates from the last count, deliveries and sales. Simulated data." />
       {error ? <WidgetError>The stock figures could not load.</WidgetError> : !plan || !view ? (
         <div className="space-y-4" aria-busy><Skeleton className="h-24 w-full" /><Skeleton className="h-64 w-full" /></div>
       ) : (
         <>
           <SummaryBar
             items={[
-              { label: "Critical", value: by("critical"), tone: by("critical") ? "neg" : "pos" },
-              { label: "Low", value: by("low"), tone: by("low") ? "warn" : "pos" },
-              { label: "Fine", value: by("fine"), tone: "pos" },
+              { label: "Critical", value: by("critical"), tone: by("critical") ? "neg" : "pos", compare: { text: by("critical") ? "Order today" : "Nothing critical", good: by("critical") ? false : true }, href: "/stock?show=critical" },
+              { label: "Low", value: by("low"), tone: by("low") ? "warn" : "pos", compare: { text: `${halfPar} under half of target stock`, good: null }, href: "/stock?show=low" },
+              { label: "Stock on hand", value: local(onHandValue), compare: { text: `${fmtPct(parValue ? onHandValue / parValue : 0, 0)} of target stock value`, good: null }, href: "/stock?show=all" },
+              ...(unexplained ? [{ label: "Missing, needing a look", value: local(unexplained.value), tone: unexplained.value > 0 ? "warn" as const : undefined, compare: { text: `${unexplained.items} ${unexplained.items === 1 ? "item" : "items"} to check`, good: unexplained.items ? false : true }, href: "/stock?tab=where" }] : []),
             ]}
+            trend={!daily.some(({ t }) => t.theoCost > 0) ? undefined : <StripTrend goodWhen="none" title="Stock used per day, last 30 days" points={used} format={(n) => fmtMoney(n, sel.currency)} explain="Stock used each day at cost: what the recipes of sold dishes needed, plus waste and breakage." series={[
+              { id: "recipes", label: "Used by sales", axis: "main", format: (n) => fmtMoney(n, sel.currency), points: daily.map(({ date, t }) => ({ date, value: Math.round(t.theoCost) })), goodWhen: "none" as const, explain: "Recipe cost of what was sold." },
+              { id: "lost", label: "Waste and breakage", axis: "main", format: (n) => fmtMoney(n, sel.currency), points: daily.map(({ date, t }) => ({ date, value: Math.round(t.waste + t.breakage) })), goodWhen: "none" as const, explain: "Logged losses at cost." },
+            ]} summary={`Stock used per day, from recipes of what sold plus waste. Latest day ${fmtMoney(used[used.length - 1]?.value ?? 0, sel.currency)}.`} note="sold plus waste, at cost" />}
             action={mayCount ? (
               <>
                 <Link href="/count" className={linkButton("primary")}><ClipboardCheck size={16} aria-hidden /> {paused ? `Resume count, ${Math.min(paused.index + 1, paused.order.length)} of ${paused.order.length}` : "Start count"}</Link>
-                {paused && <Link href="/count?choose=1" className={cn(textLink, "mt-3 justify-center")}>Choose another count</Link>}
+                {paused && <Link href="/count?choose=1" className={cn(textLink, "mt-3 justify-center sm:ms-4 sm:mt-0")}>Choose another count</Link>}
               </>
             ) : undefined}
           />
@@ -227,17 +251,18 @@ export function StockPage() {
           {tab === "stock" ? (
             <>
               <CriticalItems plan={plan} />
-              <Section id="stock.all" title="Show all items" summary={`${plan.items.length} items: ${count("food")} food, ${count("drinks")} beverage, ${count("inventory")} inventory`} flush>
-                <div className="px-4 pt-4 sm:px-6">{areaSwitch}</div>
-                <AllItems key={area} plan={view} area={area} />
-              </Section>
+              <div id="all-items" className="scroll-mt-24">
+                <Section id="stock.all" forceOpen={!!asked} title="Show all items" summary={`${plan.items.length} items: ${count("food")} food, ${count("drinks")} beverage, ${count("inventory")} inventory`} flush>
+                  {!asked && <div className="px-4 pt-4 sm:px-6">{areaSwitch}</div>}
+                  <AllItems key={`${area}-${asked}`} plan={view} area={asked ? "food" : area} initialShow={asked ?? "all"} />
+                </Section>
+              </div>
               {spotCheck && <Section id="stock.spot" title="Quick spot check" summary="Count a few items between full counts"><QuickCount user={user} propertyId={plan.propertyId} onFullCount={() => router.push("/count")} /></Section>}
             </>
           ) : (
             <>
               <div>{areaSwitch}</div>
               <ExpectedVsActual key={area} propertyId={plan.propertyId} area={area} />
-              <p className="flex flex-wrap gap-x-5 gap-y-2"><Link href="/stock?tab=where" className={textLink}>Where missing stock went</Link><Link href="/stock?tab=counts" className={textLink}>Count records</Link></p>
             </>
           )}
         </>

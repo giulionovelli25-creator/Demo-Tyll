@@ -12,7 +12,10 @@ export async function POST(req: NextRequest) {
   const entries = cleanEntries(g.user, body);
   const propertyId = String(body.propertyId ?? "");
   if (body.action === "build") {
-    const r = buildMonthOrder(g.user, propertyId, entries);
+    // Quantities the manager changed on the Predictions page. Anything that is not a sensible number is ignored.
+    const raw = body.quantities && typeof body.quantities === "object" ? (body.quantities as Record<string, unknown>) : {};
+    const quantities = Object.fromEntries(Object.entries(raw).filter(([k, v]) => typeof k === "string" && k.length < 64 && typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 100000).slice(0, 500)) as Record<string, number>;
+    const r = buildMonthOrder(g.user, propertyId, entries, quantities);
     return r.ok ? json({ request: r.request, lines: r.lines, total: r.total }) : json({ error: r.error }, r.status);
   }
   const r = monthPlanFor(g.user, propertyId, entries);

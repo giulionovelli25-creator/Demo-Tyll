@@ -61,7 +61,7 @@ export function ProfitStrip({ c, money, onOpen, partialDay }: { c: Compared; mon
                 <span className="flex items-center gap-1.5 text-[13px] text-steel">
                   {m.kind === "deduction" && <span aria-hidden>−</span>}
                   {m.label}
-                  {estimate && available && <Badge className="!px-1.5 !py-0 !text-[10px]">est.</Badge>}
+                  {estimate && available && <Badge className="!px-1.5 !py-0 !text-xs">est.</Badge>}
                 </span>
                 <span className={cn("num mt-1 block whitespace-nowrap leading-tight tracking-[-0.025em]", m.kind === "total" ? "text-[26px] text-ink" : "text-[22px] text-graphite")}>
                   {available ? money(now, { compact: true }) : "Not split"}

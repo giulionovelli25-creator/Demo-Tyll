@@ -14,7 +14,7 @@ import type { User } from "@/lib/types";
 interface TourStep { path: string; target: string; title: string; text: string; module?: ModuleId; perm?: Permission }
 
 const S = {
-  nav: (path: string): TourStep => ({ path, target: "nav", title: "Your main tools", text: "Your four main tools come first, then Alerts, then Reports and settings. The logo takes you back to the Overview." }),
+  nav: (path: string): TourStep => ({ path, target: "nav", title: "Your main tools", text: "Overview and Alerts come first, then three sections: Stock and waste, Purchasing, and Revenue and reconciliation. Open a section to see its pages. The logo takes you back to the Overview." }),
   search: (path: string): TourStep => ({ path, target: "search", title: "Search anything", text: "Find a record or a screen by name, such as Coca-Cola, PR-DXB-0001 or a room number. Press Ctrl+K on a keyboard." }),
   bell: (path: string): TourStep => ({ path, target: "bell", title: "Requests for you", text: "When another team sends you work, it appears here. Tap a notification to open the exact record." }),
   hub: (path: string, title: string, text: string, module: ModuleId): TourStep => ({ path, target: "hub", title, text, module }),
@@ -49,10 +49,10 @@ const TOURS: Partial<Record<User["role"], (u: User) => TourStep[]>> = {
     S.nav("/"), S.search("/"), S.bell("/"),
   ],
   purchasing: () => [
-    S.page("/forecast", "Predictions", "What to order and how much for the month. Orders and history holds requests, purchase orders and deliveries.", "forecast"),
+    S.page("/forecast", "Predictions", "What to order and how much for the month. Orders holds requests, purchase orders and deliveries.", "forecast"),
     S.page("/forecast?tab=approvals&queue=purchasing", "Requests to review", "Open a request to check quantities and choose the supplier, then approve or send it back.", "forecast"),
     S.bell("/forecast?tab=approvals"),
-    S.page("/stock", "Stock", "How much is left, with critical items first. Suppliers are under Reports and settings.", "stock"),
+    S.page("/stock", "Stock levels", "How much is left, with critical items first. Deliveries and invoices are under Purchasing.", "stock"),
     S.search("/forecast?tab=approvals"),
   ],
   chef: () => [

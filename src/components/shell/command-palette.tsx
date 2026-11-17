@@ -132,7 +132,7 @@ export function CommandPalette({ user, pages, onClose }: { user: User; pages: Pa
             aria-controls="palette-list"
             className="h-14 w-full bg-transparent ps-12 pe-16 text-[15px] text-ink outline-none placeholder:text-steel"
           />
-          <kbd className="absolute end-4 top-1/2 -translate-y-1/2 rounded-md border border-line px-1.5 py-0.5 text-[11px] text-steel">Esc</kbd>
+          <kbd className="absolute end-4 top-1/2 -translate-y-1/2 rounded-md border border-line px-1.5 py-0.5 text-xs text-steel">Esc</kbd>
         </div>
         {q.trim().length < 2 && recent.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 border-b border-hair px-4 py-3 text-sm">

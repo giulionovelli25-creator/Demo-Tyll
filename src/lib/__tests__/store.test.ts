@@ -252,6 +252,6 @@ describe("stock intelligence actions", () => {
     signIn("u-owner");
     expect(s().scope).toMatchObject({ propertyId: "dxb", outletId: "dxb-lobby" }); // the owner's own choice comes back
     signIn("u-fc");
-    expect(s().scope).toMatchObject({ propertyId: "all", outletId: "all" }); // a new person starts from everything they may see
+    expect(s().scope).toMatchObject({ propertyId: "dxb", outletId: "all" }); // a new person stays on the hotel in view, all its outlets, so figures match across pages
   });
 });

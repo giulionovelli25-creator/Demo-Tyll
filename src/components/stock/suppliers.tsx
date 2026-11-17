@@ -1,7 +1,9 @@
 "use client";
-import { ChevronDown } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Badge, Button, EmptyState, Field, Note, Panel, Stat, TableWrap, Td, Th, cn, report, rowClass } from "@/components/ui";
+import { ChevronDown, Copy, Mail } from "lucide-react";
+import { useMemo, useState, type ReactNode } from "react";
+import { Badge, Button, Drawer, EmptyState, Field, Note, Panel, SummaryBar, TableWrap, Td, Th, cn, report, rowClass, textLink } from "@/components/ui";
+import { StripTrend } from "@/components/charts";
+import { byDay, lastDays, versus, weekSums } from "@/lib/domain/trends";
 import { ingredientById, propertyById, supplierById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
 import { deliveryOvercharge, matchDeliveryLine, receivedAsCorrected, type MatchIssue } from "@/lib/domain/inventory";
@@ -17,12 +19,14 @@ const ISSUE_LABEL: Record<MatchIssue, string> = {
   over_delivery: "Delivered more than ordered",
 };
 
-export function Suppliers({ propertyId }: { propertyId: string }) {
+export function Suppliers({ propertyId, tabs }: { propertyId: string; tabs?: ReactNode }) {
   const ctx = useCtx();
   const property = propertyById[propertyId];
   const money = (n: number) => fmtMoney(n, property.currency, { decimals: true });
   const [onlyIssues, setOnlyIssues] = useState(true);
   const [open, setOpen] = useState<string | null>(null);
+  const [draft, setDraft] = useState<string | null>(null);
+  const me = useUser();
   const receipts = useDemo((s) => s.receiptCorrections);
   // Recorded receiving differences replace the delivered quantity in every check and in stock. The originals stay visible.
   const corrected = useMemo(() => receivedAsCorrected(ctx.data.deliveries, receipts), [ctx.data.deliveries, receipts]);
@@ -32,20 +36,32 @@ export function Suppliers({ propertyId }: { propertyId: string }) {
     [corrected, propertyId],
   );
   const withIssues = deliveries.filter((x) => x.lines.some((l) => l.issues.length > 0));
-  const visible = onlyIssues ? withIssues : deliveries;
+  // The largest amount to query first, then the newest.
+  const visible = [...(onlyIssues ? withIssues : deliveries)].sort((a, b) => b.over - a.over || (a.d.date < b.d.date ? 1 : -1));
   const expected = ctx.data.deliveries.filter((d) => d.propertyId === propertyId && d.status === "expected");
+  // Staff and the head chef see quantities without prices, so money is said to be hidden rather than shown as nothing.
+  const priced = deliveries.some((x) => x.d.lines.some((l) => l.poPrice > 0 || l.invoicePrice > 0));
+  const perDay = priced ? byDay(deliveries, (x) => x.d.date, (x) => x.over, lastDays(13)) : byDay(withIssues, (x) => x.d.date, () => 1, lastDays(13));
+  const weekIssues = weekSums(withIssues, (x) => x.d.date, () => 1);
+  // The five largest first; the rest one click away, so the page never opens on a long list.
+  const [everything, setEverything] = useState(false);
+  const rows = everything ? visible : visible.slice(0, 5);
+  const show = (issues: boolean) => { setOnlyIssues(issues); setEverything(true); requestAnimationFrame(() => document.getElementById("deliveries")?.scrollIntoView({ block: "start", behavior: "smooth" })); };
 
   return (
-    <div className="space-y-5">
-      <Panel title="Orders, deliveries and invoices" description="Each delivery is checked three ways: what was ordered, what arrived, and what the supplier invoiced.">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-6 lg:grid-cols-4">
-          <Stat label="Deliveries checked" value={deliveries.length} sub="last 13 days" />
-          <Stat label="With a difference" tone={withIssues.length ? "warn" : undefined} value={withIssues.length} />
-          <Stat label="Invoiced beyond delivery or agreed price" tone="warn" value={money(sum(deliveries, (x) => x.over))} sub="to query with suppliers" />
-          <Stat label="Deliveries confirmed" value={expected.length} sub="for tomorrow" />
-        </div>
-      </Panel>
+    <div className="space-y-6">
+      <SummaryBar
+        items={[
+          { label: "Deliveries checked", value: deliveries.length, compare: { text: "Last 13 days", good: null }, onClick: () => show(false) },
+          { label: "With a difference", value: withIssues.length, tone: withIssues.length ? "warn" : "pos", compare: versus(weekIssues.now, weekIssues.before, "down", "the week before"), onClick: () => show(true) },
+          { label: "To query with suppliers", value: priced ? fmtMoney(sum(deliveries, (x) => x.over), property.currency) : "Not shown", tone: priced ? "money" : undefined, compare: { text: priced ? "Above delivery or price" : "Prices not shown to your role", good: null }, onClick: () => show(true) },
+          { label: "Confirmed for tomorrow", value: expected.length, compare: { text: expected.length === 1 ? "1 delivery" : `${expected.length} deliveries`, good: null } },
+        ]}
+        trend={<StripTrend goodWhen="down" title={priced ? "Amount to query per delivery day, last 13 days" : "Deliveries with a difference, last 13 days"} points={perDay} explain="What suppliers invoiced beyond what arrived or the agreed price, by delivery day." series={priced ? [{ id: "count", label: "Deliveries with a difference", axis: "count", format: (n) => `${Math.round(n)}`, points: byDay(withIssues, (x) => x.d.date, () => 1, lastDays(13)), goodWhen: "down" as const, explain: "Short, over, or invoiced above the order price." }] : []} format={priced ? money : (n) => `${n} ${n === 1 ? "delivery" : "deliveries"}`} summary={`Invoiced beyond delivery or agreed price, by delivery date. Deliveries are only held for the last 13 days.`} note="13 days held" />}
+      />
 
+      {tabs}
+      <div id="deliveries" className="scroll-mt-24">
       <Panel
         title="Deliveries"
         action={<label className="flex cursor-pointer items-center gap-2 text-[13px] text-graphite"><input type="checkbox" className="accent-[var(--color-accent)]" checked={onlyIssues} onChange={(e) => setOnlyIssues(e.target.checked)} /> Only deliveries with a difference</label>}
@@ -54,47 +70,49 @@ export function Suppliers({ propertyId }: { propertyId: string }) {
         {visible.length === 0 ? <div className="px-6 pb-6"><EmptyState title="Every delivery matched its order and invoice" /></div> : (
           <TableWrap>
             <table className="w-full min-w-[780px] text-sm">
-              <thead><tr><Th>Purchase order</Th><Th>Supplier</Th><Th>Delivered</Th><Th>Result</Th><Th align="right">To query</Th></tr></thead>
+              <thead><tr><Th>Supplier</Th><Th>Delivered</Th><Th>What differs</Th><Th align="right">To query</Th></tr></thead>
               <tbody>
-                {visible.map(({ d, lines, over }) => {
+                {rows.map(({ d, lines, over }) => {
                   const issues = [...new Set(lines.flatMap((l) => l.issues))];
                   const isOpen = open === d.id;
                   return [
                     <tr key={d.id} className={cn(rowClass, "cursor-pointer", isOpen && "bg-cloud")} onClick={() => setOpen(isOpen ? null : d.id)}>
                       <Td>
-                        <button type="button" aria-expanded={isOpen} className="num flex items-center gap-2 text-ink" onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : d.id); }}>
-                          <ChevronDown size={15} className={cn("text-steel transition-transform duration-200 ease-tyll", isOpen && "rotate-180")} aria-hidden />{d.id}
+                        <button type="button" aria-expanded={isOpen} className="flex items-center gap-2 text-start text-ink" onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : d.id); }}>
+                          <ChevronDown size={15} className={cn("shrink-0 text-steel transition-transform duration-200 ease-tyll", isOpen && "rotate-180")} aria-hidden /><span>{supplierById[d.supplierId].name}<span className="num block text-xs text-steel">{d.id}</span></span>
                         </button>
                       </Td>
-                      <Td>{supplierById[d.supplierId].name}</Td>
                       <Td className="num text-graphite">{fmtDate(d.date, true)}</Td>
-                      <Td>{issues.length === 0 ? <Badge tone="pos">Matched</Badge> : <span className="flex flex-wrap gap-1">{issues.map((i) => <Badge key={i} tone="warn">{ISSUE_LABEL[i]}</Badge>)}</span>}</Td>
-                      <Td align="right" className={cn(over > 0 && "text-warn")}>{over > 0 ? money(over) : "None"}</Td>
+                      <Td>{issues.length === 0 ? <Badge tone="pos">Matched</Badge> : <span className="flex flex-wrap gap-1">{issues.map((i) => <Badge key={i} tone="neutral">{i === "short_delivery" && over === 0 ? "Short, not charged" : ISSUE_LABEL[i]}</Badge>)}</span>}</Td>
+                      <Td align="right" className={cn(over > 0 && "font-medium text-ink")}>{!priced ? "Not shown" : over > 0 ? fmtMoney(over, property.currency) : "None"}</Td>
                     </tr>,
                     isOpen && (
                       <tr key={`${d.id}-lines`} className="border-t border-hair bg-cloud">
-                        <td colSpan={5} className="px-6 pb-5 pt-2">
+                        <td colSpan={4} className="px-6 pb-5 pt-2">
                           <table className="w-full text-[13px]">
-                            <thead><tr className="text-start text-xs text-steel"><th className="py-1.5 font-medium">Item</th><th className="py-1.5 text-end font-medium">Ordered</th><th className="py-1.5 text-end font-medium">Delivered</th><th className="py-1.5 text-end font-medium">Invoiced</th><th className="py-1.5 text-end font-medium">Order price</th><th className="py-1.5 text-end font-medium">Invoice price</th></tr></thead>
+                            <thead><tr className="text-start text-xs text-steel"><th className="py-1.5 font-medium">Item</th><th className="py-1.5 text-end font-medium">Ordered</th><th className="py-1.5 text-end font-medium">Delivered</th><th className="py-1.5 text-end font-medium">Invoiced</th><th className="py-1.5 text-end font-medium">Order price</th><th className="py-1.5 text-end font-medium">Invoice price</th><th className="py-1.5 text-end font-medium">Invoiced, not delivered</th><th className="py-1.5 text-end font-medium">To query</th></tr></thead>
                             <tbody>
-                              {lines.map(({ line, issues: li }) => {
+                              {lines.map(({ line, issues: li, overcharge }) => {
                                 const g = ingredientById[line.ingredientId];
                                 return (
                                   <tr key={line.ingredientId} className="num border-t border-hair">
                                     <td className="py-1.5 text-ink">{g.name}</td>
                                     <td className="py-1.5 text-end">{fmtQty(line.ordered, g.unit)}</td>
-                                    <td className={cn("py-1.5 text-end", li.includes("short_delivery") && "text-warn")}>
+                                    <td className={cn("py-1.5 text-end", li.includes("short_delivery") && "font-semibold text-ink")}>
                                       {fmtQty(line.delivered, g.unit)}
                                       {(() => { const was = ctx.data.deliveries.find((x) => x.id === d.id)?.lines.find((l) => l.ingredientId === line.ingredientId)?.delivered; return was !== undefined && was !== line.delivered ? <span className="block text-xs text-steel line-through">{fmtQty(was, g.unit)}</span> : null; })()}
                                     </td>
-                                    <td className={cn("py-1.5 text-end", li.includes("invoiced_not_delivered") && "text-warn")}>{fmtQty(line.invoiced, g.unit)}</td>
+                                    <td className={cn("py-1.5 text-end", li.includes("invoiced_not_delivered") && "font-semibold text-ink")}>{fmtQty(line.invoiced, g.unit)}</td>
                                     <td className="py-1.5 text-end">{money(line.poPrice)}</td>
-                                    <td className={cn("py-1.5 text-end", li.includes("price_above_po") && "text-warn")}>{money(line.invoicePrice)}</td>
+                                    <td className={cn("py-1.5 text-end", li.includes("price_above_po") && "font-semibold text-ink")}>{money(line.invoicePrice)}</td>
+                                    <td className={cn("py-1.5 text-end", line.invoiced > line.delivered ? "font-semibold text-ink" : "text-steel")}>{line.invoiced > line.delivered ? fmtQty(line.invoiced - line.delivered, g.unit) : "None"}</td>
+                                    <td className={cn("py-1.5 text-end", overcharge > 0 ? "font-semibold text-ink" : "text-steel")}>{overcharge > 0 ? money(overcharge) : "None"}</td>
                                   </tr>
                                 );
                               })}
                             </tbody>
                           </table>
+                          {priced && over > 0 && <div className="mt-3"><Button size="sm" onClick={() => setDraft(d.id)}><Mail size={14} aria-hidden /> Draft a credit request for {fmtMoney(over, property.currency)}</Button></div>}
                           <ReceiveForm deliveryId={d.id} lines={d.lines} />
                         </td>
                       </tr>
@@ -105,8 +123,11 @@ export function Suppliers({ propertyId }: { propertyId: string }) {
             </table>
           </TableWrap>
         )}
+        {visible.length > 5 && <div className="border-t border-hair px-6 py-3"><button type="button" onClick={() => setEverything((v) => !v)} className={textLink}>{everything ? "Show the five largest" : `Show all ${visible.length} deliveries`}</button></div>}
         <Note className="px-6 py-4">Only the delivered quantity is added to estimated stock. Deliveries and invoices are simulated. A live version would read them from the purchasing system.</Note>
       </Panel>
+      </div>
+      <CreditDraft delivery={deliveries.find((x) => x.d.id === draft) ?? null} onClose={() => setDraft(null)} money={(n) => fmtMoney(n, property.currency, { decimals: true })} hotel={property.name} from={me?.name ?? "The purchasing team"} />
     </div>
   );
 }
@@ -144,5 +165,31 @@ function ReceiveForm({ deliveryId, lines }: { deliveryId: string; lines: Deliver
         </form>
       )}
     </div>
+  );
+}
+
+/** A credit request the manager sends from their own email: every line invoiced beyond what arrived or above the order price. Nothing is sent from Tyll. */
+function CreditDraft({ delivery, onClose, money, hotel, from }: { delivery: { d: { id: string; date: string; supplierId: string; lines: DeliveryLine[] }; over: number } | null; onClose: () => void; money: (n: number) => string; hotel: string; from: string }) {
+  const [copied, setCopied] = useState(false);
+  if (!delivery) return null;
+  const { d, over } = delivery;
+  const supplier = supplierById[d.supplierId].name;
+  const lines = d.lines.map(matchDeliveryLine).filter((m) => m.overcharge > 0).map(({ line, overcharge }) => {
+    const g = ingredientById[line.ingredientId];
+    const parts = [line.invoiced > line.delivered ? `invoiced ${fmtQty(line.invoiced, g.unit)}, received ${fmtQty(line.delivered, g.unit)}` : null, line.invoicePrice > line.poPrice + 0.005 ? `invoiced at ${money(line.invoicePrice)}, ordered at ${money(line.poPrice)}` : null].filter(Boolean).join("; ");
+    return `- ${g.name}: ${parts}. Difference ${money(overcharge)}.`;
+  });
+  const text = [`To: ${supplier}`, `Subject: Credit request for ${d.id}, delivered ${fmtDate(d.date, true)}`, "", "Hello,", "", `For our order ${d.id}, delivered on ${fmtDate(d.date, true)}, your invoice does not match what we received:`, "", ...lines, "", `Please send a credit note for ${money(over)}, or let us know if our records are wrong.`, "", "Thank you,", `${from}, ${hotel}`].join("\n");
+  const copy = async () => { try { await navigator.clipboard.writeText(text); setCopied(true); } catch { setCopied(false); } };
+  return (
+    <Drawer open onClose={onClose} title={`Credit request to ${supplier}`} description="Ready to paste into your email. Tyll does not send it.">
+      <div className="space-y-4">
+        <pre className="whitespace-pre-wrap rounded-[var(--radius-control)] border border-line bg-cloud p-4 font-sans text-sm leading-relaxed text-ink">{text}</pre>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="primary" onClick={copy}><Copy size={15} aria-hidden /> {copied ? "Copied" : "Copy the text"}</Button>
+          <span className="text-xs text-steel">Asking is not accusing: the note leaves room for a mistake on our side.</span>
+        </div>
+      </div>
+    </Drawer>
   );
 }

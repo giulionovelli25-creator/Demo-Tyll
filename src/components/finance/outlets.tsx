@@ -35,7 +35,7 @@ export function OutletFinance() {
   const flagsOf = (id: string) => flags.filter((i) => i.outletId === id);
   const flagValue = (id: string) => sum(flagsOf(id), (i) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency));
   const hasOps = c.now.operatingProfit !== null;
-  const profitWord = hasOps ? "Net profit, estimate" : "Gross profit";
+  const profitWord = hasOps ? "Operating contribution, estimate" : "Gross profit";
 
   const sorted = useMemo(() => {
     const value = (r: OutletRow): number | string => ({ name: outletById[r.outletId].name, revenue: r.now.net, cost: costOf(r.now), profit: profitOf(r.now), margin: r.now.gpMargin, flags: flagValue(r.outletId) })[sort.key];
@@ -107,7 +107,7 @@ export function OutletFinance() {
                     <Th sortKey="name" sort={sort} onSort={toggle}>Outlet</Th>
                     <Th sortKey="revenue" sort={sort} onSort={toggle} align="right">Revenue</Th>
                     <Th sortKey="cost" sort={sort} onSort={toggle} align="right">Cost</Th>
-                    <Th sortKey="profit" sort={sort} onSort={toggle} align="right">{hasOps ? "Net profit" : "Gross profit"}</Th>
+                    <Th sortKey="profit" sort={sort} onSort={toggle} align="right">{hasOps ? "Operating contribution" : "Gross profit"}</Th>
                     <Th sortKey="margin" sort={sort} onSort={toggle} align="right">Gross margin</Th>
                     <Th sortKey="flags" sort={sort} onSort={toggle} align="right">Flagged</Th>
                     <Th><span className="sr-only">Open</span></Th>
@@ -121,8 +121,8 @@ export function OutletFinance() {
                         <Td align="right"><span className="text-ink">{money(r.now.net, { compact: true })}</span><span className="block"><Delta value={pctChange(r.now.net, r.before.net)} /></span></Td>
                         <Td align="right"><span className="text-ink">{money(costOf(r.now), { compact: true })}</span><span className="block"><Delta value={pctChange(costOf(r.now), costOf(r.before))} goodWhen="down" /></span></Td>
                         <Td align="right"><span className={profitOf(r.now) < 0 ? "text-neg" : "text-ink"}>{money(profitOf(r.now), { compact: true })}</span><span className="block"><Delta value={pctChange(profitOf(r.now), profitOf(r.before))} /></span></Td>
-                        <Td align="right"><StatusPill rag={ragOf(r)}>{fmtPct(r.now.gpMargin)}</StatusPill><span className="mt-0.5 block"><Delta value={(r.now.gpMargin - r.before.gpMargin) * 100} kind="pts" /></span></Td>
-                        <Td align="right">{flagsOf(r.outletId).length ? <span className="text-money">{money(flagValue(r.outletId))}<span className="block text-xs">{flagsOf(r.outletId).length} open</span></span> : <span className="text-steel">None</span>}</Td>
+                        <Td align="right"><StatusPill rag={ragOf(r)}>{fmtPct(r.now.gpMargin)}</StatusPill><span className="mt-0.5 block"><Delta value={(r.now.gpMargin - r.before.gpMargin) * 100} kind="pts" goodWhen="none" /></span></Td>
+                        <Td align="right">{flagsOf(r.outletId).length ? <span className="font-medium text-ink">{money(flagValue(r.outletId))}<span className="block text-xs">{flagsOf(r.outletId).length} open</span></span> : <span className="text-steel">None</span>}</Td>
                         <Td align="right"><button type="button" aria-expanded={open === r.outletId} aria-label={`Open ${outletById[r.outletId].name}`} onClick={(e) => { e.stopPropagation(); setOpen(open === r.outletId ? null : r.outletId); }} className="rounded-full p-1.5 text-steel transition-colors duration-200 hover:bg-mist hover:text-ink"><ChevronDown size={16} className={cn("transition-transform duration-200", open === r.outletId && "rotate-180")} aria-hidden /></button></Td>
                       </tr>
                       {open === r.outletId && <tr><td colSpan={7} className="p-0"><Detail r={r} /></td></tr>}
