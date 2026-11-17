@@ -63,3 +63,21 @@ export function topBy(entries: readonly WasteEntry[], keyOf: (w: WasteLog) => st
 
 /** Flagged transactions opened per day, by money at stake. */
 export const flagsByDay = (cases: readonly Investigation[], valueOf: (i: Investigation) => number) => byDay(cases, (i) => i.date, valueOf);
+
+/**
+ * Saved against last month's pace, an estimate: what the days so far would have cost at last month's daily rate,
+ * less what they did cost. Positive is money saved; negative means the loss runs above last month's pace.
+ */
+export function paceSaving(before: number, beforeDays: number, now: number, nowDays: number): number {
+  if (beforeDays <= 0 || nowDays <= 0) return 0;
+  return Math.round((before / beforeDays) * nowDays - now);
+}
+
+export interface LeakRow { id: string; label: string; lost: number; saved: number; how: "pace" | "recovered" | "credit"; href: string }
+
+/** Every kind of loss Tyll measures, added up once. A row's saving counts only when it is above zero. */
+export function lostAndSaved(rows: readonly LeakRow[]) {
+  const lost = rows.reduce((s, r) => s + r.lost, 0);
+  const saved = rows.reduce((s, r) => s + Math.max(0, r.saved), 0);
+  return { lost, saved, share: lost > 0 ? saved / lost : 0, rows: [...rows].sort((a, b) => b.lost - a.lost) };
+}

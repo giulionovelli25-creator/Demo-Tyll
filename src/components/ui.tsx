@@ -398,7 +398,7 @@ export function Drawer({ open, onClose, title, description, children, wide }: { 
   return (
     <div className="no-print fixed inset-0 z-50 flex justify-end">
       <button type="button" aria-label="Close panel" className="animate-fade absolute inset-0 bg-scrim backdrop-blur-[2px]" onClick={onClose} />
-      <div ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-label={typeof title === "string" ? title : undefined} className={cn("animate-slide-in relative flex h-full w-full flex-col bg-paper shadow-float outline-none", wide ? "max-w-3xl" : "max-w-xl")}>
+      <div ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-label={typeof title === "string" ? title : undefined} className={cn("animate-slide-in relative flex h-full w-full flex-col bg-paper shadow-float outline-none", "md:w-1/2", wide ? "md:min-w-[720px]" : "md:min-w-[560px]")}>
         <header className="flex items-start justify-between gap-4 border-b border-line px-6 py-5">
           <div className="min-w-0">
             <h2 className="text-xl leading-snug">{title}</h2>

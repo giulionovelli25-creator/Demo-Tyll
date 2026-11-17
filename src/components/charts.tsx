@@ -343,7 +343,7 @@ function TrendExplorer({ open, onClose, title, explain, series, predicted }: { o
 }
 
 /** The trend at the top of a page: one line in the section colour, with the period and unit said in words. Predicted days are dashed. Open makes it large, with more lines to switch on. */
-export function StripTrend({ title, points, format, summary, note, series = [], explain, goodWhen = "none" }: { title: string; points: StripPoint[]; format: (n: number) => string; summary: string; note?: string; series?: TrendSeries[]; explain?: string; goodWhen?: "up" | "down" | "none" }) {
+export function StripTrend({ title, points, format, summary, note, series = [], explain, goodWhen = "none", height = 76 }: { title: string; points: StripPoint[]; format: (n: number) => string; summary: string; note?: string; series?: TrendSeries[]; explain?: string; goodWhen?: "up" | "down" | "none"; height?: number }) {
   const [open, setOpen] = useState(false);
   const main: TrendSeries = { id: "main", label: title.replace(/, last \d+ days$/, ""), points: points.map((p) => ({ date: p.date, value: p.value })), format, axis: "main", explain: explain ?? summary, on: true, goodWhen };
   const verdict = trendVerdict(main.points, goodWhen);
@@ -362,7 +362,7 @@ export function StripTrend({ title, points, format, summary, note, series = [], 
         <button type="button" onClick={() => setOpen(true)} className="-me-1 inline-flex h-7 shrink-0 items-center gap-1 rounded-full px-2 text-xs font-medium text-accent-ink transition-colors duration-150 hover:bg-accent-soft" aria-label={`Open ${title} larger, with more lines to compare`}><Maximize2 size={13} aria-hidden />Open</button>
       </figcaption>
       <p className="sr-only">{summary}</p>
-      <div className="mt-1 h-[76px]" aria-hidden>
+      <div className="mt-1" style={{ height }} aria-hidden>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 6, right: 4, bottom: 0, left: 4 }}>
             <XAxis dataKey="label" hide />
