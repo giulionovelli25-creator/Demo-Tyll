@@ -28,10 +28,10 @@ beforeEach(() => resetPurchasingStore());
 describe("Scenario B: Guest Connect dinner for two", () => {
   it("is never confirmed before the outlet accepts; accept, then confirm with the guest", () => {
     const venues = ok(S.venuesFor(fo, { kind: "restaurant", party: 2, timeMin: T2130 })).venues;
-    expect(venues.map((v) => v.id)).toContain("dxb-terrace");
-    const r = ok(S.createGc(fo, { venueId: "dxb-terrace", party: 2, timeMin: T2130, room: room() })).request;
+    expect(venues.map((v) => v.id)).toContain("lis-terrace");
+    const r = ok(S.createGc(fo, { venueId: "lis-terrace", party: 2, timeMin: T2130, room: room() })).request;
     expect(r.status).toBe("pending");
-    expect(err(S.createGc(fo, { venueId: "dxb-terrace", party: 2, timeMin: T2130, room: room() }))).toBe(409); // duplicate
+    expect(err(S.createGc(fo, { venueId: "lis-terrace", party: 2, timeMin: T2130, room: room() }))).toBe(409); // duplicate
     expect(err(S.gcAction(fo, r.id, { action: "confirm" }))).toBe(409); // not accepted yet
     expect(err(S.gcAction(karim, r.id, { action: "accept" }))).toBe(403); // another outlet's manager
     expect(err(S.gcAction(owner, r.id, { action: "accept" }))).toBe(403);
@@ -43,19 +43,19 @@ describe("Scenario B: Guest Connect dinner for two", () => {
   });
 
   it("decline needs a reason; an alternative must be accepted by the requester before confirming", () => {
-    const r = ok(S.createGc(con, { venueId: "dxb-terrace", party: 2, timeMin: T2130, room: room() })).request;
+    const r = ok(S.createGc(con, { venueId: "lis-terrace", party: 2, timeMin: T2130, room: room() })).request;
     expect(err(S.gcAction(sara, r.id, { action: "decline" }))).toBe(400);
     ok(S.gcAction(sara, r.id, { action: "alternative", timeMin: 22 * 60 }));
     expect(err(S.gcAction(con, r.id, { action: "confirm" }))).toBe(409);
     ok(S.gcAction(con, r.id, { action: "accept_alternative" }));
     const c = ok(S.gcAction(con, r.id, { action: "confirm" })).request;
     expect(c.timeMin).toBe(22 * 60);
-    const d = ok(S.createGc(con, { venueId: "dxb-terrace", party: 2, timeMin: 22 * 60 + 30, room: room() })).request;
+    const d = ok(S.createGc(con, { venueId: "lis-terrace", party: 2, timeMin: 22 * 60 + 30, room: room() })).request;
     expect(ok(S.gcAction(sara, d.id, { action: "decline", note: "Private event on the terrace" })).request.status).toBe("declined");
   });
 
   it("keeps capacity consistent: accepted seats count, pending ones do not; changes and cancellations release seats", () => {
-    const v = venueById["dxb-lune"];
+    const v = venueById["lis-terrace"];
     const free = v.capacity! - bookedSeats(v.id, DEMO_TODAY, slotOf(T2130));
     const big = ok(S.createGc(fo, { venueId: v.id, party: free, timeMin: T2130, room: room() })).request;
     const small = ok(S.createGc(con, { venueId: v.id, party: 1, timeMin: T2130, room: loadStore().guest.rooms[1].number })).request;
@@ -69,8 +69,8 @@ describe("Scenario B: Guest Connect dinner for two", () => {
   });
 
   it("refuses roles outside the front office and concierge", () => {
-    expect(err(S.createGc(maria, { venueId: "dxb-terrace", party: 2, timeMin: T2130, room: room() }))).toBe(403);
-    expect(err(S.createGc(hk, { venueId: "dxb-terrace", party: 2, timeMin: T2130, room: room() }))).toBe(403);
+    expect(err(S.createGc(maria, { venueId: "lis-terrace", party: 2, timeMin: T2130, room: room() }))).toBe(403);
+    expect(err(S.createGc(hk, { venueId: "lis-terrace", party: 2, timeMin: T2130, room: room() }))).toBe(403);
     expect(err(S.venuesFor(owner, { kind: "restaurant" }))).toBe(403);
   });
 });
@@ -82,7 +82,7 @@ describe("guest requests", () => {
     ok(S.requestAction(con, r.id, { action: "assign" }));
     ok(S.requestAction(con, r.id, { action: "awaiting" }));
     expect(err(S.requestAction(con, r.id, { action: "confirm" }))).toBe(400);
-    const c = ok(S.requestAction(con, r.id, { action: "confirm", note: "Dubai Taxi ref 48213" })).request;
+    const c = ok(S.requestAction(con, r.id, { action: "confirm", note: "Taxi ref 48213" })).request;
     expect(c.status).toBe("confirmed");
     expect(c.confirmation).toMatch(/simulated/);
     expect(ok(S.requestAction(con, r.id, { action: "complete" })).request.status).toBe("completed");
@@ -92,7 +92,7 @@ describe("guest requests", () => {
   it("a restaurant request is confirmed through Guest Connect, not directly", () => {
     const r = ok(S.createRequest(con, { kind: "restaurant", room: room(), details: "Dinner for two" })).request;
     expect(err(S.requestAction(con, r.id, { action: "confirm", note: "said yes" }))).toBe(409);
-    const g = ok(S.createGc(con, { venueId: "dxb-terrace", party: 2, timeMin: T2130, room: room(), sourceRequestId: r.id })).request;
+    const g = ok(S.createGc(con, { venueId: "lis-terrace", party: 2, timeMin: T2130, room: room(), sourceRequestId: r.id })).request;
     expect(loadStore().guest.requests.find((x) => x.id === r.id)!.status).toBe("awaiting_confirmation");
     ok(S.gcAction(sara, g.id, { action: "accept" }));
     expect(loadStore().guest.requests.find((x) => x.id === r.id)!.status).toBe("awaiting_confirmation");
@@ -107,9 +107,9 @@ describe("Scenario D: housekeeping supplies through purchasing", () => {
     const short = before.filter((s) => s.needed > 0);
     expect(short.length).toBeGreaterThan(0);
     const lines = short.map((s) => ({ ingredientId: s.ingredientId, qty: s.needed }));
-    const r = ok(P.saveRequest(hk, { propertyId: "dxb", deptId: "dxb-hk", period: "3", lines })).request;
-    expect(err(P.saveRequest(hk, { propertyId: "dxb", deptId: "dxb-hk", period: "3", lines }))).toBe(409);
-    expect(err(P.saveRequest(fo, { propertyId: "dxb", deptId: "dxb-hk", lines }))).toBe(403);
+    const r = ok(P.saveRequest(hk, { propertyId: "lis", deptId: "lis-hk", period: "3", lines })).request;
+    expect(err(P.saveRequest(hk, { propertyId: "lis", deptId: "lis-hk", period: "3", lines }))).toBe(409);
+    expect(err(P.saveRequest(fo, { propertyId: "lis", deptId: "lis-hk", lines }))).toBe(403);
     expect(ok(S.suppliesFor(hk, cleanEntries(hk, {}))).supplies.find((s) => s.ingredientId === short[0].ingredientId)!.openRequest?.id).toBe(r.id);
     ok(P.actOnRequest(hk, r.id, { action: "submit" }));
     for (let i = 0; i < 4 && !["approved"].includes(loadStore().requests.find((x) => x.id === r.id)!.status); i++) {
@@ -139,7 +139,7 @@ describe("navigation and overview", () => {
   });
 
   it("the outlet gets a notice for a new table request; service figures come from recorded times", () => {
-    ok(S.createGc(fo, { venueId: "dxb-terrace", party: 2, timeMin: T2130, room: room() }));
+    ok(S.createGc(fo, { venueId: "lis-terrace", party: 2, timeMin: T2130, room: room() }));
     expect(S.guestAlerts(sara).some((a) => a.href === "/rooms?tab=tables")).toBe(true);
     expect(S.guestAlerts(karim).some((a) => a.href === "/rooms?tab=tables")).toBe(false);
     const s = ok(S.serviceSummary(owner)).summary;

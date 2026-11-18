@@ -19,3 +19,14 @@ describe("Overview lost and saved", () => {
     expect(r.rows.map((x) => x.id)).toEqual(["b", "c", "a"]);
   });
 });
+
+import { ROLE_HOURS, tyllValue, yearly } from "../domain/trends";
+describe("Tyll value", () => {
+  it("projects 30 days to a year and adds the three parts", () => {
+    expect(yearly(10000)).toBe(121700);
+    expect(ROLE_HOURS.reduce((s, r) => s + r.hours, 0)).toBe(35);
+    const v = tyllValue(4000, 92000);
+    expect(v.hours).toBe(54600);
+    expect(v.total).toBe(v.stopped + v.ordering + v.hours);
+  });
+});

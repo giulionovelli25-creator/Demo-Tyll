@@ -10,7 +10,7 @@ import { useCtx, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { DATA_START, DEMO_TODAY, fmtMoney, fmtPct, fmtQty } from "@/lib/util";
 
-const aed = (n: number) => fmtMoney(n, "AED", { decimals: true });
+const aed = (n: number) => fmtMoney(n, "EUR", { decimals: true });
 
 export function Recipes() {
   const ctx = useCtx();
@@ -72,13 +72,13 @@ export function Recipes() {
             </tbody>
           </table>
         </TableWrap>
-        <Note className="px-6 py-4">Shown in the group price list (AED). Each outlet applies its own price level and each property its own cost level, which Menu performance on the Overview takes into account. The other six menu items use a standard cost until their recipes are built.</Note>
+        <Note className="px-6 py-4">Shown in the group price list (euros). Each outlet applies its own price level and each property its own cost level, which Menu performance on the Overview takes into account. The other six menu items use a standard cost until their recipes are built.</Note>
       </Panel>
 
       <Panel title="Ingredient prices" description={mayEdit ? "Change a price and every recipe cost, margin and forecast that uses it updates from today." : "Your role can view prices but not change them."} flush>
         <div className="scroll-thin max-h-[760px] overflow-y-auto">
           <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10 bg-paper"><tr><Th>Ingredient</Th><Th align="right">Price per unit (AED)</Th>{mayEdit && <Th> </Th>}</tr></thead>
+            <thead className="sticky top-0 z-10 bg-paper"><tr><Th>Ingredient</Th><Th align="right">Price per unit (€)</Th>{mayEdit && <Th> </Th>}</tr></thead>
             <tbody>
               {ingredients.map((g) => {
                 const current = ingredientCostAt(g.id, DEMO_TODAY, ctx.overrides);
@@ -99,7 +99,7 @@ export function Recipes() {
                     </Td>
                     {mayEdit && (
                       <Td align="right">
-                        <Button size="sm" variant={dirty ? "primary" : "secondary"} disabled={!dirty} onClick={() => { if (report(setPrice(g.id, Number(draft)), `${g.name} is now AED ${Number(draft).toFixed(2)}. Recipe costs and margins are updated.`)) setDrafts((d) => Object.fromEntries(Object.entries(d).filter(([k]) => k !== g.id))); }}>Save</Button>
+                        <Button size="sm" variant={dirty ? "primary" : "secondary"} disabled={!dirty} onClick={() => { if (report(setPrice(g.id, Number(draft)), `${g.name} is now €${Number(draft).toFixed(2)}. Recipe costs and margins are updated.`)) setDrafts((d) => Object.fromEntries(Object.entries(d).filter(([k]) => k !== g.id))); }}>Save</Button>
                       </Td>
                     )}
                   </tr>

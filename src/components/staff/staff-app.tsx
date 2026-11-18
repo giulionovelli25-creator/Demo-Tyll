@@ -32,8 +32,8 @@ export function staffActions(user: User): Action[] {
     can(user, "stock.logWaste") && outlets && { id: "waste", label: "Log waste", icon: Trash2 },
     can(user, "stock.logWaste") && outlets && { id: "breakage", label: "Log breakage", icon: GlassWater },
     can(user, "prep.complete") && user.role === "employee" && outlets && { id: "prep", label: "Prep tasks", icon: ChefHat },
-    can(user, "hk.clean") && user.deptId === "dxb-hk" && { id: "rooms", label: "My rooms", icon: BedDouble },
-    can(user, "bell.task") && user.deptId === "dxb-bell" && { id: "bell", label: "Luggage tasks", icon: Luggage },
+    can(user, "hk.clean") && user.deptId === "lis-hk" && { id: "rooms", label: "My rooms", icon: BedDouble },
+    can(user, "bell.task") && user.deptId === "lis-bell" && { id: "bell", label: "Luggage tasks", icon: Luggage },
     can(user, "concierge") && { id: "requests", label: "Guest requests", icon: ConciergeBell },
     can(user, "stock.count") && (user.role === "storekeeper" || outlets) && { id: "count", label: "Stock count", icon: ClipboardCheck },
     can(user, "purchase.receive") && { id: "receive", label: "Deliveries", icon: PackageCheck },
@@ -119,8 +119,8 @@ interface TaskRow { key: string; title: string; sub: string; href: string; badge
 
 function useMyTasks(user: User): TaskRow[] {
   const prep = usePrepPlans().data;
-  const rooms = useRoomsBoard(can(user, "hk.clean") && user.deptId === "dxb-hk").data;
-  const bell = useBell(can(user, "bell.task") && user.deptId === "dxb-bell").data;
+  const rooms = useRoomsBoard(can(user, "hk.clean") && user.deptId === "lis-hk").data;
+  const bell = useBell(can(user, "bell.task") && user.deptId === "lis-bell").data;
   const out: TaskRow[] = [];
   if (user.role === "employee") {
     for (const p of prep?.plans ?? []) for (const t of p.tasks.filter((x) => x.assigneeId === user.id && !x.done)) out.push({ key: t.id, title: `Prepare ${t.portions} ${itemById[t.itemId].name.toLowerCase()}`, sub: `${outletById[p.outletId].name}${t.startedAt ? " · started" : ""}`, href: "/staff?do=prep", badge: t.startedAt ? "In progress" : "To do" });
@@ -339,7 +339,7 @@ function RequestsMobile() {
               {open === r.id && (
                 <div className="mt-3 space-y-2">
                   {next && <Big onClick={() => act(r, next.action, `${next.label}: done.`)}>{next.label}</Big>}
-                  <Field label="Outcome or reason" value={note} onChange={(e) => setNote(e.target.value)} placeholder={r.kind === "taxi" ? "For example: Dubai Taxi ref 48213" : ""} />
+                  <Field label="Outcome or reason" value={note} onChange={(e) => setNote(e.target.value)} placeholder={r.kind === "taxi" ? "For example: Lisbon Taxi ref 48213" : ""} />
                   {r.status === "awaiting_confirmation" && r.kind === "taxi" && <Button size="lg" className="w-full" onClick={() => act(r, "confirm", "Confirmation recorded.")}>Record confirmation</Button>}
                   {["assigned", "in_progress"].includes(r.status) && r.kind === "taxi" && <Button size="lg" className="w-full" onClick={() => act(r, "awaiting", "Waiting for confirmation.")}>Waiting for the taxi company</Button>}
                   <div className="grid grid-cols-2 gap-2">

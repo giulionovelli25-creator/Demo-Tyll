@@ -259,7 +259,7 @@ function EventBuy({ eventId }: { eventId: string }) {
   const router = useRouter();
   const entries = useSessionEntries();
   const version = usePlanDrafts((st) => st.version);
-  const propertyId = eventId.split("-")[1]?.toLowerCase() ?? "dxb";
+  const propertyId = eventId.split("-")[1]?.toLowerCase() ?? "lis";
   const { data, error, loading } = usePost<{ plan: BuyPlanOut }>("/api/plan/buy", { propertyId, eventId, version, ...entries });
   const mutate = useMutate();
   const [picks, setPicks] = useState<Record<string, { selected: boolean; qty?: number; supplierId?: string }>>({});

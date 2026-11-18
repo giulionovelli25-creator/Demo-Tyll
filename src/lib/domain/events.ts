@@ -1,7 +1,7 @@
 // Event requirements: portions, drinks, ingredients, staff and estimated cost. Pure arithmetic on the event's own
 // inputs, the menu's recipes and stated demo assumptions, so the same event always gives the same answer.
 import { itemById, propertyById } from "../data/catalog";
-import { HOURLY_RATE_AED, type Skill } from "../data/workforce";
+import { HOURLY_RATE_EUR, type Skill } from "../data/workforce";
 import type { Assignment, EventRecord, EventStatus, RecipeChange, ServiceFormat, ServiceId, StaffRatios, SupportRequest } from "../types";
 import { fxRate } from "../util";
 import { ingredientsFor } from "./planning";
@@ -144,11 +144,11 @@ export function eventCost(e: EventRecord, cover: Coverage[]): EventCost {
     if (itemById[p.itemId].dept === "food") food += c;
     else drink += c;
   }
-  const fx = fxRate("AED", currency);
+  const fx = fxRate("EUR", currency);
   let labour = 0, labourExtra = 0;
   for (const c of cover) {
     const hours = Math.max(0, c.window.end - c.window.start) / 60;
-    const rate = HOURLY_RATE_AED[c.skill] * fx;
+    const rate = HOURLY_RATE_EUR[c.skill] * fx;
     labour += c.required * hours * rate;
     labourExtra += c.stillNeeded * hours * rate;
   }

@@ -21,18 +21,18 @@ export function demoNow(g: Pick<GuestShape, "clockBase"> = loadStore().guest): n
   return Math.min(23 * 60 + 59, DEMO_NOW_MIN + Math.max(0, elapsed));
 }
 
-/** Rooms and guest service run for whole hotels the user may see, on Grand Resort Dubai in this demo. */
-const guestProperty = (user: User) => (allowedProperties(user).includes("dxb") ? "dxb" : null);
+/** Rooms and guest service run for whole hotels the user may see, on Grand Hotel Lumière in this demo. */
+const guestProperty = (user: User) => (allowedProperties(user).includes("lis") ? "lis" : null);
 const mayView = (user: User) => can(user, "rooms.view") || can(user, "hk.clean") || can(user, "bell.task") || can(user, "gc.respond");
 
 /** Housekeepers on shift now, and anyone confirmed through Staff Support to help Housekeeping now. Requests do not count. */
 export function housekeepersOnShift(s: Shape, now: number): string[] {
-  const own = EMPLOYEES.filter((e) => e.deptId === "dxb-hk" && e.skills.includes("housekeeping") && e.title === "Room attendant")
+  const own = EMPLOYEES.filter((e) => e.deptId === "lis-hk" && e.skills.includes("housekeeping") && e.title === "Room attendant")
     .filter((e) => shiftsOf(e.id, DEMO_TODAY).some((sh) => sh.start <= now && sh.end > now)).map((e) => e.id);
-  const borrowed = s.assignments.filter((a) => a.toDeptId === "dxb-hk" && a.status === "confirmed" && a.date === DEMO_TODAY && a.start <= now + 60 && a.end > now).map((a) => a.employeeId);
+  const borrowed = s.assignments.filter((a) => a.toDeptId === "lis-hk" && a.status === "confirmed" && a.date === DEMO_TODAY && a.start <= now + 60 && a.end > now).map((a) => a.employeeId);
   return [...new Set([...own, ...borrowed])];
 }
-const supervisorsOf = () => EMPLOYEES.filter((e) => e.deptId === "dxb-hk" && e.skills.includes("inspection")).map((e) => e.id);
+const supervisorsOf = () => EMPLOYEES.filter((e) => e.deptId === "lis-hk" && e.skills.includes("inspection")).map((e) => e.id);
 
 export interface RoomView extends RoomOps {
   estimate: ReadyEstimate;
@@ -58,7 +58,7 @@ export interface RoomsBoard {
 export function roomsBoard(user: User): Result<{ board: RoomsBoard }> {
   if (!mayView(user)) return fail(403, "Your role cannot open rooms.");
   const pid = guestProperty(user);
-  if (!pid) return fail(403, "Rooms and guest services are set up for Grand Resort Dubai in this demo.");
+  if (!pid) return fail(403, "Rooms and guest services are set up for Grand Hotel Lumière in this demo.");
   const s = loadStore();
   const g = s.guest;
   const now = demoNow(g);
@@ -83,7 +83,7 @@ export function roomsBoard(user: User): Result<{ board: RoomsBoard }> {
     ok: true,
     board: {
       now, rooms: visible, atRisk: frontline ? [] : atRisk, inspectionRequired: needsInspection(pid), mine: frontline || undefined,
-      housekeepers: hks.map((id) => ({ id, name: employeeById[id].name, borrowed: employeeById[id].deptId !== "dxb-hk", rooms: rooms.filter((r) => r.housekeeperId === id && (r.status === "vacant_dirty" || r.status === "cleaning")).length })),
+      housekeepers: hks.map((id) => ({ id, name: employeeById[id].name, borrowed: employeeById[id].deptId !== "lis-hk", rooms: rooms.filter((r) => r.housekeeperId === id && (r.status === "vacant_dirty" || r.status === "cleaning")).length })),
       shortage: !frontline && neededPeople > hks.length ? { rooms: due.length, people: hks.length, neededPeople } : null,
     },
   };
@@ -226,11 +226,11 @@ export function alternativeRooms(user: User, roomId: string): Result<{ rooms: { 
 // ---- Bell team ---------------------------------------------------------------------------------------------------
 
 const ORDER: BellStatus[] = ["requested", "assigned", "on_the_way", "collected", "delivered", "completed"];
-const bellPeople = () => EMPLOYEES.filter((e) => e.deptId === "dxb-bell" && e.skills.includes("bell"));
+const bellPeople = () => EMPLOYEES.filter((e) => e.deptId === "lis-bell" && e.skills.includes("bell"));
 
 export function bellBoard(user: User): Result<{ tasks: (BellTask & { assigneeName?: string; overdue: boolean; age: number })[]; team: { id: string; name: string; onShift: boolean }[]; now: number; mine?: boolean }> {
   if (!mayView(user) && !can(user, "bell.task")) return fail(403, "Your role cannot open bell tasks.");
-  if (!guestProperty(user)) return fail(403, "Rooms and guest services are set up for Grand Resort Dubai in this demo.");
+  if (!guestProperty(user)) return fail(403, "Rooms and guest services are set up for Grand Hotel Lumière in this demo.");
   const g = loadStore().guest;
   const now = demoNow(g);
   const frontline = can(user, "bell.task") && !can(user, "bell.dispatch") && !can(user, "fo.desk");
@@ -244,7 +244,7 @@ export function bellBoard(user: User): Result<{ tasks: (BellTask & { assigneeNam
 
 export function createBell(user: User, body: Record<string, unknown>): Result<{ task: BellTask }> {
   if (!can(user, "fo.desk") && !can(user, "bell.dispatch") && !can(user, "concierge")) return fail(403, "Your role cannot request luggage help.");
-  if (!guestProperty(user)) return fail(403, "Rooms and guest services are set up for Grand Resort Dubai in this demo.");
+  if (!guestProperty(user)) return fail(403, "Rooms and guest services are set up for Grand Hotel Lumière in this demo.");
   const kind = (["delivery", "pickup", "arrival", "departure"] as BellKind[]).find((k) => k === body.kind);
   if (!kind) return fail(400, "Choose what the guest needs.");
   const room = text(body.room, 8);
@@ -258,10 +258,10 @@ export function createBell(user: User, body: Record<string, unknown>): Result<{ 
   const from = text(body.from, 60) || (kind === "delivery" || kind === "arrival" ? "Lobby" : `Room ${room}`);
   const to = text(body.to, 60) || (kind === "delivery" || kind === "arrival" ? `Room ${room}` : "Lobby");
   const task = mutateStore((x) => {
-    const id = `BT-DXB-${String(nextNumber(x, "BT-DXB") + 2).padStart(4, "0")}`;
-    const t: BellTask = { id, propertyId: "dxb", kind, room, from, to, bags, requestedBy: user.id, requestedMin: now, priority: body.priority === "urgent" ? "urgent" : "normal", status: "requested", sourceRequestId: typeof body.sourceRequestId === "string" ? body.sourceRequestId : undefined, history: [{ min: now, by: user.id, action: "Requested", note: text(body.note) || undefined }] };
+    const id = `BT-LIS-${String(nextNumber(x, "BT-LIS") + 2).padStart(4, "0")}`;
+    const t: BellTask = { id, propertyId: "lis", kind, room, from, to, bags, requestedBy: user.id, requestedMin: now, priority: body.priority === "urgent" ? "urgent" : "normal", status: "requested", sourceRequestId: typeof body.sourceRequestId === "string" ? body.sourceRequestId : undefined, history: [{ min: now, by: user.id, action: "Requested", note: text(body.note) || undefined }] };
     x.guest.bell.push(t);
-    notify(x, { to: USERS.filter((u) => can(u, "bell.dispatch") && u.role === "bell_captain"), type: "bell-new", ref: id, propertyId: "dxb", from: user.id, title: `Luggage help for room ${room}`, body: `${bags} bag${bags === 1 ? "" : "s"}, ${from} to ${to}. Assign someone from the bell team.`, href: `/rooms?tab=bell&task=${id}` });
+    notify(x, { to: USERS.filter((u) => can(u, "bell.dispatch") && u.role === "bell_captain"), type: "bell-new", ref: id, propertyId: "lis", from: user.id, title: `Luggage help for room ${room}`, body: `${bags} bag${bags === 1 ? "" : "s"}, ${from} to ${to}. Assign someone from the bell team.`, href: `/rooms?tab=bell&task=${id}` });
     return t;
   });
   return { ok: true, task };
@@ -299,7 +299,7 @@ export function bellAction(user: User, id: string, body: Record<string, unknown>
         y.assigneeId = who;
         resolve(x, ["bell-new", "bell-assign"], y.id);
         const u = USERS.find((z) => z.staffId === who);
-        if (u) notify(x, { to: [u], type: "bell-assign", ref: y.id, propertyId: "dxb", from: user.id, title: `Luggage task: room ${y.room}`, body: `${y.bags} bags, ${y.from} to ${y.to}.`, href: `/staff?do=bell&task=${y.id}` });
+        if (u) notify(x, { to: [u], type: "bell-assign", ref: y.id, propertyId: "lis", from: user.id, title: `Luggage task: room ${y.room}`, body: `${y.bags} bags, ${y.from} to ${y.to}.`, href: `/staff?do=bell&task=${y.id}` });
       });
     }
     case "on_the_way":

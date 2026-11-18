@@ -17,7 +17,7 @@ import { personName, useCtx, useInvestigations, useView } from "@/lib/hooks";
 import { useMutate } from "@/lib/plan-hooks";
 import type { BudgetRow, InvoiceView, SpendEntry } from "@/lib/server/finance";
 import type { Currency, InvoiceStatus } from "@/lib/types";
-import { DEMO_TODAY, downloadCsv, fmtDate, fmtMoney, fmtPct, sum } from "@/lib/util";
+import { DEMO_TODAY, downloadCsv, fmtDate, fmtMoney, fmtPct, sum, MONTH_START } from "@/lib/util";
 
 export const INV_STATUS: Record<InvoiceStatus, { label: string; tone: Tone }> = {
   to_check: { label: "Difference to check", tone: "warn" }, matched: { label: "Matches order and delivery", tone: "ink" }, flagged: { label: "Difference flagged", tone: "neg" },
@@ -402,7 +402,7 @@ function SummaryReport({ propertyId, events, money }: { propertyId: string; even
   const { user } = useView();
   const currency = propertyById[propertyId].currency;
   const outletIds = allowedOutlets(user).filter((o) => o.startsWith(`${propertyId}-`));
-  const t = useMemo(() => compare(ctx, { outletIds, wholeProperties: [propertyId], dept: "all", range: { from: "2026-10-01", to: DEMO_TODAY }, currency }).now, [ctx, outletIds, propertyId, currency]);
+  const t = useMemo(() => compare(ctx, { outletIds, wholeProperties: [propertyId], dept: "all", range: { from: MONTH_START, to: DEMO_TODAY }, currency }).now, [ctx, outletIds, propertyId, currency]);
   const opex = t.operatingExpenses === null ? null : t.operatingExpenses - t.fnbCost;
   return (
     <div className="space-y-5">

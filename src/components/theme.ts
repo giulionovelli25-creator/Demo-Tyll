@@ -21,13 +21,8 @@ export const MODULE_TONE: Record<ModuleId, string> = {
 
 /** Each outlet's colours: tone for the app's accent, mark for dots and bars. */
 export const OUTLET_TONE: Record<string, { tone: string; mark: string }> = {
-  "dxb-lune": { tone: "burgundy", mark: "rose" },
-  "dxb-terrace": { tone: "emerald", mark: "green" },
-  "dxb-pool": { tone: "azure", mark: "blue" },
-  "dxb-lobby": { tone: "violet", mark: "violet" },
-  "dxb-ird": { tone: "bronze", mark: "amber" },
-  "doh-dana": { tone: "burgundy", mark: "rose" },
-  "doh-souq": { tone: "emerald", mark: "green" },
-  "doh-sky": { tone: "azure", mark: "blue" },
-  "doh-ird": { tone: "bronze", mark: "amber" },
+  "lis-terrace": { tone: "emerald", mark: "green" },
+  "lis-lobby": { tone: "violet", mark: "violet" },
+  "lis-banquets": { tone: "burgundy", mark: "rose" },
+  "lis-ird": { tone: "bronze", mark: "amber" },
 };

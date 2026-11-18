@@ -51,7 +51,7 @@ export default function FlowPage() {
   const tickets = useMemo<LiveOrder[]>(() => ctx.data.liveOrders.filter((o) => sel.outletIds.includes(o.outletId)).map((o) => ({ ...o, status: flowStatus[o.id] ?? o.status })), [ctx.data.liveOrders, sel.outletIds, flowStatus]);
   const outlets = useMemo(() => [...new Set(tickets.map((t) => t.outletId))], [tickets]);
   const [picked, setPicked] = useState("");
-  const outletId = outlets.includes(picked) ? picked : outlets.includes("dxb-terrace") ? "dxb-terrace" : outlets[0];
+  const outletId = outlets.includes(picked) ? picked : outlets.includes("lis-terrace") ? "lis-terrace" : outlets[0];
 
   const predict = (t: LiveOrder): TicketPrediction => predictTicket(t, tickets, sim, now, ctx.data.prepRatios?.[t.outletId] ?? 1);
   const all = tickets.map((t) => ({ t, p: predict(t) }));

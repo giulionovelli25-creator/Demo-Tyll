@@ -163,11 +163,11 @@ export function scopeOutlets(user: User, scope: Scope): string[] {
   return allowedOutlets(user).filter((id) => (s.outletId === "all" ? s.propertyId === "all" || outletById[id].propertyId === s.propertyId : id === s.outletId));
 }
 
-/** Group views are reported in AED. A single-property view uses that property's own currency. */
+/** Group views are reported in euros. A single-property view uses that property's own currency. */
 export function scopeCurrency(user: User, scope: Scope): Currency {
   const props = new Set(scopeOutlets(user, scope).map((id) => outletById[id].propertyId));
   if (props.size === 1) return PROPERTIES.find((p) => props.has(p.id))!.currency;
-  return "AED";
+  return "EUR";
 }
 
 export class AccessError extends Error {}

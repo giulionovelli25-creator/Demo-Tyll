@@ -98,7 +98,7 @@ export default function SettingsPage() {
               <tr><Th> </Th>{ROLES.map((r) => <Th key={r} className={cn("text-center", r === user.role && "text-ink")}>{ROLE_LABEL[r]}{r === user.role && <span className="block text-xs font-normal">you</span>}</Th>)}</tr>
             </thead>
             <tbody>
-              <tr className={rowClass}><Td className="text-steel">Sees</Td>{ROLES.map((r) => <Td key={r} className="text-center text-xs text-graphite">{sample(r).propertyIds === "all" ? "Both hotels" : sample(r).outletIds === "all" ? "Dubai, all outlets" : "The Terrace"}</Td>)}</tr>
+              <tr className={rowClass}><Td className="text-steel">Sees</Td>{ROLES.map((r) => <Td key={r} className="text-center text-xs text-graphite">{sample(r).propertyIds === "all" ? "Both hotels" : sample(r).outletIds === "all" ? "Lisbon, all outlets" : "Mercado"}</Td>)}</tr>
               {MODULE_ROWS.map(([m, label]) => <tr key={m} className={rowClass}><Td>Open {label}</Td>{ROLES.map((r) => <Td key={r}><Mark on={canOpen(sample(r), m)} /></Td>)}</tr>)}
               {PERMISSION_ROWS.map(([p, label]) => <tr key={p} className={rowClass}><Td>{label}</Td>{ROLES.map((r) => <Td key={r}><Mark on={can(sample(r), p)} /></Td>)}</tr>)}
             </tbody>

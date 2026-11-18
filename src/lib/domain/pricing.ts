@@ -20,13 +20,13 @@ function valueAt(base: number, id: string, date: string, changes: readonly Price
   return value;
 }
 
-/** Ingredient cost per unit in AED (group base price list). */
+/** Ingredient cost per unit in euros (group base price list). */
 export function ingredientCostAt(id: string, date: string, overrides: PriceOverrides = NO_OVERRIDES): number {
   const seeded = valueAt(ingredientById[id].cost, id, date, INGREDIENT_PRICE_CHANGES);
   return overrides.length ? valueAt(seeded, id, date, overrides) : seeded;
 }
 
-/** Menu price in AED base terms, before the outlet's price factor. */
+/** Menu price in euros base terms, before the outlet's price factor. */
 export function basePriceAt(itemId: string, date: string): number {
   return valueAt(itemById[itemId].price, itemId, date, MENU_PRICE_CHANGES);
 }
@@ -52,7 +52,7 @@ export function recipeBreakdown(item: MenuItem, date: string, overrides: PriceOv
 
 const costCache = new WeakMap<PriceOverrides, Map<string, number>>();
 
-/** Cost of one portion in AED base terms. Items without a recipe fall back to their standard cost. */
+/** Cost of one portion in euros base terms. Items without a recipe fall back to their standard cost. */
 export function itemCostAt(itemId: string, date: string, overrides: PriceOverrides = NO_OVERRIDES): number {
   let cache = costCache.get(overrides);
   if (!cache) costCache.set(overrides, (cache = new Map()));

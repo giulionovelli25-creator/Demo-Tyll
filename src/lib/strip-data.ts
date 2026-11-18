@@ -58,7 +58,7 @@ export function useDeliveryChecks(propertyId: string | null | undefined) {
   const receipts = useDemo((s) => s.receiptCorrections);
   return useMemo(() => {
     const ds = receivedAsCorrected(ctx.data.deliveries, receipts).filter((d) => d.propertyId === propertyId && d.status === "delivered").map((d) => ({ d, over: deliveryOvercharge(d), issue: d.lines.some((l) => matchDeliveryLine(l).issues.length > 0) }));
-    return { issues: ds.filter((x) => x.issue).length, value: sum(ds, (x) => x.over), perDay: byDay(ds, (x) => x.d.date, (x) => x.over, lastDays(13)) };
+    return { issues: ds.filter((x) => x.issue).length, value: sum(ds, (x) => x.over), credited: sum(ds, (x) => x.d.credit?.amount ?? 0), perDay: byDay(ds, (x) => x.d.date, (x) => x.over, lastDays(30)) };
   }, [ctx.data.deliveries, receipts, propertyId]);
 }
 
@@ -66,7 +66,7 @@ export function useDeliveryChecks(propertyId: string | null | undefined) {
 export function useUnexplained(propertyId: string | null) {
   const ctx = useCtx();
   const { sel } = useView();
-  const { data } = useVariancePeriods(propertyId ?? "dxb");
+  const { data } = useVariancePeriods(propertyId ?? "lis");
   return useMemo(() => {
     const outlets = new Set(sel.outletIds);
     const flagged = (data?.periods ?? []).filter((p) => outlets.has(p.outletId)).map((p) => periodVariance(p, ctx.adjust)).filter((v) => v.significant && v.unexplained > 0);

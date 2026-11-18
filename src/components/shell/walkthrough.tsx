@@ -15,7 +15,7 @@ interface TourStep { path: string; target: string; title: string; text: string; 
 
 const S = {
   nav: (path: string): TourStep => ({ path, target: "nav", title: "Your main tools", text: "Overview and Alerts come first, then three sections: Stock and waste, Purchasing, and Revenue and reconciliation. Open a section to see its pages. The logo takes you back to the Overview." }),
-  search: (path: string): TourStep => ({ path, target: "search", title: "Search anything", text: "Find a record or a screen by name, such as Coca-Cola, PR-DXB-0001 or a room number. Press Ctrl+K on a keyboard." }),
+  search: (path: string): TourStep => ({ path, target: "search", title: "Search anything", text: "Find a record or a screen by name, such as Coca-Cola, PR-LIS-0001 or a room number. Press Ctrl+K on a keyboard." }),
   bell: (path: string): TourStep => ({ path, target: "bell", title: "Requests for you", text: "When another team sends you work, it appears here. Tap a notification to open the exact record." }),
   hub: (path: string, title: string, text: string, module: ModuleId): TourStep => ({ path, target: "hub", title, text, module }),
   page: (path: string, title: string, text: string, module: ModuleId, perm?: Permission): TourStep => ({ path, target: "page", title, text, module, perm }),

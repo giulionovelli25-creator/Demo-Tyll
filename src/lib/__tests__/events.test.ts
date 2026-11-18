@@ -20,7 +20,7 @@ const supportRoute = await import("../../app/api/support/[id]/route");
 const none: import("../server/stock").SessionEntries = { waste: [], counts: [], overrides: [], recipes: [], receipts: [] };
 const U = (id: string) => userById[id];
 const yasmin = U("u-events"), sara = U("u-rm"), karim = U("u-lby"), james = U("u-gm");
-const CONF = "EVT-DXB-0001";
+const CONF = "EVT-LIS-0001";
 const conf = () => loadStore().events.find((e) => e.id === CONF)!;
 const ok = <T,>(r: { ok: true } & T | { ok: false; error: string }): T => { if (!r.ok) throw new Error(r.error); return r; };
 const h = (n: number) => n * 60;
@@ -58,26 +58,26 @@ describe("Scenario A: conference planning to confirmed staff", () => {
     ok(O.saveEvent(yasmin, { id: CONF, guests: 120 }));
     const cov = coverage(conf(), loadStore().assignments, loadStore().support);
     expect(cov.filter((c) => c.stillNeeded > 0).map((c) => [c.skill, c.stillNeeded])).toEqual([["waiter", 2]]);
-    const found = ok(O.findCandidates(yasmin, { propertyId: "dxb", skill: "waiter", date: conf().date, start: conf().start, end: conf().end, toDeptId: "dxb-banq" }));
-    const terrace = found.candidates.filter((c) => c.deptId === "dxb-terrace").slice(0, 2);
+    const found = ok(O.findCandidates(yasmin, { propertyId: "lis", skill: "waiter", date: conf().date, start: conf().start, end: conf().end, toDeptId: "lis-banq" }));
+    const terrace = found.candidates.filter((c) => c.deptId === "lis-terrace").slice(0, 2);
     expect(terrace).toHaveLength(2);
     // Nobody on a shift then, on leave, or unqualified.
     for (const c of found.candidates) {
       expect(employeeById[c.employeeId].skills).toContain("waiter");
       expect(O.availability(loadStore(), c.employeeId, conf().date, { start: conf().start, end: conf().end }).ok).toBe(true);
     }
-    expect(found.candidates.some((c) => c.employeeId === "LBY-S2")).toBe(false); // on leave that day
+    expect(found.candidates.some((c) => c.employeeId === "AZU-S2")).toBe(false); // on leave that day
     const req = ok(O.createSupport(yasmin, { eventId: CONF, role: "waiter", skill: "waiter", count: 2, employeeIds: terrace.map((c) => c.employeeId), reason: "Conference banquet service" })).request;
     expect(coverage(conf(), loadStore().assignments, loadStore().support).find((c) => c.skill === "waiter")).toMatchObject({ confirmed: 6, requested: 2, stillNeeded: 2 });
-    // Sara manages The Terrace, so she decides; Yasmin cannot approve on her behalf.
+    // Sara manages Mercado, so she decides; Yasmin cannot approve on her behalf.
     expect(O.decideItem(yasmin, req.id, req.items[0].id, { decision: "approve" }).ok).toBe(false);
     for (const i of req.items) ok(O.decideItem(sara, req.id, i.id, { decision: "approve" }));
     const after = coverage(conf(), loadStore().assignments, loadStore().support).find((c) => c.skill === "waiter")!;
     expect(after).toMatchObject({ confirmed: 8, stillNeeded: 0 });
     const a = loadStore().assignments.find((x) => x.requestId === req.id)!;
-    expect(a).toMatchObject({ approvedBy: "u-rm", fromDeptId: "dxb-terrace", toDeptId: "dxb-banq", status: "confirmed" });
+    expect(a).toMatchObject({ approvedBy: "u-rm", fromDeptId: "lis-terrace", toDeptId: "lis-banq", status: "confirmed" });
     // The lending department's schedule shows the person away.
-    const sched = ok(O.deptSchedule(sara, "dxb-terrace", conf().date));
+    const sched = ok(O.deptSchedule(sara, "lis-terrace", conf().date));
     expect(sched.rows.find((r) => r.employeeId === a.employeeId)!.away[0]).toContain("Regional sales conference dinner");
     expect(O.opsAlerts(yasmin, none).some((x) => x.text.includes("Staff support confirmed"))).toBe(true);
   });
@@ -86,16 +86,16 @@ describe("Scenario A: conference planning to confirmed staff", () => {
 describe("Scenario B: restaurant asks for emergency help", () => {
   it("one approved, one alternative accepted, both departments see it", () => {
     const tonight = { date: "2026-10-13", start: h(18), end: h(23) };
-    const found = ok(O.findCandidates(sara, { propertyId: "dxb", skill: "waiter", ...tonight, toDeptId: "dxb-terrace" }));
-    const lobby = found.candidates.filter((c) => c.deptId === "dxb-lobby");
+    const found = ok(O.findCandidates(sara, { propertyId: "lis", skill: "waiter", ...tonight, toDeptId: "lis-terrace" }));
+    const lobby = found.candidates.filter((c) => c.deptId === "lis-lobby");
     expect(lobby.length).toBeGreaterThan(0);
-    const req = ok(O.createSupport(sara, { propertyId: "dxb", toDeptId: "dxb-terrace", skill: "waiter", count: 2, employeeIds: [lobby[0].employeeId], askDeptId: "dxb-lobby", reason: "Two large parties booked late", ...tonight, priority: "urgent" })).request;
+    const req = ok(O.createSupport(sara, { propertyId: "lis", toDeptId: "lis-terrace", skill: "waiter", count: 2, employeeIds: [lobby[0].employeeId], askDeptId: "lis-lobby", reason: "Two large parties booked late", ...tonight, priority: "urgent" })).request;
     expect(req.items).toHaveLength(2);
-    // Sara cannot release Lobby Lounge staff.
+    // Sara cannot release Bar Azulejo staff.
     expect(O.decideItem(sara, req.id, req.items[0].id, { decision: "approve" }).ok).toBe(false);
     ok(O.decideItem(karim, req.id, req.items[0].id, { decision: "approve" }));
-    const alt = O.findCandidates(karim, { propertyId: "dxb", skill: "waiter", ...tonight, toDeptId: "dxb-terrace", exclude: [lobby[0].employeeId] });
-    const altLobby = ok(alt).candidates.find((c) => c.deptId === "dxb-lobby");
+    const alt = O.findCandidates(karim, { propertyId: "lis", skill: "waiter", ...tonight, toDeptId: "lis-terrace", exclude: [lobby[0].employeeId] });
+    const altLobby = ok(alt).candidates.find((c) => c.deptId === "lis-lobby");
     if (!altLobby) return; // nobody else free at the lounge tonight in this data
     ok(O.decideItem(karim, req.id, req.items[1].id, { decision: "alternative", employeeId: altLobby.employeeId, start: h(19), end: h(23), comment: "Can start at 19:00" }));
     expect(loadStore().assignments.filter((a) => a.requestId === req.id)).toHaveLength(1);
@@ -105,16 +105,16 @@ describe("Scenario B: restaurant asks for emergency help", () => {
     const assigned = loadStore().assignments.filter((a) => a.requestId === req.id && a.status === "confirmed");
     expect(assigned).toHaveLength(2);
     expect(assigned.find((a) => a.employeeId === altLobby.employeeId)).toMatchObject({ start: h(19), approvedBy: "u-lby" });
-    expect(ok(O.deptSchedule(sara, "dxb-terrace", "2026-10-13")).borrowed).toHaveLength(2);
-    expect(ok(O.deptSchedule(karim, "dxb-lobby", "2026-10-13")).rows.filter((r) => r.away.length)).toHaveLength(2);
+    expect(ok(O.deptSchedule(sara, "lis-terrace", "2026-10-13")).borrowed).toHaveLength(2);
+    expect(ok(O.deptSchedule(karim, "lis-lobby", "2026-10-13")).rows.filter((r) => r.away.length)).toHaveLength(2);
   });
 });
 
 describe("Scenario C: event changes", () => {
   it("100 to 150 guests replaces the event's demand; cancelling releases staff and stock", () => {
-    const e = ok(O.saveEvent(yasmin, { propertyId: "dxb", name: "Pharma launch dinner", type: "Corporate dinner", date: "2026-10-17", start: h(19), end: h(22), guests: 100, format: "seated", services: [serviceFor("set_menu", 100), serviceFor("soft_drinks", 100)].map((s) => ({ id: s.id, guests: s.guests })) })).event;
+    const e = ok(O.saveEvent(yasmin, { propertyId: "lis", name: "Pharma launch dinner", type: "Corporate dinner", date: "2026-10-17", start: h(19), end: h(22), guests: 100, format: "seated", services: [serviceFor("set_menu", 100), serviceFor("soft_drinks", 100)].map((s) => ({ id: s.id, guests: s.guests })) })).event;
     // A draft does not reserve stock.
-    const before = P.buyPlan(sara, { propertyId: "dxb", period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
+    const before = P.buyPlan(sara, { propertyId: "lis", period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
     if (!before.ok) throw new Error(before.error);
     const reservedDraft = before.plan.lines.find((l) => l.ingredientId === "chicken")!.reservedForOthers;
     ok(O.setEventStatus(yasmin, e.id, { status: "planning" }, none));
@@ -126,7 +126,7 @@ describe("Scenario C: event changes", () => {
     expect(Math.abs(eventIngredients(ev).get("chicken")! - atHundred * 1.5)).toBeLessThan(0.2);
     expect(staffNeeds(ev).find((n) => n.role === "waiter")!.required).toBe(10);
     // Only one event's worth is reserved for the outlets, at the new size.
-    const mid = P.buyPlan(sara, { propertyId: "dxb", period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
+    const mid = P.buyPlan(sara, { propertyId: "lis", period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
     if (!mid.ok) throw new Error(mid.error);
     const chickenLine = mid.plan.lines.find((l) => l.ingredientId === "chicken")!;
     expect(chickenLine.reservedForOthers).toBeGreaterThanOrEqual(reservedDraft);
@@ -134,7 +134,7 @@ describe("Scenario C: event changes", () => {
     // Cancel: status, released demand.
     expect(O.setEventStatus(yasmin, e.id, { status: "cancelled" }, none).ok).toBe(false);
     ok(O.setEventStatus(yasmin, e.id, { status: "cancelled", reason: "Client postponed" }, none));
-    const after = P.buyPlan(sara, { propertyId: "dxb", period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
+    const after = P.buyPlan(sara, { propertyId: "lis", period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
     if (!after.ok) throw new Error(after.error);
     expect(after.plan.lines.find((l) => l.ingredientId === "chicken")!.reservedForOthers).toBeCloseTo(reservedDraft, 6);
   });
@@ -143,7 +143,7 @@ describe("Scenario C: event changes", () => {
     const r = ok(O.saveEvent(yasmin, { id: CONF, start: h(12), end: h(16), setupStart: h(10), cleanupEnd: h(17) }));
     const team = loadStore().assignments.filter((a) => a.eventId === CONF);
     // Banqueting has no rostered shifts, so its own team moves with the event.
-    expect(team.filter((a) => a.status === "confirmed" && a.fromDeptId === "dxb-banq").every((a) => a.start >= h(10) && a.end <= h(17))).toBe(true);
+    expect(team.filter((a) => a.status === "confirmed" && a.fromDeptId === "lis-banq").every((a) => a.start >= h(10) && a.end <= h(17))).toBe(true);
     expect(Array.isArray(r.notes)).toBe(true);
   });
 });
@@ -151,20 +151,20 @@ describe("Scenario C: event changes", () => {
 describe("Scenario D: double booking", () => {
   it("refuses to approve someone who was booked elsewhere after the request was sent", () => {
     ok(O.saveEvent(yasmin, { id: CONF, guests: 120 }));
-    const found = ok(O.findCandidates(yasmin, { propertyId: "dxb", skill: "waiter", date: conf().date, start: conf().start, end: conf().end, toDeptId: "dxb-banq" }));
-    const person = found.candidates.find((c) => c.deptId === "dxb-terrace")!;
+    const found = ok(O.findCandidates(yasmin, { propertyId: "lis", skill: "waiter", date: conf().date, start: conf().start, end: conf().end, toDeptId: "lis-banq" }));
+    const person = found.candidates.find((c) => c.deptId === "lis-terrace")!;
     const first = ok(O.createSupport(yasmin, { eventId: CONF, role: "waiter", skill: "waiter", count: 1, employeeIds: [person.employeeId], reason: "Conference" })).request;
     // Another request for the same person at an overlapping time, approved first.
-    const second = ok(O.createSupport(sara, { propertyId: "dxb", toDeptId: "dxb-terrace", skill: "waiter", count: 1, askDeptId: "dxb-lobby", reason: "Busy", date: conf().date, start: conf().start, end: conf().end })).request;
+    const second = ok(O.createSupport(sara, { propertyId: "lis", toDeptId: "lis-terrace", skill: "waiter", count: 1, askDeptId: "lis-lobby", reason: "Busy", date: conf().date, start: conf().start, end: conf().end })).request;
     void second;
-    const third = ok(O.createSupport(U("u-fnb"), { propertyId: "dxb", toDeptId: "dxb-pool", skill: "waiter", count: 1, employeeIds: [person.employeeId], reason: "Pool party", date: conf().date, start: conf().start - 60, end: conf().start + 60 })).request;
+    const third = ok(O.createSupport(U("u-fnb"), { propertyId: "lis", toDeptId: "lis-ird", skill: "waiter", count: 1, employeeIds: [person.employeeId], reason: "Room service rush", date: conf().date, start: conf().start - 60, end: conf().start + 60 })).request;
     ok(O.decideItem(sara, third.id, third.items[0].id, { decision: "approve" }));
     const clash = O.decideItem(sara, first.id, first.items[0].id, { decision: "approve" });
     expect(clash.ok).toBe(false);
     if (!clash.ok) expect(clash.error).toMatch(/no longer free/);
     expect(loadStore().assignments.filter((a) => a.employeeId === person.employeeId && a.status === "confirmed")).toHaveLength(1);
     // The person no longer appears as available.
-    expect(ok(O.findCandidates(yasmin, { propertyId: "dxb", skill: "waiter", date: conf().date, start: conf().start, end: conf().end, toDeptId: "dxb-banq" })).candidates.some((c) => c.employeeId === person.employeeId)).toBe(false);
+    expect(ok(O.findCandidates(yasmin, { propertyId: "lis", skill: "waiter", date: conf().date, start: conf().start, end: conf().end, toDeptId: "lis-banq" })).candidates.some((c) => c.employeeId === person.employeeId)).toBe(false);
   });
 });
 
@@ -180,19 +180,18 @@ describe("Scenario E: permissions", () => {
 
   it("staff cannot approve; other hotels and other departments are refused; approvals record the real approver", async () => {
     ok(O.saveEvent(yasmin, { id: CONF, guests: 120 }));
-    const found = ok(O.findCandidates(yasmin, { propertyId: "dxb", skill: "waiter", date: conf().date, start: conf().start, end: conf().end, toDeptId: "dxb-banq" }));
-    const req = ok(O.createSupport(yasmin, { eventId: CONF, role: "waiter", skill: "waiter", count: 1, employeeIds: [found.candidates.find((c) => c.deptId === "dxb-terrace")!.employeeId], reason: "Conference" })).request;
+    const found = ok(O.findCandidates(yasmin, { propertyId: "lis", skill: "waiter", date: conf().date, start: conf().start, end: conf().end, toDeptId: "lis-banq" }));
+    const req = ok(O.createSupport(yasmin, { eventId: CONF, role: "waiter", skill: "waiter", count: 1, employeeIds: [found.candidates.find((c) => c.deptId === "lis-terrace")!.employeeId], reason: "Conference" })).request;
     const res = await supportRoute.POST(post(`/api/support/${req.id}`, session("u-emp"), { action: "decide", itemId: req.items[0].id, decision: "approve" }), { params: Promise.resolve({ id: req.id }) });
     expect(res.status).toBe(403);
     expect(O.decideItem(U("u-chef"), req.id, req.items[0].id, { decision: "approve" }).ok).toBe(false);
     expect(O.decideItem(karim, req.id, req.items[0].id, { decision: "approve" }).ok).toBe(false);
-    // A Doha event is invisible to Dubai's managers.
-    expect(O.eventsFor(yasmin).some((e) => e.propertyId === "doh")).toBe(false);
-    expect(O.eventsFor(james).some((e) => e.propertyId === "doh")).toBe(false);
+    // A hotel outside the person's access is refused (the group now has one hotel, so this is an unknown one).
+    expect(O.eventsFor(yasmin).every((e) => e.propertyId === "lis")).toBe(true);
     expect(O.findCandidates(yasmin, { propertyId: "doh", skill: "waiter", date: "2026-10-16", start: h(19), end: h(23) }).ok).toBe(false);
     // Rosters only for departments you manage.
-    expect(O.deptSchedule(sara, "dxb-lobby", "2026-10-15").ok).toBe(false);
-    expect(O.deptSchedule(U("u-emp"), "dxb-terrace", "2026-10-15").ok).toBe(false);
+    expect(O.deptSchedule(sara, "lis-lobby", "2026-10-15").ok).toBe(false);
+    expect(O.deptSchedule(U("u-emp"), "lis-terrace", "2026-10-15").ok).toBe(false);
     // The general manager may release Terrace staff; the record shows him, not the requester.
     ok(O.decideItem(james, req.id, req.items[0].id, { decision: "approve" }));
     expect(loadStore().assignments.find((a) => a.requestId === req.id)!.approvedBy).toBe("u-gm");
@@ -214,29 +213,28 @@ describe("Scenario E: permissions", () => {
 });
 
 describe("event purchasing", () => {
-  it("buys an event's own-store item for the event, counts it once, and issues the delivery to the event", () => {
-    const e = ok(O.saveEvent(yasmin, { propertyId: "dxb", name: "Gala", type: "Banquet", date: "2026-10-17", start: h(19), end: h(22), guests: 150, format: "seated", services: [{ id: "three_course", guests: 150 }] })).event;
+  it("buys an item for the event, counts it once, and issues the delivery to the event", () => {
+    const e = ok(O.saveEvent(yasmin, { propertyId: "lis", name: "Gala", type: "Banquet", date: "2026-10-17", start: h(19), end: h(22), guests: 150, format: "seated", services: [{ id: "three_course", guests: 150 }] })).event;
     ok(O.setEventStatus(yasmin, e.id, { status: "planning" }, none));
-    const line = () => P.buyPlanForEvent(yasmin, loadStore().events.find((x) => x.id === e.id)!, none).find((l) => l.ingredientId === "tenderloin")!;
-    // Maison Lune's own tenderloin and its deliveries are not available to the event.
-    expect(line().usable).toBe(0);
-    expect(line().incoming).toBe(0);
-    expect(line().suggested).toBeGreaterThanOrEqual(15);
-    const pr = ok(P.saveRequest(yasmin, { propertyId: "dxb", eventId: e.id, lines: [{ ingredientId: "tenderloin", qty: line().suggested }] })).request;
+    const line = () => P.buyPlanForEvent(yasmin, loadStore().events.find((x) => x.id === e.id)!, none).find((l) => l.ingredientId === "chocolate")!;
+    // The main store's chocolate does not cover 150 three-course covers, so the event needs its own order for the rest.
+    expect(line().suggested).toBeGreaterThan(0);
+    const pr = ok(P.saveRequest(yasmin, { propertyId: "lis", eventId: e.id, lines: [{ ingredientId: "chocolate", qty: line().suggested }] })).request;
     ok(P.actOnRequest(yasmin, pr.id, { action: "submit" }));
     expect(line().suggested).toBe(0);
     ok(P.actOnRequest(U("u-buy"), pr.id, { action: "purchasing", decision: "approve" }));
     ok(P.actOnRequest(U("u-fc"), pr.id, { action: "accounting", decision: "approve" }));
     if (P.requestsFor(yasmin).find((r) => r.id === pr.id)!.status === "manager") ok(P.actOnRequest(james, pr.id, { action: "manager", decision: "approve" }));
     expect(line().suggested).toBe(0);
-    const lune = () => P.buyPlan(U("u-owner"), { propertyId: "dxb", outletIds: ["dxb-lune"], period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
-    const luneBefore = lune();
+    const store = () => P.buyPlan(U("u-owner"), { propertyId: "lis", outletIds: ["lis-terrace", "lis-lobby", "lis-banquets", "lis-ird"], period: "custom", from: "2026-10-17", to: "2026-10-17" }, none);
+    const storeBefore = store();
     ok(P.actOnRequest(U("u-buy"), pr.id, { action: "receive", received: [] }));
-    // Received: issued to the event, not added to Lune's store.
-    expect(loadStore().events.find((x) => x.id === e.id)!.issued.some((i) => i.ingredientId === "tenderloin")).toBe(true);
+    // Received: issued to the event, not added to the main store.
+    expect(loadStore().events.find((x) => x.id === e.id)!.issued.some((i) => i.ingredientId === "chocolate")).toBe(true);
     // Fully issued, so nothing more is needed from stores.
-    expect(P.buyPlanForEvent(yasmin, loadStore().events.find((x) => x.id === e.id)!, none).find((l) => l.ingredientId === "tenderloin")?.suggested ?? 0).toBe(0);
-    const luneAfter = lune();
-    if (luneBefore.ok && luneAfter.ok) expect(luneAfter.plan.lines.find((l) => l.ingredientId === "tenderloin")?.usable).toBeCloseTo(luneBefore.plan.lines.find((l) => l.ingredientId === "tenderloin")?.usable ?? 0, 6);
+    expect(P.buyPlanForEvent(yasmin, loadStore().events.find((x) => x.id === e.id)!, none).find((l) => l.ingredientId === "chocolate")?.suggested ?? 0).toBe(0);
+    const storeAfter = store();
+    expect(storeBefore.ok && storeAfter.ok).toBe(true);
+    if (storeBefore.ok && storeAfter.ok) expect(storeAfter.plan.lines.find((l) => l.ingredientId === "chocolate")?.usable ?? 0).toBeCloseTo(storeBefore.plan.lines.find((l) => l.ingredientId === "chocolate")?.usable ?? 0, 6);
   });
 });

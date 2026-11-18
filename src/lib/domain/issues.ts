@@ -25,12 +25,12 @@ export interface Issue {
 
 const RANK: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
-/** Thresholds are in AED and converted for other currencies. */
+/** Thresholds are in euros and converted for other currencies. */
 export const ISSUE_RULES = {
-  highImpact: 300,
-  mediumImpact: 60,
+  highImpact: 75,
+  mediumImpact: 15,
   wasteRise: 0.3,
-  wasteRiseMin: 200,
+  wasteRiseMin: 50,
   marginFallPts: 2,
   marginMinUnits: 20,
   supplierDays: 3,
@@ -46,7 +46,7 @@ export function buildIssues(
   patterns: readonly Pattern[],
   opts: { includeStock: boolean; includeSuppliers?: boolean; rows?: OutletRow[] },
 ): Issue[] {
-  const aed = fxRate("AED", sel.currency);
+  const aed = fxRate("EUR", sel.currency);
   const out: Issue[] = [];
 
   for (const i of investigations) {

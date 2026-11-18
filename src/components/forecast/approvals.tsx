@@ -10,7 +10,10 @@ import { allowedOutlets, can } from "@/lib/domain/access";
 import { personName, useView } from "@/lib/hooks";
 import { type RequestDetail, useMutate, useRequest, useRequests } from "@/lib/plan-hooks";
 import type { PurchaseRequest, RequestStatus, User } from "@/lib/types";
-import { fmtDate, fmtMoney, fmtQty } from "@/lib/util";
+import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty } from "@/lib/util";
+import { STAGE_LABEL, arrivalText, orderStage } from "@/lib/domain/order-stage";
+import { supplierById } from "@/lib/data/catalog";
+import Link from "next/link";
 import { Choice } from "./parts";
 
 export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "warn" | "pos" | "neg" | "ink" }> = {
@@ -26,14 +29,17 @@ export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "w
 
 type Queue = "purchasing" | "accounting" | "manager" | "approved" | "delivery" | "returned" | "drafts" | "all";
 const inQueue = (r: PurchaseRequest, q: Queue, user: User) =>
-  q === "all" ? r.status !== "draft" || r.createdBy === user.id
+  q === "all" ? true
     : q === "approved" ? r.status === "approved" || r.status === "received"
       : q === "delivery" ? r.status === "approved"
       : q === "returned" ? r.status === "rejected" || r.status === "changes"
-        : q === "drafts" ? r.status === "draft" && r.createdBy === user.id
+        : q === "drafts" ? r.status === "draft" && (r.createdBy === user.id || can(user, "purchase.review"))
           : r.status === q;
 
 const total = (r: PurchaseRequest) => r.lines.reduce((s, l) => s + l.qty * l.unitPrice, 0);
+const suppliersOf = (r: PurchaseRequest) => [...new Set(r.lines.map((l) => supplierById[l.supplierId]?.name ?? supplierName(l.supplierId)))].join(", ");
+const approverOf = (r: PurchaseRequest) => r.history.find((h) => h.action === "Purchasing review approved")?.by;
+const arrival = (r: PurchaseRequest) => arrivalText(r.expectedAt, fmtDate, addDays(DEMO_TODAY, 1));
 const unitOf = (g: string) => (ingredientById[g].unit === "each" ? "units" : ingredientById[g].unit);
 const where = (r: PurchaseRequest) => (r.deptId ? deptById[r.deptId]?.name ?? r.deptId : r.eventId ? "Event" : r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : `${r.outletIds.length} outlets`);
 
@@ -79,17 +85,19 @@ function RequestList({ base }: { base: string }) {
           : !data ? <div className="p-6"><EmptyState title="Loading requests" /></div>
             : shown.length === 0 ? <div className="p-6"><EmptyState title="Nothing here" action={can(user, "purchase.create") ? <Button onClick={() => router.push("/forecast?tab=buy")}>Plan what to buy</Button> : undefined}>No requests in this list.</EmptyState></div> : (
               <TableWrap>
-                <table className="w-full min-w-[760px] text-sm">
-                  <thead><tr><Th>Request</Th><Th>For</Th><Th>Raised by</Th><Th align="right">Expected total</Th><Th>Status</Th><Th>Updated</Th></tr></thead>
+                <table className="w-full min-w-[980px] text-sm">
+                  <thead><tr><Th>Order</Th><Th>For</Th><Th>Supplier</Th><Th>Created by</Th><Th>Approved by</Th><Th align="right">Value</Th><Th>Status</Th><Th>Arrival</Th></tr></thead>
                   <tbody>
                     {shown.map((r) => (
                       <tr key={r.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`${base}&request=${r.id}`)}>
                         <Td><button type="button" className="num text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`${base}&request=${r.id}`); }}>{r.id}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
                         <Td>{where(r)}<span className="block text-xs text-steel">{fmtDate(r.period.from)}{r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to)}` : ""}</span></Td>
+                        <Td>{suppliersOf(r)}</Td>
                         <Td>{personName(r.createdBy)}</Td>
+                        <Td>{approverOf(r) ? personName(approverOf(r)!) : <span className="text-steel">Not yet</span>}</Td>
                         <Td align="right">{fmtMoney(total(r), propertyById[r.propertyId].currency)}</Td>
-                        <Td><Badge tone={STATUS[r.status].tone}>{STATUS[r.status].label}</Badge></Td>
-                        <Td className="text-graphite">{new Date(r.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</Td>
+                        <Td><Badge tone={STAGE_LABEL[orderStage(r)].tone}>{STAGE_LABEL[orderStage(r)].label}</Badge></Td>
+                        <Td className={cn("whitespace-nowrap", orderStage(r) === "late" ? "font-medium text-neg" : "text-graphite")}>{arrival(r) || <span className="text-steel">Not sent</span>}</Td>
                       </tr>
                     ))}
                   </tbody>
@@ -113,6 +121,8 @@ function Progress({ d }: { d: RequestDetail }) {
     { key: "submitted", label: "Submitted", at: submitted?.at, done: !!submitted },
     ...d.steps.map((s) => ({ key: s, label: names[s], at: stepsDone(s)?.at, done: !!stepsDone(s) })),
     { key: "approved", label: "Approved", at: r.history.find((h) => h.status === "approved")?.at, done: r.status === "approved" || r.status === "received" },
+    { key: "sent", label: "Sent", at: r.history.find((h) => h.action.startsWith("Sent to"))?.at, done: !!r.sentAt },
+    { key: "delivered", label: orderStage(r) === "short" ? "Delivered short" : "Delivered", at: r.history.find((h) => h.status === "received")?.at, done: r.status === "received" },
   ];
   const time = (at?: string) => (at ? new Date(at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "");
   return (
@@ -178,7 +188,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
         <Button variant="ghost" size="sm" onClick={() => router.push(base)}><ArrowLeft size={15} /> All requests</Button>
       </div>
       <Panel
-        title={<span className="flex flex-wrap items-center gap-3"><span className="num">{r.id}</span><Badge tone={STATUS[r.status].tone}>{STATUS[r.status].label}</Badge>{r.poNumber && <Badge>{r.poNumber}</Badge>}</span>}
+        title={<span className="flex flex-wrap items-center gap-3"><span className="num">{r.id}</span><Badge tone={STAGE_LABEL[orderStage(r)].tone}>{STAGE_LABEL[orderStage(r)].label}</Badge>{r.poNumber && <Badge>{r.poNumber}</Badge>}</span>}
         description={`${where(r)}, ${propertyById[r.propertyId].name}. For ${fmtDate(r.period.from, true)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, true)}` : ""}. Raised by ${personName(r.createdBy)}.`}
       >
         {sent && r.status !== "draft" && (
@@ -188,6 +198,23 @@ function RequestView({ id, base }: { id: string; base: string }) {
           </div>
         )}
         <Progress d={data} />
+        {orderStage(r) === "late" && (
+          <div role="alert" className="mt-5 rounded-2xl border border-neg/25 bg-neg-soft px-5 py-4">
+            <p className="text-sm font-medium text-ink">{suppliersOf(r)} was due {arrival(r)} and has not arrived.</p>
+            <p className="mt-1 text-sm text-graphite">Items at risk tonight: {r.lines.map((l) => ingredientById[l.ingredientId].name).join(", ")}. Ask the supplier for a new time. If it cannot arrive in time, order from the backup supplier.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button size="sm" onClick={() => toast.done(`Call ${suppliersOf(r)} and ask for a new arrival time. In this demo no call is made.`)}>Call supplier</Button>
+              <Link href={`/forecast?tab=buy&focus=${r.lines[0]?.ingredientId ?? ""}`} className="inline-flex h-9 items-center rounded-full border border-line px-4 text-[13px] text-ink hover:bg-cloud">Order from backup supplier</Link>
+            </div>
+          </div>
+        )}
+        {r.deliveryId && r.status === "received" && <p className="mt-4 text-sm"><Link href={`/stock?tab=suppliers&delivery=${r.deliveryId}`} className="text-accent-ink underline-offset-4 hover:underline">See ordered, delivered and invoiced for {r.deliveryId}</Link></p>}
+        <section className="mt-5">
+          <h3 className="text-[13px] font-medium text-ink">Status history</h3>
+          <ol className="mt-2 space-y-1.5 text-[13px]">
+            {r.history.map((h, i) => <li key={i} className="flex gap-3"><span className="num w-28 shrink-0 text-steel">{fmtDate(h.at.slice(0, 10))} {h.at.slice(11, 16)}</span><span className="text-graphite"><span className="text-ink">{h.action}</span>, {personName(h.by)}{h.comment ? `. ${h.comment}` : ""}</span></li>)}
+          </ol>
+        </section>
         {r.comment && <p className="mt-4 text-sm text-graphite"><span className="text-steel">Comment: </span>{r.comment}</p>}
         {r.prepPlanId && <p className="mt-1 text-[13px] text-steel">Raised from prep plan {r.prepPlanId}.</p>}
       </Panel>

@@ -6,10 +6,11 @@ import path from "node:path";
 import { ingredientById } from "../data/catalog";
 import type { Assignment, Delivery, EventRecord, PrepPlan, PurchaseRequest, SupportRequest } from "../types";
 import { seedOps } from "./ops-seed";
+import { seedRequests } from "./orders-seed";
 import { seedGuest, type GuestShape } from "./guest-seed";
 import { emptyNotify, type NotifyShape } from "./notify";
 import { seedStage6, type FinanceShape, type SalesShape, type StockLogShape } from "./stage6-seed";
-import { DEMO_TODAY } from "../util";
+import { DEMO_TODAY, addDays, diffDays } from "../util";
 
 export interface Shape {
   version: 1;
@@ -33,9 +34,23 @@ export interface Shape {
   notify: NotifyShape;
   /** The walking order for stock counts, per hotel. Absent until a manager sets one. */
   countRoutes?: Record<string, string[]>;
+  /** The business date the records were last moved to, and the shape of the demo data they were built for. */
+  businessDate?: string;
+  dataVersion?: number;
 }
 
-const empty = (): Shape => ({ version: 1, seq: 0, requests: [], plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify() });
+/** 2: Grand Hotel Lumière, Lisbon, in euros. A store built for an older demo hotel is rebuilt from the seeds. */
+const DATA_VERSION = 3;
+
+/** Moves every date in the stored records forward by the days since they were saved, so the demo story stays current. */
+function moveToToday(data: Shape): Shape {
+  const days = data.businessDate ? diffDays(DEMO_TODAY, data.businessDate) : 0;
+  if (days === 0) return { ...data, businessDate: DEMO_TODAY };
+  const text = JSON.stringify(data).replace(/\d{4}-\d{2}-\d{2}/g, (d) => addDays(d, days));
+  return { ...(JSON.parse(text) as Shape), businessDate: DEMO_TODAY };
+}
+
+const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? dataFile("purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
@@ -48,6 +63,8 @@ export function loadStore(): Shape {
   }
   const mtime = fs.statSync(f).mtimeMs;
   if (!cache || cache.path !== f || cache.mtime !== mtime) cache = { path: f, mtime, data: JSON.parse(fs.readFileSync(f, "utf8")) as Shape };
+  if (cache.data.dataVersion !== DATA_VERSION) writeStore(empty());
+  else if (cache.data.businessDate !== DEMO_TODAY) writeStore(moveToToday(cache.data));
   // A store from before Stage 4 gets its events and staffing records added once.
   if (!cache.data.events) {
     writeStore({ ...cache.data, ...seedOps() });
@@ -90,7 +107,8 @@ export const nextNumber = (s: Shape, key: string) => (s.counters[key] = (s.count
 export function receivedDeliveries(propertyId?: string): Delivery[] {
   return loadStore().requests
     // Orders for events are issued to the event on receipt, not added to the storeroom.
-    .filter((r) => r.status === "received" && !r.eventId && (!propertyId || r.propertyId === propertyId))
+    // Orders that arrived as a delivery in the dataset are already counted there.
+    .filter((r) => r.status === "received" && !r.eventId && !r.deliveryId && (!propertyId || r.propertyId === propertyId))
     .map((r) => {
       return {
         id: r.poNumber ?? r.id, propertyId: r.propertyId, supplierId: ingredientById[r.lines[0]?.ingredientId]?.supplierId ?? "dry",

@@ -1,10 +1,23 @@
 import type { Currency, DateRange } from "./types";
 
 // ---- Demo clock -------------------------------------------------------------
-// The demo runs on a fixed business date so every figure is reproducible.
-export const DEMO_TODAY = "2026-10-13";
+// The demo's business date is today in Lisbon, so it never looks out of date. Every simulated record is placed
+// relative to it, and random draws are seeded by "days before today" (see rng), so the same story shows every day.
+// TYLL_DEMO_DATE pins the date for tests and screenshots.
+function businessToday(): string {
+  const env = typeof process !== "undefined" ? process.env?.TYLL_DEMO_DATE || process.env?.NEXT_PUBLIC_TYLL_DEMO_DATE : undefined;
+  if (env && /^\d{4}-\d{2}-\d{2}$/.test(env)) return env;
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Lisbon", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+}
+export const DEMO_TODAY = businessToday();
 export const DEMO_NOW_MIN = 20 * 60 + 55;
-export const DATA_START = "2026-08-15";
+const shift = (iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
+/** A date relative to the business date: rel(-1) is yesterday. */
+export const rel = (days: number) => shift(DEMO_TODAY, days);
+export const DATA_START = rel(-59);
+/** The first day of the business date's month. */
+export const MONTH_START = `${DEMO_TODAY.slice(0, 8)}01`;
+const offsetOf = (iso: string) => Math.round((Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${DEMO_TODAY}T00:00:00Z`)) / 86400000);
 
 // ---- Deterministic random numbers --------------------------------------------
 export function hashString(s: string): number {
@@ -17,7 +30,8 @@ export function hashString(s: string): number {
 }
 
 export function rng(seed: string) {
-  let a = hashString(seed) || 1;
+  // Dates in a seed count as days before today, so a record keeps its draw as the business date moves.
+  let a = hashString(seed.replace(/\d{4}-\d{2}-\d{2}/g, (d) => `d${offsetOf(d)}`)) || 1;
   const next = () => {
     a |= 0;
     a = (a + 0x6d2b79f5) | 0;
@@ -94,28 +108,27 @@ export function fmtTime(min: number): string {
 
 export const isWeekend = (iso: string, city: string) => {
   const wd = weekday(iso);
-  // Qatar's weekend is Friday–Saturday; the UAE moved to Saturday–Sunday in 2022.
-  return city === "Doha" ? wd === 5 || wd === 6 : wd === 6 || wd === 0;
+  void city;
+  return wd === 6 || wd === 0;
 };
 
 // ---- Money ------------------------------------------------------------------
-// Both currencies are pegged to the US dollar (AED 3.6725, QAR 3.64).
-const USD_PER: Record<Currency, number> = { AED: 1 / 3.6725, QAR: 1 / 3.64 };
-export const fxRate = (from: Currency, to: Currency) => (from === to ? 1 : USD_PER[from] / USD_PER[to]);
+// The demo hotel reports in euros. fxRate stays so a second currency can be added later without touching callers.
+export const fxRate = (from: Currency, to: Currency) => (from === to ? 1 : 1);
+const SIGN: Record<Currency, string> = { EUR: "€" };
 
 export const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 
 export function fmtMoney(n: number, currency: Currency, opts: { compact?: boolean; decimals?: boolean } = {}): string {
+  // One format everywhere: whole euros in full, such as €12,400. "compact" is kept for callers but no longer shortens,
+  // so a screen never mixes €12.4k with €12,400. Chart axes use fmtShort, which has no currency sign.
+  void opts.compact;
   const abs = Math.abs(n);
-  let body: string;
-  if (opts.compact && abs >= 1_000_000) body = `${(abs / 1_000_000).toFixed(2)}M`;
-  else if (opts.compact && abs >= 10_000) body = `${(abs / 1000).toFixed(1)}k`;
-  else
-    body = abs.toLocaleString("en-US", {
+  const body = abs.toLocaleString("en-US", {
       minimumFractionDigits: opts.decimals ? 2 : 0,
       maximumFractionDigits: opts.decimals ? 2 : 0,
     });
-  return `${n < 0 ? "−" : ""}${currency} ${body}`;
+  return `${n < 0 ? "−" : ""}${SIGN[currency] ?? currency}${body}`;
 }
 
 /** Short axis label without a currency code, such as 150k or 1.2M. */

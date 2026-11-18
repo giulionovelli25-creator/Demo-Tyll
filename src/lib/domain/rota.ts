@@ -7,11 +7,11 @@ import type { Shift } from "./pour";
 const weekday = (date: string) => new Date(`${date}T00:00:00Z`).getUTCDay();
 
 /**
- * The demo's planted story, matching the seeded over pouring at Lobby Lounge: its bartender works every Friday, Saturday
+ * The demo's planted story, matching the seeded over pouring at Bar Azulejo: its bartender works every Friday, Saturday
  * and Sunday day shift, which are the shifts losing most. Everyone else follows an ordinary rota.
  */
 const FIXED: Record<string, (wd: number) => "day" | "evening" | null> = {
-  "dxb-lobby": (wd) => (wd === 5 || wd === 6 || wd === 0 ? "day" : wd === 1 || wd === 2 ? null : "evening"),
+  "lis-lobby": (wd) => (wd === 5 || wd === 6 || wd === 0 ? "day" : wd === 1 || wd === 2 ? null : "evening"),
 };
 
 /** The shift a person works on a date, or null on a day off. Five days a week; two days off together. */

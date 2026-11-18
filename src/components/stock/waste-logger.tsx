@@ -33,7 +33,7 @@ function iconFor(id: string, kind: "ingredient" | "dish"): LucideIcon {
   if (g.supplierId === "produce") return Salad;
   if (["milk", "cream", "butter", "cheddar", "parmesan", "mozzarella", "creamcheese", "labneh", "icecream"].includes(id)) return Milk;
   if (id === "coffee") return Coffee;
-  if (g.supplierId === "bev") return Wine;
+  if (g.supplierId === "bev" || g.supplierId === "wine") return Wine;
   return Wheat;
 }
 

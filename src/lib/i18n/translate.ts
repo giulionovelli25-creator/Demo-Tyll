@@ -28,7 +28,7 @@ const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const DATE = `(?:(?:${DAYS.join("|")}) )?\\d{1,2} (?:${MONTHS.join("|")})(?: \\d{4})?\\b`;
 const TIME = "\\d{1,2}:\\d{2} (?:AM|PM)\\b";
 const FIGURE = "\\d(?:[\\d,.]*\\d)?";
-const MONEY = `[−-]?(?:AED|QAR|USD) ?[−-]?${FIGURE}[kKmM]?\\b`;
+const MONEY = `[−-]?€[−-]?${FIGURE}[kKmM]?`;
 const CODE = "\\b[A-Z]{2,8}-[A-Za-z0-9-]*\\d[A-Za-z0-9-]*\\b";
 const QTY = `[−+-]?${FIGURE} ?(?:kg|ml|g|l)\\b`;
 const NUMBER = `[−+-]?${FIGURE}%?`;
@@ -58,8 +58,18 @@ export class Translator {
   }
 
   /** A date, time or item in the chosen language. Figures and names stay as they are. */
+  /** €12,450.50 becomes 12.450,50 € in German and Italian. Arabic keeps the English form, kept in reading order. */
+  private money(value: string) {
+    const m = /^([−-]?)€([−-]?)([\d,]+)(?:\.(\d+))?([kKmM]?)$/.exec(value);
+    if (!m) return undefined;
+    if (this.lang === "ar") return `\u2066${value}\u2069`;
+    return `${m[1] || m[2]}${m[3].replace(/,/g, ".")}${m[4] ? `,${m[4]}` : ""}${m[5]} €`;
+  }
+
   private local(value: string) {
     if (this.items.has(value)) return this.word(value) ?? value;
+    const money = this.money(value);
+    if (money) return money;
     const date = new RegExp(`^(?:(${DAYS.join("|")}) )?(\\d{1,2}) (${MONTHS.join("|")})( \\d{4})?$`).exec(value);
     if (date) {
       const day = date[1] ? `${DAY_NAME[this.lang][DAYS.indexOf(date[1])]} ` : "";
@@ -90,7 +100,8 @@ export class Translator {
     if (known !== undefined) return known;
     const body = text.trim();
     let out = text;
-    if (/[A-Za-z]/.test(body)) {
+    if (!/[A-Za-z]/.test(body) && body.includes("€")) out = text.replace(new RegExp(MONEY, "g"), (m) => this.money(m) ?? m);
+    else if (/[A-Za-z]/.test(body)) {
       const whole = this.sentence(body);
       // A line made of several sentences, or of facts joined by " · " or "; ", is translated piece by piece.
       const pieces = whole ? [whole] : body.split(/((?<=[.?!:]) | · |; )/);

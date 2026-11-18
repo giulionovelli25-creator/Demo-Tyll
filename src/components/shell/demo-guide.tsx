@@ -8,7 +8,7 @@ import { useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Button, cn, toast } from "@/components/ui";
-import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
+import { HERO_EXCEPTION_ID, HERO_INVOICE_ID } from "@/lib/data/constants";
 import { ROLE_LABEL, userById } from "@/lib/data/catalog";
 import { api, reloadTo } from "@/lib/api";
 import { usePlanDrafts } from "@/lib/plan-hooks";
@@ -24,7 +24,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "cokes", main: true, scope: "stock", title: "Where did the Cokes go?", summary: "Follow an eight-can Coca-Cola difference from an alert to the evidence and an outcome.",
     steps: [
-      { as: "u-rm", href: "/", text: "Sara, The Terrace's manager, sees the stock alert at the top of her Overview." },
+      { as: "u-rm", href: "/", text: "Sara, Mercado's manager, sees the stock alert at the top of her Overview." },
       { href: "/stock?tab=where", text: "Open Where did it go? and choose Coca-Cola: 40 opening + 10 received − 12 counted = 38 used, but sales explain 30. 8 cans are unexplained." },
       { text: "Open the possible explanations. Each is a hypothesis to check, not an accusation." },
       { href: `/investigations/${HERO_EXCEPTION_ID}`, text: "Open the linked order: a Coke removed from a bill six minutes after its ticket went to the bar." },
@@ -51,7 +51,7 @@ export const SCENARIOS: Scenario[] = [
       { text: "Choose Calculate what to buy, review the items, then Send to Purchasing." },
       { as: "u-buy", href: "/forecast?tab=approvals", text: "Nadia (Purchasing) has a notification in the bell. Open the same request, review quantities and supplier, and approve." },
       { as: "u-fc", href: "/finance?tab=approvals", text: "Priya (Accounting) is notified next. Review the cost against the budget and approve, reject or request changes." },
-      { as: "u-gm", href: "/forecast?tab=approvals", text: "Only if the total is over AED 5,000: James, the general manager, gives the final approval. Otherwise skip this step." },
+      { as: "u-gm", href: "/forecast?tab=approvals", text: "Only if the total is over €5,000: James, the general manager, gives the final approval. Otherwise skip this step." },
       { as: "u-store", href: "/staff?do=receive", text: "Ahmed (Storekeeper) opens Deliveries on his phone and records what actually arrived." },
       { as: "u-rm", href: "/forecast?tab=buy", text: "Back in Order stock, stock is higher only by what was received, and Sara was notified of each decision." },
     ],
@@ -59,18 +59,18 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "event", main: true, scope: "events", title: "Organise a conference without staffing problems", summary: "Plan a conference, find who is free in other departments, and get the loan approved.",
     steps: [
-      { as: "u-events", href: "/events?tab=events&event=EVT-DXB-0001", text: "Yasmin (Events) opens the conference. Change guests to 120 in Details and see food, stock and staff recalculate." },
-      { href: "/events?tab=events&event=EVT-DXB-0001&step=3", text: "Requirements show the kitchen's portions and any ingredient shortage. A shortage can go to Purchasing as a request." },
-      { href: "/events?tab=events&event=EVT-DXB-0001&step=4", text: "Staffing shows the shortage. Choose Find available staff, pick someone free with the right skill, and send the request." },
+      { as: "u-events", href: "/events?tab=events&event=EVT-LIS-0001", text: "Yasmin (Events) opens the conference. Change guests to 120 in Details and see food, stock and staff recalculate." },
+      { href: "/events?tab=events&event=EVT-LIS-0001&step=3", text: "Requirements show the kitchen's portions and any ingredient shortage. A shortage can go to Purchasing as a request." },
+      { href: "/events?tab=events&event=EVT-LIS-0001&step=4", text: "Staffing shows the shortage. Choose Find available staff, pick someone free with the right skill, and send the request." },
       { as: "u-rm", href: "/events?tab=support", text: "Sara manages the lending team and is notified. Approve, decline or suggest someone else. Tyll checks for clashing shifts." },
-      { as: "u-events", href: "/events?tab=events&event=EVT-DXB-0001&step=4", text: "Back on the event, coverage shows the approved person. Nobody moves without that approval." },
+      { as: "u-events", href: "/events?tab=events&event=EVT-LIS-0001&step=4", text: "Back on the event, coverage shows the approved person. Nobody moves without that approval." },
     ],
   },
   {
     id: "connect", main: true, scope: "guest", title: "Find dinner for a guest in seconds", summary: "The front desk asks a hotel restaurant for a table; the restaurant answers.",
     steps: [
       { as: "u-fo", href: "/rooms?tab=connect", text: "Leila (Front Office) opens Guest Connect, chooses Restaurant, 2 guests and a time, and sees which venues are likely to have room." },
-      { text: "Enter the room number and choose Request table at The Terrace. It shows 'Waiting for the venue': nothing is confirmed yet." },
+      { text: "Enter the room number and choose Request table at Mercado. It shows 'Waiting for the venue': nothing is confirmed yet." },
       { as: "u-rm", href: "/rooms?tab=tables", text: "Sara is notified. She accepts or suggests another time; accepting checks the seats again." },
       { as: "u-fo", href: "/rooms?tab=connect", text: "Leila sees the answer in her bell. After telling the guest, she marks it Confirmed with the guest." },
     ],
@@ -79,10 +79,10 @@ export const SCENARIOS: Scenario[] = [
     id: "rooms", main: true, scope: "guest", title: "Prevent a guest from waiting for their room", summary: "A VIP suite is predicted late; housekeeping fixes it and the front desk sees it ready.",
     steps: [
       { as: "u-fo", href: "/rooms?tab=readiness", text: "Leila sees suite 1211 predicted late for its 21:30 arrival. Open it to read why." },
-      { href: "/rooms?tab=readiness&room=dxb-1211", text: "Choose Prioritise cleaning. Housekeeping is notified." },
-      { as: "u-hk", href: "/rooms?tab=housekeeping&room=dxb-1211", text: "Grace (Housekeeping) adds a helper; the ready time moves earlier." },
+      { href: "/rooms?tab=readiness&room=lis-1211", text: "Choose Prioritise cleaning. Housekeeping is notified." },
+      { as: "u-hk", href: "/rooms?tab=housekeeping&room=lis-1211", text: "Grace (Housekeeping) adds a helper; the ready time moves earlier." },
       { as: "u-maid", href: "/staff?do=rooms", text: "Maria finishes the room on her phone. It goes to inspection, not straight to ready." },
-      { as: "u-hk", href: "/rooms?tab=housekeeping&room=dxb-1211", text: "Grace inspects and passes it." },
+      { as: "u-hk", href: "/rooms?tab=housekeeping&room=lis-1211", text: "Grace inspects and passes it." },
       { as: "u-fo", href: "/rooms?tab=readiness", text: "Leila sees 1211 Ready. Ready means the room is prepared; it does not mean the guest has checked in." },
       { href: "/rooms?tab=bell", text: "Optional: request luggage help for the room; the bell captain is notified." },
     ],
@@ -106,7 +106,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "invoice", scope: "purchasing", title: "Invoice that does not match the delivery", summary: "Finance compares order, delivery and invoice.",
     steps: [
-      { as: "u-fc", href: "/finance?tab=invoices&invoice=INV-DXB-1011-MEAT", text: "Priya opens Gulf Prime Meats' invoice: 22 kg chicken ordered, 18 received, 22 invoiced. Flag it or request a correction." },
+      { as: "u-fc", href: `/finance?tab=invoices&invoice=${HERO_INVOICE_ID}`, text: "Priya opens Carnes Ribeiro & Filhos' invoice: 20 kg beef tenderloin ordered, 16 received, 20 invoiced. Flag it or request a correction." },
     ],
   },
 ];

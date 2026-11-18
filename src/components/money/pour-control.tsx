@@ -14,7 +14,7 @@ import { fmtMoney, fmtNum } from "@/lib/util";
 
 type Family = "wine" | "spirits";
 
-const PERIODS: { value: PourPeriod; label: string }[] = [{ value: "today", label: "Today" }, { value: "week", label: "This week" }, { value: "month", label: "This month" }];
+const PERIODS: { value: PourPeriod; label: string }[] = [{ value: "today", label: "Today" }, { value: "week", label: "Last 7 days" }, { value: "month", label: "Last 30 days" }];
 const fmtBottles = (n: number) => fmtNum(n, n % 1 === 0 ? 0 : 1);
 
 function YieldCell({ f }: { f: PourFigures }) {
@@ -32,7 +32,7 @@ function FamilySwitch() {
   return <Segmented size="sm" label="Wine or spirits" value={family} onChange={setFamily} options={[{ value: "wine", label: "Wine" }, { value: "spirits", label: "Spirits" }]} />;
 }
 
-/** One line of what is not billed, today, this week and this month. */
+/** One line of what is not billed, today, the last 7 days and the last 30 days. */
 function Gaps({ family }: { family: Family }) {
   const { pour } = useAlertFeed();
   if (!pour) return null;

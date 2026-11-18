@@ -454,7 +454,7 @@ export const useDemo = create<DemoState>()(
             if (!Number.isFinite(cost) || cost <= 0) return fail("Enter a price above zero.");
             if (cost > 100000) return fail("That price looks too high. Check the amount.");
             set((s) => ({ priceOverrides: [...s.priceOverrides.filter((p) => p.id !== ingredientId), { id: ingredientId, from: DEMO_TODAY, value: Math.round(cost * 100) / 100 }] }));
-            log("Ingredient price changed", `${ingredientById[ingredientId].name} to AED ${cost.toFixed(2)} from ${DEMO_TODAY}`);
+            log("Ingredient price changed", `${ingredientById[ingredientId].name} to €${cost.toFixed(2)} from ${DEMO_TODAY}`);
             return OK;
           });
         },

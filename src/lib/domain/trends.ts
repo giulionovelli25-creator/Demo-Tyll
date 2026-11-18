@@ -81,3 +81,28 @@ export function lostAndSaved(rows: readonly LeakRow[]) {
   const saved = rows.reduce((s, r) => s + Math.max(0, r.saved), 0);
   return { lost, saved, share: lost > 0 ? saved / lost : 0, rows: [...rows].sort((a, b) => b.lost - a.lost) };
 }
+
+/** A 30 day figure at the same rate for a year, rounded to the nearest hundred. An estimate. */
+export const yearly = (last30: number) => Math.round((last30 * 365) / 30 / 100) * 100;
+
+/** Hours a week each role no longer spends on manual checks. Estimates from typical hotel routines, stated on screen. */
+export const ROLE_HOURS: { role: string; hours: number; what: string }[] = [
+  { role: "Outlet and bar managers", hours: 10, what: "End of shift checks, voids and comps, bar counts" },
+  { role: "Cost controller", hours: 8, what: "Matching invoices, stock reconciliation, variance reports" },
+  { role: "Purchasing manager", hours: 6, what: "Working out order quantities, chasing deliveries" },
+  { role: "Head chef", hours: 5, what: "Prep planning, waste sheets, ordering" },
+  { role: "Night audit", hours: 3, what: "Room charge and bill checks" },
+  { role: "F&B director", hours: 3, what: "Pulling figures together for the weekly review" },
+];
+export const HOURLY_RATE = 30;
+/** Ordering to the forecast instead of to par: a small share of purchases not bought. An estimate. */
+export const OVER_ORDERING_SHARE = 0.006;
+
+/** What Tyll is worth in a year at the last 30 days' rate: losses stopped, less over-ordering and hours saved. */
+export function tyllValue(saved30: number, purchases30: number) {
+  const stopped = yearly(saved30);
+  const ordering = yearly(purchases30 * OVER_ORDERING_SHARE);
+  const hoursWeek = ROLE_HOURS.reduce((s, r) => s + r.hours, 0);
+  const hours = hoursWeek * 52 * HOURLY_RATE;
+  return { stopped, ordering, hoursWeek, hours, total: stopped + ordering + hours };
+}

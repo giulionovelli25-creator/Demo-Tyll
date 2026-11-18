@@ -15,7 +15,7 @@ const { userById } = await import("../data/catalog");
 const { BUDGETS } = await import("../data/finance-rules");
 
 const U = (id: string) => userById[id];
-const sara = U("u-rm"), buyer = U("u-buy"), priya = U("u-fc"), gm = U("u-gm"), owner = U("u-owner"), omar = U("u-emp"), store = U("u-store"), elena = U("u-acc-doh"), sales = U("u-sales");
+const sara = U("u-rm"), buyer = U("u-buy"), priya = U("u-fc"), gm = U("u-gm"), owner = U("u-owner"), omar = U("u-emp"), store = U("u-store"), sales = U("u-sales");
 const ok = <T,>(r: ({ ok: true } & T) | { ok: false; error: string }): T => { if (!r.ok) throw new Error(r.error); return r; };
 const status = (r: { ok: boolean }) => (r.ok ? 200 : (r as unknown as { status: number }).status);
 const row = (p: string, d: string) => F.budgetRows(loadStore(), p).find((b) => b.dept === d)!;
@@ -24,7 +24,7 @@ beforeEach(() => resetPurchasingStore());
 
 /** Sara asks for chicken; it goes through purchasing, accounting and, when large, the GM. */
 function approvedChicken(qty = 30) {
-  const r = ok(P.saveRequest(sara, { propertyId: "dxb", period: "tomorrow", lines: [{ ingredientId: "chicken", qty }] })).request;
+  const r = ok(P.saveRequest(sara, { propertyId: "lis", period: "tomorrow", lines: [{ ingredientId: "chicken", qty }] })).request;
   ok(P.actOnRequest(sara, r.id, { action: "submit" }));
   for (let i = 0; i < 4; i++) {
     const st = loadStore().requests.find((x) => x.id === r.id)!.status;
@@ -36,15 +36,15 @@ function approvedChicken(qty = 30) {
 
 describe("Scenario A: approval, receipt, invoice and spending stages", () => {
   it("never treats an approval as an expense; only a recorded invoice becomes one", () => {
-    const before = row("dxb", "fnb");
+    const before = row("lis", "fnb");
     const r = approvedChicken();
     expect(r.poNumber).toBeTruthy();
-    const afterApproval = row("dxb", "fnb");
+    const afterApproval = row("lis", "fnb");
     expect(afterApproval.recorded).toBe(before.recorded);
     expect(afterApproval.committed).toBeGreaterThan(before.committed);
     // Stage 3 sees the same figure as Finance.
     const b = P.budgetFor(r);
-    expect(b.budget).toBe(BUDGETS.dxb.fnb);
+    expect(b.budget).toBe(BUDGETS.lis.fnb);
     // The approval screen leaves the request itself out, then subtracts it as "left after this request".
     expect(b.available - r.lines[0].qty * r.lines[0].unitPrice).toBeCloseTo(afterApproval.remainingIfSpent, 2);
 
@@ -57,7 +57,7 @@ describe("Scenario A: approval, receipt, invoice and spending stages", () => {
     expect(inv.status).toBe("to_check");
     expect(inv.lines[0].issues).toContain("invoiced_not_delivered");
     expect(inv.overcharge).toBeCloseTo(2 * r.lines[0].unitPrice, 2);
-    expect(row("dxb", "fnb").recorded).toBe(before.recorded);
+    expect(row("lis", "fnb").recorded).toBe(before.recorded);
 
     // Approving with the difference open needs a reason; a corrected invoice clears it.
     expect(status(F.invoiceAction(priya, inv.id, { action: "approve" }))).toBe(409);
@@ -69,52 +69,52 @@ describe("Scenario A: approval, receipt, invoice and spending stages", () => {
     expect(status(F.invoiceAction(priya, inv.id, { action: "post" }))).toBe(409);
     ok(F.invoiceAction(priya, inv.id, { action: "approve" }));
     ok(F.invoiceAction(priya, inv.id, { action: "post" }));
-    const after = row("dxb", "fnb");
+    const after = row("lis", "fnb");
     expect(after.recorded).toBeCloseTo(before.recorded + 28 * r.lines[0].unitPrice, 2);
     // Nothing is double counted across the stages.
     expect(after.recorded + after.invoices + after.committed).toBeCloseTo(before.recorded + before.invoices + before.committed + 28 * r.lines[0].unitPrice, 2);
   });
 
-  it("finds the dataset's chicken invoice for more than was delivered, and states it as a difference", () => {
-    const inv = ok(F.invoiceById(priya, "INV-DXB-1011-MEAT")).invoice;
-    const l = inv.lines.find((x) => x.ingredientId === "chicken")!;
-    expect(l.invoiced).toBeGreaterThan(l.received);
+  it("finds the dataset's beef invoice for more than was delivered, and states it as a difference", () => {
+    // Yesterday's meat delivery: 20 kg of beef tenderloin ordered, 16 kg delivered, 20 kg invoiced at the order price.
+    const inv = ok(F.invoiceById(priya, "INV-LIS-1012-MEAT")).invoice;
+    const l = inv.lines.find((x) => x.ingredientId === "tenderloin")!;
+    expect([l.ordered, l.received, l.invoiced]).toEqual([20, 16, 20]);
+    expect(l.invoicePrice).toBe(l.poPrice);
+    expect(l.issues).toContain("invoiced_not_delivered");
+    expect(l.overcharge).toBeCloseTo(4 * l.poPrice, 2);
     expect(inv.status).toBe("to_check");
-    expect(inv.overcharge).toBeGreaterThan(0);
+    expect(inv.overcharge).toBeGreaterThanOrEqual(l.overcharge);
   });
 });
 
 describe("currency, stages and permissions", () => {
-  it("keeps each hotel in its own currency and never mixes them", () => {
-    const d = ok(F.financeReport(priya, { propertyId: "dxb" }) as { ok: true; currency: string; entries: { propertyId: string }[] });
-    const q = ok(F.financeReport(priya, { propertyId: "doh" }) as { ok: true; currency: string; entries: { propertyId: string }[] });
-    expect(d.currency).toBe("AED");
-    expect(q.currency).toBe("QAR");
-    expect(d.entries.every((e) => e.propertyId === "dxb")).toBe(true);
-    expect(q.entries.every((e) => e.propertyId === "doh")).toBe(true);
+  it("reports the hotel in its own currency, euros, with only its own entries", () => {
+    const d = ok(F.financeReport(priya, { propertyId: "lis" }) as { ok: true; currency: string; entries: { propertyId: string }[] });
+    expect(d.currency).toBe("EUR");
+    expect(d.entries.length).toBeGreaterThan(0);
+    expect(d.entries.every((e) => e.propertyId === "lis")).toBe(true);
   });
 
   it("separates recorded spending from invoices and commitments", () => {
-    for (const b of F.budgetRows(loadStore(), "dxb")) {
+    for (const b of F.budgetRows(loadStore(), "lis")) {
       expect(b.remaining).toBeCloseTo(b.budget - b.recorded, 2);
       expect(b.remainingIfSpent).toBeCloseTo(b.budget - b.recorded - b.invoices - b.committed, 2);
     }
-    expect(row("dxb", "hk").recorded).toBeCloseTo(8400 + 3150 + 6200, 2);
+    // Housekeeping spending this month: amenity restock, laundry chemicals and linen rental.
+    expect(row("lis", "hk").recorded).toBeCloseTo(2100 + 790 + 1550, 2);
   });
 
-  it("refuses finance to staff, sales and purchasing, and other hotels to a hotel accountant", () => {
+  it("refuses finance to staff, sales and purchasing, and invoice actions to the owner", () => {
     for (const u of [omar, store, sales, buyer, sara]) expect(status(F.invoicesFor(u))).toBe(403);
-    expect(status(F.invoiceById(elena, "INV-DXB-1011-MEAT"))).toBe(404);
-    expect(status(F.invoiceAction(elena, "INV-DXB-1011-MEAT", { action: "flag", note: "x x x" }))).toBe(404);
-    expect(status(F.invoiceAction(owner, "INV-DXB-1011-MEAT", { action: "flag", note: "x x x" }))).toBe(403);
+    expect(status(F.invoiceAction(owner, "INV-LIS-1012-MEAT", { action: "flag", note: "x x x" }))).toBe(403);
     expect(ok(F.financeHome(owner)).approvals).toBe(0);
-    expect(status(F.financeReport(elena, { propertyId: "dxb" }))).toBe(403);
     const r = approvedChicken(5);
     expect(status(P.actOnRequest(omar, r.id, { action: "receive" }))).toBe(404);
   });
 
   it("raises stock only on receipt, once", () => {
-    const qty = () => stockFor(sara, "dxb", cleanEntries(sara, {})).find((x) => x.ingredientId === "chicken")!.estimated;
+    const qty = () => stockFor(sara, "lis", cleanEntries(sara, {})).find((x) => x.ingredientId === "chicken")!.estimated;
     const start = qty();
     const r = approvedChicken(12);
     expect(qty()).toBeCloseTo(start, 6);

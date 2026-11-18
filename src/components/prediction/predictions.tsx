@@ -47,6 +47,7 @@ function Inputs({ plan }: { plan: MonthPlanOut }) {
   return (
     <Panel title="What the prediction uses" description={`${fmtDate(plan.period.from)} to ${fmtDate(plan.period.to)}, the whole hotel.`}>
       <dl>
+        <InputRow label="Hotel occupancy" value={i.occupancy.nights ? `${fmtNum(i.occupancy.minGuests)} to ${fmtNum(i.occupancy.maxGuests)}` : "Not available"} note={i.occupancy.nights ? `In-house guests a night for the next ${i.occupancy.nights} nights (${fmtPct(i.occupancy.minRate, 0)} to ${fmtPct(i.occupancy.maxRate, 0)} of rooms), from the PMS. Breakfast and in-room dining follow it. Simulated.` : "Connect the PMS to use it."} />
         <InputRow label="Forecast covers" value={fmtNum(i.covers)} note={`${fmtNum(i.bookings)} booked or usually booked, ${fmtNum(i.walkIns)} walk ins, ${fmtNum(i.eventGuests)} from events`} />
         <InputRow label="Events" value={String(i.events.length)} note={i.events.length ? i.events.map((e) => `${e.name}, ${fmtDate(e.date)}, ${e.attendance} guests`).join("; ") : "No confirmed events this month"} />
         <InputRow label="Last 4 weeks usage" value={money(i.lastFourWeeksValue)} note={`Predicted use to month end: ${money(i.predictedValue)}`} />
@@ -225,7 +226,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
   const [busy, setBusy] = useState(false);
   const [built, setBuilt] = useState<{ request: PurchaseRequest; lines: number; total: number } | null>(null);
   const mayBuild = can(user, "purchase.create");
-  const local = (n: number) => fmtMoney(n, propertyById[propertyId ?? "dxb"].currency);
+  const local = (n: number) => fmtMoney(n, propertyById[propertyId ?? "lis"].currency);
   const edits = usePlanEdits((s) => s.qty);
   const clearEdits = usePlanEdits((s) => s.clear);
   const earnPilot = usePilot((s) => s.earn);
@@ -315,8 +316,8 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
               <AllRecommended rows={rows} plan={plan} edit={mayBuild} />
             </Section></div>
           )}
-          <Section id="predictions.how" title="How this is calculated" summary={`${fmtNum(plan.inputs.covers)} forecast covers, ${plan.inputs.events.length} ${plan.inputs.events.length === 1 ? "event" : "events"}, last 4 weeks of usage. Confidence ${CONF[plan.inputs.confidence].word.toLowerCase()}.`}>
-            <p className="text-[13px] text-steel">Predicted use from forecast covers and events, plus a safe buffer of 2 days, less what you have and what is on the way. Simulated data. Build order puts food, drinks and inventory into one draft.</p>
+          <Section id="predictions.how" title="How this is calculated" summary={`${plan.inputs.occupancy.nights ? `${fmtNum(plan.inputs.occupancy.minGuests)} to ${fmtNum(plan.inputs.occupancy.maxGuests)} in-house guests a night, ` : ""}${fmtNum(plan.inputs.covers)} forecast covers, ${plan.inputs.events.length} ${plan.inputs.events.length === 1 ? "event" : "events"}, last 4 weeks of usage. Confidence ${CONF[plan.inputs.confidence].word.toLowerCase()}.`}>
+            <p className="text-[13px] text-steel">Predicted use from hotel occupancy, forecast covers and events, plus a safe buffer of 2 days, less what you have and what is on the way. Simulated data. Build order puts food, drinks and inventory into one draft.</p>
             <Inputs plan={plan} />
             <Panel title="Monthly view" description="Where predicted use passes stock, the shelf is empty without a new order. The dashed line is the date to order by.">
               <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-graphite">

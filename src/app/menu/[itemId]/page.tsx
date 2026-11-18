@@ -48,7 +48,7 @@ export default function MenuItemPage() {
       </EmptyState>
     );
   }
-  const baseCurrencyRate = fxRate("AED", currency);
+  const baseCurrencyRate = fxRate("EUR", currency);
   const recipe = recipeBreakdown(item, DEMO_TODAY, ctx.overrides);
   const recipeTotal = recipe.reduce((s, l) => s + l.cost, 0);
   const totals = computeTotals(ctx, { ...sel, dept: "all" });
@@ -75,7 +75,7 @@ export default function MenuItemPage() {
       </Panel>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <Panel title="Recipe and cost" description={item.recipe ? "Cost per portion at today's ingredient prices, in the group price list (AED)." : undefined} action={<Link href="/stock?tab=recipes" className="text-[13px] text-steel underline-offset-4 hover:text-ink hover:underline">Edit ingredient prices</Link>} flush>
+        <Panel title="Recipe and cost" description={item.recipe ? "Cost per portion at today's ingredient prices, in the group price list (euros)." : undefined} action={<Link href="/stock?tab=recipes" className="text-[13px] text-steel underline-offset-4 hover:text-ink hover:underline">Edit ingredient prices</Link>} flush>
           {item.recipe ? (
             <TableWrap>
               <table className="w-full min-w-[460px] text-sm">

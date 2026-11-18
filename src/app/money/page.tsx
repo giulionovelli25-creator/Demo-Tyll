@@ -136,7 +136,7 @@ export default function MoneyPage() {
       ) : (
         <>
           <Section id="revenue.chart" title={`Revenue and ${monthC.now.operatingProfit !== null ? "estimated operating contribution" : "gross profit"}, last ${days.length} days`} summary={`${money(weekC.now.net, { compact: true })} revenue in the last 7 days, ${money(weekC.now.operatingProfit ?? weekC.now.grossProfit, { compact: true })} ${profitName.toLowerCase()}. ${fmtDate(DEMO_TODAY)} is today so far.`}>
-            <RevenueProfitChart points={points} format={(n) => money(n)} axisFormat={fmtShort} profitName={profitName} summary={`Revenue and ${profitName} per day for the last ${days.length} days, in ${currency}.`} />
+            <RevenueProfitChart points={points} format={(n) => money(n)} axisFormat={fmtShort} profitName={profitName} summary={`Revenue and ${profitName} per day for the last ${days.length} days, in euros.`} />
           </Section>
           <div id="outlets" className="scroll-mt-24"><Section id="revenue.outlets" forceOpen={tab === "outlets"} title="Outlet performance" summary={outlets[0] ? `${outlets.length} ${outlets.length === 1 ? "outlet" : "outlets"}, ${fmtRange(sel.range)}. ${outletLabel(outlets[0].outletId)} leads with ${money(outlets[0].now.net, { compact: true })}.` : "No outlets in your selection"}>
             <Period />
@@ -172,14 +172,14 @@ function Mistakes() {
     ["8:42 PM", "Guest orders a burger and a Coke", ""],
     ["8:43 PM", "Both items are sent for preparation", "Kitchen and bar tickets print"],
     ["8:49 PM", "The Coke is removed from the order", "No reason, no approval"],
-    ["8:51 PM", "The guest pays for the burger only", "Card, AED 98"],
+    ["8:51 PM", "The guest pays for the burger only", "Card, €22"],
   ];
 
   return (
     <div className="space-y-6">
-      {hero && canSeeOutlet(user, "dxb-terrace") && (
-        <Section id="flags.example" title="Worked example: a Coke removed after it was sent to the bar" summary="Tonight at The Terrace. How one flag is found, step by step.">
-        <Panel title="Tonight at The Terrace: an item removed after it was sent to the bar" description="A worked example of what Tyll looks for. The order below is in tonight's records." action={<Badge tone={hero.status === "closed" ? "neutral" : "warn"}>{STATUS_LABEL[hero.status]}</Badge>}>
+      {hero && canSeeOutlet(user, "lis-terrace") && (
+        <Section id="flags.example" title="Worked example: a Coke removed after it was sent to the bar" summary="Tonight at Mercado. How one flag is found, step by step.">
+        <Panel title="Tonight at Mercado: an item removed after it was sent to the bar" description="A worked example of what Tyll looks for. The order below is in tonight's records." action={<Badge tone={hero.status === "closed" ? "neutral" : "warn"}>{STATUS_LABEL[hero.status]}</Badge>}>
           <ol className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {steps.map(([time, title, detail], i) => (
               <li key={time} className={cn("relative rounded-2xl border p-4", i === 2 ? "border-warn/40 bg-warn-soft" : "border-line")}>
@@ -336,7 +336,7 @@ function Orders() {
             </table>
           </TableWrap>
           <p className="num border-t border-hair px-6 py-3 text-xs text-steel">
-            Showing {Math.min(shown, list.length)} of {list.length} orders. Amounts in {[...new Set(sel.outletIds.map((id) => propertyById[outletById[id].propertyId].currency))].join(" and ")}.
+            Showing {Math.min(shown, list.length)} of {list.length} orders. Amounts in euros.
             {list.length > shown && <button type="button" className="ms-3 underline underline-offset-4 hover:text-ink" onClick={() => setShown((n) => n + 40)}>Show 40 more</button>}
           </p>
         </>

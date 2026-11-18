@@ -10,7 +10,7 @@ export const HK_RULES = {
   inspectMinutes: 10,
   priorityInspectMinutes: 5,
   /** Hotels that inspect every room before it is released. */
-  inspectionRequired: { dxb: true, doh: false } as Record<string, boolean>,
+  inspectionRequired: { lis: true } as Record<string, boolean>,
 };
 
 export const SERVICE_TARGETS = {
@@ -125,14 +125,10 @@ export interface Venue {
 }
 
 export const VENUES: Venue[] = [
-  { id: "dxb-terrace", propertyId: "dxb", name: "The Terrace", kind: "restaurant", outletId: "dxb-terrace", capacity: 30, opens: 12 * 60, closes: 23 * 60, note: "All-day casual dining, terrace seating" },
-  { id: "dxb-lune", propertyId: "dxb", name: "Maison Lune", kind: "restaurant", outletId: "dxb-lune", capacity: 16, opens: 18 * 60 + 30, closes: 23 * 60, note: "Fine dining, French" },
-  { id: "dxb-lobby", propertyId: "dxb", name: "Lobby Lounge", kind: "lounge", outletId: "dxb-lobby", capacity: 24, opens: 9 * 60, closes: 24 * 60, note: "Afternoon tea, coffee and cocktails" },
-  { id: "dxb-pool", propertyId: "dxb", name: "Azure Pool Bar", kind: "lounge", outletId: "dxb-pool", capacity: 20, opens: 10 * 60, closes: 22 * 60, note: "Poolside drinks and light meals" },
-  { id: "dxb-spa", propertyId: "dxb", name: "Serenity Spa", kind: "spa", capacity: 3, opens: 9 * 60, closes: 21 * 60, note: "Massage and facial treatments" },
-  { id: "dxb-tour", propertyId: "dxb", name: "Desert sunrise tour", kind: "activity", capacity: null, opens: 5 * 60, closes: 7 * 60, note: "Arranged with a partner; availability on request" },
-  { id: "doh-dana", propertyId: "doh", name: "Al Dana", kind: "restaurant", outletId: "doh-dana", capacity: 20, opens: 18 * 60, closes: 23 * 60, note: "Signature restaurant" },
-  { id: "doh-sky", propertyId: "doh", name: "Skyline", kind: "lounge", outletId: "doh-sky", capacity: 26, opens: 17 * 60, closes: 24 * 60 + 60, note: "Rooftop bar" },
+  { id: "lis-terrace", propertyId: "lis", name: "Mercado", kind: "restaurant", outletId: "lis-terrace", capacity: 30, opens: 12 * 60, closes: 23 * 60, note: "All-day casual dining, terrace seating" },
+  { id: "lis-lobby", propertyId: "lis", name: "Bar Azulejo", kind: "lounge", outletId: "lis-lobby", capacity: 24, opens: 9 * 60, closes: 24 * 60, note: "Afternoon tea, coffee and cocktails" },
+  { id: "lis-spa", propertyId: "lis", name: "Serenity Spa", kind: "spa", capacity: 3, opens: 9 * 60, closes: 21 * 60, note: "Massage and facial treatments" },
+  { id: "lis-tour", propertyId: "lis", name: "Sintra day tour", kind: "activity", capacity: null, opens: 5 * 60, closes: 7 * 60, note: "Arranged with a partner; availability on request" },
 ];
 export const venueById: Record<string, Venue> = Object.fromEntries(VENUES.map((v) => [v.id, v]));
 

@@ -18,16 +18,16 @@ const { presetRange, addDays, DEMO_TODAY, fmtRange } = await import("../util");
 
 const entries: import("../server/stock").SessionEntries = { waste: [], counts: [], overrides: [], recipes: [], receipts: [] };
 const buyer = userById["u-fnb"];
-const outlets = allowedOutlets(buyer).filter((o) => o.startsWith("dxb"));
+const outlets = allowedOutlets(buyer).filter((o) => o.startsWith("lis"));
 const outlook = (period: string, user = buyer) => {
-  const r = outlookFor(user, { propertyId: "dxb", outletIds: outlets, period }, entries);
+  const r = outlookFor(user, { propertyId: "lis", outletIds: outlets, period }, entries);
   if (!r.ok) throw new Error(r.error);
   return r.outlook;
 };
 
 describe("prediction", () => {
   it("orders exactly what What to buy suggests, so the two screens never disagree", () => {
-    const plan = buyPlan(buyer, { propertyId: "dxb", outletIds: outlets, period: "7" }, entries);
+    const plan = buyPlan(buyer, { propertyId: "lis", outletIds: outlets, period: "7" }, entries);
     if (!plan.ok) throw new Error(plan.error);
     expect(outlook("7").lines).toEqual(plan.plan.lines);
   });
@@ -55,14 +55,14 @@ describe("prediction", () => {
   });
 
   it("refuses an outlet outside the person's access", () => {
-    const r = outlookFor(userById["u-chef"], { propertyId: "dxb", outletIds: ["dxb-lune"], period: "7" }, entries);
+    const r = outlookFor(userById["u-chef"], { propertyId: "lis", outletIds: ["lis-lobby"], period: "7" }, entries);
     expect(r.ok).toBe(false);
   });
 });
 
 describe("month plan", () => {
   const plan = () => {
-    const r = monthPlanFor(buyer, "dxb", entries);
+    const r = monthPlanFor(buyer, "lis", entries);
     if (!r.ok) throw new Error(r.error);
     return r.plan;
   };
@@ -104,21 +104,21 @@ describe("month plan", () => {
   });
 
   it("Build order makes one draft with lines from several suppliers, and building again updates it", () => {
-    const first = buildMonthOrder(buyer, "dxb", entries);
+    const first = buildMonthOrder(buyer, "lis", entries);
     if (!first.ok) throw new Error(first.error);
     expect(first.request.status).toBe("draft");
     expect(first.request.period.to).toBe("2026-10-31");
     expect(new Set(first.request.lines.map((l) => l.supplierId)).size).toBeGreaterThan(1);
-    const again = buildMonthOrder(buyer, "dxb", entries);
+    const again = buildMonthOrder(buyer, "lis", entries);
     if (!again.ok) throw new Error(again.error);
     expect(again.request.id).toBe(first.request.id);
-    expect(buildMonthOrder(userById["u-fc"], "dxb", entries).ok).toBe(false);
+    expect(buildMonthOrder(userById["u-fc"], "lis", entries).ok).toBe(false);
   });
 });
 
 describe("Pour Control", () => {
   const out = () => {
-    const r = pourFor(buyer, "dxb");
+    const r = pourFor(buyer, "lis");
     if (!r.ok) throw new Error(r.error);
     return r.pour;
   };
@@ -130,13 +130,13 @@ describe("Pour Control", () => {
     expect(w.opened).toBeCloseTo(out().wine.outlets.reduce((s, o) => s + o.periods.week.opened, 0), 5);
   });
 
-  it("flags the Lobby Lounge, as the house wine case does, and says so in one plain line with no names", () => {
+  it("flags Bar Azulejo, as the house wine case does, and says so in one plain line with no names", () => {
     const flags = out().wine.flags;
     expect(flags.length).toBeGreaterThan(0);
-    expect(flags[0].outletId).toBe("dxb-lobby");
-    expect(flags[0].text).toMatch(/^Lobby Lounge, \w+ \w+ shift: [\d.]+ bottles opened, \d+ glasses sold, expected \d+\. About AED [\d,]+ of wine not billed\.$/);
+    expect(flags[0].outletId).toBe("lis-lobby");
+    expect(flags[0].text).toMatch(/^Bar Azulejo, \w+ \w+ shift: [\d.]+ bottles opened, \d+ glasses sold, expected \d+\. About €[\d,]+ of wine not billed\.$/);
     expect(flags[0].figures.yieldPer!).toBeLessThan(5 * POUR_RULES.threshold);
-    for (const f of flags) expect(f.text).not.toMatch(/TRC-|LBY-S|login/);
+    for (const f of flags) expect(f.text).not.toMatch(/MER-|AZU-S|login/);
   });
 
   it("never shows a money gap without a glass gap", () => {
@@ -145,9 +145,9 @@ describe("Pour Control", () => {
   });
 
   it("limits a manager to their own outlets", () => {
-    const r = pourFor(userById["u-rm"], "dxb");
+    const r = pourFor(userById["u-rm"], "lis");
     if (!r.ok) throw new Error(r.error);
-    expect(r.pour.wine.outlets.map((o) => o.outletId)).toEqual(["dxb-terrace"]);
+    expect(r.pour.wine.outlets.map((o) => o.outletId)).toEqual(["lis-terrace"]);
     expect(pourFor(userById["u-rm"], "doh").ok).toBe(false);
   });
 });
@@ -193,9 +193,9 @@ describe("navigation and dates", () => {
     const { getDataset } = await import("../data/generate");
     const d = getDataset();
     const kept = demoCases(d.exceptions, d.seedInvestigations);
-    const open = kept.filter((e) => e.propertyId === "dxb" && d.seedInvestigations[e.id]?.status !== "closed");
+    const open = kept.filter((e) => e.propertyId === "lis" && d.seedInvestigations[e.id]?.status !== "closed");
     expect(open.length).toBeLessThanOrEqual(12);
-    for (const id of ["EX-TRC-1013-198", "EX-VAR-TRC-WAGYU-1013", "EX-VAR-TRC-COKE-1013", "EX-VAR-LBY-WINE-1012"]) expect(kept.some((e) => e.id === id)).toBe(true);
+    for (const id of ["EX-MER-1013-198", "EX-VAR-MER-WAGYU-1013", "EX-VAR-MER-COKE-1013", "EX-VAR-AZU-WINE-1013"]) expect(kept.some((e) => e.id === id)).toBe(true);
     expect(d.exceptions.length).toBeGreaterThan(kept.length);
   });
 

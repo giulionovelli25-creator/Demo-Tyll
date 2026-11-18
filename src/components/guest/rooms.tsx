@@ -122,7 +122,7 @@ export function RoomDetail({ roomId, back = "/rooms?tab=readiness" }: { roomId: 
               {(supervisor || manager) && room.status === "inspection" && <Button variant="primary" onClick={() => act({ action: "inspect", pass: true }, "Inspected. The room is ready and the front desk can see it.")}>Pass inspection</Button>}
               {(supervisor || manager) && room.status === "inspection" && <Button onClick={() => { if (note.length < 3) return toast.error("Write what needs doing again in the note below."); void act({ action: "inspect", pass: false, note }, "Sent back to cleaning."); }}>Fail inspection</Button>}
               {desk && a && room.status !== "ready" && <Button onClick={() => setShowMove(!showMove)}>See another ready room</Button>}
-              {manager && <Button variant="ghost" onClick={() => router.push(`/events?tab=support&mode=new&kind=hk&dept=dxb-hk&date=${DEMO_TODAY}&start=${hm(b.now)}&end=23:00&count=1&reason=${encodeURIComponent(`Room ${room.number} for an arrival at ${a ? hm(a.etaMin) : "tonight"}`)}`)}>Request housekeeping support</Button>}
+              {manager && <Button variant="ghost" onClick={() => router.push(`/events?tab=support&mode=new&kind=hk&dept=lis-hk&date=${DEMO_TODAY}&start=${hm(b.now)}&end=23:00&count=1&reason=${encodeURIComponent(`Room ${room.number} for an arrival at ${a ? hm(a.etaMin) : "tonight"}`)}`)}>Request housekeeping support</Button>}
             </div>
             {manager && ["vacant_dirty", "cleaning"].includes(room.status) && (
               <div className="grid gap-3 sm:grid-cols-2">
@@ -187,7 +187,7 @@ export function HousekeepingBoard() {
       {b.shortage && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-warn/25 bg-warn-soft px-5 py-4">
           <p className="text-sm text-ink">{b.shortage.rooms} rooms must be turned around before their guests arrive. That needs about {b.shortage.neededPeople} people; {b.shortage.people} {b.shortage.people === 1 ? "is" : "are"} on shift.</p>
-          <Button variant="primary" onClick={() => router.push(`/events?tab=support&mode=new&kind=hk&dept=dxb-hk&date=${DEMO_TODAY}&start=${hm(b.now)}&end=23:00&count=${b.shortage!.neededPeople - b.shortage!.people}&reason=${encodeURIComponent(`${b.shortage!.rooms} rooms to turn around before arrivals tonight`)}`)}>Request extra help</Button>
+          <Button variant="primary" onClick={() => router.push(`/events?tab=support&mode=new&kind=hk&dept=lis-hk&date=${DEMO_TODAY}&start=${hm(b.now)}&end=23:00&count=${b.shortage!.neededPeople - b.shortage!.people}&reason=${encodeURIComponent(`${b.shortage!.rooms} rooms to turn around before arrivals tonight`)}`)}>Request extra help</Button>
         </div>
       )}
       <Panel title="On shift" description="Pending staff requests are not counted until approved.">

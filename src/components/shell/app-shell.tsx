@@ -38,7 +38,7 @@ import { TakeTourButton, TourOffer, Walkthrough } from "./walkthrough";
 import { SharedStockSync } from "@/lib/shared-stock";
 import { PinScreen } from "./pin";
 import { Tour } from "./tour";
-import { PILOT_URL, usePilot } from "@/lib/pilot";
+import { PILOT_URL } from "@/lib/pilot";
 
 const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }> = {
   overview: { label: "Overview", icon: LayoutDashboard },
@@ -796,13 +796,11 @@ function AlertsButton({ user }: { user: User }) {
   return <NotificationBell attention={alerts} />;
 }
 
-/** The pilot offer, small and out of the way, once the visitor has seen something worth money. */
+/** The pilot offer, always in the top bar, small and out of the way (the owner asked for it to stay visible on 18 November 2026). */
 function PilotLink() {
-  const earned = usePilot((s) => s.earned);
-  if (!earned) return null;
   return (
-    <a href={PILOT_URL} target="_blank" rel="noopener noreferrer" className="animate-fade me-1 hidden h-9 items-center gap-1.5 rounded-full border border-accent/40 bg-paper px-3.5 text-[13px] font-medium text-accent transition-colors duration-150 hover:bg-accent-soft lg:inline-flex">
-      <Sparkles size={14} aria-hidden /> Start free 30 day pilot
+    <a href={PILOT_URL} target="_blank" rel="noopener noreferrer" className="me-1 hidden h-9 items-center gap-1.5 rounded-full border border-accent/40 bg-paper px-3.5 text-[13px] font-medium text-accent transition-colors duration-150 hover:bg-accent-soft md:inline-flex">
+      <Sparkles size={14} aria-hidden /> Start a free 30-day pilot
     </a>
   );
 }

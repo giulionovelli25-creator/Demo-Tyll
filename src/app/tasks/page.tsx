@@ -55,9 +55,9 @@ function DeptTasks() {
   if (task) return <BellTaskView id={task} />;
   return (
     <div className="space-y-5">
-      <PageHeader title={`Good evening, ${user.name.split(" ")[0]}`} lead={`${user.title.split(",")[1]?.trim() ?? ""}, Grand Resort Dubai. Here is your work for this shift.`} />
-      {user.deptId === "dxb-hk" && <MyRooms />}
-      {user.deptId === "dxb-bell" && <MyBellTasks />}
+      <PageHeader title={`Good evening, ${user.name.split(" ")[0]}`} lead={`${user.title.split(",")[1]?.trim() ?? ""}, Grand Hotel Lumière. Here is your work for this shift.`} />
+      {user.deptId === "lis-hk" && <MyRooms />}
+      {user.deptId === "lis-bell" && <MyBellTasks />}
       <MyAssignments />
     </div>
   );

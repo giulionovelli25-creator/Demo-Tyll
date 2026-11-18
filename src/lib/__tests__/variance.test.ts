@@ -7,9 +7,9 @@ import { DEMO_TODAY } from "../util";
 
 const latest = latestPeriods(getOutletStock().periods);
 const find = (outletId: string, ingredientId: string) => latest.find((p) => p.outletId === outletId && p.ingredientId === ingredientId)!;
-const coke = find("dxb-terrace", "coke");
-const wine = find("dxb-lobby", "wine");
-const beef = find("dxb-terrace", "wagyu");
+const coke = find("lis-terrace", "coke");
+const wine = find("lis-lobby", "wine");
+const beef = find("lis-terrace", "wagyu");
 const near = (a: number, b: number) => expect(a).toBeCloseTo(b, 6);
 
 describe("worked examples", () => {
@@ -25,7 +25,7 @@ describe("worked examples", () => {
     near(v.unexplained, 8);
     expect(v.significant).toBe(true);
     // The Coke removed from the hero order after it was sent to the bar falls inside the period.
-    expect(coke.removals.some((r) => r.orderId === "TRC-1013-198" && r.itemId === "coke")).toBe(true);
+    expect(coke.removals.some((r) => r.orderId === "MER-1013-198" && r.itemId === "coke")).toBe(true);
     expect(summaryFor(coke, v)).toContain("8 cans of Coca-Cola remain unexplained");
   });
 
@@ -61,7 +61,7 @@ describe("worked examples", () => {
   it("opens cases for the three examples and not for ordinary counting noise", () => {
     const cases = getDataset().exceptions.filter((e) => e.type === "usage_variance");
     const keys = cases.map((e) => `${e.outletId}|${e.ingredientId}`);
-    expect(keys).toEqual(expect.arrayContaining(["dxb-terrace|coke", "dxb-lobby|wine", "dxb-terrace|wagyu"]));
+    expect(keys).toEqual(expect.arrayContaining(["lis-terrace|coke", "lis-lobby|wine", "lis-terrace|wagyu"]));
     expect(cases.length).toBeLessThanOrEqual(8);
     expect(latest.filter((p) => needsCase(periodVariance(p))).length).toBe(cases.length);
   });
@@ -95,6 +95,7 @@ describe("corrections", () => {
     near(v.expected, 3.75);
     near(v.unexplained, 0);
     expect(v.significant).toBe(false);
-    near(periodVariance(wine, { recounts: [], recipes: [{ ...change, from: "2026-10-13" }], waste: [] }).expected, 3);
+    // The wine window now runs to tonight, so a change that starts tomorrow leaves it untouched.
+    near(periodVariance(wine, { recounts: [], recipes: [{ ...change, from: "2026-10-14" }], waste: [] }).expected, 3);
   });
 });

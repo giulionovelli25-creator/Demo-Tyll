@@ -11,8 +11,8 @@ export const HORIZON_DAYS = 7;
 
 /** How strongly each kind of outlet follows hotel occupancy. Demo assumptions, stated on screen. */
 export const OCCUPANCY_ELASTICITY: Record<string, number> = {
-  "In-room dining": 0.9, "Pool bar": 0.8, "Lobby lounge": 0.6, "All-day dining": 0.6, "Casual restaurant": 0.5,
-  "Fine dining restaurant": 0.3, "Signature restaurant": 0.3, "Rooftop bar": 0.3,
+  "In-room dining": 0.9, "Pool bar": 0.8, "Lobby lounge": 0.6, "All-day dining": 0.8, "Casual restaurant": 0.5,
+  "Fine dining restaurant": 0.3, "Signature restaurant": 0.3, "Rooftop bar": 0.3, "Lobby bar": 0.5, "Banquets and events": 0.1,
 };
 export const RESERVATION_WEIGHT = 0.5;
 export const EVENT_SPILLOVER = 0.3;

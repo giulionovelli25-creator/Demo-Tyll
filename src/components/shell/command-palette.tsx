@@ -141,7 +141,7 @@ export function CommandPalette({ user, pages, onClose }: { user: User; pages: Pa
           </div>
         )}
         <div ref={listRef} id="palette-list" role="listbox" aria-label="Results" className="scroll-thin min-h-0 flex-1 overflow-y-auto p-2">
-          {flat.length === 0 && <p className="px-3 py-4 text-sm text-steel">{recordHits.q !== q.trim() ? "Searching" : <>Nothing you can open matches &ldquo;{q}&rdquo;. Try an item such as Coca-Cola, or an outlet such as The Terrace.</>}</p>}
+          {flat.length === 0 && <p className="px-3 py-4 text-sm text-steel">{recordHits.q !== q.trim() ? "Searching" : <>Nothing you can open matches &ldquo;{q}&rdquo;. Try an item such as Coca-Cola, or an outlet such as Mercado.</>}</p>}
           {groups.map((g) => (
             <div key={g} className="mb-2">
               <p className="px-3 py-1 text-xs text-steel">{g}</p>

@@ -1,4 +1,5 @@
-// Demo finance set-up: departments that hold a budget, October budgets, and the hotel's other spending earlier in the
+import { MONTH_START, rel } from "../util";
+// Demo finance set-up: departments that hold a budget, this month's budgets, and the hotel's other spending earlier in the
 // month. Budgets and the non-F&B history are simulated planning figures, not balances from an accounting system.
 // F&B spending is not listed here: it comes from the supplier invoices in the dataset and from Tyll's own orders.
 
@@ -14,12 +15,14 @@ export const FIN_DEPTS: { id: FinDept; label: string; category: FinCategory }[] 
 export const FIN_DEPT_LABEL = Object.fromEntries(FIN_DEPTS.map((d) => [d.id, d.label])) as Record<FinDept, string>;
 export const CATEGORY_LABEL: Record<FinCategory, string> = { fnb: "Food & beverage purchasing", events: "Event costs", hk_supplies: "Housekeeping supplies", maintenance: "Maintenance supplies" };
 
-export const BUDGET_MONTH = { label: "October 2026", from: "2026-10-01", to: "2026-10-31" };
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const monthEnd = () => { const d = new Date(Date.parse(`${MONTH_START}T00:00:00Z`)); d.setUTCMonth(d.getUTCMonth() + 1, 0); return d.toISOString().slice(0, 10); };
+/** The budget month is the business date's month. */
+export const BUDGET_MONTH = { label: `${MONTH_NAMES[Number(MONTH_START.slice(5, 7)) - 1]} ${MONTH_START.slice(0, 4)}`, from: MONTH_START, to: monthEnd() };
 
-/** October budgets in each hotel's own currency (Dubai AED, Doha QAR). */
+/** This month's budgets, in euros. */
 export const BUDGETS: Record<string, Record<FinDept, number>> = {
-  dxb: { fnb: 260000, events: 60000, hk: 38000, eng: 25000 },
-  doh: { fnb: 265000, events: 45000, hk: 30000, eng: 20000 },
+  lis: { fnb: 95000, events: 16000, hk: 11000, eng: 7500 },
 };
 
 export interface HistoryExpense {
@@ -32,20 +35,15 @@ export interface HistoryExpense {
   amount: number;
 }
 
-/** Spending recorded earlier in October outside F&B purchasing. Simulated demo history. */
+/** Spending recorded in the last few weeks outside F&B purchasing. Simulated demo history. */
 export const HISTORY_EXPENSES: HistoryExpense[] = [
-  { id: "EXP-DXB-H01", propertyId: "dxb", dept: "hk", date: "2026-10-02", supplier: "Linen & Amenities Co.", description: "Guest amenity restock", amount: 8400 },
-  { id: "EXP-DXB-H02", propertyId: "dxb", dept: "hk", date: "2026-10-05", supplier: "Linen & Amenities Co.", description: "Laundry chemicals", amount: 3150 },
-  { id: "EXP-DXB-H03", propertyId: "dxb", dept: "hk", date: "2026-10-09", supplier: "Gulf Linen Services", description: "Linen rental, first week", amount: 6200 },
-  { id: "EXP-DXB-H04", propertyId: "dxb", dept: "eng", date: "2026-10-03", supplier: "Coolair Technical", description: "Air-conditioning filter replacement", amount: 4800 },
-  { id: "EXP-DXB-H05", propertyId: "dxb", dept: "eng", date: "2026-10-07", supplier: "Al Noor Building Supplies", description: "Plumbing parts", amount: 2350 },
-  { id: "EXP-DXB-H06", propertyId: "dxb", dept: "eng", date: "2026-10-10", supplier: "Aqua Pools LLC", description: "Pool pump service", amount: 5600 },
-  { id: "EXP-DXB-H07", propertyId: "dxb", dept: "events", date: "2026-10-04", supplier: "Bloom Florists", description: "Flowers, 4 October gala", amount: 9800 },
-  { id: "EXP-DXB-H08", propertyId: "dxb", dept: "events", date: "2026-10-04", supplier: "Stagecraft AV", description: "Sound and screens, 4 October gala", amount: 12400 },
-  { id: "EXP-DXB-H09", propertyId: "dxb", dept: "events", date: "2026-10-11", supplier: "Gulf Linen Services", description: "Table linen hire", amount: 3900 },
-  { id: "EXP-DOH-H01", propertyId: "doh", dept: "hk", date: "2026-10-03", supplier: "Doha Hotel Supplies", description: "Guest amenity restock", amount: 7100 },
-  { id: "EXP-DOH-H02", propertyId: "doh", dept: "hk", date: "2026-10-08", supplier: "Doha Hotel Supplies", description: "Cleaning chemicals", amount: 2600 },
-  { id: "EXP-DOH-H03", propertyId: "doh", dept: "eng", date: "2026-10-06", supplier: "Pearl Technical Services", description: "Lift maintenance visit", amount: 6900 },
-  { id: "EXP-DOH-H04", propertyId: "doh", dept: "eng", date: "2026-10-12", supplier: "Pearl Technical Services", description: "Lighting repairs", amount: 1850 },
-  { id: "EXP-DOH-H05", propertyId: "doh", dept: "events", date: "2026-10-05", supplier: "Corniche Events", description: "Stage and lighting, wedding", amount: 14200 },
+  { id: "EXP-LIS-H01", propertyId: "lis", dept: "hk", date: rel(-11), supplier: "Linho Lisboa", description: "Guest amenity restock", amount: 2100 },
+  { id: "EXP-LIS-H02", propertyId: "lis", dept: "hk", date: rel(-8), supplier: "Linho Lisboa", description: "Laundry chemicals", amount: 790 },
+  { id: "EXP-LIS-H03", propertyId: "lis", dept: "hk", date: rel(-4), supplier: "Lavandaria Tejo", description: "Linen rental, last week", amount: 1550 },
+  { id: "EXP-LIS-H04", propertyId: "lis", dept: "eng", date: rel(-10), supplier: "Climatec Lisboa", description: "Air-conditioning filter replacement", amount: 1200 },
+  { id: "EXP-LIS-H05", propertyId: "lis", dept: "eng", date: rel(-6), supplier: "Materiais Alfama", description: "Plumbing parts", amount: 590 },
+  { id: "EXP-LIS-H06", propertyId: "lis", dept: "eng", date: rel(-3), supplier: "Elevadores Sete Colinas", description: "Lift service visit", amount: 1400 },
+  { id: "EXP-LIS-H07", propertyId: "lis", dept: "events", date: rel(-9), supplier: "Flores da Graça", description: "Flowers, gala dinner", amount: 2450 },
+  { id: "EXP-LIS-H08", propertyId: "lis", dept: "events", date: rel(-9), supplier: "Palco AV", description: "Sound and screens, gala dinner", amount: 3100 },
+  { id: "EXP-LIS-H09", propertyId: "lis", dept: "events", date: rel(-2), supplier: "Lavandaria Tejo", description: "Table linen hire", amount: 980 },
 ];

@@ -134,7 +134,7 @@ function RequestView({ id }: { id: string }) {
               {!venue && ["assigned", "in_progress"].includes(r.status) && <Button onClick={() => act("awaiting", "Waiting for confirmation.")}>Waiting for an outside confirmation</Button>}
               {["in_progress", "confirmed", "assigned"].includes(r.status) && <Button onClick={() => act("complete", "Completed.")}>Complete</Button>}
             </div>
-            <Field label={r.status === "awaiting_confirmation" && !venue ? "Confirmation received, or reason" : "Note or reason"} value={note} onChange={(e) => setNote(e.target.value)} placeholder={r.kind === "taxi" ? "For example: Dubai Taxi ref 48213, car at 21:40" : ""} />
+            <Field label={r.status === "awaiting_confirmation" && !venue ? "Confirmation received, or reason" : "Note or reason"} value={note} onChange={(e) => setNote(e.target.value)} placeholder={r.kind === "taxi" ? "For example: Lisbon Taxi ref 48213, car at 21:40" : ""} />
             <div className="flex flex-wrap gap-2">
               {!venue && r.status === "awaiting_confirmation" && <Button variant="primary" onClick={() => act("confirm", "Confirmation recorded.")}>Record confirmation</Button>}
               <Button variant="ghost" onClick={() => act("unable", "Marked unable to fulfil.")}>Unable to fulfil</Button>
@@ -366,7 +366,7 @@ export function SuppliesPanel() {
   if (!data) return null;
   const short = data.supplies.filter((s) => s.needed > 0 && !s.openRequest);
   const request = async () => {
-    const r = await mutate<{ request: { id: string } }>("/api/purchasing", { propertyId: "dxb", deptId: "dxb-hk", period: "3", comment: "Housekeeping supplies below par for the next three nights.", lines: short.map((s) => ({ ingredientId: s.ingredientId, qty: s.needed, suggested: s.needed, requirement: s.par, available: s.onHand })) });
+    const r = await mutate<{ request: { id: string } }>("/api/purchasing", { propertyId: "lis", deptId: "lis-hk", period: "3", comment: "Housekeeping supplies below par for the next three nights.", lines: short.map((s) => ({ ingredientId: s.ingredientId, qty: s.needed, suggested: s.needed, requirement: s.par, available: s.onHand })) });
     if (!r.ok) return toast.error(r.error);
     toast.done(`${r.data.request.id} drafted. Review and submit it to purchasing.`);
     router.push(`/forecast?tab=approvals&request=${r.data.request.id}`);
@@ -390,13 +390,13 @@ export function SuppliesPanel() {
 /** The owner's view of guest experience: three indicators and one link, no operational buttons. */
 export function GuestStrip() {
   const { user } = useView();
-  const show = can(user, "rooms.view") && (user.propertyIds === "all" || user.propertyIds.includes("dxb"));
+  const show = can(user, "rooms.view") && (user.propertyIds === "all" || user.propertyIds.includes("lis"));
   const { data } = useLiveGet<{ summary: ServiceSummary }>(show ? "/api/guest/service" : null);
   if (!data) return null;
   const { today: t, open } = data.summary;
   return (
     <section className="flex flex-wrap items-center gap-x-8 gap-y-2 rounded-panel border border-line bg-paper px-6 py-4 text-sm shadow-panel">
-      <span className="text-steel">Guest experience, Dubai today</span>
+      <span className="text-steel">Guest experience, Lisbon today</span>
       <span><span className="num text-ink">{t.roomsOnTime.done ? `${t.roomsOnTime.onTime} of ${t.roomsOnTime.done}` : "No"}</span> <span className="text-steel">rooms ready by arrival</span></span>
       <span><span className="num text-ink">{t.requestsInTarget.done ? `${t.requestsInTarget.inTarget} of ${t.requestsInTarget.done}` : "No"}</span> <span className="text-steel">requests within target</span></span>
       <span><span className={open.roomsAtRisk ? "num text-warn" : "num text-ink"}>{open.roomsAtRisk}</span> <span className="text-steel">arrivals at risk now</span></span>

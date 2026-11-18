@@ -159,7 +159,7 @@ export default function ReportsPage() {
           <div>
             <TyllLogo height={22} />
             <h2 className="mt-4 text-[26px] tracking-[-0.03em]">{scopeName}</h2>
-            <p className="text-sm text-steel">Management report, {fmtRange(sel.range)}{sel.range.to === DEMO_TODAY ? ", today to 8:55 PM" : ""}. Compared with the previous {sel.range.from === sel.range.to ? "day at the same time" : "period of the same length"}. Amounts in {currency}.</p>
+            <p className="text-sm text-steel">Management report, {fmtRange(sel.range)}{sel.range.to === DEMO_TODAY ? ", today to 8:55 PM" : ""}. Compared with the previous {sel.range.from === sel.range.to ? "day at the same time" : "period of the same length"}. Amounts in euros.</p>
           </div>
           <dl className="num grid grid-cols-3 gap-x-8 text-end text-sm">
             <div><dt className="text-xs text-steel">Gross margin</dt><dd className="text-lg">{fmtPct(t.gpMargin)}</dd></div>

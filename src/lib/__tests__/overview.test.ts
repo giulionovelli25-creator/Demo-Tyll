@@ -10,8 +10,8 @@ import { DEMO_TODAY, presetRange } from "../util";
 const data = getDataset();
 const ctx = (over: Partial<Ctx> = {}): Ctx => ({ data, waste: data.wasteLogs, counts: data.counts, overrides: [], investigations: {}, adjust: NO_ADJUSTMENTS, ...over });
 const ALL = OUTLETS.map((o) => o.id);
-const group: Sel = { outletIds: ALL, wholeProperties: ["dxb", "doh"], dept: "all", range: presetRange("week"), currency: "AED" };
-const terrace: Sel = { ...group, outletIds: ["dxb-terrace"], wholeProperties: [] };
+const group: Sel = { outletIds: ALL, wholeProperties: ["lis"], dept: "all", range: presetRange("week"), currency: "EUR" };
+const terrace: Sel = { ...group, outletIds: ["lis-terrace"], wholeProperties: [] };
 const patterns = detectPatterns(data.exceptions, DEMO_TODAY);
 const rank = { high: 0, medium: 1, low: 2 };
 
@@ -31,7 +31,8 @@ describe("needs attention", () => {
   it("adds waste and menu-margin issues backed by the figures", () => {
     const rows = totalsByOutlet(ctx(), group);
     const waste = issues.filter((i) => i.kind === "waste");
-    expect(waste.some((i) => i.outletId === "dxb-terrace")).toBe(true);
+    // Banquets' over-production (yesterday's conference dinner) is the waste story.
+    expect(waste.some((i) => i.outletId === "lis-banquets")).toBe(true);
     for (const w of waste) {
       const r = rows.find((x) => x.outletId === w.outletId)!;
       expect(w.impact).toBeCloseTo(r.now.waste - r.before.waste, 6);
@@ -48,7 +49,7 @@ describe("needs attention", () => {
   it("keeps an outlet manager's list to their outlet and leaves out property-wide supplier issues", () => {
     const mine = buildIssues(ctx(), terrace, listInvestigations(ctx()), patterns, { includeStock: true, includeSuppliers: false });
     expect(mine.every((i) => i.kind !== "supplier")).toBe(true);
-    expect(mine.filter((i) => i.kind === "investigation").every((i) => i.outletId === "dxb-terrace")).toBe(true);
+    expect(mine.filter((i) => i.kind === "investigation").every((i) => i.outletId === "lis-terrace")).toBe(true);
   });
 });
 
@@ -59,6 +60,9 @@ describe("daily briefing", () => {
     const text = dailyBriefing(c, rows, buildIssues(ctx(), group, listInvestigations(ctx()), patterns, { includeStock: true, rows }), group);
     const change = ((c.now.net - c.before.net) / c.before.net) * 100;
     expect(text).toContain(`Revenue is ${change > 0 ? "up" : "down"} ${Math.abs(change).toFixed(1)}% on the previous 7 days.`);
-    expect(text).toContain("Gross margin fell most at The Terrace");
+    const drop = (r: (typeof rows)[number]) => r.now.gpMargin - r.before.gpMargin;
+    const worst = rows.reduce((a, b) => (drop(b) < drop(a) ? b : a));
+    expect(worst.outletId).toBe("lis-banquets");
+    expect(text).toContain(`Gross margin fell most at Banquets and Events, down ${(-drop(worst) * 100).toFixed(1)} pts.`);
   });
 });

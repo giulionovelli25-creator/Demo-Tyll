@@ -21,7 +21,7 @@ const reqRoute = await import("../../app/api/purchasing/[id]/route");
 const none: import("../server/stock").SessionEntries = { waste: [], counts: [], overrides: [], recipes: [], receipts: [] };
 const U = (id: string) => userById[id];
 const sara = U("u-rm");
-const tomorrow = { propertyId: "dxb", period: "tomorrow" };
+const tomorrow = { propertyId: "lis", period: "tomorrow" };
 const lineOf = (user: typeof sara, body: Record<string, unknown>, g: string, entries = none) => {
   const r = P.buyPlan(user, body, entries);
   if (!r.ok) throw new Error(r.error);
@@ -37,14 +37,14 @@ describe("forecast engine", () => {
   it("counts each guest once: occupancy moves walk-ins, never booked covers", () => {
     const data = getDataset();
     const period = periodOf("3");
-    const base = baselineFor(data, ["dxb-terrace"], period);
-    const d0 = demandFor(data, ["dxb-terrace"], period, base.values, base);
+    const base = baselineFor(data, ["lis-terrace"], period);
+    const d0 = demandFor(data, ["lis-terrace"], period, base.values, base);
     expect(d0.guests.reservations).toBeCloseTo(base.values.reservations, 6);
-    const busy = demandFor(data, ["dxb-terrace"], period, { ...base.values, occupancy: Math.min(1, base.values.occupancy + 0.1) }, base);
+    const busy = demandFor(data, ["lis-terrace"], period, { ...base.values, occupancy: Math.min(1, base.values.occupancy + 0.1) }, base);
     expect(busy.guests.reservations).toBeCloseTo(d0.guests.reservations, 6);
     expect(busy.guests.walkIns).toBeGreaterThan(d0.guests.walkIns);
     // Event guests are added separately, not inside the booked covers.
-    const event = demandFor(data, ["dxb-terrace"], period, { ...base.values, eventGuests: base.values.eventGuests + 100 }, base);
+    const event = demandFor(data, ["lis-terrace"], period, { ...base.values, eventGuests: base.values.eventGuests + 100 }, base);
     expect(event.guests.reservations).toBeCloseTo(d0.guests.reservations, 6);
   });
 
@@ -70,12 +70,12 @@ describe("Scenario A: forecast to approved request", () => {
     expect(plan.plan.sources.walkIns).toBe("manual");
     const short = plan.plan.lines.filter((l) => l.suggested > 0).slice(0, 3);
     expect(short.length).toBeGreaterThan(0);
-    const draft = P.saveRequest(sara, { propertyId: "dxb", period: "tomorrow", lines: short.map((l) => ({ ingredientId: l.ingredientId, qty: l.suggested, supplierId: l.supplierId, suggested: l.suggested })), comment: "Busy Wednesday" });
+    const draft = P.saveRequest(sara, { propertyId: "lis", period: "tomorrow", lines: short.map((l) => ({ ingredientId: l.ingredientId, qty: l.suggested, supplierId: l.supplierId, suggested: l.suggested })), comment: "Busy Wednesday" });
     if (!draft.ok) throw new Error(draft.error);
     const id = draft.request.id;
-    expect(id).toMatch(/^PR-DXB-\d{4}$/);
+    expect(id).toMatch(/^PR-LIS-\d{4}$/);
     // Submitting does not raise stock.
-    const before = stockFor(sara, "dxb", none).find((s) => s.ingredientId === short[0].ingredientId)!.estimated;
+    const before = stockFor(sara, "lis", none).find((s) => s.ingredientId === short[0].ingredientId)!.estimated;
     expect(P.actOnRequest(sara, id, { action: "submit" }).ok).toBe(true);
 
     const buyer = U("u-buy");
@@ -95,12 +95,12 @@ describe("Scenario A: forecast to approved request", () => {
     expect(final.status).toBe("approved");
     expect(final.poNumber).toBe(`PO-${id.slice(3)}`);
     expect(final.history.map((h) => h.by)).toEqual(expect.arrayContaining(["u-rm", "u-buy", "u-fc"]));
-    expect(stockFor(sara, "dxb", none).find((s) => s.ingredientId === short[0].ingredientId)!.estimated).toBeCloseTo(before, 6);
+    expect(stockFor(sara, "lis", none).find((s) => s.ingredientId === short[0].ingredientId)!.estimated).toBeCloseTo(before, 6);
     expect(P.alertsFor(sara, none).some((a) => a.id === `mine-${id}-approved`)).toBe(true);
 
     // Stock rises only when the delivery is received.
     expect(P.actOnRequest(buyer, id, { action: "receive", received: [] }).ok).toBe(true);
-    expect(stockFor(sara, "dxb", none).find((s) => s.ingredientId === short[0].ingredientId)!.estimated).toBeGreaterThan(before);
+    expect(stockFor(sara, "lis", none).find((s) => s.ingredientId === short[0].ingredientId)!.estimated).toBeGreaterThan(before);
   });
 
   it("does not suggest the same quantity again while a request is open", () => {
@@ -116,11 +116,11 @@ describe("Scenario A: forecast to approved request", () => {
 describe("Scenario B: prep plan to purchasing", () => {
   it("raising burgers from the forecast to 15 more adds 2.7 kg of beef to the buy calculation", () => {
     const chef = U("u-chef");
-    const sug = P.prepPlanFor(chef, { outletId: "dxb-terrace", period: "tomorrow", meal: "all" }, none);
+    const sug = P.prepPlanFor(chef, { outletId: "lis-terrace", period: "tomorrow", meal: "all" }, none);
     if (!sug.ok) throw new Error(sug.error);
     const burgers = sug.prep.suggested.burger;
     expect(burgers).toBeGreaterThan(0);
-    const saved = P.savePrepPlan(chef, { outletId: "dxb-terrace", period: "tomorrow", meal: "all", portions: { ...sug.prep.suggested, burger: burgers + 15 }, suggested: sug.prep.suggested });
+    const saved = P.savePrepPlan(chef, { outletId: "lis-terrace", period: "tomorrow", meal: "all", portions: { ...sug.prep.suggested, burger: burgers + 15 }, suggested: sug.prep.suggested });
     if (!saved.ok) throw new Error(saved.error);
     expect(saved.plan.tasks.find((t) => t.itemId === "burger")!.portions).toBe(burgers + 15);
     const without = lineOf(sara, tomorrow, "wagyu")!;
@@ -133,12 +133,12 @@ describe("Scenario B: prep plan to purchasing", () => {
 
   it("lets staff tick off their own tasks only, and refuses plan changes from staff", () => {
     const chef = U("u-chef");
-    const saved = P.savePrepPlan(chef, { outletId: "dxb-terrace", period: "tomorrow", meal: "all", portions: { burger: 30, caesar: 20 } });
+    const saved = P.savePrepPlan(chef, { outletId: "lis-terrace", period: "tomorrow", meal: "all", portions: { burger: 30, caesar: 20 } });
     if (!saved.ok) throw new Error(saved.error);
     const task = saved.plan.tasks[0];
     expect(P.updatePrepTask(chef, { planId: saved.plan.id, taskId: task.id, op: "assign", assigneeId: "u-emp" }).ok).toBe(true);
     const omar = U("u-emp");
-    expect(P.savePrepPlan(omar, { outletId: "dxb-terrace", period: "tomorrow", meal: "all", portions: { burger: 1 } }).ok).toBe(false);
+    expect(P.savePrepPlan(omar, { outletId: "lis-terrace", period: "tomorrow", meal: "all", portions: { burger: 1 } }).ok).toBe(false);
     expect(P.updatePrepTask(omar, { planId: saved.plan.id, taskId: task.id, op: "complete" }).ok).toBe(true);
     expect(P.plansFor(chef)[0].tasks[0]).toMatchObject({ done: true, doneBy: "u-emp" });
   });
@@ -160,16 +160,16 @@ describe("Scenario C: shared storeroom", () => {
   it("returns no dish-level detail about other outlets to a manager", async () => {
     const r = P.buyPlan(sara, tomorrow, none);
     if (!r.ok) throw new Error(r.error);
-    expect(r.plan.outletIds).toEqual(["dxb-terrace"]);
-    expect(JSON.stringify(r.plan)).not.toContain("dxb-lune");
-    expect(P.buyPlan(sara, { ...tomorrow, outletIds: ["dxb-lune"] }, none).ok).toBe(false);
+    expect(r.plan.outletIds).toEqual(["lis-terrace"]);
+    expect(JSON.stringify(r.plan)).not.toContain("lis-lobby");
+    expect(P.buyPlan(sara, { ...tomorrow, outletIds: ["lis-lobby"] }, none).ok).toBe(false);
   });
 });
 
 describe("Scenario D: Stage 2 corrections reach purchasing", () => {
   it("logged waste lowers usable stock and raises the suggestion; a corrected pour raises wine requirement", () => {
     const before = lineOf(sara, { ...tomorrow, period: "3" }, "chicken")!;
-    const waste = [{ id: "W-1", outletId: "dxb-terrace", date: "2026-10-13", ingredientId: "chicken", qty: 5, reason: "spoilage" as const, by: "TRC-S7", synced: true, seq: 1 }];
+    const waste = [{ id: "W-1", outletId: "lis-terrace", date: "2026-10-13", ingredientId: "chicken", qty: 5, reason: "spoilage" as const, by: "MER-S7", synced: true, seq: 1 }];
     const after = lineOf(sara, { ...tomorrow, period: "3" }, "chicken", { ...none, waste })!;
     expect(before.usable - after.usable).toBeCloseTo(5, 6);
     expect(after.suggested).toBeGreaterThanOrEqual(before.suggested);
@@ -206,14 +206,16 @@ describe("Scenario E: permissions", () => {
     expect((await buyRoute.POST(post("/api/plan/buy", session("u-rm"), { propertyId: "doh", period: "tomorrow" }))).status).toBe(403);
   });
 
-  it("hides another hotel's requests and other people's drafts", () => {
-    const owner = U("u-owner");
-    const doha = P.saveRequest(owner, { propertyId: "doh", period: "tomorrow", lines: [{ ingredientId: "lamb", qty: 5 }] });
-    if (!doha.ok) throw new Error(doha.error);
-    P.actOnRequest(owner, doha.request.id, { action: "submit" });
-    expect(P.requestsFor(sara).some((r) => r.id === doha.request.id)).toBe(false);
-    expect(P.requestsFor(U("u-gm")).some((r) => r.id === doha.request.id)).toBe(false);
-    expect(P.actOnRequest(sara, doha.request.id, { action: "comment", comment: "hello" }).ok).toBe(false);
+  it("hides another outlet's requests and other people's drafts", () => {
+    // One hotel now: Bar Azulejo's request is hidden from Mercado's manager, and the general manager sees it.
+    const karim = U("u-lby");
+    const bar = P.saveRequest(karim, { ...tomorrow, lines: [{ ingredientId: "lime", qty: 5 }] });
+    if (!bar.ok) throw new Error(bar.error);
+    expect(bar.request.outletIds).toEqual(["lis-lobby"]);
+    P.actOnRequest(karim, bar.request.id, { action: "submit" });
+    expect(P.requestsFor(sara).some((r) => r.id === bar.request.id)).toBe(false);
+    expect(P.requestsFor(U("u-gm")).some((r) => r.id === bar.request.id)).toBe(true);
+    expect(P.actOnRequest(sara, bar.request.id, { action: "comment", comment: "hello" }).ok).toBe(false);
     const draft = P.saveRequest(sara, { ...tomorrow, lines: [{ ingredientId: "chicken", qty: 3 }] });
     if (!draft.ok) throw new Error(draft.error);
     expect(P.requestsFor(U("u-buy")).some((r) => r.id === draft.request.id)).toBe(false);

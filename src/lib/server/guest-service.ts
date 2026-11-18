@@ -14,13 +14,13 @@ import { stockFor, type SessionEntries } from "./stock";
 
 const text = (v: unknown, max = 300) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const hm = (m: number) => `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-const inHotel = (user: User) => (["owner", "gm"].includes(user.role) || !!user.deptId || can(user, "gc.respond")) && (user.propertyIds === "all" || user.propertyIds.includes("dxb"));
+const inHotel = (user: User) => (["owner", "gm"].includes(user.role) || !!user.deptId || can(user, "gc.respond")) && (user.propertyIds === "all" || user.propertyIds.includes("lis"));
 
 // ---- Guest requests ------------------------------------------------------------------------------------------------
 
 const KINDS: GuestRequestKind[] = ["taxi", "restaurant", "spa", "activity", "assistance", "bell", "general"];
 /** Who looks after each kind of request next. Restaurant, spa and activity go through Guest Connect. */
-const ROUTE: Record<GuestRequestKind, string> = { taxi: "dxb-conc", restaurant: "dxb-conc", spa: "dxb-conc", activity: "dxb-conc", assistance: "dxb-hk", bell: "dxb-bell", general: "dxb-fo" };
+const ROUTE: Record<GuestRequestKind, string> = { taxi: "lis-conc", restaurant: "lis-conc", spa: "lis-conc", activity: "lis-conc", assistance: "lis-hk", bell: "lis-bell", general: "lis-fo" };
 
 export function requestsFor(user: User): Result<{ requests: ServiceRequest[]; now: number }> {
   if (!inHotel(user) || !(can(user, "concierge") || can(user, "fo.desk") || can(user, "hk.manage") || can(user, "rooms.view"))) return fail(403, "Your role cannot open guest requests.");
@@ -43,10 +43,10 @@ export function createRequest(user: User, body: Record<string, unknown>): Result
   const forMin = typeof body.forMin === "number" && body.forMin >= 0 && body.forMin < 30 * 60 ? Math.round(body.forMin) : now;
   if (s.guest.requests.some((r) => r.room === room && r.kind === kind && r.details.toLowerCase() === details.toLowerCase() && !["completed", "cancelled", "unable"].includes(r.status))) return fail(409, "This request is already open.");
   const request = mutateStore((x) => {
-    const id = `GR-DXB-${String(nextNumber(x, "GR-DXB") + 6).padStart(4, "0")}`;
-    const r: ServiceRequest = { id, propertyId: "dxb", kind, room, details, forMin, priority: body.priority === "urgent" ? "urgent" : "normal", deptId: ROUTE[kind], status: "new", createdBy: user.id, createdMin: now, history: [{ min: now, by: user.id, action: `Request raised for ${deptById[ROUTE[kind]].name}` }] };
+    const id = `GR-LIS-${String(nextNumber(x, "GR-LIS") + 6).padStart(4, "0")}`;
+    const r: ServiceRequest = { id, propertyId: "lis", kind, room, details, forMin, priority: body.priority === "urgent" ? "urgent" : "normal", deptId: ROUTE[kind], status: "new", createdBy: user.id, createdMin: now, history: [{ min: now, by: user.id, action: `Request raised for ${deptById[ROUTE[kind]].name}` }] };
     x.guest.requests.push(r);
-    notify(x, { to: USERS.filter((u) => u.deptId === r.deptId && u.role !== "employee"), type: "guest-request", ref: id, propertyId: "dxb", from: user.id, title: `Guest request for room ${room}: ${KIND_WORD[kind]}`, body: `${details}. ${r.priority === "urgent" ? "Marked urgent. " : ""}Open it to take it on.`, href: `/rooms?tab=requests&request=${id}` });
+    notify(x, { to: USERS.filter((u) => u.deptId === r.deptId && u.role !== "employee"), type: "guest-request", ref: id, propertyId: "lis", from: user.id, title: `Guest request for room ${room}: ${KIND_WORD[kind]}`, body: `${details}. ${r.priority === "urgent" ? "Marked urgent. " : ""}Open it to take it on.`, href: `/rooms?tab=requests&request=${id}` });
     return r;
   });
   return { ok: true, request };
@@ -95,7 +95,7 @@ export function requestAction(user: User, id: string, body: Record<string, unkno
     y.history.push({ min: now, by: user.id, action: { assign: "Taken on", start: "Started", awaiting: "Waiting for an outside confirmation", confirm: "Confirmation recorded", complete: "Completed", cancel: "Cancelled", unable: "Unable to fulfil" }[action]!, note: note || undefined });
     if (to === "completed") {
       const assigned = y.history.find((h) => h.action === "Taken on" || h.action === "Started")?.min;
-      x.guest.log.push({ id: `L-${y.id}`, date: DEMO_TODAY, propertyId: "dxb", kind: "request", ref: y.id, createdMin: y.createdMin, assignedMin: assigned, doneMin: now, target: SERVICE_TARGETS.request[y.kind] ?? 30, escalated: y.priority === "urgent" });
+      x.guest.log.push({ id: `L-${y.id}`, date: DEMO_TODAY, propertyId: "lis", kind: "request", ref: y.id, createdMin: y.createdMin, assignedMin: assigned, doneMin: now, target: SERVICE_TARGETS.request[y.kind] ?? 30, escalated: y.priority === "urgent" });
     }
     return y;
   });
@@ -118,7 +118,7 @@ export function venuesFor(user: User, body: Record<string, unknown>): Result<{ v
   const date = body.date === addDays(DEMO_TODAY, 1) ? addDays(DEMO_TODAY, 1) : DEMO_TODAY;
   const time = Number(body.timeMin ?? 19 * 60 + 30);
   const s = loadStore();
-  const venues = VENUES.filter((v) => v.propertyId === "dxb" && (v.kind === kind || (kind === "lounge" && v.kind === "lounge")))
+  const venues = VENUES.filter((v) => v.propertyId === "lis" && (v.kind === kind || (kind === "lounge" && v.kind === "lounge")))
     .map((v) => { const a = availabilityAt(v, date, time, party, heldSeats(s, v.id, date, slotOf(time))); return { ...v, availability: a.status, free: a.free }; })
     .sort((a, b) => ["likely", "limited", "request", "closed"].indexOf(a.availability) - ["likely", "limited", "request", "closed"].indexOf(b.availability));
   return { ok: true, venues, note: "Availability is simulated from demo booking patterns. Nothing is confirmed until the venue accepts." };
@@ -137,7 +137,7 @@ export function gcFor(user: User): Result<{ requests: (GcRequest & { venueName: 
 export function createGc(user: User, body: Record<string, unknown>): Result<{ request: GcRequest }> {
   if (!can(user, "fo.desk") && !can(user, "concierge")) return fail(403, "Your role cannot use Guest Connect.");
   const v = venueById[String(body.venueId ?? "")];
-  if (!v || v.propertyId !== "dxb") return fail(400, "Choose a venue at this hotel.");
+  if (!v || v.propertyId !== "lis") return fail(400, "Choose a venue at this hotel.");
   const party = Number(body.party);
   if (!Number.isInteger(party) || party < 1 || party > 20) return fail(400, "Enter between 1 and 20 guests.");
   const date = body.date === addDays(DEMO_TODAY, 1) ? addDays(DEMO_TODAY, 1) : DEMO_TODAY;
@@ -152,11 +152,11 @@ export function createGc(user: User, body: Record<string, unknown>): Result<{ re
   const dup = s.guest.gc.find((r) => r.room === room && r.venueId === v.id && r.date === date && r.timeMin === timeMin && ["pending", "accepted", "alternative", "confirmed"].includes(r.status));
   if (dup) return fail(409, `${dup.id} already asks ${v.name} for this time.`);
   const request = mutateStore((x) => {
-    const id = `GC-DXB-${String(nextNumber(x, "GC-DXB")).padStart(4, "0")}`;
-    const r: GcRequest = { id, propertyId: "dxb", venueId: v.id, room, party, date, timeMin, notes: text(body.notes, 200), status: "pending", createdBy: user.id, fromDeptId: user.deptId ?? "dxb-fo", createdMin: now, sourceRequestId: typeof body.sourceRequestId === "string" ? body.sourceRequestId : undefined,
+    const id = `GC-LIS-${String(nextNumber(x, "GC-LIS")).padStart(4, "0")}`;
+    const r: GcRequest = { id, propertyId: "lis", venueId: v.id, room, party, date, timeMin, notes: text(body.notes, 200), status: "pending", createdBy: user.id, fromDeptId: user.deptId ?? "lis-fo", createdMin: now, sourceRequestId: typeof body.sourceRequestId === "string" ? body.sourceRequestId : undefined,
       history: [{ min: now, by: user.id, action: `Asked ${v.name} for ${party} at ${hm(timeMin)}${date !== DEMO_TODAY ? " tomorrow" : ""}` }] };
     x.guest.gc.push(r);
-    notify(x, { to: USERS.filter((u) => u.role !== "owner" && (v.outletId ? u.role !== "gm" : true) && mayRespond(u, v)), type: "gc-request", ref: id, propertyId: "dxb", from: user.id, title: `${v.name}: table request for ${party} at ${hm(timeMin)}`, body: `${deptById[r.fromDeptId]?.name ?? "The front desk"} asks whether you can take this booking. Accept, decline or suggest another time.`, href: `/rooms?tab=tables&request=${id}`, email: true });
+    notify(x, { to: USERS.filter((u) => u.role !== "owner" && (v.outletId ? u.role !== "gm" : true) && mayRespond(u, v)), type: "gc-request", ref: id, propertyId: "lis", from: user.id, title: `${v.name}: table request for ${party} at ${hm(timeMin)}`, body: `${deptById[r.fromDeptId]?.name ?? "The front desk"} asks whether you can take this booking. Accept, decline or suggest another time.`, href: `/rooms?tab=tables&request=${id}`, email: true });
     if (r.sourceRequestId) { const sr = x.guest.requests.find((y) => y.id === r.sourceRequestId); if (sr) { sr.status = "awaiting_confirmation"; sr.linkedId = id; sr.history.push({ min: now, by: user.id, action: `Sent to ${v.name} through Guest Connect (${id})` }); } }
     return r;
   });
@@ -189,7 +189,7 @@ export function gcAction(user: User, id: string, body: Record<string, unknown>):
       // The venue's first answer is measured against the response target.
       if (was === "pending" && ["accepted", "declined", "alternative"].includes(status)) {
         y.respondedMin = now; y.respondedBy = user.id;
-        x.guest.log.push({ id: `L-${y.id}-${now}`, date: DEMO_TODAY, propertyId: "dxb", kind: "gc", ref: y.id, createdMin: y.createdMin, assignedMin: now, doneMin: now, target: SERVICE_TARGETS.gcResponse, confirmed: status === "accepted" });
+        x.guest.log.push({ id: `L-${y.id}-${now}`, date: DEMO_TODAY, propertyId: "lis", kind: "gc", ref: y.id, createdMin: y.createdMin, assignedMin: now, doneMin: now, target: SERVICE_TARGETS.gcResponse, confirmed: status === "accepted" });
       }
       const sr = y.sourceRequestId ? x.guest.requests.find((z) => z.id === y.sourceRequestId) : undefined;
       if (sr && status === "confirmed") { sr.status = "confirmed"; sr.history.push({ min: now, by: user.id, action: `${v.name} confirmed for ${y.party} at ${hm(y.timeMin)}` }); }
@@ -197,11 +197,11 @@ export function gcAction(user: User, id: string, body: Record<string, unknown>):
       // The venue's answer goes back to the requester; a change goes back to the venue.
       if (was === "pending" && ["accepted", "declined", "alternative"].includes(status)) {
         resolve(x, "gc-request", y.id);
-        notify(x, { to: [y.createdBy], type: "gc-answer", ref: y.id, propertyId: "dxb", from: user.id, title: `${v.name} ${status === "accepted" ? "accepted" : status === "declined" ? "declined" : "suggested another time for"} ${y.id}`, body: status === "accepted" ? "Confirm it with the guest, then mark it confirmed." : status === "alternative" ? `Suggested time: ${hm(y.proposedMin!)}. Accept it or cancel.` : "Find another option for the guest.", href: `/rooms?tab=connect&request=${y.id}`, email: true });
+        notify(x, { to: [y.createdBy], type: "gc-answer", ref: y.id, propertyId: "lis", from: user.id, title: `${v.name} ${status === "accepted" ? "accepted" : status === "declined" ? "declined" : "suggested another time for"} ${y.id}`, body: status === "accepted" ? "Confirm it with the guest, then mark it confirmed." : status === "alternative" ? `Suggested time: ${hm(y.proposedMin!)}. Accept it or cancel.` : "Find another option for the guest.", href: `/rooms?tab=connect&request=${y.id}`, email: true });
       }
       if (status === "pending") {
         resolve(x, ["gc-request", "gc-answer"], y.id);
-        notify(x, { to: USERS.filter((u) => u.role !== "owner" && (v.outletId ? u.role !== "gm" : true) && mayRespond(u, v)), type: "gc-request", ref: y.id, propertyId: "dxb", from: user.id, title: `${v.name}: changed request ${y.id}`, body: `Now ${y.party} at ${hm(y.timeMin)}. Please answer again.`, href: `/rooms?tab=tables&request=${y.id}` });
+        notify(x, { to: USERS.filter((u) => u.role !== "owner" && (v.outletId ? u.role !== "gm" : true) && mayRespond(u, v)), type: "gc-request", ref: y.id, propertyId: "lis", from: user.id, title: `${v.name}: changed request ${y.id}`, body: `Now ${y.party} at ${hm(y.timeMin)}. Please answer again.`, href: `/rooms?tab=tables&request=${y.id}` });
       }
       if (status === "confirmed" || status === "cancelled") resolve(x, ["gc-request", "gc-answer"], y.id);
       return y;
@@ -268,8 +268,8 @@ export function gcAction(user: User, id: string, body: Record<string, unknown>):
 const SUPPLY_PAR: Record<string, number> = { amenity: 180, towel: 400, chem: 30 };
 
 export function suppliesFor(user: User, entries: SessionEntries): Result<{ supplies: { ingredientId: string; name: string; unit: string; onHand: number; par: number; needed: number; openRequest?: { id: string; status: string } }[] }> {
-  if (!can(user, "hk.manage") || user.deptId !== "dxb-hk") return fail(403, "Only housekeeping managers can see supplies.");
-  const rows = stockFor(user, "dxb", entries);
+  if (!can(user, "hk.manage") || user.deptId !== "lis-hk") return fail(403, "Only housekeeping managers can see supplies.");
+  const rows = stockFor(user, "lis", entries);
   const s = loadStore();
   return {
     ok: true,
@@ -277,7 +277,7 @@ export function suppliesFor(user: User, entries: SessionEntries): Result<{ suppl
       const g = ingredientById[id];
       const onHand = Math.max(0, rows.find((r) => r.ingredientId === id)?.estimated ?? 0);
       const pack = g.packSize;
-      const open = s.requests.find((r) => r.deptId === "dxb-hk" && !["received", "rejected"].includes(r.status) && r.lines.some((l) => l.ingredientId === id));
+      const open = s.requests.find((r) => r.deptId === "lis-hk" && !["received", "rejected"].includes(r.status) && r.lines.some((l) => l.ingredientId === id));
       return { ingredientId: id, name: g.name, unit: g.unit === "each" ? "units" : g.unit, onHand, par: SUPPLY_PAR[id], needed: onHand >= SUPPLY_PAR[id] ? 0 : Math.ceil((SUPPLY_PAR[id] - onHand) / pack) * pack, openRequest: open ? { id: open.id, status: open.status } : undefined };
     }),
   };
@@ -302,7 +302,7 @@ export function serviceSummary(user: User): Result<{ summary: ServiceSummary }> 
   return {
     ok: true,
     summary: {
-      today: metricsFor(s.guest.log, DEMO_TODAY, "dxb"), yesterday: metricsFor(s.guest.log, addDays(DEMO_TODAY, -1), "dxb"), now,
+      today: metricsFor(s.guest.log, DEMO_TODAY, "lis"), yesterday: metricsFor(s.guest.log, addDays(DEMO_TODAY, -1), "lis"), now,
       open: {
         roomsAtRisk: board?.atRisk.length ?? 0,
         overdueBell: s.guest.bell.filter((t) => !["delivered", "completed", "cancelled"].includes(t.status) && now - t.requestedMin > SERVICE_TARGETS.bell).length,

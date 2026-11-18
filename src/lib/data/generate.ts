@@ -4,12 +4,10 @@ import type {
   Arrival, Attendant, CountRecord, DayItem, DayOutlet, Delivery, Exception, GuestRequest, HotelEvent, InvestigationState,
   LiveOrder, OccupancyDay, Order, OrderLine, Outlet, ReservationDay, Room, RoomCharge, RoomStatus, Transfer, WasteLog, WasteReason,
 } from "../types";
-import {
-  DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, eachDay, isWeekend, rng, round2, weekday,
-} from "../util";
+import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, eachDay, isWeekend, rng, round2, weekday, rel } from "../util";
 import { INGREDIENTS, MENU_ITEMS, OUTLETS, PROPERTIES, ingredientById, itemById, outletsOfProperty, propertyById } from "./catalog";
 import { detectExceptions } from "../domain/detect";
-import { avgDailyUsage, orderPack, usageFromSales, varianceAllocation, wasteQuantities } from "../domain/inventory";
+import { avgDailyUsage, deliveryOvercharge, orderPack, usageFromSales, varianceAllocation, wasteQuantities } from "../domain/inventory";
 import { buildRollups, lineValue, orderTotals } from "../domain/orders";
 import { ingredientCostAt, menuPriceAt } from "../domain/pricing";
 
@@ -41,11 +39,12 @@ export interface Dataset {
 import { HERO_EXCEPTION_ID, HERO_ORDER_ID } from "./constants";
 import { SCENARIOS, buildOutletStock, latestPeriods, type OutletStock } from "./outlet-stock";
 import { headlineFor, needsCase, periodVariance } from "../domain/variance";
+import { lossLevel } from "../domain/story";
 export { HERO_EXCEPTION_ID, HERO_ORDER_ID };
-/** From this date the demo story has The Terrace drifting: more adjustments and more waste, building week by week. */
-const DRIFT_FROM = "2026-09-22";
+/** From this date the demo story has Mercado drifting: more adjustments and more waste, building week by week. */
+const DRIFT_FROM = rel(-21);
 const driftLevel = (outletId: string, date: string) =>
-  outletId !== "dxb-terrace" ? 0 : Math.min(1, Math.max(0, diffDays(date, DRIFT_FROM) / 21)) ** 2;
+  outletId !== "lis-terrace" ? 0 : Math.min(1, Math.max(0, diffDays(date, DRIFT_FROM) / 21)) ** 2;
 
 type Rng = ReturnType<typeof rng>;
 
@@ -60,11 +59,13 @@ const PEAKS: Record<string, [number, number, number][]> = {
   "Lobby lounge": [[10 * 60, 70, 0.35], [16 * 60, 70, 0.35], [21 * 60, 60, 0.3]],
   "In-room dining": [[8 * 60, 50, 0.35], [13 * 60, 60, 0.2], [21 * 60, 70, 0.45]],
   "Rooftop bar": [[21 * 60, 75, 1]],
+  "Lobby bar": [[11 * 60, 70, 0.2], [18 * 60 + 30, 70, 0.4], [22 * 60, 70, 0.4]],
+  "Banquets and events": [[10 * 60 + 30, 40, 0.25], [13 * 60, 45, 0.4], [20 * 60, 60, 0.35]],
 };
 
 const RATE_BY_KIND: Record<string, number> = {
   "Fine dining restaurant": 0.6, "Signature restaurant": 0.6, "Casual restaurant": 1, "All-day dining": 0.9,
-  "Pool bar": 1.2, "Lobby lounge": 0.8, "In-room dining": 0.7, "Rooftop bar": 1.25,
+  "Pool bar": 1.2, "Lobby lounge": 0.8, "In-room dining": 0.7, "Rooftop bar": 1.25, "Lobby bar": 1.15, "Banquets and events": 0.5,
 };
 
 const OK_REMOVE = ["Guest changed order", "Item unavailable", "Entered in error"];
@@ -76,7 +77,7 @@ function occupancyFor(propertyId: string, date: string): number {
   const p = propertyById[propertyId];
   const r = rng(`occ|${propertyId}|${date}`);
   const season = Math.min(0.08, Math.max(0, diffDays(date, DATA_START)) * 0.0012);
-  const base = (propertyId === "dxb" ? 0.72 : 0.66) + season + (isWeekend(date, p.city) ? 0.09 : 0) + (weekday(date) === 4 ? 0.03 : 0);
+  const base = (propertyId === "lis" ? 0.72 : 0.66) + season + (isWeekend(date, p.city) ? 0.09 : 0) + (weekday(date) === 4 ? 0.03 : 0);
   return Math.min(0.97, Math.max(0.45, base + r.between(-0.04, 0.04)));
 }
 
@@ -144,7 +145,7 @@ function makeOrder(o: Outlet, date: string, seq: number, r: Rng): Order {
     if (l && candidates.length > 1) {
       l.state = "removed_post";
       l.removedMin = (l.sentMin ?? l.enteredMin) + r.int(3, 16);
-      // In the drift period most unexplained removals at The Terrace sit under two evening logins.
+      // In the drift period most unexplained removals at Mercado sit under two evening logins.
       l.removedBy = k > 0 && evening && r.chance(0.72) ? (r.chance(0.55) ? `${o.code}-S2` : `${o.code}-S4`) : staffId;
       if (r.chance(0.45 - 0.25 * k)) {
         l.reason = r.pick(OK_REMOVE);
@@ -182,7 +183,7 @@ function makeOrder(o: Outlet, date: string, seq: number, r: Rng): Order {
     order.discountPct = r.pick([10, 10, 15, 20]);
     order.discountReason = r.pick(OK_DISCOUNT);
     order.discountApprovedBy = r.pick([supervisor, manager]);
-  } else if (r.chance(0.003 * rate.discount * (o.id === "doh-sky" ? 1.6 : 1))) {
+  } else if (r.chance(0.003 * rate.discount)) {
     order.discountPct = r.pick([30, 40, 50, 20]);
     if (r.chance(0.35)) order.discountReason = "Guest relations";
     if (r.chance(0.3)) order.discountApprovedBy = supervisor;
@@ -208,11 +209,11 @@ function makeOrder(o: Outlet, date: string, seq: number, r: Rng): Order {
 function heroOrder(): Order {
   const t = (h: number, m: number) => h * 60 + m;
   return {
-    id: HERO_ORDER_ID, outletId: "dxb-terrace", date: DEMO_TODAY, openMin: t(20, 42), closeMin: t(20, 51), covers: 1,
-    staffId: "TRC-S2", table: "Table 14", discountPct: 0, payment: "card",
+    id: HERO_ORDER_ID, outletId: "lis-terrace", date: DEMO_TODAY, openMin: t(20, 42), closeMin: t(20, 51), covers: 1,
+    staffId: "MER-S2", table: "Table 14", discountPct: 0, payment: "card",
     lines: [
-      { itemId: "burger", qty: 1, unitPrice: menuPriceAt("burger", "dxb-terrace", DEMO_TODAY), state: "kept", enteredMin: t(20, 42), sentMin: t(20, 43), completedMin: t(20, 50) },
-      { itemId: "coke", qty: 1, unitPrice: menuPriceAt("coke", "dxb-terrace", DEMO_TODAY), state: "removed_post", enteredMin: t(20, 42), sentMin: t(20, 43), removedMin: t(20, 49), removedBy: "TRC-S2" },
+      { itemId: "burger", qty: 1, unitPrice: menuPriceAt("burger", "lis-terrace", DEMO_TODAY), state: "kept", enteredMin: t(20, 42), sentMin: t(20, 43), completedMin: t(20, 50) },
+      { itemId: "coke", qty: 1, unitPrice: menuPriceAt("coke", "lis-terrace", DEMO_TODAY), state: "removed_post", enteredMin: t(20, 42), sentMin: t(20, 43), removedMin: t(20, 49), removedBy: "MER-S2" },
     ],
   };
 }
@@ -275,9 +276,9 @@ function buildRoomCharges(orders: Order[]): RoomCharge[] {
           });
         }
       };
-      mk("minibar", r.int(16, 26), 18, 140, "Minibar consumption recorded by housekeeping", 0.016);
-      mk("spa", r.int(5, 10), 280, 950, "Spa treatment", 0.006);
-      mk("laundry", r.int(4, 9), 45, 260, "Laundry and pressing", 0.008);
+      mk("minibar", r.int(16, 26), 5, 35, "Minibar consumption recorded by housekeeping", 0.016);
+      mk("spa", r.int(5, 10), 70, 240, "Spa treatment", 0.006);
+      mk("laundry", r.int(4, 9), 12, 65, "Laundry and pressing", 0.008);
     }
   }
   return out;
@@ -292,8 +293,8 @@ function seedInvestigation(e: Exception): InvestigationState {
   const roomCharge = e.type.startsWith("room_charge");
   const closed = (): InvestigationState => {
     const outcome = roomCharge
-      ? r.weighted(["recovered", "legitimate", "confirmed_loss", "inconclusive"] as const, (x) => ({ recovered: 0.55, legitimate: 0.2, confirmed_loss: 0.2, inconclusive: 0.05 })[x])
-      : r.weighted(["legitimate", "confirmed_loss", "recovered", "inconclusive"] as const, (x) => ({ legitimate: 0.5, confirmed_loss: 0.28, recovered: 0.16, inconclusive: 0.06 })[x]);
+      ? r.weighted(["recovered", "legitimate", "confirmed_loss", "inconclusive"] as const, (x) => ({ recovered: 0.7, legitimate: 0.15, confirmed_loss: 0.12, inconclusive: 0.03 })[x])
+      : r.weighted(["legitimate", "confirmed_loss", "recovered", "inconclusive"] as const, (x) => ({ legitimate: 0.3, confirmed_loss: 0.14, recovered: 0.52, inconclusive: 0.04 })[x]);
     const by = r.pick([manager, supervisor]);
     const closedAt = addDays(e.date, Math.min(age, r.int(1, 4)));
     const text = {
@@ -324,7 +325,7 @@ function buildWaste(): WasteLog[] {
   const out: WasteLog[] = [];
   const meanByKind: Record<string, number> = {
     "Fine dining restaurant": 2.2, "Signature restaurant": 2.1, "Casual restaurant": 3, "All-day dining": 2.9,
-    "Pool bar": 1.2, "Lobby lounge": 0.8, "In-room dining": 0.8, "Rooftop bar": 1.1,
+    "Pool bar": 1.2, "Lobby lounge": 0.8, "In-room dining": 0.8, "Rooftop bar": 1.1, "Lobby bar": 1, "Banquets and events": 0.6,
   };
   for (const o of OUTLETS) {
     const used = new Map<string, number>();
@@ -332,17 +333,17 @@ function buildWaste(): WasteLog[] {
     const pool = [...used.keys()].map((id) => ingredientById[id]);
     for (const date of eachDay({ from: DATA_START, to: DEMO_TODAY })) {
       const r = rng(`waste|${o.id}|${date}`);
-      const mean = meanByKind[o.kind] * (1 + 2.4 * driftLevel(o.id, date)) * (date === DEMO_TODAY ? 0.7 : 1);
+      const mean = 1.2 * lossLevel(date) * meanByKind[o.kind] * (date === DEMO_TODAY ? 0.7 : 1);
       const n = Math.max(0, Math.round(mean + gaussian(r) * 0.9));
       for (let i = 1; i <= n; i++) {
         const id = `W-${o.code}-${date.slice(5, 7)}${date.slice(8, 10)}-${i}`;
         const by = r.pick([`${o.code}-S8`, `${o.code}-S9`]);
         const roll = r.next();
-        if (roll < 0.1) {
-          const g = r.pick(["wineglass", "highball", "plate"]);
+        if (roll < 0.16) {
+          const g = r.pick(["wineglass", "highball", "plate", "flute", "rocks"]);
           out.push({ id, outletId: o.id, date, ingredientId: g, qty: r.int(1, 5), reason: "breakage", by, synced: true, seq: 0 });
         } else if (roll < 0.28) {
-          const m = r.weighted(o.menu.filter((e) => itemById[e.itemId].recipe && itemById[e.itemId].dept === "food"), (e) => e.weight);
+          const m = r.weighted(o.menu.filter((e) => itemById[e.itemId].recipe && itemById[e.itemId].dept === "food" && !e.itemId.startsWith("banq")), (e) => e.weight);
           if (m) out.push({ id, outletId: o.id, date, itemId: m.itemId, qty: r.int(1, 3), reason: r.pick<WasteReason>(["waste", "waste", "other"]), by, synced: true, seq: 0 });
         } else {
           const g = r.weighted(pool, (x) => (x.shelfLifeDays <= 7 ? 5 : 1) * Math.sqrt(used.get(x.id) ?? 0.01));
@@ -354,10 +355,19 @@ function buildWaste(): WasteLog[] {
       }
     }
   }
+  // Banquets make food for the guests booked, and some of it comes back. Yesterday's conference dinner is the worked example.
+  for (const date of eachDay({ from: DATA_START, to: addDays(DEMO_TODAY, -1) })) {
+    const r = rng(`overmade|${date}`);
+    const big = date === addDays(DEMO_TODAY, -1);
+    if (!big && !r.chance(0.3)) continue;
+    const itemId = big ? "banqdinner" : r.chance(0.7) ? "banqlunch" : "banqdinner";
+    const qty = big ? 40 : Math.round(r.between(14, 26) * lossLevel(date));
+    out.push({ id: `W-BQT-${date.slice(5, 7)}${date.slice(8, 10)}-OP`, outletId: "lis-banquets", date, itemId, qty, reason: "waste", by: "BQT-S8", synced: true, seq: 0 });
+  }
   return out;
 }
 
-const LAST_FULL_COUNT = "2026-10-11";
+const LAST_FULL_COUNT = rel(-2);
 const TERRACE_HEAVY = ["wagyu", "hammour", "coke", "potato", "brioche", "mozzarella", "chicken"];
 
 function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
@@ -378,7 +388,7 @@ function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
   for (const p of PROPERTIES) {
     const avg = avgDailyUsage(dayItems, p.id);
     for (const date of sundays) {
-      const full = date === LAST_FULL_COUNT || date === "2026-09-13";
+      const full = date === LAST_FULL_COUNT || date === rel(-30);
       const weekUsage = usageFromSales(dayItems, (r) => r.date > addDays(date, -7) && r.date <= date && propertyById[OUTLETS.find((o) => o.id === r.outletId)!.propertyId].id === p.id);
       for (const g of INGREDIENTS) {
         if (!g.priority && !full) continue;
@@ -393,9 +403,9 @@ function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
         const expected = daily * r.between(2.3, 3.4);
         let leaked = 0;
         for (let i = 0; i < 7; i++) leaked += leak.get(`${p.id}|${addDays(date, -i)}|${g.id}`) ?? 0;
-        // Items The Terrace uses most go missing faster as its drift builds.
-        const drifting = p.id === "dxb" && TERRACE_HEAVY.includes(g.id) ? 0.06 * driftLevel("dxb-terrace", date) : 0;
-        const shrink = (weekUsage.get(g.id) ?? 0) * (r.between(0.003, 0.016) + drifting) + leaked * 0.75 - (r.chance(0.15) ? daily * 0.05 : 0);
+        // Items Mercado uses most go missing faster as its drift builds.
+        const drifting = p.id === "lis" && TERRACE_HEAVY.includes(g.id) ? 0.06 * driftLevel("lis-terrace", date) : 0;
+        const shrink = (weekUsage.get(g.id) ?? 0) * (r.between(0.02, 0.08) + drifting) + leaked * 0.75 - (r.chance(0.15) ? daily * 0.05 : 0);
         const precision = g.unit === "each" ? 1 : 100;
         const counted = Math.max(0, Math.round((expected - shrink) * precision) / precision);
         out.push({
@@ -406,7 +416,7 @@ function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
       }
     }
     // Housekeeping supplies, counted in the storeroom at the last full count. Amenity kits are running low.
-    if (p.id === "dxb") {
+    if (p.id === "lis") {
       for (const [id, qty] of [["amenity", 60], ["towel", 420], ["chem", 38]] as const) {
         out.push({ id: `C-${p.id}-${LAST_FULL_COUNT}-${id}`, propertyId: p.id, ingredientId: id, date: LAST_FULL_COUNT, kind: "weekly", expected: qty, counted: qty, by: "HK-09", seq: 0, allocation: {} });
       }
@@ -433,35 +443,52 @@ function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
 
 const SUPPLIER_DAYS: Record<string, (wd: number) => boolean> = {
   meat: () => true, sea: () => true, produce: () => true, bakery: () => true,
-  dry: (wd) => wd === 1 || wd === 4, bev: (wd) => wd === 2 || wd === 5, ware: () => false,
+  dry: (wd) => wd === 1 || wd === 4, bev: (wd) => wd === 2 || wd === 5, wine: (wd) => wd === 2 || wd === 5, ware: () => false,
 };
-const SUPPLIER_COVER: Record<string, number> = { meat: 1.02, sea: 1.02, produce: 1.02, bakery: 1.02, dry: 3.6, bev: 3.6, ware: 0 };
+const SUPPLIER_COVER: Record<string, number> = { meat: 1.02, sea: 1.02, produce: 1.02, bakery: 1.02, dry: 3.6, bev: 3.6, wine: 3.6, ware: 0 };
 
 function buildDeliveries(dayItems: DayItem[]): Delivery[] {
   const out: Delivery[] = [];
   for (const p of PROPERTIES) {
     const avg = avgDailyUsage(dayItems, p.id);
     // Suppliers confirm the next day's delivery; anything later is still to be ordered.
-    for (const date of eachDay({ from: addDays(DEMO_TODAY, -12), to: addDays(DEMO_TODAY, 1) })) {
+    for (const date of eachDay({ from: addDays(DEMO_TODAY, -29), to: addDays(DEMO_TODAY, 1) })) {
       for (const supplierId of Object.keys(SUPPLIER_DAYS)) {
         if (!SUPPLIER_DAYS[supplierId](weekday(date))) continue;
         const r = rng(`delivery|${p.id}|${date}|${supplierId}`);
         const future = date > DEMO_TODAY;
-        // Gulf Prime Meats could not confirm chicken for Dubai tomorrow.
-        const lines = INGREDIENTS.filter((g) => g.supplierId === supplierId && (avg.get(g.id) ?? 0) > 0 && !(p.id === "dxb" && g.id === "chicken" && date === addDays(DEMO_TODAY, 1))).map((g) => {
+        // Carnes Ribeiro & Filhos could not confirm chicken for Lisbon tomorrow.
+        const lines = INGREDIENTS.filter((g) => g.supplierId === supplierId && (avg.get(g.id) ?? 0) > 0 && !(p.id === "lis" && g.id === "chicken" && date === addDays(DEMO_TODAY, 1))).map((g) => {
           const want = avg.get(g.id)! * SUPPLIER_COVER[supplierId] * r.between(0.94, 1.08);
           const pack = orderPack(g);
           const ordered = Math.max(pack, Math.round(want / pack) * pack);
           const poPrice = round2(ingredientCostAt(g.id, date) * p.costFactor);
           let delivered = ordered;
           let invoicePrice = poPrice;
-          if (!future && r.chance(0.05)) delivered = Math.max(0, ordered - pack * r.int(1, 2));
-          if (!future && r.chance(0.045)) invoicePrice = round2(poPrice * r.pick([1.03, 1.05, 1.08]));
+          if (!future && r.chance(0.035)) delivered = Math.max(0, ordered - pack * r.int(1, 2));
+          if (!future && r.chance(0.03)) invoicePrice = round2(poPrice * r.pick([1.03, 1.05, 1.08]));
           const invoiced = delivered < ordered && r.chance(0.6) ? ordered : delivered;
           return { ingredientId: g.id, ordered, delivered: future ? 0 : delivered, invoiced: future ? 0 : invoiced, poPrice, invoicePrice };
         });
         if (lines.length === 0) continue;
-        out.push({ id: `PO-${p.id.toUpperCase()}-${date.slice(5, 7)}${date.slice(8, 10)}-${supplierId.toUpperCase()}`, propertyId: p.id, supplierId, date, status: future ? "expected" : "delivered", lines });
+        // The worked examples: yesterday's beef came 4 kg short but was invoiced in full, and two days ago
+        // Mercearia Lusa invoiced €180 above what was delivered.
+        if (p.id === "lis" && supplierId === "meat" && date === addDays(DEMO_TODAY, -1)) {
+          const beef = lines.find((l) => l.ingredientId === "tenderloin");
+          if (beef) Object.assign(beef, { ordered: 20, delivered: 16, invoiced: 20, invoicePrice: beef.poPrice });
+          // The 30 kg of chicken for Thursday's conference came with the same delivery (issued today as T-7).
+          const chicken = lines.find((l) => l.ingredientId === "chicken");
+          if (chicken) for (const k of ["ordered", "delivered", "invoiced"] as const) chicken[k] += 30;
+        }
+        if (p.id === "lis" && supplierId === "dry" && date <= addDays(DEMO_TODAY, -2) && date >= addDays(DEMO_TODAY, -4)) {
+          const l = lines.find((x) => x.ingredientId === "parmesan") ?? lines[0];
+          if (l.delivered > 0) Object.assign(l, { invoiced: l.delivered, invoicePrice: round2(l.poPrice + 180 / l.delivered) });
+        }
+        const delivery: Delivery = { id: `PO-${p.id.toUpperCase()}-${date.slice(5, 7)}${date.slice(8, 10)}-${supplierId.toUpperCase()}`, propertyId: p.id, supplierId, date, status: future ? "expected" : "delivered", lines };
+        // Since the hotel started checking invoices with Tyll, most older differences have been credited by the supplier.
+        const over = deliveryOvercharge(delivery);
+        if (over > 0 && diffDays(DEMO_TODAY, date) >= 6 && r.chance(0.8)) delivery.credit = { amount: round2(over), date: addDays(date, r.int(3, 5)) };
+        out.push(delivery);
       }
     }
   }
@@ -470,13 +497,11 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
 
 function buildTransfers(): Transfer[] {
   return [
-    { id: "T-1", propertyId: "dxb", ingredientId: "wine", date: "2026-10-12", qty: 4.5, direction: "out", counterparty: "Banqueting" },
-    { id: "T-2", propertyId: "dxb", ingredientId: "chicken", date: "2026-10-13", qty: 6, direction: "out", counterparty: "Staff restaurant" },
-    { id: "T-3", propertyId: "dxb", ingredientId: "coke", date: "2026-10-13", qty: 48, direction: "in", counterparty: "Banqueting" },
-    { id: "T-7", propertyId: "dxb", ingredientId: "chicken", date: "2026-10-13", qty: 30, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner" },
-    { id: "T-6", propertyId: "dxb", ingredientId: "lobster", date: "2026-10-13", qty: 9, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner" },
-    { id: "T-4", propertyId: "doh", ingredientId: "coffee", date: "2026-10-12", qty: 2, direction: "out", counterparty: "Executive lounge" },
-    { id: "T-5", propertyId: "doh", ingredientId: "lamb", date: "2026-10-13", qty: 5, direction: "in", counterparty: "Banqueting" },
+    { id: "T-1", propertyId: "lis", ingredientId: "wine", date: rel(-1), qty: 4.5, direction: "out", counterparty: "Banqueting" },
+    { id: "T-2", propertyId: "lis", ingredientId: "chicken", date: rel(0), qty: 6, direction: "out", counterparty: "Staff restaurant" },
+    { id: "T-3", propertyId: "lis", ingredientId: "coke", date: rel(0), qty: 48, direction: "in", counterparty: "Banqueting" },
+    { id: "T-7", propertyId: "lis", ingredientId: "chicken", date: rel(0), qty: 30, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner" },
+    { id: "T-6", propertyId: "lis", ingredientId: "lobster", date: rel(0), qty: 3, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner" },
   ];
 }
 
@@ -498,8 +523,7 @@ function buildContext(dayOutlets: DayOutlet[]): { occupancy: OccupancyDay[]; res
     }
   }
   const events: HotelEvent[] = [
-    { id: "EV-1", propertyId: "dxb", date: "2026-10-15", name: "Regional sales conference dinner", attendance: 180 },
-    { id: "EV-2", propertyId: "doh", date: "2026-10-16", name: "Wedding reception", attendance: 240 },
+    { id: "EV-1", propertyId: "lis", date: rel(2), name: "Regional sales conference dinner", attendance: 180 },
   ];
   return { occupancy, reservations, events };
 }
@@ -544,9 +568,9 @@ function buildRooms(): { rooms: Room[]; arrivals: Arrival[]; attendants: Attenda
   const requests: GuestRequest[] = [];
   for (const p of PROPERTIES) {
     const r = rng(`rooms|${p.id}`);
-    const team = ATTENDANT_NAMES.slice(0, p.id === "dxb" ? 6 : 5).map((name, i) => ({ id: `HK-${p.id}-${i + 1}`, propertyId: p.id, name }));
+    const team = ATTENDANT_NAMES.slice(0, p.id === "lis" ? 6 : 5).map((name, i) => ({ id: `HK-${p.id}-${i + 1}`, propertyId: p.id, name }));
     attendants.push(...team);
-    const floors = p.id === "dxb" ? [12, 14, 15] : [8, 9, 10];
+    const floors = p.id === "lis" ? [12, 14, 15] : [8, 9, 10];
     for (const floor of floors) {
       for (let n = 1; n <= 12; n++) {
         const number = String(floor * 100 + n);
@@ -568,7 +592,7 @@ function buildRooms(): { rooms: Room[]; arrivals: Arrival[]; attendants: Attenda
     targets.slice(0, 9).forEach((room, i) => {
       const waiting = room.status !== "ready" && i % 4 === 1;
       arrivals.push({
-        id: `ARR-${p.id}-${i + 1}`, propertyId: p.id, guest: GUESTS[(i + 1 + (p.id === "doh" ? 5 : 0)) % GUESTS.length], room: room.number,
+        id: `ARR-${p.id}-${i + 1}`, propertyId: p.id, guest: GUESTS[(i + 1) % GUESTS.length], room: room.number,
         etaMin: waiting ? DEMO_NOW_MIN - r.int(8, 25) : DEMO_NOW_MIN + r.int(15, 170), status: waiting ? "waiting" : "expected", vip: i === 3,
       });
     });
@@ -621,8 +645,8 @@ export function getDataset(): Dataset {
   // Stock differences found by today's counts are new, except the Wagyu case, which the outlet manager already has.
   const variances = varianceExceptions(outletStock);
   for (const e of variances) {
-    seedInvestigations[e.id] = e.ingredientId === "wagyu" && e.outletId === "dxb-terrace"
-      ? { status: "assigned", assigneeId: "TRC-S7", deadline: addDays(DEMO_TODAY, 2), notes: [], confirmedLoss: 0, recovered: 0 }
+    seedInvestigations[e.id] = e.ingredientId === "wagyu" && e.outletId === "lis-terrace"
+      ? { status: "assigned", assigneeId: "MER-S7", deadline: addDays(DEMO_TODAY, 2), notes: [], confirmedLoss: 0, recovered: 0 }
       : { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
   }
   const exceptions = [...flagged, ...variances];

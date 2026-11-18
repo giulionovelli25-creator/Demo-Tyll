@@ -170,7 +170,7 @@ export function Proposals() {
   const { data, error } = useSales(propertyId);
   if (id) return <OppProposals oppId={id} propertyId={propertyId} create={params.get("new") === "1"} />;
   if (!data) return <Panel><EmptyState title={error ?? "Loading proposals"} /></Panel>;
-  const money = (n: number, c: string) => fmtMoney(n, c as "AED");
+  const money = (n: number, c: string) => fmtMoney(n, c as "EUR");
   const rows = data.opps.flatMap((o) => o.proposals.filter((p) => p.status !== "superseded").map((p) => ({ o, p })));
   return (
     <div className="space-y-5">
@@ -297,10 +297,10 @@ function ProposalForm({ o, base, id, limit, onDone }: { o: OppView; base?: OppVi
           <Field label="Guests" type="number" value={f.guests} onChange={set("guests")} />
           <Field label="Venue" value={f.venue} onChange={set("venue")} />
           <Select label="Service style" value={f.format} onChange={set("format")}><option value="seated">Seated</option><option value="buffet">Buffet</option><option value="reception">Reception</option><option value="theatre">Theatre</option></Select>
-          <Field label={`Price per guest (${o.currency})`} type="number" value={f.pricePerGuest} onChange={set("pricePerGuest")} />
+          <Field label="Price per guest (€)" type="number" value={f.pricePerGuest} onChange={set("pricePerGuest")} />
           <Field label="Discount %" type="number" value={f.discountPct} onChange={set("discountPct")} hint={over ? `Above ${limit}%: needs approval` : `Up to ${limit}% without approval`} />
           <Field label="Optional service" value={f.extraLabel} onChange={set("extraLabel")} placeholder="For example: AV package" />
-          <Field label={`Its price (${o.currency})`} type="number" value={f.extraAmount} onChange={set("extraAmount")} />
+          <Field label="Its price (€)" type="number" value={f.extraAmount} onChange={set("extraAmount")} />
           <Field label="Valid until" type="date" value={f.validUntil} onChange={set("validUntil")} />
         </div>
         <fieldset>
@@ -359,7 +359,7 @@ export function ConfirmedBusiness() {
 /** One line on the Overview: business confirmed this month, as contract value. Not counted as revenue. */
 export function BusinessStrip() {
   const { user, propertyId } = useView();
-  const { data } = useLiveGet<{ summary: { propertyId: string; currency: "AED" | "QAR"; value: number; count: number }[] }>(can(user, "sales.view") ? "/api/sales/summary" : null);
+  const { data } = useLiveGet<{ summary: { propertyId: string; currency: "EUR"; value: number; count: number }[] }>(can(user, "sales.view") ? "/api/sales/summary" : null);
   const rows = (data?.summary ?? []).filter((r) => !propertyId || r.propertyId === propertyId);
   if (!rows.length) return null;
   return (

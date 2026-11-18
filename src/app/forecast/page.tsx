@@ -16,6 +16,7 @@ import { useLiveGet } from "@/lib/guest-hooks";
 import { useView } from "@/lib/hooks";
 import type { PurchaseRequest } from "@/lib/types";
 import { fmtMoney, sum } from "@/lib/util";
+import { orderStage } from "@/lib/domain/order-stage";
 
 type Tab = "approvals" | "buy" | "prep" | "outlook";
 
@@ -51,10 +52,11 @@ function Orders({ tab, tabs, setTab, predicts, planTabs }: { tab: Tab; tabs: Tab
   const { data } = useLiveGet<{ requests: PurchaseRequest[] }>("/api/purchasing");
   const requests = data?.requests ?? [];
   const value = (rs: PurchaseRequest[]) => sum(rs, (r) => sum(r.lines, (l) => l.qty * l.unitPrice));
-  const drafts = requests.filter((r) => r.status === "draft" && r.createdBy === user.id);
+  const drafts = requests.filter((r) => r.status === "draft");
   const waiting = requests.filter((r) => WAITING.includes(r.status));
   const onTheWay = requests.filter((r) => r.status === "approved");
-  const currency = allowedProperties(user)[0] ? propertyById[allowedProperties(user)[0]].currency : "AED";
+  const late = onTheWay.filter((r) => orderStage(r) === "late");
+  const currency = allowedProperties(user)[0] ? propertyById[allowedProperties(user)[0]].currency : "EUR";
   const money = (n: number) => fmtMoney(n, currency);
   const { plan } = useAlertFeed();
   const nextOrder = plan?.items.filter((i) => i.orderQty > 0 && i.orderBy).map((i) => i.orderBy!).sort()[0];
@@ -65,7 +67,7 @@ function Orders({ tab, tabs, setTab, predicts, planTabs }: { tab: Tab; tabs: Tab
       <PageHeader
         title={LABEL[tab]}
         question={tab === "approvals" ? "What is on order, and what still needs a decision?" : undefined}
-        lead={tab === "approvals" ? (data ? `${waiting.length} waiting for approval, ${onTheWay.length} on the way, ${drafts.length} ${drafts.length === 1 ? "draft" : "drafts"} of yours.` : "Loading orders.") : undefined}
+        lead={tab === "approvals" ? (data ? `${waiting.length} waiting for approval, ${onTheWay.length} on the way${late.length ? ` (${late.length} late)` : ""}, ${drafts.length} ${drafts.length === 1 ? "draft" : "drafts"}.` : "Loading orders.") : undefined}
       >
         {!planning && predicts && can(user, "purchase.create") && <Link href="/forecast" className={linkButton("primary")}>Build order</Link>}
       </PageHeader>

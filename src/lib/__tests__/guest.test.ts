@@ -84,8 +84,8 @@ describe("Scenario A: late room to ready room", () => {
   it("counts staff borrowed through Staff Support only once approved", () => {
     const now = G.demoNow();
     const before = board().housekeepers.length;
-    const found = ok(O.findCandidates(hk, { propertyId: "dxb", skill: "cleaning", date: "2026-10-13", start: now, end: 23 * 60, toDeptId: "dxb-hk" }));
-    const req = ok(O.createSupport(hk, { propertyId: "dxb", toDeptId: "dxb-hk", skill: "cleaning", count: 1, employeeIds: [found.candidates[0].employeeId], reason: "Arrivals tonight", date: "2026-10-13", start: now, end: 23 * 60 })).request;
+    const found = ok(O.findCandidates(hk, { propertyId: "lis", skill: "cleaning", date: "2026-10-13", start: now, end: 23 * 60, toDeptId: "lis-hk" }));
+    const req = ok(O.createSupport(hk, { propertyId: "lis", toDeptId: "lis-hk", skill: "cleaning", count: 1, employeeIds: [found.candidates[0].employeeId], reason: "Arrivals tonight", date: "2026-10-13", start: now, end: 23 * 60 })).request;
     expect(board().housekeepers.length).toBe(before);
     const lender = Object.values(userById).find((u) => O.managesDept(u, req.items[0].deptId) && u.role !== "owner")!;
     ok(O.decideItem(lender, req.id, req.items[0].id, { decision: "approve" }));

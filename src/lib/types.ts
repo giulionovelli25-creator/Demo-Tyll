@@ -1,6 +1,6 @@
 // Shared data model for every Tyll module. All screens read these shapes.
 
-export type Currency = "AED" | "QAR";
+export type Currency = "EUR";
 export type Dept = "food" | "beverage";
 export type Station = "kitchen" | "bar";
 
@@ -47,7 +47,7 @@ export interface Ingredient {
   name: string;
   nameAr: string;
   unit: "kg" | "l" | "each";
-  /** Base cost per unit in AED at the start of the demo period. */
+  /** Base cost per unit in euros at the start of the demo period. */
   cost: number;
   supplierId: string;
   shelfLifeDays: number;
@@ -68,7 +68,7 @@ export interface MenuItem {
   nameAr: string;
   dept: Dept;
   category: string;
-  /** Base selling price in AED, net of tax and service charge. */
+  /** Base selling price in euros, net of tax and service charge. */
   price: number;
   recipe?: RecipeLine[];
   /** Used only where no recipe has been built yet. */
@@ -92,7 +92,7 @@ export interface Staff {
 export interface PriceChange {
   id: string;
   from: string;
-  /** New value. For ingredients: AED cost per unit. For menu items: AED base price. */
+  /** New value. For ingredients: euro cost per unit. For menu items: euro base price. */
   value: number;
 }
 
@@ -299,6 +299,8 @@ export interface Delivery {
   date: string;
   status: "delivered" | "expected";
   lines: DeliveryLine[];
+  /** A credit note the supplier issued for an invoice difference. Simulated. */
+  credit?: { amount: number; date: string };
 }
 
 export interface Transfer {
@@ -597,6 +599,11 @@ export interface PurchaseRequest {
   deptId?: string;
   /** Set when approved. Demo only: nothing is sent to a supplier. */
   poNumber?: string;
+  /** When the approved order went to the supplier (simulated), and when the supplier said it would arrive. Local time, YYYY-MM-DDTHH:MM. */
+  sentAt?: string;
+  expectedAt?: string;
+  /** The delivery record this order arrived as, for the ordered, delivered and invoiced view. */
+  deliveryId?: string;
   history: RequestEvent[];
 }
 

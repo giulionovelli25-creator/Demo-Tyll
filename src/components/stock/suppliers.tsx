@@ -1,6 +1,7 @@
 "use client";
 import { ChevronDown, Copy, Mail } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import { Badge, Button, Drawer, EmptyState, Field, Note, Panel, SummaryBar, TableWrap, Td, Th, cn, report, rowClass, textLink } from "@/components/ui";
 import { StripTrend } from "@/components/charts";
 import { byDay, lastDays, versus, weekSums } from "@/lib/domain/trends";
@@ -24,7 +25,9 @@ export function Suppliers({ propertyId, tabs }: { propertyId: string; tabs?: Rea
   const property = propertyById[propertyId];
   const money = (n: number) => fmtMoney(n, property.currency, { decimals: true });
   const [onlyIssues, setOnlyIssues] = useState(true);
-  const [open, setOpen] = useState<string | null>(null);
+  // An order opened from Orders arrives with ?delivery=, which opens that delivery's three way check.
+  const asked = useSearchParams().get("delivery");
+  const [open, setOpen] = useState<string | null>(asked);
   const [draft, setDraft] = useState<string | null>(null);
   const me = useUser();
   const receipts = useDemo((s) => s.receiptCorrections);
@@ -41,23 +44,25 @@ export function Suppliers({ propertyId, tabs }: { propertyId: string; tabs?: Rea
   const expected = ctx.data.deliveries.filter((d) => d.propertyId === propertyId && d.status === "expected");
   // Staff and the head chef see quantities without prices, so money is said to be hidden rather than shown as nothing.
   const priced = deliveries.some((x) => x.d.lines.some((l) => l.poPrice > 0 || l.invoicePrice > 0));
-  const perDay = priced ? byDay(deliveries, (x) => x.d.date, (x) => x.over, lastDays(13)) : byDay(withIssues, (x) => x.d.date, () => 1, lastDays(13));
+  const perDay = priced ? byDay(deliveries, (x) => x.d.date, (x) => x.over, lastDays(30)) : byDay(withIssues, (x) => x.d.date, () => 1, lastDays(30));
   const weekIssues = weekSums(withIssues, (x) => x.d.date, () => 1);
   // The five largest first; the rest one click away, so the page never opens on a long list.
   const [everything, setEverything] = useState(false);
-  const rows = everything ? visible : visible.slice(0, 5);
+  const askedRow = asked ? deliveries.find((x) => x.d.id === asked) : undefined;
+  const rows = askedRow ? [askedRow, ...(everything ? visible : visible.slice(0, 5)).filter((x) => x !== askedRow)] : everything ? visible : visible.slice(0, 5);
+  useEffect(() => { if (asked) requestAnimationFrame(() => document.getElementById("deliveries")?.scrollIntoView({ block: "start", behavior: "smooth" })); }, [asked]);
   const show = (issues: boolean) => { setOnlyIssues(issues); setEverything(true); requestAnimationFrame(() => document.getElementById("deliveries")?.scrollIntoView({ block: "start", behavior: "smooth" })); };
 
   return (
     <div className="space-y-6">
       <SummaryBar
         items={[
-          { label: "Deliveries checked", value: deliveries.length, compare: { text: "Last 13 days", good: null }, onClick: () => show(false) },
+          { label: "Deliveries checked", value: deliveries.length, compare: { text: "Last 30 days", good: null }, onClick: () => show(false) },
           { label: "With a difference", value: withIssues.length, tone: withIssues.length ? "warn" : "pos", compare: versus(weekIssues.now, weekIssues.before, "down", "the week before"), onClick: () => show(true) },
           { label: "To query with suppliers", value: priced ? fmtMoney(sum(deliveries, (x) => x.over), property.currency) : "Not shown", tone: priced ? "money" : undefined, compare: { text: priced ? "Above delivery or price" : "Prices not shown to your role", good: null }, onClick: () => show(true) },
           { label: "Confirmed for tomorrow", value: expected.length, compare: { text: expected.length === 1 ? "1 delivery" : `${expected.length} deliveries`, good: null } },
         ]}
-        trend={<StripTrend goodWhen="down" title={priced ? "Amount to query per delivery day, last 13 days" : "Deliveries with a difference, last 13 days"} points={perDay} explain="What suppliers invoiced beyond what arrived or the agreed price, by delivery day." series={priced ? [{ id: "count", label: "Deliveries with a difference", axis: "count", format: (n) => `${Math.round(n)}`, points: byDay(withIssues, (x) => x.d.date, () => 1, lastDays(13)), goodWhen: "down" as const, explain: "Short, over, or invoiced above the order price." }] : []} format={priced ? money : (n) => `${n} ${n === 1 ? "delivery" : "deliveries"}`} summary={`Invoiced beyond delivery or agreed price, by delivery date. Deliveries are only held for the last 13 days.`} note="13 days held" />}
+        trend={<StripTrend goodWhen="down" title={priced ? "Amount to query per delivery day, last 30 days" : "Deliveries with a difference, last 30 days"} points={perDay} explain="What suppliers invoiced beyond what arrived or the agreed price, by delivery day." series={priced ? [{ id: "count", label: "Deliveries with a difference", axis: "count", format: (n) => `${Math.round(n)}`, points: byDay(withIssues, (x) => x.d.date, () => 1, lastDays(13)), goodWhen: "down" as const, explain: "Short, over, or invoiced above the order price." }] : []} format={priced ? money : (n) => `${n} ${n === 1 ? "delivery" : "deliveries"}`} summary={`Invoiced beyond delivery or agreed price, by delivery date. Deliveries are only held for the last 13 days.`} note="13 days held" />}
       />
 
       {tabs}
@@ -84,7 +89,7 @@ export function Suppliers({ propertyId, tabs }: { propertyId: string; tabs?: Rea
                       </Td>
                       <Td className="num text-graphite">{fmtDate(d.date, true)}</Td>
                       <Td>{issues.length === 0 ? <Badge tone="pos">Matched</Badge> : <span className="flex flex-wrap gap-1">{issues.map((i) => <Badge key={i} tone="neutral">{i === "short_delivery" && over === 0 ? "Short, not charged" : ISSUE_LABEL[i]}</Badge>)}</span>}</Td>
-                      <Td align="right" className={cn(over > 0 && "font-medium text-ink")}>{!priced ? "Not shown" : over > 0 ? fmtMoney(over, property.currency) : "None"}</Td>
+                      <Td align="right" className={cn(over > 0 && "font-medium text-ink")}>{!priced ? "Not shown" : over > 0 ? <>{fmtMoney(over, property.currency)}{d.credit && <span className="mt-0.5 block text-xs font-normal text-pos">Credited {fmtDate(d.credit.date)}</span>}</> : "None"}</Td>
                     </tr>,
                     isOpen && (
                       <tr key={`${d.id}-lines`} className="border-t border-hair bg-cloud">
@@ -112,7 +117,7 @@ export function Suppliers({ propertyId, tabs }: { propertyId: string; tabs?: Rea
                               })}
                             </tbody>
                           </table>
-                          {priced && over > 0 && <div className="mt-3"><Button size="sm" onClick={() => setDraft(d.id)}><Mail size={14} aria-hidden /> Draft a credit request for {fmtMoney(over, property.currency)}</Button></div>}
+                          {priced && over > 0 && !d.credit && <div className="mt-3"><Button size="sm" onClick={() => setDraft(d.id)}><Mail size={14} aria-hidden /> Draft a credit request for {fmtMoney(over, property.currency)}</Button></div>}
                           <ReceiveForm deliveryId={d.id} lines={d.lines} />
                         </td>
                       </tr>

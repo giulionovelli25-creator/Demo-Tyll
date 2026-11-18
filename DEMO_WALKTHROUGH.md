@@ -38,15 +38,14 @@ The sidebar is **Overview**, then **Log waste, Stock, Predictions, Revenue, Drin
 | Story | People |
 | --- | --- |
 | Owner's view | Layla Al Mansoori (owner) |
-| Missing stock, wine, beef | Sara Haddad (The Terrace manager), Marco Bellini (F&B director, can change pour standards) |
-| Forecast to purchasing | Sara, then Nadia Rahman (Purchasing), Priya Raman (Accounting), James Whitfield (General manager, only for orders over AED 5,000), Ahmed Karimi (Storekeeper) |
+| Missing stock, wine, beef | Sara Haddad (Mercado manager), Marco Bellini (F&B director, can change pour standards) |
+| Forecast to purchasing | Sara, then Nadia Rahman (Purchasing), Priya Raman (Accounting), James Whitfield (General manager, only for orders over €5,000), Ahmed Karimi (Storekeeper) |
 | Conference and staff support | Yasmin Saleh (Events), Sara (lends her team) |
 | Guest Connect | Leila Mansour (Front office) or Lina Haddad (Concierge), then Sara |
 | Late room | Leila, Grace Mwangi (Housekeeping), Maria Santos (Room attendant) |
 | Luggage | Leila, Tomas Reyes (Bell captain), Yusuf Adeyemi (Bell attendant) |
 | Sales | Noor Al Hashimi (Sales), Daniel Mercer (Director of sales, approves discounts) |
 | Staff on a phone | Omar Farouk (Steward), Ravi Menon (Commis chef), Maria, Yusuf, Ahmed |
-| Other hotel (permission checks) | Mariam Al Kuwari (Sales, Doha), Elena Petrova (Accountant, Doha) |
 
 ## Take a tour
 
@@ -60,14 +59,14 @@ Main stories: Where did the Cokes go? · More wine than expected · Forecast to 
 
 ## Baseline (after a reset)
 
-- **Coca-Cola, The Terrace:** 40 opening + 10 received − 12 counted = 38 used; sales explain 30; **8 cans unexplained**. The hero order TRC-1013-198 has a Coke removed after it went to the bar.
-- **House wine, Lobby Lounge:** 20 glasses × 150 ml = 3,000 ml expected; 3,750 ml used; **750 ml unexplained**. At a 175 ml standard: 3,500 ml expected, 250 ml unexplained.
-- **Wagyu beef, The Terrace:** 80 burgers × 180 g = 14.4 kg expected; 16.2 kg used; **1.8 kg unexplained**.
+- **Coca-Cola, Mercado:** 40 opening + 10 received − 12 counted = 38 used; sales explain 30; **8 cans unexplained**. The hero order TRC-1013-198 has a Coke removed after it went to the bar.
+- **House wine, Bar Azulejo:** 20 glasses × 150 ml = 3,000 ml expected; 3,750 ml used; **750 ml unexplained**. At a 175 ml standard: 3,500 ml expected, 250 ml unexplained.
+- **Wagyu beef, Mercado:** 80 burgers × 180 g = 14.4 kg expected; 16.2 kg used; **1.8 kg unexplained**.
 - **Rooms:** suite 1211 (VIP, due 21:30) is being cleaned and is predicted about 19 minutes late; the guest for 1205 is already waiting. The demo clock starts at 20:55 and moves with real time.
-- **Events:** Regional sales conference dinner (EVT-DXB-0001), 180 guests, short of staff; Doha wedding (EVT-DOH-0001).
-- **Purchasing:** no requests; the first new one is PR-DXB-0001. The F&B budget for October is AED 260,000, with about AED 10,000 left before new orders.
-- **Finance:** 23 Dubai supplier invoices differ from their delivery, such as Gulf Prime Meats MEAT-1011 (22 kg chicken ordered, 18 received, 22 invoiced).
-- **Sales:** five Dubai opportunities, one proposal awaiting the customer (PRP-DXB-0001), one deal already linked to EVT-DXB-0001.
+- **Events:** Regional sales conference dinner (EVT-LIS-0001), 180 guests, short of staff.
+- **Orders:** seven example orders, PR-LIS-0001 to PR-LIS-0007, one at every stage: a draft, two waiting for approval, one sent, the fish order due at 15:00 that is late (a red alert with Call supplier and Order from backup supplier), one delivered and one delivered 4 kg of beef short. The F&B budget this month is €95,000.
+- **Finance:** supplier invoices that differ from their delivery, such as yesterday's Carnes Ribeiro & Filhos meat invoice (20 kg beef tenderloin ordered, 16 received, 20 invoiced) and a €180 difference at Mercearia Lusa. Older differences have mostly been credited.
+- **Sales:** five opportunities, one proposal awaiting the customer (PRP-LIS-0001), one deal already linked to EVT-LIS-0001.
 
 ## Everyday actions
 
@@ -88,17 +87,17 @@ Only the owner or general manager can reset shared records. Other people see **S
 
 ## Five-to-seven-minute demo
 
-1. **Owner sees a problem.** Sign in as Layla. The Overview shows revenue, expenses, estimated operating contribution and potential losses (each has a **?** explaining it). The Terrace has the lowest margin and the most open issues.
+1. **Owner sees a problem.** Sign in as Layla. The Overview shows revenue, expenses, estimated operating contribution and potential losses (each has a **?** explaining it). Mercado has the lowest margin and the most open issues.
 2. **Manager investigates missing stock.** Guided demo → *Where did the Cokes go?* As Sara: Tyll Stock → Where did it go? → Coca-Cola: 8 cans unexplained, possible explanations listed as things to check.
 3. **Tyll shows the evidence.** Open the linked order: a Coke removed from a bill six minutes after its ticket went to the bar. Record the outcome.
 4. **Tyll predicts what is needed.** Forecast → What to buy: change expected guests and watch quantities change; open a line's explanation.
 5. **Department asks for approval.** Create the request and submit it.
 6. **Other departments act.** Sign in as Nadia: the bell shows the request; open it and approve. Priya is notified next and approves. Ahmed records the delivery on his phone.
-7. **Owner sees the result.** Back as Layla: the Overview, Finance → Budgets & Reports (spending against budget, never mixing AED and QAR), and the Money Back List.
+7. **Owner sees the result.** Back as Layla: the Overview, Finance → Budgets & Reports (spending against budget), and the Money Back List.
 
 ### Longer version
 
-Add the conference story (Find staff, approval by the lending manager), Guest Connect (dinner for two accepted by The Terrace), the late room (front desk, housekeeping, a phone, inspection), and a phone waste entry that the manager sees straight away. **Cmd K or Ctrl K** (or the search icon) finds actions, outlets and records such as *Coca-Cola*, *PR-DXB-0001*, *1211* or *Guest Connect*.
+Add the conference story (Find staff, approval by the lending manager), Guest Connect (dinner for two accepted by Mercado), the late room (front desk, housekeeping, a phone, inspection), and a phone waste entry that the manager sees straight away. **Cmd K or Ctrl K** (or the search icon) finds actions, outlets and records such as *Coca-Cola*, *PR-DXB-0001*, *1211* or *Guest Connect*.
 
 ## Known limitations
 

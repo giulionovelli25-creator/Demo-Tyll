@@ -129,12 +129,10 @@ describe("protected data", () => {
 
   it("sends an outlet manager only their outlet's records", () => {
     const snap = snapshotFor(userById["u-rm"]);
-    expect(new Set(snap.dayItems.map((r) => r.outletId))).toEqual(new Set(["dxb-terrace"]));
-    expect(snap.exceptions.every((e) => e.outletId === "dxb-terrace")).toBe(true);
+    expect(new Set(snap.dayItems.map((r) => r.outletId))).toEqual(new Set(["lis-terrace"]));
+    expect(snap.exceptions.every((e) => e.outletId === "lis-terrace")).toBe(true);
     expect(snap.rooms).toHaveLength(0);
-    expect(snap.roomCharges.every((c) => c.outletId === "dxb-terrace")).toBe(true);
-    // Counts of Maison Lune's own store stay with Lune.
-    expect(snap.counts.some((c) => ["lobster", "truffle", "tenderloin"].includes(c.ingredientId))).toBe(false);
+    expect(snap.roomCharges.every((c) => c.outletId === "lis-terrace")).toBe(true);
     expect(snapshotFor(userById["u-gm"]).counts.some((c) => c.ingredientId === "tenderloin")).toBe(true);
   });
 
@@ -148,20 +146,20 @@ describe("protected data", () => {
   });
 
   it("hides orders outside a user's outlets, with the same answer as a missing order", async () => {
-    const lune = getDataset().orders.find((o) => o.outletId === "dxb-lune")!;
-    const terrace = getDataset().orders.find((o) => o.outletId === "dxb-terrace")!;
+    const lobby = getDataset().orders.find((o) => o.outletId === "lis-lobby")!;
+    const terrace = getDataset().orders.find((o) => o.outletId === "lis-terrace")!;
     const manager = userById["u-rm"];
-    expect(orderById(manager, lune.id)).toBeNull();
+    expect(orderById(manager, lobby.id)).toBeNull();
     expect(orderById(manager, terrace.id)?.id).toBe(terrace.id);
     expect(orderById(userById["u-emp"], terrace.id)).toBeNull();
-    expect(ordersOnDate(manager, terrace.date).every((o) => o.outletId === "dxb-terrace")).toBe(true);
-    expect(ordersWithItem(manager, "burger", "2026-10-07", "2026-10-13", ["dxb-lune", "dxb-pool"])).toHaveLength(0);
-    expect(searchOrders(manager, "MLN-")).toHaveLength(0);
+    expect(ordersOnDate(manager, terrace.date).every((o) => o.outletId === "lis-terrace")).toBe(true);
+    expect(ordersWithItem(manager, "burger", "2026-10-07", "2026-10-13", ["lis-lobby", "lis-ird"])).toHaveLength(0);
+    expect(searchOrders(manager, "AZU-")).toHaveLength(0);
 
     const token = signIn("u-rm");
     verifyPin(token, creds("u-rm").pin, "t");
     const params = (id: string) => ({ params: Promise.resolve({ id }) });
-    expect((await orderRoute.GET(req(`/api/orders/${lune.id}`, token), params(lune.id))).status).toBe(404);
+    expect((await orderRoute.GET(req(`/api/orders/${lobby.id}`, token), params(lobby.id))).status).toBe(404);
     expect((await orderRoute.GET(req("/api/orders/NOPE", token), params("NOPE"))).status).toBe(404);
     expect((await orderRoute.GET(req(`/api/orders/${terrace.id}`, token), params(terrace.id))).status).toBe(200);
   });

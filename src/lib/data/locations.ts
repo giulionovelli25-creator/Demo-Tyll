@@ -24,11 +24,14 @@ export function locationOf(ingredientId: string): LocationId {
   if (g.dept === "glassware") return "glass";
   if (FROZEN.has(g.id)) return "freezer";
   if (SPIRITS.has(g.id)) return "cellar";
-  if (g.supplierId === "bev" || (g.dept === "beverage" && g.supplierId === "produce")) return "bar";
+  if ((g.supplierId === "bev" || g.supplierId === "wine") || (g.dept === "beverage" && g.supplierId === "produce")) return "bar";
   if (g.supplierId === "produce") return "produce";
   if (g.supplierId === "meat" || g.supplierId === "sea" || DAIRY.has(g.id)) return "walkin";
   return "dry";
 }
+
+/** Bread now comes from Mercearia Lusa with the dry goods, but kitchens still file it as bakery. */
+const BAKERY = new Set(["brioche", "bread", "pita"]);
 
 /** Categories for the Stock page's monthly view. */
 export const CATEGORIES = [
@@ -36,12 +39,12 @@ export const CATEGORIES = [
   { id: "produce", name: "Fresh produce", suppliers: ["produce"] },
   { id: "bakery", name: "Bakery", suppliers: ["bakery"] },
   { id: "dry", name: "Dairy and dry goods", suppliers: ["dry"] },
-  { id: "drinks", name: "Beverage", suppliers: ["bev"] },
+  { id: "drinks", name: "Beverage", suppliers: ["bev", "wine"] },
 ] as const;
 
 export type CategoryId = (typeof CATEGORIES)[number]["id"];
 export const categoryOf = (ingredientId: string): CategoryId | null =>
-  CATEGORIES.find((c) => (c.suppliers as readonly string[]).includes(ingredientById[ingredientId].supplierId))?.id ?? null;
+  BAKERY.has(ingredientId) ? "bakery" : CATEGORIES.find((c) => (c.suppliers as readonly string[]).includes(ingredientById[ingredientId].supplierId))?.id ?? null;
 
 /** The three parts of Stock and of Log waste. Food and drinks are used up. Inventory is reused until it breaks. */
 export const STOCK_AREAS = [
@@ -54,7 +57,7 @@ export type StockArea = (typeof STOCK_AREAS)[number]["id"];
 export function stockAreaOf(ingredientId: string): StockArea {
   const g = ingredientById[ingredientId];
   if (g.dept === "glassware" || g.dept === "supplies") return "inventory";
-  return g.supplierId === "bev" ? "drinks" : "food";
+  return (g.supplierId === "bev" || g.supplierId === "wine") ? "drinks" : "food";
 }
 
 /** How a hotel files its stock: food and beverage, each by category, then inventory. Lists show items under these headings, in this order. */
@@ -83,11 +86,11 @@ export function stockGroupOf(ingredientId: string): StockGroupId {
   if (g.id === "wine") return "wine";
   if (g.id === "rum" || g.id === "vodka" || g.id === "liqueur") return "spirits";
   if (g.id === "coffee") return "coffee";
-  if (g.supplierId === "bev") return "soft";
+  if ((g.supplierId === "bev" || g.supplierId === "wine")) return "soft";
   if (DAIRY.has(g.id) || g.id === "icecream") return "dairy";
   if (g.supplierId === "meat" || g.supplierId === "sea") return "meat";
   if (g.supplierId === "produce") return "produce";
-  if (g.supplierId === "bakery") return "bakery";
+  if (BAKERY.has(g.id)) return "bakery";
   return "dry";
 }
 

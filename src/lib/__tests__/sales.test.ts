@@ -17,14 +17,14 @@ const { isCommitted } = await import("../domain/events");
 const { addDays, DEMO_TODAY } = await import("../util");
 
 const U = (id: string) => userById[id];
-const noor = U("u-sales"), daniel = U("u-dos"), mariam = U("u-sales-doh"), yasmin = U("u-events"), owner = U("u-owner"), omar = U("u-emp"), gm = U("u-gm"), chef = U("u-chef");
+const noor = U("u-sales"), daniel = U("u-dos"), yasmin = U("u-events"), owner = U("u-owner"), omar = U("u-emp"), gm = U("u-gm"), chef = U("u-chef");
 const ok = <T,>(r: ({ ok: true } & T) | { ok: false; error: string }): T => { if (!r.ok) throw new Error(r.error); return r; };
 const status = (r: { ok: boolean }) => (r.ok ? 200 : (r as unknown as { status: number }).status);
 const date = addDays(DEMO_TODAY, 21);
 
 beforeEach(() => resetPurchasingStore());
 
-const conference = () => ok(S.saveOpp(noor, { propertyId: "dxb", type: "Conference", customer: "Meridian Pharma", expectedDate: date, guests: 120, value: 90000, nextAction: "Send proposal" })).opp;
+const conference = () => ok(S.saveOpp(noor, { propertyId: "lis", type: "Conference", customer: "Meridian Pharma", expectedDate: date, guests: 120, value: 90000, nextAction: "Send proposal" })).opp;
 const proposal = (oppId: string, extra: Record<string, unknown> = {}) => ok(S.saveProposal(noor, { oppId, date, start: 9 * 60, end: 17 * 60, guests: 120, format: "buffet", services: ["coffee_break", "lunch_buffet", "soft_drinks"], pricePerGuest: 450, ...extra })).proposal;
 
 describe("Scenario B: opportunity to event", () => {
@@ -34,7 +34,7 @@ describe("Scenario B: opportunity to event", () => {
     const o = conference();
     const p = proposal(o.id);
     expect(p.status).toBe("ready");
-    const costed = ok(S.salesFor(noor, "dxb")).opps.find((x) => x.id === o.id)!.proposals[0].costing;
+    const costed = ok(S.salesFor(noor, "lis")).opps.find((x) => x.id === o.id)!.proposals[0].costing;
     expect(costed.price).toBe(54000);
     expect(costed.directCost).toBeGreaterThan(0);
     expect(costed.contribution).toBeCloseTo(costed.price - costed.directCost, 2);
@@ -59,22 +59,22 @@ describe("Scenario B: opportunity to event", () => {
     expect(O.eventsFor(yasmin).some((x) => x.id === e.id)).toBe(true);
     expect(ok(O.eventDetail(yasmin, e.id, cleanEntries(yasmin, {}))).detail).toBeTruthy();
     expect(P.buyPlanForEvent(yasmin, e, cleanEntries(yasmin, {})).length).toBeGreaterThan(0);
-    const mine = ok(S.salesFor(noor, "dxb")).opps.find((x) => x.id === o.id)!;
+    const mine = ok(S.salesFor(noor, "lis")).opps.find((x) => x.id === o.id)!;
     expect(mine.status).toBe("confirmed");
     expect(mine.event?.id).toBe(e.id);
   });
 
   it("updates the linked event instead of creating another", () => {
-    const linked = loadStore().events.find((e) => e.id === "EVT-DXB-0001")!;
-    const p = ok(S.saveProposal(daniel, { oppId: "OPP-DXB-0004", date: linked.date, start: linked.start, end: linked.end, guests: 150, format: "seated", services: ["set_menu", "soft_drinks"], pricePerGuest: 320 })).proposal;
-    expect(status(S.saveProposal(daniel, { oppId: "OPP-DXB-0005", date, pricePerGuest: 100, services: ["wine"] }))).toBe(409); // lost
+    const linked = loadStore().events.find((e) => e.id === "EVT-LIS-0001")!;
+    const p = ok(S.saveProposal(daniel, { oppId: "OPP-LIS-0004", date: linked.date, start: linked.start, end: linked.end, guests: 150, format: "seated", services: ["set_menu", "soft_drinks"], pricePerGuest: 320 })).proposal;
+    expect(status(S.saveProposal(daniel, { oppId: "OPP-LIS-0005", date, pricePerGuest: 100, services: ["wine"] }))).toBe(409); // lost
     const count = loadStore().events.length;
     ok(S.proposalAction(daniel, p.id, { action: "mark_sent" }));
     ok(S.proposalAction(daniel, p.id, { action: "record_acceptance", note: "Client confirmed 150 by signed amendment" }));
     const done = ok(S.proposalAction(daniel, p.id, { action: "confirm" }));
-    expect(done.eventId).toBe("EVT-DXB-0001");
+    expect(done.eventId).toBe("EVT-LIS-0001");
     expect(loadStore().events.length).toBe(count);
-    const e = loadStore().events.find((x) => x.id === "EVT-DXB-0001")!;
+    const e = loadStore().events.find((x) => x.id === "EVT-LIS-0001")!;
     expect(e.guests).toBe(150);
     expect(e.history.at(-1)!.action).toMatch(/confirmed sales proposal/);
     expect(e.issued.length).toBe(linked.issued.length); // stock already issued is kept
@@ -99,24 +99,23 @@ describe("discounts and permissions", () => {
     expect(loadStore().sales.proposals.find((x) => x.id === big.id)!.approval?.by).toBe("u-gm");
   });
 
-  it("keeps each hotel's pipeline to its own sales team, and staff out", () => {
-    expect(ok(S.salesFor(mariam)).opps.every((o) => o.propertyId === "doh")).toBe(true);
-    expect(ok(S.salesFor(noor)).opps.every((o) => o.propertyId === "dxb")).toBe(true);
-    expect(status(S.saveOpp(mariam, { id: "OPP-DXB-0001", status: "contacted" }))).toBe(404);
+  it("keeps the hotel's pipeline to its sales team, and staff out", () => {
+    expect(ok(S.salesFor(noor)).opps.every((o) => o.propertyId === "lis")).toBe(true);
+    // A hotel outside the person's access is refused.
     expect(status(S.saveOpp(noor, { propertyId: "doh", type: "Wedding", customer: "X", expectedDate: date, guests: 10 }))).toBe(403);
     expect(status(S.salesFor(omar))).toBe(403);
-    expect(status(S.saveOpp(owner, { id: "OPP-DXB-0001", status: "contacted" }))).toBe(403);
-    expect(status(S.saveOpp(noor, { id: "OPP-DXB-0001", status: "confirmed" }))).toBe(409);
-    expect(status(S.saveOpp(noor, { id: "OPP-DXB-0001", status: "lost" }))).toBe(400);
+    expect(status(S.saveOpp(owner, { id: "OPP-LIS-0001", status: "contacted" }))).toBe(403);
+    expect(status(S.saveOpp(noor, { id: "OPP-LIS-0001", status: "confirmed" }))).toBe(409);
+    expect(status(S.saveOpp(noor, { id: "OPP-LIS-0001", status: "lost" }))).toBe(400);
     expect(O.eventsFor(chef).some((e) => e.opportunityId)).toBe(false);
   });
 
   it("reports pipeline, pending and confirmed value separately", () => {
-    const perf = ok(S.salesPerformance(noor, "dxb")).performance;
-    expect(perf.currency).toBe("AED");
-    expect(perf.pipeline).toBe(64000 + 210000 + 36000);
+    const perf = ok(S.salesPerformance(noor, "lis")).performance;
+    expect(perf.currency).toBe("EUR");
+    expect(perf.pipeline).toBe(16000 + 52000 + 9000);
     expect(perf.awaitingDecision).toBe(1);
-    expect(perf.confirmedValue).toBe(57600);
+    expect(perf.confirmedValue).toBe(15300);
     expect(perf.lost).toBe(1);
     expect(status(S.salesPerformance(noor, "doh"))).toBe(403);
   });

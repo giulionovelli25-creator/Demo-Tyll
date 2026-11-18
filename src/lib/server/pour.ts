@@ -9,9 +9,9 @@ import { rostered } from "../domain/rota";
 
 export type PourPeriod = "today" | "week" | "month";
 
-const monthStart = (iso: string) => `${iso.slice(0, 7)}-01`;
-const LAST_MONTH = monthStart(addDays(monthStart(DEMO_TODAY), -1));
-const FROM: Record<PourPeriod, string> = { today: DEMO_TODAY, week: addDays(DEMO_TODAY, -6), month: monthStart(DEMO_TODAY) };
+// "month" is the last 30 days; "lastMonth" the 30 days before, for the pace comparison.
+const LAST_MONTH = addDays(DEMO_TODAY, -59);
+const FROM: Record<PourPeriod, string> = { today: DEMO_TODAY, week: addDays(DEMO_TODAY, -6), month: addDays(DEMO_TODAY, -29) };
 
 export interface PourFamilyOut {
   family: PourFamily;
@@ -22,8 +22,10 @@ export interface PourFamilyOut {
   /** Value not billed per day for the last 30 days, and the week before this one, for the trend and the comparison. */
   daily: { date: string; gap: number; gapValue: number; shifts: Record<Shift, number> }[];
   lastWeek: PourFigures;
-  /** The whole of last calendar month, for the pace the Overview compares this month with. */
+  /** The 30 days before the last 30, for the pace the Overview compares with. */
   lastMonth: PourFigures;
+  /** The full days of the last 30 (today left out), worked out the same way as lastMonth so the two compare. */
+  recentFull: PourFigures;
 }
 
 /** One outlet, day by day: what was not billed and who rang up bills that day. Managers only. */
@@ -137,7 +139,8 @@ export function pourFor(user: User, propertyId: string, asked?: readonly string[
         return { date, gap: f.gap, gapValue: f.gapValue, shifts: Object.fromEntries(SHIFTS.map((sh) => [sh.id, figures(today.filter((e) => e.shift === sh.id)).gapValue])) as Record<Shift, number> };
       }),
       lastWeek: figures(entries.filter((e) => e.date >= addDays(DEMO_TODAY, -13) && e.date <= addDays(DEMO_TODAY, -7))),
-      lastMonth: figures(entries.filter((e) => e.date >= LAST_MONTH && e.date < monthStart(DEMO_TODAY))),
+      lastMonth: figures(entries.filter((e) => e.date >= LAST_MONTH && e.date < addDays(DEMO_TODAY, -29))),
+      recentFull: figures(entries.filter((e) => e.date >= addDays(DEMO_TODAY, -29) && e.date < DEMO_TODAY)),
     };
   };
   const staff = mayName ? outletIds.filter((o) => pourSellsAt(o, "wine") || pourSellsAt(o, "spirits")).map((o) => staffView(o, log)).filter((v) => v.days.some((d) => d.value > 0)) : undefined;

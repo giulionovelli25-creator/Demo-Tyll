@@ -1,6 +1,6 @@
 # Tyll platform demo
 
-An interactive demonstration of Tyll, the hospitality intelligence and operations platform, for a fictional two-hotel group (Grand Resort Dubai in AED, Grand Resort Doha in QAR). Modules: Overview, Money, Stock and investigations, Forecast and purchasing, Sales & Events with staff support, Rooms & Guests, Finance, Reports, and Tyll Staff for phones.
+An interactive demonstration of Tyll, the hospitality intelligence and operations platform, for one fictional hotel, Grand Hotel Lumière in Lisbon (250 rooms, four outlets: Mercado, Bar Azulejo, Banquets and Events, In-Room Dining), with every amount in euros. Modules: Overview, Money, Stock and investigations, Forecast and purchasing, Sales & Events with staff support, Rooms & Guests, Finance, Reports, and Tyll Staff for phones.
 
 Everything is simulated. No real hotel system, guest, supplier, payment service or language model is connected. The separate Tyll payment reconciliation product is not rebuilt here.
 

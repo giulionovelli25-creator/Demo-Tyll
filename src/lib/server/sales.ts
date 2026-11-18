@@ -20,8 +20,7 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 
 /** Discounts above this need a director of sales or the general manager. Demo settings, per hotel. */
 export const SALES_POLICY: Record<string, { discountApprovalAbove: number; approverLabel: string }> = {
-  dxb: { discountApprovalAbove: 10, approverLabel: "Director of sales or general manager" },
-  doh: { discountApprovalAbove: 8, approverLabel: "General manager" },
+  lis: { discountApprovalAbove: 10, approverLabel: "Director of sales or general manager" },
 };
 
 const OPP_TYPES: OppType[] = ["Conference", "Group booking", "Wedding", "Private dining", "Banquet", "Corporate hospitality"];
@@ -29,7 +28,7 @@ const EVENT_TYPE: Record<OppType, EventType> = { Conference: "Conference", "Grou
 const FORMATS: ServiceFormat[] = ["seated", "buffet", "reception", "theatre"];
 const OPEN_OPP: OppStatus[] = ["new", "contacted", "proposal_needed", "proposal_sent"];
 /** The banqueting kitchen that prepares event food at each hotel, as on the seeded events. Events can change it. */
-const EVENT_KITCHEN: Record<string, string> = { dxb: "dxb-terrace", doh: "doh-souq" };
+const EVENT_KITCHEN: Record<string, string> = { lis: "lis-terrace" };
 
 const canSeeOpp = (user: User, o: Pick<Opportunity, "propertyId">) => can(user, "sales.view") && allowedProperties(user).includes(o.propertyId);
 const salesPeople = (propertyId: string) => Object.values(userById).filter((u) => (u.role === "sales" || u.role === "sales_director") && allowedProperties(u).includes(propertyId));
@@ -322,7 +321,7 @@ export function salesPerformance(user: User, propertyId: string): Result<{ perfo
   const opps = s.sales.opps.filter((o) => o.propertyId === propertyId);
   const open = opps.filter((o) => OPEN_OPP.includes(o.status));
   const sent = s.sales.proposals.filter((p) => p.propertyId === propertyId && p.status === "sent");
-  const month = (d: string) => d >= "2026-10-01" && d <= "2026-10-31";
+  const month = (d: string) => d.slice(0, 7) === DEMO_TODAY.slice(0, 7);
   const confirmedNow = s.sales.proposals.filter((p) => p.propertyId === propertyId && p.status === "confirmed" && month(p.updatedAt.slice(0, 10) > DEMO_TODAY ? DEMO_TODAY : p.updatedAt.slice(0, 10)));
   const confirmedSeed = opps.filter((o) => o.status === "confirmed" && !s.sales.proposals.some((p) => p.oppId === o.id && p.status === "confirmed"));
   const priceOf = (p: Proposal) => costProposal(p, opps.find((o) => o.id === p.oppId)!).price;

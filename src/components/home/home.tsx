@@ -6,7 +6,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { MODULE_ICON, MODULE_TONE } from "@/components/theme";
 import { Drawer, EmptyState, Note, OutletDot, PageHeader, Skeleton, WidgetError, cn, linkButton, textLink } from "@/components/ui";
 import { StripTrend } from "@/components/charts";
-import { byDay, lostAndSaved, paceSaving, versus, wasteInCurrency, weekSums, type LeakRow } from "@/lib/domain/trends";
+import { HOURLY_RATE, OVER_ORDERING_SHARE, ROLE_HOURS, byDay, lostAndSaved, paceSaving, tyllValue, versus, wasteInCurrency, weekSums, yearly, type LeakRow } from "@/lib/domain/trends";
 import { useDailyTotals, useDeliveryChecks, useUnexplained } from "@/lib/strip-data";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { outletById, propertyById } from "@/lib/data/catalog";
@@ -70,15 +70,15 @@ function Card({ module, title, number, tone, line, cta, href, picture, loading }
   );
 }
 
-const monthName = (iso: string) => new Date(`${iso}T00:00:00Z`).toLocaleString("en-GB", { month: "long", timeZone: "UTC" });
 
 /** What one row saved, in words. Pace savings are estimates and say so; a row above last month's pace says that plainly. */
 function savedLine(r: LeakRow, money: (n: number, o?: { compact?: boolean }) => string, before: string) {
-  if (r.how === "credit") return "No credit recorded yet";
+  if (r.how === "credit") return r.saved > 0 ? `${money(r.saved, { compact: true })} credited by suppliers` : "No credit recorded yet";
   if (r.how === "recovered") return r.saved > 0 ? `${money(r.saved, { compact: true })} recovered` : "Nothing recovered yet";
-  if (r.saved > 0) return `${money(r.saved, { compact: true })} saved on ${monthName(before)}'s pace, estimate`;
-  if (r.saved < 0) return `${money(-r.saved, { compact: true })} above ${monthName(before)}'s pace`;
-  return `Same as ${monthName(before)}`;
+  void before;
+  if (r.saved > 0) return `${money(r.saved, { compact: true })} less than the 30 days before, estimate`;
+  if (r.saved < 0) return `${money(-r.saved, { compact: true })} more than the 30 days before`;
+  return "Same as the 30 days before";
 }
 
 /** Lost and saved for each kind of loss as two bars on one scale, so the rows compare at a glance. Each row opens its records. */
@@ -112,7 +112,7 @@ function LedgerBars({ rows, lost, saved, money, before }: { rows: LeakRow[]; los
           </li>
         ))}
       </ul>
-      <Note>Saved is money recovered on closed cases, plus any loss that ran below {monthName(before)}&apos;s daily pace, which is an estimate. Supplier invoices count once a credit is recorded.</Note>
+      <Note>Saved is money recovered on closed cases, credits from suppliers, and any loss that ran below the daily pace of the 30 days before, which is an estimate.</Note>
     </div>
   );
 }
@@ -124,7 +124,7 @@ export function Home() {
   const ctx = useCtx();
   const { plan, open, pour, error, loading } = useAlertFeed();
   const investigations = useInvestigations();
-  const checks = useDeliveryChecks(plan?.propertyId ?? propertyId ?? "dxb");
+  const checks = useDeliveryChecks(plan?.propertyId ?? propertyId ?? "lis");
   const wasteRows = useMemo(() => wasteInCurrency(ctx, sel.outletIds, sel.currency), [ctx, sel.outletIds, sel.currency]);
   const pourRate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
   const pourDaily = useMemo(() => (pour?.wine.daily ?? []).map((d, i) => ({ date: d.date, value: (d.gapValue + (pour?.spirits.daily[i]?.gapValue ?? 0)) * pourRate })), [pour, pourRate]);
@@ -146,13 +146,14 @@ export function Home() {
   const dailyRevenue = daily.map(({ date, t }) => ({ date, value: Math.round(t.net) }));
   const openFlags = useMemo(() => investigations.filter((i) => i.status !== "closed" && exceptionInSel(i, sel)), [investigations, sel]);
   const flagValue = (i: (typeof openFlags)[number]) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency);
-  const unexplained = useUnexplained(plan?.propertyId ?? propertyId ?? "dxb");
+  const unexplained = useUnexplained(plan?.propertyId ?? propertyId ?? "lis");
   const [brief, setBrief] = useState(false);
-  const [breakdown, setBreakdown] = useState<"lost" | "saved" | null>(null);
+  const [breakdown, setBreakdown] = useState<"lost" | "saved" | "value" | null>(null);
   // This month: every kind of loss Tyll measures, and what was saved on each. Each part links to its records.
   const ledger = useMemo(() => {
-    const from = `${DEMO_TODAY.slice(0, 8)}01`;
-    const before = `${addDays(from, -1).slice(0, 8)}01`;
+    // The last 30 days, compared with the 30 days before.
+    const from = addDays(DEMO_TODAY, -29);
+    const before = addDays(from, -30);
     const beforeDays = diffDays(from, before);
     // The pace uses full days only, so today's half day does not look like a saving.
     const nowDays = diffDays(DEMO_TODAY, from);
@@ -168,14 +169,16 @@ export function Home() {
     const rows: LeakRow[] = [
       { id: "waste", label: "Food and drinks thrown away", lost: wasteOf(false, (d) => d >= from), saved: paceSaving(wasteOf(false, lastMonth), beforeDays, wasteOf(false, fullDay), nowDays), how: "pace", href: "/waste" },
       { id: "broken", label: "Glass and china broken", lost: wasteOf(true, (d) => d >= from), saved: paceSaving(wasteOf(true, lastMonth), beforeDays, wasteOf(true, fullDay), nowDays), how: "pace", href: "/waste" },
-      { id: "drinks", label: "Drinks poured, not billed", lost: pour ? (pour.wine.totals.month.gapValue + pour.spirits.totals.month.gapValue) * pourRate : 0, saved: paceSaving(drinksBefore, beforeDays, sum(pourDaily.filter((d) => fullDay(d.date)), (d) => d.value), nowDays), how: "pace", href: "/drinks" },
+      { id: "drinks", label: "Drinks poured, not billed", lost: pour ? (pour.wine.totals.month.gapValue + pour.spirits.totals.month.gapValue) * pourRate : 0, saved: paceSaving(drinksBefore, beforeDays, pour ? (pour.wine.recentFull.gapValue + pour.spirits.recentFull.gapValue) * pourRate : 0, nowDays), how: "pace", href: "/drinks" },
       { id: "bills", label: "Flagged bills", lost: sum(bills, flagValue), saved: recoveredOf(bills), how: "recovered", href: "/money?tab=flags" },
-      { id: "invoices", label: "Supplier invoice differences", lost: checks.value, saved: 0, how: "credit", href: "/stock?tab=suppliers" },
+      { id: "invoices", label: "Supplier invoice differences", lost: checks.value, saved: checks.credited, how: "credit", href: "/stock?tab=suppliers" },
       { id: "counts", label: "Stock missing at counts", lost: unexplained?.value ?? 0, saved: recoveredOf(counts), how: "recovered", href: "/stock?tab=where" },
     ];
     return { from, before, ...lostAndSaved(rows.map((r) => ({ ...r, lost: Math.round(r.lost), saved: Math.round(r.saved) }))) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wasteRows, investigations, sel, pour, pourRate, pourDaily, checks.value, unexplained]);
+  }, [wasteRows, investigations, sel, pour, pourRate, pourDaily, checks.value, checks.credited, unexplained]);
+  const purchases30 = useMemo(() => sum(ctx.data.deliveries.filter((d) => d.status === "delivered" && d.date >= ledger.from), (d) => sum(d.lines, (l) => l.invoiced * l.invoicePrice)), [ctx.data.deliveries, ledger.from]);
+  const value = tyllValue(ledger.saved, purchases30);
   const week = useMemo(() => compare(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
   const today = useMemo(() => computeTotals(ctx, { ...sel, range: { from: DEMO_TODAY, to: DEMO_TODAY } }), [ctx, sel]);
 
@@ -193,7 +196,7 @@ export function Home() {
   const dueLater = sum(toOrder, (i) => i.cost) - dueToday - dueWeek;
   const place = sel.outletIds.length === 1 ? outletById[sel.outletIds[0]].name : propertyId ? propertyById[propertyId].name : "All hotels";
   const top = topAlerts(open);
-  const local = (n: number) => fmtMoney(n, propertyById[plan?.propertyId ?? "dxb"].currency, { compact: true });
+  const local = (n: number) => fmtMoney(n, propertyById[plan?.propertyId ?? "lis"].currency, { compact: true });
   const greeting = DEMO_NOW_MIN < 720 ? "Good morning" : DEMO_NOW_MIN < 1020 ? "Good afternoon" : "Good evening";
 
   return (
@@ -207,11 +210,11 @@ export function Home() {
 
       {/* Two blocks side by side: the money story on the left, what needs doing today on the right. Then one row of small doors into each area. */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <section aria-label="Money lost and saved this month" className="min-w-0 rounded-panel border border-line bg-paper shadow-panel lg:col-span-2">
+        <section aria-label="Money lost and saved, last 30 days" className="min-w-0 rounded-panel border border-line bg-paper shadow-panel lg:col-span-2">
           <div className="grid grid-cols-2 gap-2 px-3 pb-3 pt-4 sm:gap-4 sm:px-4 sm:pt-5">
             {([
-              { id: "lost" as const, label: "Money lost this month", value: money(ledger.lost), tone: "text-ink", note: `Since ${fmtDate(ledger.from)}, six kinds of loss` },
-              { id: "saved" as const, label: "Money saved this month", value: money(ledger.saved), tone: "text-pos", note: `${fmtPct(ledger.share)} of what was lost` },
+              { id: "lost" as const, label: "Money lost, last 30 days", value: money(ledger.lost), tone: "text-ink", note: `Since ${fmtDate(ledger.from)}, six kinds of loss` },
+              { id: "saved" as const, label: "Money saved, last 30 days", value: money(ledger.saved), tone: "text-pos", note: `${fmtPct(ledger.share)} of what was lost` },
             ]).map((b, i) => (
               <button key={b.id} type="button" onClick={() => setBreakdown(b.id)} aria-haspopup="dialog"
                 className={cn("group min-w-0 rounded-[var(--radius-control)] px-2 py-2 text-start transition-colors duration-150 hover:bg-cloud sm:px-3", i === 1 && "relative before:absolute before:-start-1 before:top-2 before:bottom-2 before:border-s before:border-hair sm:before:-start-2")}>
@@ -281,8 +284,30 @@ export function Home() {
         />
       </div>
 
-      <Drawer open={breakdown !== null} onClose={() => setBreakdown(null)} title={breakdown === "saved" ? "Money saved this month" : "Money lost this month"} description={`Since ${fmtDate(ledger.from)}, by kind of loss. Simulated data.`}>
+      <Drawer open={breakdown === "lost" || breakdown === "saved"} onClose={() => setBreakdown(null)} title={breakdown === "saved" ? "Money saved, last 30 days" : "Money lost, last 30 days"} description={`Since ${fmtDate(ledger.from)}, by kind of loss. ${money(yearly(ledger.lost))} lost and ${money(yearly(ledger.saved))} saved a year at this rate, estimates. Simulated data.`}>
         <LedgerBars rows={breakdown === "saved" ? [...ledger.rows].sort((a, b) => b.saved - a.saved) : ledger.rows} lost={ledger.lost} saved={ledger.saved} money={money} before={ledger.before} />
+        <button type="button" onClick={() => setBreakdown("value")} className="mt-4 flex w-full items-baseline justify-between gap-3 rounded-[var(--radius-control)] border border-line px-4 py-3 text-start text-sm transition-colors duration-150 hover:bg-cloud">
+          <span><span className="block font-medium text-ink">Tyll value this year</span><span className="text-xs text-graphite">Losses stopped, less over-ordering and {value.hoursWeek} hours a week saved. Estimate.</span></span>
+          <span className="num shrink-0 font-medium text-ink">{money(value.total)}</span>
+        </button>
+      </Drawer>
+
+      <Drawer open={breakdown === "value"} onClose={() => setBreakdown(null)} title="Tyll value this year" description="At the rate of the last 30 days. Every part is an estimate, and the assumptions are listed. Simulated data.">
+        <div className="space-y-5 text-sm">
+          <div className="rounded-[var(--radius-control)] bg-cloud px-4 py-3"><p className="text-xs text-steel">Total, a year</p><p className="num mt-0.5 text-[24px] font-medium text-ink">{money(value.total)}</p></div>
+          <ul className="divide-y divide-hair">
+            <li className="py-2.5"><Link href="#" onClick={(e) => { e.preventDefault(); setBreakdown("saved"); }} className="flex items-baseline justify-between gap-3 hover:text-accent-ink"><span><span className="block font-medium text-ink">Losses stopped</span><span className="text-xs text-graphite">Money saved in the last 30 days, {money(ledger.saved)}, for 12 months.</span></span><span className="num shrink-0 font-medium text-pos">{money(value.stopped)}</span></Link></li>
+            <li className="py-2.5"><Link href="/forecast" prefetch={false} className="flex items-baseline justify-between gap-3 hover:text-accent-ink"><span><span className="block font-medium text-ink">Less over-ordering</span><span className="text-xs text-graphite">Orders sized to the forecast instead of to par: {fmtPct(OVER_ORDERING_SHARE, 1)} of {money(purchases30)} purchases in 30 days.</span></span><span className="num shrink-0 font-medium text-ink">{money(value.ordering)}</span></Link></li>
+            <li className="py-2.5"><span className="flex items-baseline justify-between gap-3"><span><span className="block font-medium text-ink">Hours saved</span><span className="text-xs text-graphite">{value.hoursWeek} hours a week across the team, at {money(HOURLY_RATE)} an hour.</span></span><span className="num shrink-0 font-medium text-ink">{money(value.hours)}</span></span></li>
+          </ul>
+          <section>
+            <h3 className="font-medium text-ink">Hours saved a week, by role</h3>
+            <table className="mt-2 w-full text-[13px]">
+              <tbody>{ROLE_HOURS.map((r) => <tr key={r.role} className="border-t border-hair"><td className="py-2 pe-3"><span className="block text-ink">{r.role}</span><span className="text-xs text-steel">{r.what}</span></td><td className="num py-2 text-end font-medium text-ink">{r.hours} h</td></tr>)}</tbody>
+            </table>
+          </section>
+          <Note>Hours are estimates from typical hotel routines, not measured in this demo. Over-ordering assumes {fmtPct(OVER_ORDERING_SHARE, 1)} of purchases. Losses stopped are the saved figures above.</Note>
+        </div>
       </Drawer>
 
       <Drawer open={brief} onClose={() => setBrief(false)} title={`Morning brief, ${fmtDate(addDays(DEMO_TODAY, 1), true)}`} description="What a manager reads at 7 AM. In this demo it is a preview: nothing is sent.">
@@ -300,7 +325,7 @@ export function Home() {
             <ol className="mt-2 list-decimal space-y-1.5 ps-5 text-graphite">{top.slice(0, 3).map((a) => <li key={a.id}>{a.what}{a.amount !== null ? `, ${money(a.amount, { compact: true })} ${a.amountWord}` : ""}.</li>)}</ol>
           </section>
           <section>
-            <h3 className="font-medium text-ink">This month so far</h3>
+            <h3 className="font-medium text-ink">Last 30 days</h3>
             <p className="mt-2 text-graphite">{money(ledger.lost)} lost and {money(ledger.saved)} saved, {fmtPct(ledger.share)} of the loss.</p>
           </section>
           <Note>Sent by email at 7 AM to the managers who choose it in Settings. Figures are simulated in this demo.</Note>

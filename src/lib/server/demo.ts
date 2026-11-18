@@ -5,6 +5,7 @@ import { userById } from "../data/catalog";
 import type { User } from "../types";
 import { emptyNotify } from "./notify";
 import { seedOps } from "./ops-seed";
+import { seedRequests } from "./orders-seed";
 import { seedGuest } from "./guest-seed";
 import { mutateStore } from "./purchasing-store";
 import { seedStage6 } from "./stage6-seed";
@@ -24,7 +25,7 @@ export function resetDemo(user: User, raw: unknown): { ok: true; scope: ResetSco
   mutateStore((x) => {
     const six = seedStage6();
     if (has("stock")) x.stockLog = six.stockLog;
-    if (has("purchasing") || has("events")) { x.requests = []; x.plans = []; x.finance = six.finance; x.seq = 0; }
+    if (has("purchasing") || has("events")) { x.requests = seedRequests(); x.plans = []; x.finance = six.finance; x.seq = x.requests.length; }
     if (has("events") || has("sales")) { const ops = seedOps(); x.events = ops.events; x.support = ops.support; x.assignments = ops.assignments; Object.assign(x.counters, ops.counters); for (const k of Object.keys(x.counters)) if (/^(SR|EVT)-/.test(k) && !(k in ops.counters)) delete x.counters[k]; }
     if (has("sales")) x.sales = six.sales;
     if (has("guest")) x.guest = seedGuest();

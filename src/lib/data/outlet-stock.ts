@@ -6,12 +6,12 @@ import { periodVariance } from "../domain/variance";
 import { ingredientCostAt } from "../domain/pricing";
 import { wasteQuantities } from "../domain/inventory";
 import type { OutletCheck, OutletMovement, Order, PeriodRemoval, PeriodSale, PeriodWaste, UsagePeriod, WasteLog } from "../types";
-import { DEMO_TODAY, addDays, eachDay, rng } from "../util";
+import { DEMO_TODAY, addDays, eachDay, rng, rel } from "../util";
 import { INGREDIENTS, OUTLETS, ingredientById, itemById, propertyById } from "./catalog";
 
 export const CLOSE = 1440;
-const FIRST_CLOSE = "2026-10-05";
-const LAST_CLOSE = "2026-10-12";
+const FIRST_CLOSE = rel(-8);
+const LAST_CLOSE = rel(-1);
 
 interface Scenario {
   outletId: string;
@@ -28,12 +28,12 @@ interface Scenario {
 
 /** Worked examples. Counted quantities are chosen; sales and removals are the recorded POS lines. */
 export const SCENARIOS: Scenario[] = [
-  // 30 cans sold, 40 opening, 10 issued, 12 counted: 38 used, 8 unexplained. Includes the Coke removed from TRC-1013-198.
-  { outletId: "dxb-terrace", ingredientId: "coke", fromDate: "2026-10-12", to: { date: DEMO_TODAY, min: 20 * 60 + 53 }, target: 30, opening: 40, issue: { date: DEMO_TODAY, min: 11 * 60, qty: 10 }, missing: 8, by: "TRC-S7" },
+  // 30 cans sold, 40 opening, 10 issued, 12 counted: 38 used, 8 unexplained. Includes the Coke removed from MER-1013-198.
+  { outletId: "lis-terrace", ingredientId: "coke", fromDate: rel(-1), to: { date: DEMO_TODAY, min: 20 * 60 + 53 }, target: 30, opening: 40, issue: { date: DEMO_TODAY, min: 11 * 60, qty: 10 }, missing: 8, by: "MER-S7" },
   // 20 glasses at 150 ml: 3,000 ml expected. 8 bottles opening, 6 issued, 9 counted: 3,750 ml used.
-  { outletId: "dxb-lobby", ingredientId: "wine", fromDate: "2026-10-11", to: { date: "2026-10-12", min: CLOSE }, target: 3, opening: 6, issue: { date: "2026-10-12", min: 10 * 60, qty: 4.5 }, missing: 0.75, by: "LBY-S7" },
+  { outletId: "lis-lobby", ingredientId: "wine", fromDate: rel(-1), to: { date: DEMO_TODAY, min: 20 * 60 + 53 }, target: 3, opening: 6, issue: { date: DEMO_TODAY, min: 10 * 60, qty: 4.5 }, missing: 0.75, by: "AZU-S7" },
   // 80 burgers at 180 g: 14.4 kg expected. 18 kg opening, 10 kg issued, 11.8 kg counted: 16.2 kg used.
-  { outletId: "dxb-terrace", ingredientId: "wagyu", fromDate: "2026-10-11", to: { date: DEMO_TODAY, min: 20 * 60 + 53 }, target: 14.4, opening: 18, issue: { date: "2026-10-12", min: 10 * 60, qty: 10 }, missing: 1.8, by: "TRC-S7" },
+  { outletId: "lis-terrace", ingredientId: "wagyu", fromDate: rel(-3), to: { date: DEMO_TODAY, min: 20 * 60 + 53 }, target: 14.4, opening: 18, issue: { date: rel(-1), min: 10 * 60, qty: 10 }, missing: 1.8, by: "MER-S7" },
 ];
 
 /** Counting precision: cans and units exactly, wine to a tenth of a bottle, other liquids and food to 50 ml or 50 g. */

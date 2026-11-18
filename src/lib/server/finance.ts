@@ -111,7 +111,7 @@ export function invoicesFor(user: User, propertyId?: string): Result<{ invoices:
   const props = new Set(allowedProperties(user).filter((p) => !propertyId || p === propertyId));
   const s = loadStore();
   // Received Tyll orders still waiting for a supplier's invoice, one per supplier on the order.
-  const toInvoice = s.requests.filter((r) => r.status === "received" && props.has(r.propertyId)).flatMap((r) =>
+  const toInvoice = s.requests.filter((r) => r.status === "received" && !r.deliveryId && props.has(r.propertyId)).flatMap((r) =>
     [...new Set(r.lines.map((l) => l.supplierId))].filter((sup) => !s.finance.invoices.some((i) => i.requestId === r.id && i.supplierId === sup)).map((sup) => ({
       requestId: r.id, poNumber: r.poNumber ?? r.id, propertyId: r.propertyId, supplierId: sup, supplierName: supplierById[sup]?.name ?? sup, currency: propertyById[r.propertyId].currency,
       receivedValue: r2(r.lines.filter((l) => l.supplierId === sup).reduce((t, l) => t + (l.received ?? 0) * l.unitPrice, 0)),
@@ -271,7 +271,8 @@ export function spendEntries(s: Shape, propertyId: string): SpendEntry[] {
     out.push({ id: h.id, ref: h.id, propertyId, dept: h.dept, category: categoryOf(h.dept), date: h.date, supplier: h.supplier, description: `${h.description} (simulated history)`, amount: h.amount, stage: "recorded", source: "history" });
   }
   // Tyll orders: whatever part is not yet covered by an invoice, at its stage.
-  for (const r of s.requests.filter((x) => x.propertyId === propertyId && !["draft", "rejected"].includes(x.status))) {
+  // An order that arrived as a delivery in the dataset is counted through that delivery's invoice.
+  for (const r of s.requests.filter((x) => x.propertyId === propertyId && !["draft", "rejected"].includes(x.status) && !x.deliveryId)) {
     const dept = deptOfRequest(r);
     for (const sup of new Set(r.lines.map((l) => l.supplierId))) {
       if (s.finance.invoices.some((i) => i.requestId === r.id && i.supplierId === sup)) continue;

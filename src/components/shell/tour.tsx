@@ -16,12 +16,12 @@ interface Step {
 
 export const TOUR_STEPS: Step[] = [
   { as: "u-owner", title: "See the whole group", body: "The owner opens Home. Sales, costs, margin and money at risk for both hotels are on one screen, with the change against the previous week.", cta: "Open the group overview" },
-  { as: "u-owner", title: "Notice The Terrace", body: "The briefing and the outlet list both point to The Terrace: the lowest margin in the group, falling, and the most open issues.", cta: "Show the outlet list" },
-  { as: "u-owner", title: "Open The Terrace", body: "Clicking the outlet narrows every figure to that restaurant: its costs, sales, menu profitability and open cases.", cta: "Narrow to The Terrace" },
+  { as: "u-owner", title: "Notice Mercado", body: "The briefing and the outlet list both point to Mercado: the lowest margin in the group, falling, and the most open issues.", cta: "Show the outlet list" },
+  { as: "u-owner", title: "Open Mercado", body: "Clicking the outlet narrows every figure to that restaurant: its costs, sales, menu profitability and open cases.", cta: "Narrow to Mercado" },
   { as: "u-owner", title: "Open the unusual transaction", body: "Tonight at 8:49 PM a Coke was removed from a bill, six minutes after its ticket went to the bar.", cta: "Open the investigation" },
   { as: "u-owner", title: "Read what Tyll found", body: "Tyll lays out the original order, the final bill, the tickets and the stock count, then lists what to check. It states facts and does not assign blame.", cta: "Show the evidence" },
   { as: "u-rm", title: "The manager records the result", body: "Sara Haddad, the restaurant manager, reviews the case. Choose an outcome, enter the amount and close it.", cta: "Sign in as Sara Haddad" },
-  { as: "u-owner", title: "Back to the owner", body: "The overview now shows one fewer open case at The Terrace, and the amount moved from potential loss to confirmed loss or recovered.", cta: "Return to the overview" },
+  { as: "u-owner", title: "Back to the owner", body: "The overview now shows one fewer open case at Mercado, and the amount moved from potential loss to confirmed loss or recovered.", cta: "Return to the overview" },
   { as: "u-owner", title: "Plan the week ahead", body: "Purchasing Prediction turns expected occupancy, bookings and Thursday's event into purchase suggestions. Move the occupancy slider and watch the quantities change.", cta: "Open Forecast" },
 ];
 
@@ -60,7 +60,7 @@ export function Tour() {
         scrollTo("outlets");
         break;
       case 2:
-        setScope({ outletId: "dxb-terrace" });
+        setScope({ outletId: "lis-terrace" });
         if (pathname !== "/") router.push("/");
         window.scrollTo({ top: 0, behavior: "smooth" });
         break;
@@ -80,7 +80,7 @@ export function Tour() {
         router.push("/");
         break;
       case 7:
-        setScope({ propertyId: "dxb", outletId: "all", dept: "all" });
+        setScope({ propertyId: "lis", outletId: "all", dept: "all" });
         router.push("/forecast");
         break;
     }

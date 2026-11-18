@@ -6,16 +6,17 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Rag } from "@/components/ui";
-import { ingredientById, outletById, propertyById } from "./data/catalog";
+import { MENU_ITEMS, ingredientById, outletById, propertyById, supplierById } from "./data/catalog";
+import { orderStage } from "./domain/order-stage";
 import { allowedProperties, canOpen } from "./domain/access";
 import { buildIssues, type Issue } from "./domain/issues";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "./hooks";
-import { useMonthPlan } from "./plan-hooks";
+import { useMonthPlan, useRequests } from "./plan-hooks";
 import type { PourOut } from "./server/pour";
 import type { MonthPlanOut } from "./server/purchasing";
 import { fmtDate, fxRate } from "./util";
 
-export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier";
+export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier" | "delivery";
 export type AlertState = "open" | "snoozed" | "resolved";
 
 export interface FeedAlert {
@@ -31,6 +32,8 @@ export interface FeedAlert {
   /** What that money is: at risk, to order, not billed. An order is not a loss. */
   amountWord: string;
   next: { label: string; href: string };
+  /** A second way to act, such as ordering from a backup supplier. */
+  also?: { label: string; href: string };
   /** A money case closes on its own page, so its outcome is recorded. */
   caseHref?: string;
 }
@@ -87,6 +90,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
   const outlets = useMemo(() => sel.outletIds.filter((o) => outletById[o].propertyId === pid).join(","), [sel.outletIds, pid]);
   const pourRes = useApi<{ pour: PourOut }>(canOpen(user, "money") && pid ? `/api/pour?propertyId=${pid}&outlets=${outlets}` : null);
   const pour = pourRes.data?.pour;
+  const orders = useRequests().data?.requests;
 
   const value = useMemo<Feed>(() => {
     const out: FeedAlert[] = [];
@@ -138,15 +142,30 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
         out.push({ id: f.id, kind: "pour", rag: "amber", what: `Check pouring at ${outletById[f.outletId].name}, ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][f.weekday]} ${f.shift} shift`, why: f.text, where: outletById[f.outletId].name, outletId: f.outletId, amount: f.figures.gapValue * rate, amountWord: "not billed", next: { label: "See over pouring", href: "/drinks" } });
       }
     }
+    // A delivery that has not arrived puts tonight's menu at risk, so it goes first.
+    for (const r of (orders ?? []).filter((x) => orderStage(x) === "late" && (!pid || x.propertyId === pid))) {
+      const supplierId = r.lines[0]?.supplierId ?? "";
+      const ids = new Set(r.lines.map((l) => l.ingredientId));
+      const dishes = MENU_ITEMS.filter((m) => (m.recipe ?? []).some((x) => ids.has(x.ingredientId)) && r.outletIds.some((o) => outletById[o]?.menu.some((e) => e.itemId === m.id)));
+      const word: Record<string, string> = { sea: "Fresh fish", meat: "Meat", produce: "Fresh produce", dry: "Dairy and dry goods", wine: "Wine and spirits", bev: "Drinks" };
+      out.push({
+        id: `late-${r.id}`, kind: "delivery", rag: "red",
+        what: `${word[supplierId] ?? "A"} delivery due ${r.expectedAt?.slice(11, 16)} has not arrived`,
+        why: `${dishes.length} menu ${dishes.length === 1 ? "item" : "items"} at risk tonight: ${dishes.map((d) => d.name).join(", ")}. ${supplierById[supplierId]?.name ?? "The supplier"}, order ${r.poNumber ?? r.id}.`,
+        where: r.outletIds.map((o) => outletById[o]?.name).join(", "), outletId: r.outletIds[0], amount: null, amountWord: "",
+        next: { label: "Call supplier", href: `/forecast?tab=approvals&request=${r.id}` },
+        also: { label: "Order from backup supplier", href: `/forecast?tab=buy&focus=${r.lines[0]?.ingredientId ?? ""}` },
+      });
+    }
     // Most urgent first, then the most money inside each level.
     const RANK = { red: 0, amber: 1, green: 2 } as const;
-    out.sort((a, b) => RANK[a.rag as keyof typeof RANK] - RANK[b.rag as keyof typeof RANK] || (b.amount ?? -1) - (a.amount ?? -1));
+    out.sort((a, b) => RANK[a.rag as keyof typeof RANK] - RANK[b.rag as keyof typeof RANK] || Number(b.kind === "delivery") - Number(a.kind === "delivery") || (b.amount ?? -1) - (a.amount ?? -1));
     const state = (a: FeedAlert): AlertState => memory?.[a.id] ?? "open";
     return {
       alerts: out, open: out.filter((a) => state(a) === "open"), snoozed: out.filter((a) => state(a) === "snoozed"), resolved: out.filter((a) => state(a) === "resolved"),
       loading: planned.loading, error: planned.error, plan, pour, propertyId: pid,
     };
-  }, [ctx, sel, investigations, patterns, plan, pour, pid, user, money, memory, planned.loading, planned.error]);
+  }, [ctx, sel, investigations, patterns, plan, pour, orders, pid, user, money, memory, planned.loading, planned.error]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

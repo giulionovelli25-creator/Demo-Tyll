@@ -1,6 +1,6 @@
 // What to buy, what to prep, and the approval workflow. Forecasts run on complete data so a shared storeroom counts every
 // outlet's use; each user receives only their own outlets' dish detail and the requests they are entitled to see.
-import { INGREDIENTS, STAFF, USERS, ingredientById, itemById, outletById, outletsOfProperty, storeOwner, userById } from "../data/catalog";
+import { INGREDIENTS, STAFF, USERS, ingredientById, itemById, outletById, outletsOfProperty, storeOwner, userById, propertyById } from "../data/catalog";
 import { getDataset } from "../data/generate";
 import { APPROVAL_POLICY, approvalSteps, quotesFor } from "../data/purchasing-rules";
 import { budgetForRequest, deptOfRequest } from "./finance";
@@ -11,7 +11,7 @@ import {
 } from "../domain/planning";
 import { eventPortions, eventStoreNeed, isCommitted } from "../domain/events";
 import type { EventRecord, PrepPlan, PrepTask, PurchaseRequest, RequestLine, RequestStatus, User } from "../types";
-import { DEMO_TODAY, addDays, diffDays, eachDay, sum } from "../util";
+import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, eachDay, sum } from "../util";
 import { loadStore, mutateStore, type Shape } from "./purchasing-store";
 import { notify, peopleWith, resolve } from "./notify";
 import { deptById } from "../data/workforce";
@@ -298,6 +298,8 @@ export interface MonthPlanOut {
     events: { name: string; date: string; attendance: number }[];
     lastFourWeeksValue: number;
     predictedValue: number;
+    /** In-house guests per night for the next 7 nights, from the PMS (simulated). Breakfast and in-room dining follow it. */
+    occupancy: { nights: number; minGuests: number; maxGuests: number; minRate: number; maxRate: number };
     bookedShare: number;
     swing: number;
     confidence: ConfidenceLevel;
@@ -408,6 +410,7 @@ export function monthPlanFor(user: User, propertyId: string, entries: SessionEnt
         events: base.events,
         lastFourWeeksValue: Math.round(sum(items, (i) => i.lastFourWeeks * i.unitPrice)),
         predictedValue: Math.round(sum(items, (i) => i.predicted * i.unitPrice)),
+        occupancy: occupancyAhead(data.occupancy, propertyId),
         bookedShare, swing, confidence: confidenceOf(bookedShare, swing),
       },
     },
@@ -800,6 +803,11 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       change(x, s);
       x.updatedAt = now();
       if (x.status === "approved" && !x.poNumber) x.poNumber = `PO-${x.id.slice(3)}`;
+      // In the demo an approved order counts as sent at once, arriving on the supplier's next delivery morning.
+      if (x.status === "approved" && !x.sentAt) {
+        x.sentAt = `${DEMO_TODAY}T${String(Math.floor(DEMO_NOW_MIN / 60)).padStart(2, "0")}:${String(DEMO_NOW_MIN % 60).padStart(2, "0")}`;
+        x.expectedAt = `${addDays(DEMO_TODAY, Math.max(1, ...x.lines.map((l) => ingredientById[l.ingredientId]?.leadDays ?? 1)))}T07:30`;
+      }
       x.history.push({ at: x.updatedAt, by: user.id, action: label, status: x.status, comment: comment || undefined, ...extra });
       handoff(s, x, user);
       return x;
@@ -954,3 +962,13 @@ function outletLabelFor(r: PurchaseRequest) {
 }
 export const userName = (id: string) => userById[id]?.name ?? id;
 export const ingredientIds = () => INGREDIENTS.map((g) => g.id);
+
+/** About 1.6 guests stay in each occupied room. */
+const GUESTS_PER_ROOM = 1.6;
+function occupancyAhead(days: readonly { propertyId: string; date: string; occupancy: number }[], propertyId: string) {
+  const rooms = propertyById[propertyId]?.rooms ?? 0;
+  const next = days.filter((d) => d.propertyId === propertyId && d.date >= DEMO_TODAY && d.date <= addDays(DEMO_TODAY, 6)).map((d) => d.occupancy);
+  if (!next.length) return { nights: 0, minGuests: 0, maxGuests: 0, minRate: 0, maxRate: 0 };
+  const lo = Math.min(...next), hi = Math.max(...next);
+  return { nights: next.length, minGuests: Math.round(rooms * lo * GUESTS_PER_ROOM), maxGuests: Math.round(rooms * hi * GUESTS_PER_ROOM), minRate: lo, maxRate: hi };
+}

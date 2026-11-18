@@ -10,21 +10,20 @@ export interface ApprovalPolicy {
   managerLabel: string;
 }
 
-/** Demo policies. Dubai sends every request to accounting; Doha lets small ones through after purchasing. */
+/** Demo policy. Every request goes to accounting; above the limit the general manager approves too. */
 export const APPROVAL_POLICY: Record<string, ApprovalPolicy> = {
-  dxb: { accountingAbove: 0, managerAbove: 5000, managerLabel: "General manager" },
-  doh: { accountingAbove: 1500, managerAbove: 8000, managerLabel: "General manager" },
+  lis: { accountingAbove: 0, managerAbove: 5000, managerLabel: "General manager" },
 };
 
 
 /** A second supplier quoting for each category, at a fixed difference from the usual price. */
 const ALTERNATIVES: Record<string, { id: string; name: string; factor: number; extraLead: number }> = {
-  meat: { id: "meat-alt", name: "Emirates Butchery Co.", factor: 1.06, extraLead: 1 },
-  sea: { id: "sea-alt", name: "Gulf Catch Trading", factor: 0.97, extraLead: 1 },
-  produce: { id: "produce-alt", name: "Desert Farms Direct", factor: 1.04, extraLead: 0 },
+  meat: { id: "meat-alt", name: "Talho Central", factor: 1.06, extraLead: 1 },
+  sea: { id: "sea-alt", name: "Mar Azul Pescados", factor: 0.97, extraLead: 1 },
+  produce: { id: "produce-alt", name: "Quinta Verde Direct", factor: 1.04, extraLead: 0 },
   bakery: { id: "bakery-alt", name: "Artisan Bread House", factor: 1.05, extraLead: 0 },
   dry: { id: "dry-alt", name: "Oasis Foodservice", factor: 0.98, extraLead: 1 },
-  bev: { id: "bev-alt", name: "Arabian Drinks Distribution", factor: 1.03, extraLead: 1 },
+  bev: { id: "bev-alt", name: "Ibéria Drinks Distribution", factor: 1.03, extraLead: 1 },
 };
 
 export interface Quote {

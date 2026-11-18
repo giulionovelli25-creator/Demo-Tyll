@@ -18,8 +18,8 @@ const GROUPS: { label: string; ids: string[] }[] = [
   { label: "Leadership", ids: ["u-owner", "u-gm"] },
   { label: "Restaurants and kitchen", ids: ["u-fnb", "u-rm", "u-lby", "u-chef", "u-cook", "u-emp"] },
   { label: "Purchasing and stores", ids: ["u-buy", "u-store"] },
-  { label: "Finance", ids: ["u-fc", "u-acc-doh"] },
-  { label: "Sales and events", ids: ["u-sales", "u-dos", "u-events", "u-sales-doh"] },
+  { label: "Finance", ids: ["u-fc"] },
+  { label: "Sales and events", ids: ["u-sales", "u-dos", "u-events"] },
   { label: "Rooms and guests", ids: ["u-fo", "u-con", "u-hk", "u-maid", "u-bellcap", "u-bell"] },
 ];
 

@@ -7,6 +7,7 @@ import { itemById, outletById } from "../data/catalog";
 import type { Order } from "../types";
 import { DEMO_TODAY, addDays, rng, sum } from "../util";
 import { menuPriceAt } from "./pricing";
+import { lossLevel } from "./story";
 
 export type PourFamily = "wine" | "spirits";
 export type Shift = "day" | "evening" | "late";
@@ -54,23 +55,22 @@ const skuById = Object.fromEntries(POUR_SKUS.map((s) => [s.id, s]));
 /** Simulated pour size against the standard, by outlet and shift. Most sit close to standard; a few run heavy. */
 const PROFILE: Record<string, Partial<Record<Shift, number>>> = {
   // The same story as the house wine worked example: about 187 ml poured for a 150 ml glass.
-  "dxb-lobby": { day: 1.2, evening: 1.25, late: 1.3 },
-  "dxb-pool": { day: 1.04, evening: 1.18 },
-  "dxb-terrace": { evening: 1.06, late: 1.14 },
-  "doh-sky": { evening: 1.12, late: 1.24 },
+  "lis-lobby": { day: 1.03, evening: 1.04, late: 1.06 },
+  "lis-terrace": { evening: 1.015, late: 1.03 },
 };
 /**
- * The demo's one person-level story: at Lobby Lounge the heavy pours happen mostly when its bartender is on (simulated rota).
+ * The demo's one person-level story: at Bar Azulejo the heavy pours happen mostly when its bartender is on (simulated rota).
  * The outlet's overall level stays as before, so the house wine worked example is unchanged.
  */
-const PERSON: Record<string, { staffId: string; on: number; off: number }> = { "dxb-lobby": { staffId: "LBY-S5", on: 1.38, off: 1.12 } };
+const PERSON: Record<string, { staffId: string; on: number; off: number }> = { "lis-lobby": { staffId: "AZU-S5", on: 1.16, off: 1.02 } };
 const pourFactor = (outletId: string, shift: Shift, family: PourFamily, date: string) => {
   const who = PERSON[outletId];
-  const base = who ? (rostered(outletId, date, shift).includes(who.staffId) ? who.on : who.off) : PROFILE[outletId]?.[shift] ?? 1.01;
+  const base = who ? (rostered(outletId, date, shift).includes(who.staffId) ? who.on : who.off) : PROFILE[outletId]?.[shift] ?? 1.004;
   const weekday = new Date(`${date}T00:00:00Z`).getUTCDay();
   const weekend = shift !== "day" && (weekday === 5 || weekday === 6) ? 0.04 : 0;
   // Spirits run closer to standard: a measure is easier to keep than a free pour of wine.
-  return 1 + (base - 1 + weekend) * (family === "spirits" ? 0.6 : 1);
+  // Heavy pouring has eased since the hotel started using Tyll (see lossLevel).
+  return 1 + (base - 1 + weekend) * (family === "spirits" ? 0.6 : 1) * lossLevel(date);
 };
 
 export interface PourEntry { date: string; outletId: string; shift: Shift; skuId: string; sold: number; ml: number }
@@ -81,7 +81,7 @@ const cache = new WeakMap<object, PourEntry[]>();
 export function pourLog(orders: readonly Order[]): PourEntry[] {
   const hit = cache.get(orders);
   if (hit) return hit;
-  const since = addDays(DEMO_TODAY, -45);
+  const since = addDays(DEMO_TODAY, -60);
   const wines = POUR_SKUS.filter((s) => s.family === "wine");
   const buckets = new Map<string, PourEntry>();
   const add = (date: string, outletId: string, shift: Shift, sku: PourSku, qty: number, billed: boolean) => {
@@ -109,6 +109,15 @@ export function pourLog(orders: readonly Order[]): PourEntry[] {
         for (const sku of POUR_SKUS.filter((s) => s.itemId === l.itemId)) add(o.date, o.outletId, shift, sku, l.qty, billed);
       }
     });
+  }
+  // The worked example: on the last Friday late shift at Bar Azulejo, 7 bottles of house red were poured and not rung up.
+  const friday = [1, 2, 3, 4, 5, 6, 7].map((n) => addDays(DEMO_TODAY, -n)).find((d) => new Date(`${d}T00:00:00Z`).getUTCDay() === 5);
+  if (friday && friday >= since) {
+    const red = skuById.red;
+    const k = `${friday}|lis-lobby|late|red`;
+    const b = buckets.get(k) ?? { date: friday, outletId: "lis-lobby", shift: "late" as Shift, skuId: red.id, sold: 0, ml: 0 };
+    b.ml += 7 * red.bottleMl;
+    buckets.set(k, b);
   }
   const out = [...buckets.values()];
   cache.set(orders, out);

@@ -18,7 +18,7 @@ const O = await import("../server/ops");
 const { userById } = await import("../data/catalog");
 
 const U = (id: string) => userById[id];
-const sara = U("u-rm"), nadia = U("u-buy"), priya = U("u-fc"), elena = U("u-acc-doh"), omar = U("u-emp"), owner = U("u-owner"), gm = U("u-gm"), fo = U("u-fo"), mariam = U("u-sales-doh"), noor = U("u-sales");
+const sara = U("u-rm"), nadia = U("u-buy"), priya = U("u-fc"), omar = U("u-emp"), owner = U("u-owner"), gm = U("u-gm"), fo = U("u-fo"), noor = U("u-sales");
 const ok = <T,>(r: ({ ok: true } & T) | { ok: false; error: string }): T => { if (!r.ok) throw new Error(r.error); return r; };
 const inbox = (u: typeof sara) => N.noticesFor(u).notices.filter((n) => !n.resolved);
 
@@ -26,7 +26,7 @@ beforeEach(() => resetPurchasingStore());
 
 describe("notifications follow the purchase request", () => {
   it("tells purchasing, then accounting, then the requester, and resolves each step", () => {
-    const r = ok(P.saveRequest(sara, { propertyId: "dxb", period: "tomorrow", lines: [{ ingredientId: "chicken", qty: 10 }] })).request;
+    const r = ok(P.saveRequest(sara, { propertyId: "lis", period: "tomorrow", lines: [{ ingredientId: "chicken", qty: 10 }] })).request;
     expect(inbox(nadia)).toHaveLength(0); // drafts are private
     ok(P.actOnRequest(sara, r.id, { action: "submit" }));
     const n1 = inbox(nadia).find((n) => n.ref === r.id)!;
@@ -36,7 +36,6 @@ describe("notifications follow the purchase request", () => {
     ok(P.actOnRequest(nadia, r.id, { action: "purchasing", decision: "approve" }));
     expect(inbox(nadia).some((n) => n.ref === r.id)).toBe(false);
     expect(inbox(priya).find((n) => n.ref === r.id)!.href).toContain("/finance");
-    expect(inbox(elena).some((n) => n.ref === r.id)).toBe(false); // Doha accountant: another hotel
     ok(P.actOnRequest(priya, r.id, { action: "accounting", decision: "approve" }));
     const done = inbox(sara).find((n) => n.ref === r.id)!;
     expect(done.title).toMatch(/approved as PO-/);
@@ -51,7 +50,7 @@ describe("notifications follow the purchase request", () => {
   });
 
   it("tells the venue about a table request and the front desk about its answer", () => {
-    const g = ok(GS.createGc(fo, { venueId: "dxb-terrace", party: 2, timeMin: 22 * 60 + 30, room: loadStore().guest.rooms[0].number })).request;
+    const g = ok(GS.createGc(fo, { venueId: "lis-terrace", party: 2, timeMin: 22 * 60 + 30, room: loadStore().guest.rooms[0].number })).request;
     expect(inbox(sara).some((n) => n.ref === g.id && n.type === "gc-request")).toBe(true);
     expect(inbox(U("u-lby")).some((n) => n.ref === g.id)).toBe(false);
     ok(GS.gcAction(sara, g.id, { action: "accept" }));
@@ -60,10 +59,10 @@ describe("notifications follow the purchase request", () => {
   });
 
   it("tells reviewers about a staff count and lending managers about a support request", () => {
-    ok(L.submitCount(U("u-store"), { propertyId: "dxb", ingredientId: "coke", counted: 3 }, () => 5));
+    ok(L.submitCount(U("u-store"), { propertyId: "lis", ingredientId: "coke", counted: 3 }, () => 5));
     expect(inbox(sara).some((n) => n.type === "count-review") || inbox(nadia).some((n) => n.type === "count-review")).toBe(true);
-    const found = ok(O.findCandidates(U("u-hk"), { propertyId: "dxb", skill: "cleaning", date: "2026-10-13", start: 21 * 60, end: 23 * 60, toDeptId: "dxb-hk" }));
-    const req = ok(O.createSupport(U("u-hk"), { propertyId: "dxb", toDeptId: "dxb-hk", skill: "cleaning", count: 1, employeeIds: [found.candidates[0].employeeId], reason: "Arrivals", date: "2026-10-13", start: 21 * 60, end: 23 * 60 })).request;
+    const found = ok(O.findCandidates(U("u-hk"), { propertyId: "lis", skill: "cleaning", date: "2026-10-13", start: 21 * 60, end: 23 * 60, toDeptId: "lis-hk" }));
+    const req = ok(O.createSupport(U("u-hk"), { propertyId: "lis", toDeptId: "lis-hk", skill: "cleaning", count: 1, employeeIds: [found.candidates[0].employeeId], reason: "Arrivals", date: "2026-10-13", start: 21 * 60, end: 23 * 60 })).request;
     const lenders = Object.values(userById).filter((u) => inbox(u).some((n) => n.ref === req.id && n.type === "support-ask"));
     expect(lenders.length).toBeGreaterThan(0);
     ok(O.decideItem(lenders[0], req.id, req.items[0].id, { decision: "approve" }));
@@ -73,7 +72,7 @@ describe("notifications follow the purchase request", () => {
 
 describe("search stays inside each person's access", () => {
   it("finds records with partial words and small typos, only where the person may open them", () => {
-    const r = ok(P.saveRequest(sara, { propertyId: "dxb", period: "tomorrow", lines: [{ ingredientId: "chicken", qty: 10 }] })).request;
+    const r = ok(P.saveRequest(sara, { propertyId: "lis", period: "tomorrow", lines: [{ ingredientId: "chicken", qty: 10 }] })).request;
     ok(P.actOnRequest(sara, r.id, { action: "submit" }));
     expect(S.searchFor(nadia, r.id).some((h) => h.href.includes(r.id))).toBe(true);
     expect(S.searchFor(sara, "coca").some((h) => h.group === "Stock checks")).toBe(true);
@@ -81,10 +80,9 @@ describe("search stays inside each person's access", () => {
     expect(S.searchFor(fo, "1211").some((h) => h.group === "Rooms")).toBe(true);
     expect(S.searchFor(omar, r.id)).toHaveLength(0); // staff cannot open purchasing
     expect(S.searchFor(omar, "invoice").some((h) => h.group === "Invoices")).toBe(false);
-    expect(S.searchFor(elena, "MEAT-1011").some((h) => h.href.includes("DXB"))).toBe(false); // Dubai invoice, Doha accountant
-    expect(S.searchFor(elena, "MEAT-1011").some((h) => h.href.includes("DOH"))).toBe(true);
-    expect(S.searchFor(priya, "MEAT-1011").some((h) => h.group === "Invoices")).toBe(true);
-    expect(S.searchFor(mariam, "Atlas").some((h) => h.group === "Sales")).toBe(false); // Dubai opportunity
+    expect(S.searchFor(priya, "MEAT-1012").some((h) => h.group === "Invoices" && h.href.includes("INV-LIS-1012-MEAT"))).toBe(true);
+    expect(S.searchFor(sara, "MEAT-1012").some((h) => h.group === "Invoices")).toBe(false); // a manager cannot open finance
+    expect(S.searchFor(omar, "Atlas").some((h) => h.group === "Sales")).toBe(false); // staff cannot open sales
     expect(S.searchFor(noor, "Atlas").some((h) => h.group === "Sales")).toBe(true);
     expect(S.searchFor(sara, "guest connect").some((h) => h.group === "Features")).toBe(false); // not her job
     expect(S.searchFor(fo, "guest connect").some((h) => h.group === "Features")).toBe(true);
@@ -93,8 +91,8 @@ describe("search stays inside each person's access", () => {
 
 describe("demo reset", () => {
   it("is limited to the owner and general manager, and puts one story back without touching others", () => {
-    const r = ok(P.saveRequest(sara, { propertyId: "dxb", period: "tomorrow", lines: [{ ingredientId: "chicken", qty: 10 }] })).request;
-    ok(L.logWasteShared(omar, { outletId: "dxb-terrace", ingredientId: "coke", qty: 2, reason: "waste" }));
+    const r = ok(P.saveRequest(sara, { propertyId: "lis", period: "tomorrow", lines: [{ ingredientId: "chicken", qty: 10 }] })).request;
+    ok(L.logWasteShared(omar, { outletId: "lis-terrace", ingredientId: "coke", qty: 2, reason: "waste" }));
     for (const u of [sara, nadia, priya, omar]) expect(D.resetDemo(u, "purchasing").ok).toBe(false);
     expect(D.resetDemo(gm, "nonsense").ok).toBe(false);
     ok(D.resetDemo(gm, "purchasing"));
@@ -102,9 +100,11 @@ describe("demo reset", () => {
     expect(loadStore().stockLog.waste).toHaveLength(1); // stock story untouched
     ok(D.resetDemo(owner, "stock"));
     expect(loadStore().stockLog.waste).toHaveLength(0);
-    // A fresh request after reset starts cleanly and is not a duplicate.
-    const again = ok(P.saveRequest(sara, { propertyId: "dxb", period: "tomorrow", lines: [{ ingredientId: "chicken", qty: 10 }] })).request;
-    expect(loadStore().requests).toHaveLength(1);
+    // A fresh request after reset starts cleanly after the seven seeded example orders and is not a duplicate.
+    expect(loadStore().requests.map((x) => x.id).sort()).toEqual(["PR-LIS-0001", "PR-LIS-0002", "PR-LIS-0003", "PR-LIS-0004", "PR-LIS-0005", "PR-LIS-0006", "PR-LIS-0007"]);
+    const again = ok(P.saveRequest(sara, { propertyId: "lis", period: "tomorrow", lines: [{ ingredientId: "chicken", qty: 10 }] })).request;
+    expect(loadStore().requests).toHaveLength(8);
     expect(again.id).toBe(r.id);
+    expect(again.id).toBe("PR-LIS-0008");
   });
 });

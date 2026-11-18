@@ -6,7 +6,9 @@ Last updated 14 October 2026. Repository: https://github.com/giulionovelli25-cre
 
 ---
 
-**Latest:** the interface is light by default, with one token file (`src/app/tokens.css`), six sidebar items, a full Stock page with month end prediction, Pour Control in Money, and fast breakage and count flows. Read `CLAUDE.md` for the rules.
+**Latest (18 November 2026):** the demo hotel is now **Grand Hotel Lumière, Lisbon** (250 rooms, group Lumière Hotels) with four outlets (Mercado, Bar Azulejo, Banquets and Events, In-Room Dining) and every amount in **euros**. Dubai and Doha are gone. The business date follows today in Lisbon. Overview leads with the yearly loss projection, money lost and saved in the last 30 days and Tyll value this year. Orders starts with seven example orders, and a late delivery raises a red alert. Predictions shows hotel occupancy. Older sections below describe the Dubai and Doha version and are kept as history; CLAUDE.md has the current rules.
+
+**Earlier:** the interface is light by default, with one token file (`src/app/tokens.css`), six sidebar items, a full Stock page with month end prediction, Pour Control in Money, and fast breakage and count flows. Read `CLAUDE.md` for the rules.
 
 ---
 

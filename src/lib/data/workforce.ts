@@ -1,6 +1,6 @@
 // Demo workforce: departments, people, verified skills, rostered shifts and leave. A focused scheduling model for
 // staffing events and lending people between departments; not a payroll or full rostering system.
-import { DEMO_TODAY, addDays, eachDay, hashString } from "../util";
+import { DEMO_TODAY, addDays, eachDay, hashString, rel } from "../util";
 import { OUTLETS, STAFF } from "./catalog";
 
 export type Skill = "waiter" | "bartender" | "chef" | "kitchen_assistant" | "setup" | "supervisor" | "runner" | "cleaning" | "front_desk" | "housekeeping" | "bell" | "concierge" | "inspection";
@@ -43,20 +43,18 @@ export interface Leave {
   reason: string;
 }
 
-/** Demo hourly labour rates in AED, converted for other currencies. Planning estimates, not payroll. */
-export const HOURLY_RATE_AED: Record<Skill, number> = {
-  waiter: 45, bartender: 50, chef: 70, kitchen_assistant: 35, setup: 35, supervisor: 80, runner: 32, cleaning: 30, front_desk: 45, housekeeping: 32, bell: 32, concierge: 50, inspection: 45,
+/** Demo hourly labour rates in euros. Planning estimates, not payroll. */
+export const HOURLY_RATE_EUR: Record<Skill, number> = {
+  waiter: 13, bartender: 14, chef: 18, kitchen_assistant: 11, setup: 11, supervisor: 20, runner: 10, cleaning: 10, front_desk: 13, housekeeping: 10, bell: 10, concierge: 14, inspection: 13,
 };
 
 const outletDepts: Dept[] = OUTLETS.map((o) => ({ id: o.id, propertyId: o.propertyId, name: o.name, kind: "outlet", outletId: o.id }));
 const extraDepts: Dept[] = [
-  { id: "dxb-banq", propertyId: "dxb", name: "Banqueting", kind: "banqueting" },
-  { id: "dxb-fo", propertyId: "dxb", name: "Front Office", kind: "front_office" },
-  { id: "dxb-hk", propertyId: "dxb", name: "Housekeeping", kind: "housekeeping" },
-  { id: "dxb-bell", propertyId: "dxb", name: "Bell Team", kind: "bell" },
-  { id: "dxb-conc", propertyId: "dxb", name: "Concierge", kind: "concierge" },
-  { id: "doh-banq", propertyId: "doh", name: "Banqueting", kind: "banqueting" },
-  { id: "doh-fo", propertyId: "doh", name: "Front Office", kind: "front_office" },
+  { id: "lis-banq", propertyId: "lis", name: "Banqueting", kind: "banqueting" },
+  { id: "lis-fo", propertyId: "lis", name: "Front Office", kind: "front_office" },
+  { id: "lis-hk", propertyId: "lis", name: "Housekeeping", kind: "housekeeping" },
+  { id: "lis-bell", propertyId: "lis", name: "Bell Team", kind: "bell" },
+  { id: "lis-conc", propertyId: "lis", name: "Concierge", kind: "concierge" },
 ];
 export const DEPTS: Dept[] = [...outletDepts, ...extraDepts];
 export const deptById: Record<string, Dept> = Object.fromEntries(DEPTS.map((d) => [d.id, d]));
@@ -85,7 +83,7 @@ function team(deptId: string, propertyId: string, code: string, rows: { n: numbe
 export const EMPLOYEES: Employee[] = [
   // Outlet teams are the existing staff, with skills from their role.
   ...STAFF.map((s) => ({ id: s.id, name: s.name, propertyId: OUTLETS.find((o) => o.id === s.outletId)!.propertyId, deptId: s.outletId, title: TITLE_BY_ROLE[s.role], skills: SKILLS_BY_ROLE[s.role] })),
-  ...team("dxb-banq", "dxb", "BNQ", [
+  ...team("lis-banq", "lis", "BNQ", [
     { n: 6, title: "Banquet waiter", skills: ["waiter", "runner", "setup"] },
     { n: 3, title: "Banquet bartender", skills: ["bartender", "waiter"] },
     { n: 3, title: "Banquet chef", skills: ["chef", "kitchen_assistant"] },
@@ -94,28 +92,18 @@ export const EMPLOYEES: Employee[] = [
     { n: 3, title: "Runner", skills: ["runner", "setup"] },
     { n: 3, title: "Steward", skills: ["cleaning", "kitchen_assistant"] },
   ]),
-  ...team("dxb-fo", "dxb", "FO", [
+  ...team("lis-fo", "lis", "FO", [
     { n: 4, title: "Front desk agent", skills: ["front_desk"] },
     // Cross-trained: worked banquets before joining the front office.
     { n: 2, title: "Front desk agent", skills: ["front_desk", "waiter"] },
   ]),
-  ...team("dxb-hk", "dxb", "HK", [
+  ...team("lis-hk", "lis", "HK", [
     { n: 7, title: "Room attendant", skills: ["housekeeping", "cleaning"] },
     { n: 1, title: "Public area attendant", skills: ["cleaning", "setup"] },
     { n: 1, title: "Housekeeping supervisor", skills: ["inspection", "housekeeping"] },
   ]),
-  ...team("dxb-bell", "dxb", "BELL", [{ n: 4, title: "Bell attendant", skills: ["bell", "setup"] }]),
-  ...team("dxb-conc", "dxb", "CON", [{ n: 2, title: "Concierge", skills: ["concierge", "front_desk"] }]),
-  ...team("doh-banq", "doh", "DBQ", [
-    { n: 10, title: "Banquet waiter", skills: ["waiter", "runner", "setup"] },
-    { n: 3, title: "Banquet bartender", skills: ["bartender", "waiter"] },
-    { n: 4, title: "Banquet chef", skills: ["chef", "kitchen_assistant"] },
-    { n: 6, title: "Banquet houseman", skills: ["setup", "cleaning"] },
-    { n: 3, title: "Banquet captain", skills: ["supervisor", "waiter"] },
-    { n: 4, title: "Runner", skills: ["runner", "setup"] },
-    { n: 4, title: "Steward", skills: ["cleaning", "kitchen_assistant"] },
-  ]),
-  ...team("doh-fo", "doh", "DFO", [{ n: 5, title: "Front desk agent", skills: ["front_desk"] }]),
+  ...team("lis-bell", "lis", "BELL", [{ n: 4, title: "Bell attendant", skills: ["bell", "setup"] }]),
+  ...team("lis-conc", "lis", "CON", [{ n: 2, title: "Concierge", skills: ["concierge", "front_desk"] }]),
 ];
 // People who appear in the guided demo by name.
 const NAMED: Record<string, string> = { "HK-01": "Maria Santos", "HK-09": "Agnes Mwangi", "BELL-01": "Yusuf Adeyemi", "CON-01": "Lina Haddad" };
@@ -158,14 +146,14 @@ export const SHIFTS: Shift[] = buildShifts();
 
 /** Approved leave. Kept small and visible so the demo shows Tyll respecting it. */
 export const LEAVE: Leave[] = [
-  { employeeId: "LBY-S2", date: "2026-10-15", reason: "Annual leave" },
-  { employeeId: "TRC-S2", date: "2026-10-13", reason: "Training day" },
+  { employeeId: "AZU-S2", date: rel(2), reason: "Annual leave" },
+  { employeeId: "MER-S2", date: rel(0), reason: "Training day" },
 ];
 
 export const shiftsOf = (employeeId: string, date: string) => SHIFTS.filter((s) => s.employeeId === employeeId && s.date === date);
 export const onLeave = (employeeId: string, date: string) => LEAVE.find((l) => l.employeeId === employeeId && l.date === date);
 
 /** Demo hourly rate in the property's currency. */
-export const hourlyRate = (skill: Skill, fxFromAed: number) => Math.round(HOURLY_RATE_AED[skill] * fxFromAed * 100) / 100;
+export const hourlyRate = (skill: Skill, fxFromAed: number) => Math.round(HOURLY_RATE_EUR[skill] * fxFromAed * 100) / 100;
 
 export const fmtMin = (m: number) => `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;

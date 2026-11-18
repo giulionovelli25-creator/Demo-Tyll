@@ -20,8 +20,8 @@ export const NO_ADJUSTMENTS: Adjustments = { recounts: [], recipes: [], waste: [
 export const VARIANCE_RULES = {
   /** Smaller differences are within normal counting and portioning. */
   minShare: 0.05,
-  /** In AED, converted for other currencies. */
-  minValue: 20,
+  /** In euros, converted for other currencies. */
+  minValue: 5,
   /** A difference this large, as a share of expected use, opens a case automatically. */
   caseShare: 0.1,
 };
@@ -105,7 +105,7 @@ export function periodVariance(p: UsagePeriod, adj: Adjustments = NO_ADJUSTMENTS
   const unexplained = actual - expected - waste - breakage;
   const value = unexplained * p.unitCost;
   const share = expected > 0 ? unexplained / expected : unexplained > 0 ? 1 : 0;
-  const minValue = VARIANCE_RULES.minValue * fxRate("AED", propertyById[p.propertyId].currency);
+  const minValue = VARIANCE_RULES.minValue * fxRate("EUR", propertyById[p.propertyId].currency);
   const significant = Math.abs(unexplained) > p.tolerance + 1e-9 && Math.abs(share) >= VARIANCE_RULES.minShare && Math.abs(value) >= minValue;
   const removedQty = p.removals.reduce((s, r) => s + r.qty * r.qtyPerUnit, 0);
   return {

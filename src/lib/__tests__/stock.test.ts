@@ -37,37 +37,36 @@ beforeEach(() => resetAuthStore());
 
 describe("shared stock", () => {
   it("gives a manager the same shared-store figures as the full calculation", () => {
-    const truth = new Map(stockPosition("dxb", full).map((r) => [r.ingredientId, r.estimated]));
-    const rows = stockFor(sara, "dxb", none);
+    const truth = new Map(stockPosition("lis", full).map((r) => [r.ingredientId, r.estimated]));
+    const rows = stockFor(sara, "lis", none);
     expect(rows.length).toBeGreaterThan(0);
     for (const r of rows) expect(r.estimated).toBeCloseTo(truth.get(r.ingredientId)!, 6);
     const chicken = rows.find((r) => r.ingredientId === "chicken");
     if (chicken) expect(chicken.estimated).toBeCloseTo(truth.get("chicken")!, 6);
   });
 
-  it("keeps an outlet's own store separate and hidden from other outlets' managers", () => {
-    const ownerRows = stockFor(owner, "dxb", none);
+  it("keeps every item in the shared storeroom: no outlet has its own store", () => {
+    // Maison Lune and its own store were removed; lobster is now drawn from the main storeroom by every outlet that sells it.
+    const ownerRows = stockFor(owner, "lis", none);
+    expect(ownerRows.every((r) => r.store === null)).toBe(true);
     const lobster = ownerRows.find((r) => r.ingredientId === "lobster")!;
-    expect(lobster.store).toBe("dxb-lune");
-    // Only Lune draws on its own lobster store.
-    const luneOnly = stockPosition("dxb", { ...full, dayItems: d.dayItems.filter((r) => r.outletId === "dxb-lune") });
-    expect(lobster.usage).toBeCloseTo(luneOnly.find((r) => r.ingredientId === "lobster")!.usage, 6);
-    expect(stockFor(sara, "dxb", none).some((r) => r.store !== null)).toBe(false);
+    expect(lobster.usage).toBeCloseTo(stockPosition("lis", full).find((r) => r.ingredientId === "lobster")!.usage, 6);
+    expect(stockFor(sara, "lis", none).some((r) => r.store !== null)).toBe(false);
   });
 
   it("shares out count differences only across the user's own outlets", () => {
-    for (const r of stockFor(sara, "dxb", none)) expect(Object.keys(r.allocation).every((id) => id === "dxb-terrace")).toBe(true);
+    for (const r of stockFor(sara, "lis", none)) expect(Object.keys(r.allocation).every((id) => id === "lis-terrace")).toBe(true);
   });
 });
 
 describe("purchase suggestions", () => {
   it("gives Sara the same suggestions as the full calculation for her ingredients", () => {
-    const truth = buildForecast(d, full, "dxb", defaultInputs(d, "dxb"));
-    const mine = forecastFor(sara, "dxb", undefined, none).forecast;
+    const truth = buildForecast(d, full, "lis", defaultInputs(d, "lis"));
+    const mine = forecastFor(sara, "lis", undefined, none).forecast;
     expect(mine.plans.filter((p) => p.suggested > 0).length).toBeGreaterThan(0);
     for (const p of mine.plans) expect(p.suggested).toBeCloseTo(truth.plans.find((t) => t.ingredientId === p.ingredientId)!.suggested, 6);
     // Item-level sales forecasts stay limited to her outlet.
-    const terraceItems = new Set(d.dayItems.filter((r) => r.outletId === "dxb-terrace").map((r) => r.itemId));
+    const terraceItems = new Set(d.dayItems.filter((r) => r.outletId === "lis-terrace").map((r) => r.itemId));
     expect(mine.items.every((i) => terraceItems.has(i.itemId))).toBe(true);
   });
 });
@@ -75,12 +74,12 @@ describe("purchase suggestions", () => {
 describe("stock routes", () => {
   it("allows the user's own hotel and refuses others, cross-site calls and staff on forecasts", async () => {
     const rm = session("u-rm");
-    expect((await stockRoute.POST(post("/api/stock", rm, { propertyId: "dxb" }))).status).toBe(200);
+    expect((await stockRoute.POST(post("/api/stock", rm, { propertyId: "lis" }))).status).toBe(200);
     expect((await stockRoute.POST(post("/api/stock", rm, { propertyId: "doh" }))).status).toBe(403);
-    expect((await stockRoute.POST(post("/api/stock", rm, { propertyId: "dxb" }, "https://evil.example"))).status).toBe(403);
-    expect((await forecastRoute.POST(post("/api/forecast", rm, { propertyId: "dxb" }))).status).toBe(200);
+    expect((await stockRoute.POST(post("/api/stock", rm, { propertyId: "lis" }, "https://evil.example"))).status).toBe(403);
+    expect((await forecastRoute.POST(post("/api/forecast", rm, { propertyId: "lis" }))).status).toBe(200);
     const staff = session("u-emp");
-    expect((await forecastRoute.POST(post("/api/forecast", staff, { propertyId: "dxb" }))).status).toBe(403);
+    expect((await forecastRoute.POST(post("/api/forecast", staff, { propertyId: "lis" }))).status).toBe(403);
   });
 });
 
@@ -91,15 +90,15 @@ describe("where did it go", () => {
   it("sends a manager only their own outlets' periods, and refuses staff and other hotels", async () => {
     const { GET } = await varianceRoute();
     const rm = session("u-rm");
-    const res = await GET(get("/api/variance?propertyId=dxb", rm));
+    const res = await GET(get("/api/variance?propertyId=lis", rm));
     expect(res.status).toBe(200);
     const body = (await res.json()) as { periods: { outletId: string }[] };
     expect(body.periods.length).toBeGreaterThan(0);
-    expect(body.periods.every((p) => p.outletId === "dxb-terrace")).toBe(true);
+    expect(body.periods.every((p) => p.outletId === "lis-terrace")).toBe(true);
     expect((await GET(get("/api/variance?propertyId=doh", rm))).status).toBe(403);
-    expect((await GET(get("/api/variance?id=UP-LBY-wine-1012-1440", rm))).status).toBe(404);
-    expect((await GET(get("/api/variance?propertyId=dxb", session("u-emp")))).status).toBe(403);
-    const owner = (await (await GET(get("/api/variance?propertyId=dxb", session("u-owner")))).json()) as { periods: { outletId: string }[] };
+    expect((await GET(get("/api/variance?id=UP-AZU-wine-1012-1440", rm))).status).toBe(404);
+    expect((await GET(get("/api/variance?propertyId=lis", session("u-emp")))).status).toBe(403);
+    const owner = (await (await GET(get("/api/variance?propertyId=lis", session("u-owner")))).json()) as { periods: { outletId: string }[] };
     expect(new Set(owner.periods.map((p) => p.outletId)).size).toBeGreaterThan(1);
   });
 });
