@@ -15,7 +15,7 @@ import { arrivalText, orderStage } from "@/lib/domain/order-stage";
 import { supplierById } from "@/lib/data/catalog";
 import Link from "next/link";
 import { Choice } from "./parts";
-import { MATCH_FLAG, PO_STATUS, orderTotals, outstanding, packsText, poStatus } from "@/lib/domain/procurement";
+import { MATCH_FLAG, PO_STATUS, awaitingDelivery, orderTotals, outstanding, packsText, poStatus } from "@/lib/domain/procurement";
 
 export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "warn" | "pos" | "neg" | "ink" }> = {
   draft: { label: "Draft", tone: "neutral" },
@@ -33,7 +33,7 @@ type Queue = "purchasing" | "accounting" | "fnb" | "manager" | "approved" | "del
 const inQueue = (r: PurchaseRequest, q: Queue, user: User) =>
   q === "all" ? true
     : q === "approved" ? r.status === "approved" || r.status === "received"
-      : q === "delivery" ? r.status === "approved"
+      : q === "delivery" ? awaitingDelivery(r)
       : q === "returned" ? r.status === "rejected" || r.status === "changes"
         : q === "drafts" ? r.status === "draft" && (r.createdBy === user.id || can(user, "purchase.review"))
           : r.status === q;

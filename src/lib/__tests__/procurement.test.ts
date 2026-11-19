@@ -193,11 +193,16 @@ describe("end to end: low stock to a credit request", () => {
     ok(P.actOnRequest(marco, po.id, { action: "fnb", decision: "approve" }));
     const approved = loadStore().requests.find((r) => r.id === po.id)!;
     expect(D.poStatus(approved)).toBe("approved");
+    // Approved but not sent: waiting to be sent, not on its way.
+    expect(D.awaitingSend(approved)).toBe(true);
+    expect(D.awaitingDelivery(approved)).toBe(false);
     expect(approved.poNumber).toBeTruthy();
 
     // 4. Sent by email with the PDF, and a copy kept. Logged, not sent, in the demo.
     const sent = ok(X.sendPurchaseOrder(nadia, po.id));
     expect(D.poStatus(sent.request)).toBe("sent");
+    expect(D.awaitingDelivery(sent.request)).toBe(true);
+    expect(D.awaitingSend(sent.request)).toBe(false);
     expect(sent.email).toMatchObject({ to: "encomendas@carnes-ribeiro.example", status: "logged" });
     const pdf = ok(X.readPurchaseOrderPdf(nadia, po.id));
     expect(pdf.bytes.subarray(0, 5).toString()).toBe("%PDF-");

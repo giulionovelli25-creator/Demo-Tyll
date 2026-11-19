@@ -62,3 +62,9 @@ Resume from this file if a session runs out of context.
 - **Finding:** `sendPurchaseOrder` checked `sent` on a snapshot read before the write. Within one Node process sends cannot interleave, and the button is disabled while sending, so a double click already gave one email. Two processes sharing the store file could both pass the check.
 - **Fix:** the check runs again inside `mutateStore`, against the saved store, before the outbox email is added.
 - **Test:** `procurement.test.ts`: a second send by the same and another person is refused and the outbox holds one email for the order. A true two-process race was not reproduced: UNVERIFIED beyond the code path.
+
+### F7, approved orders not yet sent counted as on the way (P2): FIXED
+- **Repro:** approve a purchase order and do not send it. Orders shows it under "Awaiting delivery" and in "N on the way", though the supplier has not been told.
+- **Root cause:** `src/app/forecast/page.tsx` and the "Awaiting delivery" filter counted every request with status approved.
+- **Fix:** `awaitingDelivery` and `awaitingSend` in `src/lib/domain/procurement.ts`. The header now reads "N approved and not sent" separately; the tile and filter count sent orders only.
+- **Test:** `procurement.test.ts`, approved then sent.

@@ -113,6 +113,11 @@ export function poStatus(r: Pick<PurchaseRequest, "status" | "sent" | "sentAt" |
   return r.sent || r.sentAt ? "sent" : "approved";
 }
 
+/** On its way: sent to the supplier and not fully received. An approved order not yet sent is not on its way. */
+export const awaitingDelivery = (r: Pick<PurchaseRequest, "status" | "sent" | "sentAt" | "receipts" | "closed">) => ["sent", "partly_received"].includes(poStatus(r));
+/** Approved, and still to be sent to the supplier. */
+export const awaitingSend = (r: Pick<PurchaseRequest, "status" | "sent" | "sentAt" | "receipts" | "closed">) => poStatus(r) === "approved";
+
 // ---- Receiving ---------------------------------------------------------------------------------------------------
 
 /** One line of a delivery. Damaged goods are refused at the door; only the rest enters stock. */
