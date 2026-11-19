@@ -1,4 +1,5 @@
 "use client";
+import { caseIsPastDeadline } from "@/lib/domain/deadline";
 import { MoreDetail } from "@/components/disclosure";
 import { StockAlert } from "./stock-alert";
 // The outlet manager's overview: what to do today, before the bigger picture.
@@ -61,7 +62,7 @@ export function ManagerOverview() {
     const out: Task[] = [];
     for (const i of investigations) {
       if (i.status === "closed" || !i.outletId || !outletIds.has(i.outletId) || !mine.has(i.assigneeId ?? "")) continue;
-      const overdue = !!i.deadline && i.deadline < DEMO_TODAY;
+      const overdue = caseIsPastDeadline(i);
       out.push({ id: i.id, title: i.headline, detail: `Investigation · ${i.deadline ? `due ${fmtDate(i.deadline)}` : "no deadline"}`, href: `/investigations/${i.id}`, urgent: overdue });
     }
     const fresh = investigations.filter((i) => i.status === "new" && i.outletId && outletIds.has(i.outletId));

@@ -1,11 +1,11 @@
 // Fictional master data for the demo. Nothing here describes a real business.
 import type { Ingredient, MenuItem, Outlet, PriceChange, Property, Staff, Supplier, User } from "../types";
-import { rel } from "../util";
+import { DEMO_TIME_ZONE, rel } from "../util";
 
 export const GROUP_NAME = "Lumière Hotels";
 
 export const PROPERTIES: Property[] = [
-  { id: "lis", name: "Grand Hotel Lumière", city: "Lisbon", currency: "EUR", rooms: 250, costFactor: 1 },
+  { id: "lis", name: "Grand Hotel Lumière", city: "Lisbon", currency: "EUR", rooms: 250, costFactor: 1, timeZone: DEMO_TIME_ZONE },
 ];
 
 export const SUPPLIERS: Supplier[] = [

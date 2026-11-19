@@ -10,7 +10,7 @@ import { allowedOutlets, can } from "@/lib/domain/access";
 import { personName, useView } from "@/lib/hooks";
 import { type RequestDetail, useMutate, useRequest, useRequests } from "@/lib/plan-hooks";
 import type { PurchaseRequest, RequestStatus, User } from "@/lib/types";
-import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, unitLabel } from "@/lib/util";
+import { DEMO_TIME_ZONE, DEMO_TODAY, addDays, dayIn, fmtDate, fmtMoney, fmtQty, timeIn, unitLabel } from "@/lib/util";
 import { arrivalText, orderStage } from "@/lib/domain/order-stage";
 import { supplierById } from "@/lib/data/catalog";
 import Link from "next/link";
@@ -45,8 +45,8 @@ const arrival = (r: PurchaseRequest) => arrivalText(r.expectedAt, fmtDate, addDa
 const unitOf = (g: string) => (ingredientById[g].unit === "each" ? "units" : ingredientById[g].unit);
 const where = (r: PurchaseRequest) => (r.deptId ? deptById[r.deptId]?.name ?? r.deptId : r.eventId ? "Event" : r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : r.supplierId ? "Main store" : `${r.outletIds.length} outlets`);
 /** Times are the hotel's local time, whoever looks at them and from wherever. */
-export const hotelTime = (iso?: string) => (iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Lisbon" }) : "");
-const hotelDate = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+export const hotelTime = (iso?: string, timeZone = DEMO_TIME_ZONE) => (iso ? timeIn(timeZone, new Date(iso)) : "");
+const hotelDate = (iso: string, timeZone = DEMO_TIME_ZONE) => dayIn(timeZone, new Date(iso));
 /** When a supplier's order is due, or the period an older request covers. */
 const forWhen = (r: PurchaseRequest, withDay = false) => (r.deliveryDate ? `Delivery ${fmtDate(r.deliveryDate, withDay)}` : `${fmtDate(r.period.from, withDay)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, withDay)}` : ""}`);
 

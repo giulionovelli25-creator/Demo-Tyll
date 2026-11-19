@@ -1,4 +1,5 @@
 // One prioritised list of what needs attention, and a short briefing built from the same figures.
+import { caseIsPastDeadline } from "@/lib/domain/deadline";
 import { itemById, outletById, propertyById, supplierById } from "../data/catalog";
 import type { Investigation } from "../types";
 import { DEMO_TODAY, diffDays, fmtPct, fxRate } from "../util";
@@ -53,7 +54,7 @@ export function buildIssues(
     if (i.status === "closed" || !exceptionInSel(i, sel)) continue;
     const impact = i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency);
     const patterned = REMOVAL_TYPES.includes(i.type) && patterns.some((p) => p.exceptionIds.includes(i.id));
-    const overdue = !!i.deadline && i.deadline < DEMO_TODAY;
+    const overdue = caseIsPastDeadline(i);
     // A new usage difference well beyond counting error is high priority however small the amount: it is fresh and checkable.
     const freshStock = i.type === "usage_variance" && i.status === "new";
     const priority: Priority = impact >= ISSUE_RULES.highImpact * aed || (patterned && i.status === "new") || overdue || freshStock ? "high" : impact >= ISSUE_RULES.mediumImpact * aed || i.type === "usage_variance" ? "medium" : "low";

@@ -1,4 +1,5 @@
 "use client";
+import { caseIsPastDeadline } from "@/lib/domain/deadline";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -64,7 +65,7 @@ export default function MoneyBackListPage() {
 
   const open = inScope.filter((i) => i.status !== "closed");
   const closed = inScope.filter((i) => i.status === "closed");
-  const overdue = open.filter((i) => i.deadline && i.deadline < DEMO_TODAY).length;
+  const overdue = open.filter((i) => caseIsPastDeadline(i)).length;
   const perDay = byDay(inScope, (i) => i.date, () => 1);
   const opened = weekSums(inScope, (i) => i.date, () => 1);
   const focus = (apply: () => void) => { apply(); setShown(PAGE); requestAnimationFrame(() => document.getElementById("case-list")?.scrollIntoView({ block: "start", behavior: "smooth" })); };
@@ -167,7 +168,7 @@ export default function MoneyBackListPage() {
                 </thead>
                 <tbody>
                   {rows.slice(0, shown).map((i) => {
-                    const late = i.status !== "closed" && i.deadline && i.deadline < DEMO_TODAY;
+                    const late = caseIsPastDeadline(i);
                     return (
                       <tr key={i.id} className={cn(rowClass, "cursor-pointer", picked.includes(i.id) && "bg-cloud")} onClick={() => router.push(`/investigations/${i.id}`)}>
                         {mayAssign && <Td className="w-10">{i.status !== "closed" && <input type="checkbox" aria-label={`Select ${i.headline}`} className="accent-[var(--color-accent)]" checked={picked.includes(i.id)} onClick={(e) => e.stopPropagation()} onChange={() => togglePick(i.id)} />}</Td>}

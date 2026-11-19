@@ -13,6 +13,8 @@ export interface Property {
   rooms: number;
   /** Local ingredient cost relative to the group base price list. */
   costFactor: number;
+  /** IANA time zone. "Today", deadlines and times on orders are this hotel's, whoever looks at them and from wherever. */
+  timeZone: string;
 }
 
 export interface OutletMenuEntry {

@@ -15,7 +15,7 @@ import {
   valueOnHand, type Lot, type MatchLineIn, type Par,
 } from "../domain/procurement";
 import type { CatalogueLine, CreditRequest, OutboxEmail, ParRecord, PurchaseRequest, PurchasingSettings, RequestLine, SupplierAccount, User, ValuationMethod } from "../types";
-import { DEMO_NOW_MIN, DEMO_TODAY, fmtMoney, round2, sum, unitLabel } from "../util";
+import { DEMO_NOW_MIN, DEMO_TODAY, fmtMoney, round2, sum, timeIn, unitLabel } from "../util";
 import { dataFile } from "./data-file";
 import { PdfDoc } from "./pdf";
 import { canSee, type Result } from "./purchasing";
@@ -524,7 +524,7 @@ export function sendPurchaseOrder(user: User, id: string): Result<{ request: Pur
   const t = orderTotals(r.lines);
   const date = r.deliveryDate ?? r.period.from;
   // The time it was sent, in the hotel's local time, so it agrees with the order's history.
-  const at = `${DEMO_TODAY}T${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Lisbon" })}`;
+  const at = `${DEMO_TODAY}T${timeIn(propertyById[r.propertyId].timeZone)}`;
   const email: OutboxEmail = {
     id: "", at: now(), by: user.id, propertyId: r.propertyId, ref: r.id, to: acct.orderEmail,
     subject: `Purchase order ${po} from ${prop.name}, delivery ${date}`,

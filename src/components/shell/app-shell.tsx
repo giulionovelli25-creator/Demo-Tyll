@@ -25,6 +25,7 @@ import { useInvestigations, useUser } from "@/lib/hooks";
 import { currentRange, useDemo } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 import type { Dept, User } from "@/lib/types";
+import { caseIsPastDeadline } from "@/lib/domain/deadline";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
 import { BreakageFab, BreakageSheet, mayLogBreakage, useBreakageSheet } from "./breakage";
 import { CommandPalette } from "./command-palette";
@@ -764,7 +765,7 @@ function useAlerts(user: User): Alert[] {
     const out: Alert[] = [];
     const open = investigations.filter((i) => i.status !== "closed");
     const today = open.filter((i) => i.date === DEMO_TODAY);
-    const overdue = open.filter((i) => i.deadline && i.deadline < DEMO_TODAY);
+    const overdue = open.filter((i) => caseIsPastDeadline(i));
     if (today.length) out.push({ id: "today", text: `${today.length} new case${today.length === 1 ? "" : "s"} today`, detail: today[0].headline, href: "/investigations", tone: "warn" });
     if (overdue.length) out.push({ id: "overdue", text: `${overdue.length} investigation${overdue.length === 1 ? " is" : "s are"} past deadline`, detail: "Open the Money Back List and sort by deadline.", href: "/investigations", tone: "neg" });
     const props = allowedProperties(user);

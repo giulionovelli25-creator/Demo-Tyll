@@ -207,6 +207,8 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     const first = proxy(req("/"));
     expect(where(first)).toBe("/");
     expect(cookieOf(first)).toBeTruthy();
+    // Every page hands the browser the server's business date.
+    expect(first.headers.get("set-cookie")).toMatch(/tyll_day=\d{4}-\d{2}-\d{2}/);
     expect(where(proxy(req("/login")))).toBe("/");
     expect(where(proxy(req("/welcome")))).toBe("/");
   });

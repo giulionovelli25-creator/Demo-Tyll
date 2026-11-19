@@ -11,7 +11,7 @@ import {
 } from "../domain/planning";
 import { eventPortions, eventStoreNeed, isCommitted } from "../domain/events";
 import type { EventRecord, PrepPlan, PrepTask, PurchaseRequest, RequestLine, RequestStatus, User } from "../types";
-import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, eachDay, sum } from "../util";
+import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, eachDay, sum, timeIn } from "../util";
 import { loadStore, mutateStore, type Shape } from "./purchasing-store";
 import { notify, peopleWith, resolve } from "./notify";
 import { deptById } from "../data/workforce";
@@ -921,7 +921,7 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       const final = legacy || body.final === true;
       if (!final && !lines.some((l) => l.delivered > 0)) return fail(400, "Enter what arrived, or close the order as delivered short.");
       return apply((x, store) => {
-        const receipt = { id: `GR-${(x.poNumber ?? x.id).replace(/^P[OR]-/, "")}-${(x.receipts?.length ?? 0) + 1}`, at: `${DEMO_TODAY}T${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Lisbon" })}`, by: user.id, final, lines };
+        const receipt = { id: `GR-${(x.poNumber ?? x.id).replace(/^P[OR]-/, "")}-${(x.receipts?.length ?? 0) + 1}`, at: `${DEMO_TODAY}T${timeIn(propertyById[x.propertyId].timeZone)}`, by: user.id, final, lines };
         x.receipts = [...(x.receipts ?? []), receipt];
         x.lines = applyReceipt(x.lines, lines).map((l) => ({ ...l, receiveNote: lines.find((y) => y.ingredientId === l.ingredientId)?.note ?? l.receiveNote }));
         if (final || fullyReceived(x.lines)) x.status = "received";

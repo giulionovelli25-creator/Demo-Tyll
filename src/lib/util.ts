@@ -4,12 +4,37 @@ import type { Currency, DateRange } from "./types";
 // The demo's business date is today in Lisbon, so it never looks out of date. Every simulated record is placed
 // relative to it, and random draws are seeded by "days before today" (see rng), so the same story shows every day.
 // TYLL_DEMO_DATE pins the date for tests and screenshots.
-function businessToday(): string {
-  const env = typeof process !== "undefined" ? process.env?.TYLL_DEMO_DATE || process.env?.NEXT_PUBLIC_TYLL_DEMO_DATE : undefined;
-  if (env && /^\d{4}-\d{2}-\d{2}$/.test(env)) return env;
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Lisbon", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+/** The demo hotel's time zone. Each property carries its own (Property.timeZone); the demo has one hotel, in Lisbon. */
+export const DEMO_TIME_ZONE = "Europe/Lisbon";
+/** The calendar day at a place, as YYYY-MM-DD: the hotel's day, not the viewer's or the server's. */
+export function dayIn(timeZone: string, at: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(at);
 }
-export const DEMO_TODAY = businessToday();
+/** Hours and minutes at a place, as HH:MM. */
+export function timeIn(timeZone: string, at: Date = new Date()): string {
+  return at.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone });
+}
+/** The cookie that hands the server's business date to the browser, so both always show the same day. */
+export const DAY_COOKIE = "tyll_day";
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * The business date, from one source per process. A pinned date (tests, screenshots) wins. In the browser it is the
+ * server's day, from DAY_COOKIE, so labels worked out on screen agree with figures worked out on the server, also
+ * after midnight. On the server it is the hotel's day when the process started, shared by every module.
+ */
+export function resolveBusinessDay(o: { pinned?: string; cookie?: string; shared: { day?: string }; now: Date }): string {
+  if (o.pinned && ISO_DAY.test(o.pinned)) return o.pinned;
+  const fromServer = o.cookie ? new RegExp(`(?:^|; )${DAY_COOKIE}=(\\d{4}-\\d{2}-\\d{2})`).exec(o.cookie)?.[1] : undefined;
+  if (fromServer) return fromServer;
+  return (o.shared.day ??= dayIn(DEMO_TIME_ZONE, o.now));
+}
+export const DEMO_TODAY = resolveBusinessDay({
+  pinned: typeof process !== "undefined" ? process.env?.TYLL_DEMO_DATE || process.env?.NEXT_PUBLIC_TYLL_DEMO_DATE : undefined,
+  cookie: typeof document !== "undefined" ? document.cookie : undefined,
+  shared: ((globalThis as { __tyllClock?: { day?: string } }).__tyllClock ??= {}),
+  now: new Date(),
+});
 export const DEMO_NOW_MIN = 20 * 60 + 55;
 const shift = (iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
 /** A date relative to the business date: rel(-1) is yesterday. */

@@ -17,6 +17,7 @@ import { useDemo } from "@/lib/store";
 import { OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL, STOCK_OUTCOME_HELP } from "@/lib/labels";
 import type { Outcome } from "@/lib/types";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "@/lib/util";
+import { isPastDeadline } from "@/lib/domain/deadline";
 
 
 const SHORTFALL_CAUSES = ["Counting error", "Waste or breakage not logged", "Delivery shorter than recorded", "Portions or recipe differ from the standard", "Transfer not recorded", "Stock taken without authorisation"];
@@ -60,7 +61,7 @@ export default function InvestigationPage() {
   const charge = inv.chargeId ? ctx.data.chargesById.get(inv.chargeId) : undefined;
   const closed = inv.status === "closed";
   const people = assignablePeople(inv.outletId, inv.propertyId);
-  const overdue = !closed && inv.deadline && inv.deadline < DEMO_TODAY;
+  const overdue = isPastDeadline(inv.deadline, closed);
   const mayAssign = can(user, "investigation.assign");
   const mayClose = can(user, "investigation.close");
   const mayReopen = can(user, "investigation.reopen");

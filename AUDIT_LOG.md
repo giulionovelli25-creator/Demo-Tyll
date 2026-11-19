@@ -44,3 +44,16 @@ Resume from this file if a session runs out of context.
 - **Root cause:** `usePlanEdits` in `predictions.tsx` kept one map per browser (`tyll-plan-edits-v1`), not per person. Other drafts (`tyll-plan-drafts`, count progress, remembered tabs) were already per person.
 - **Fix:** `src/lib/plan-edits.ts` keeps edits per person (`tyll-plan-edits-v2`; old shared edits are dropped); building an order clears only that person's edits.
 - **Test:** `plan-edits.test.ts`.
+
+### F3, server and browser disagree on "today" after midnight (P1): FIXED, rollover needs a restart
+- **Repro (by reasoning and test, not waited out live):** start the server before midnight Lisbon time and open a page after midnight. The server's `DEMO_TODAY` was fixed when each module loaded; the browser computed its own on every load. Expiry "Use by today", late orders and deadlines on screen then use the new day while server figures use the old one; a module first loaded after midnight even disagrees with the rest of the server.
+- **Root cause:** `businessToday()` in `src/lib/util.ts` ran separately in every module instance and in the browser.
+- **Fix:** `resolveBusinessDay` gives one day per server process (shared on `globalThis`); the proxy sets a `tyll_day` cookie on every page; the browser reads it. Server and screen always show the same day.
+- **Not fixed:** the server's day only moves on restart. The simulated data is generated once per process from that day, so a live rollover needs a restart. For a demo that runs overnight, restart it daily (or after midnight Lisbon time).
+- **Tests:** `dates.test.ts` (one value per process, browser takes the server's), `auth.test.ts` (cookie on every page).
+
+### F4, one rule for past deadlines and the hotel's time zone (P2): FIXED
+- **Finding:** the rule was written out in six places (case list, case page, summary, alerts, overview tasks, issues). They agreed, but nothing kept them in step. "Europe/Lisbon" was hard-coded in five places.
+- **Fix:** `src/lib/domain/deadline.ts` (`isPastDeadline`, `caseIsPastDeadline`) holds the rule with its comment; all six use it. `Property.timeZone` holds the hotel's zone; `dayIn`/`timeIn` in `util.ts` give the hotel's day and time; order times and receipts use the property's zone.
+- **Tests:** `dates.test.ts`: yesterday, today, tomorrow, closed, deadline moved later, 23:59 and 00:00 hotel time, a UTC+4 hotel viewed from UTC+1.
+- **Note:** the demo has no task module with due dates; deadlines exist on investigations only. Bell and guest-request "overdue" are minutes against a service target, a different rule, left as is.
