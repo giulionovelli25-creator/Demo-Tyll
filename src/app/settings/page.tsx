@@ -74,7 +74,7 @@ export default function SettingsPage() {
 
       <NotificationSettings />
 
-      <Panel title="Recording your demo visit" description="Whether the Tyll team may see which pages you open in this demo. No name, email or IP address is recorded; records are kept for 90 days.">
+      <Panel title="Cookies" description="Whether cookies may record which pages you open in this demo, for the Tyll team. No name, email or IP address is recorded; records are kept for 90 days.">
         <VisitConsentSetting />
       </Panel>
 

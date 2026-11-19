@@ -82,11 +82,11 @@ export function VisitConsent() {
   if (c.choice !== null) return null;
   return (
     <section aria-labelledby="visit-consent" className="no-print fixed inset-x-3 bottom-[calc(76px+env(safe-area-inset-bottom))] z-40 mx-auto max-w-[560px] rounded-panel border border-line bg-paper p-4 shadow-panel md:bottom-5 md:start-auto md:end-5 md:mx-0">
-      <h2 id="visit-consent" className="text-[15px] font-semibold text-ink">May we record which demo pages you open?</h2>
-      <p className="mt-1 text-[13px] leading-relaxed text-graphite">It shows the Tyll team which parts of the demo interest people. We record the page, the time spent on it and the demo role, with a random number for you. No name, email or IP address. Kept for 90 days. You can change this in Settings.</p>
+      <h2 id="visit-consent" className="text-[15px] font-semibold text-ink">This demo uses cookies</h2>
+      <p className="mt-1 text-[13px] leading-relaxed text-graphite">With your consent, we use cookies to see which demo pages are opened and for how long, so we can improve Tyll. No name, email or IP address is stored, and records are deleted after 90 days. You can change your choice at any time in Settings.</p>
       <div className="mt-3 grid grid-cols-2 gap-2">
-        <Button onClick={c.allow}>Yes, record my visit</Button>
-        <Button onClick={() => void c.refuse()}>No, don&rsquo;t record</Button>
+        <Button onClick={c.allow}>Accept cookies</Button>
+        <Button onClick={() => void c.refuse()}>Reject cookies</Button>
       </div>
     </section>
   );
@@ -95,13 +95,13 @@ export function VisitConsent() {
 /** For Settings: the current choice, and a way to change it. */
 export function VisitConsentSetting() {
   const c = useVisitConsent();
-  const text = c.gpc ? "Off: your browser asks sites not to track you (Global Privacy Control)." : c.choice === "yes" ? "On: the pages you open in this demo are recorded for the Tyll team." : c.choice === "no" ? "Off: nothing is recorded." : "Not chosen yet: nothing is recorded.";
+  const text = c.gpc ? "Rejected: your browser asks sites not to track you (Global Privacy Control)." : c.choice === "yes" ? "Accepted: the demo pages you open are recorded for the Tyll team." : c.choice === "no" ? "Rejected: nothing is recorded." : "Not chosen yet: nothing is recorded.";
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-sm text-ink">{text}</p>
       {!c.gpc && (c.choice === "yes"
-        ? <Button size="sm" onClick={() => void c.refuse()}>Turn off and erase my visits</Button>
-        : <Button size="sm" onClick={c.allow}>Turn on</Button>)}
+        ? <Button size="sm" onClick={() => void c.refuse()}>Reject cookies and erase my visits</Button>
+        : <Button size="sm" onClick={c.allow}>Accept cookies</Button>)}
     </div>
   );
 }
