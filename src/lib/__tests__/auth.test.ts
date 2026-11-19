@@ -230,6 +230,30 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     expect((await POST(req("/api/auth/demo", undefined, { method: "POST", body: {}, origin: "https://evil.example" }))).status).toBe(403);
   });
 
+  it("switches deterministically: after ten quick switches the last one wins, and refresh or Back keeps it", async () => {
+    const { POST } = await demoRoute();
+    const order = ["u-chef", "u-fc", "u-buy", "u-fnb", "u-chef", "u-buy", "u-fc", "u-fnb", "u-buy", "u-chef"];
+    let token = cookieOf(proxy(req("/stock")))!;
+    const old: string[] = [];
+    for (const id of order) {
+      const res = await POST(req("/api/auth/demo", token, { method: "POST", body: { userId: id } }));
+      expect(res.status).toBe(200);
+      old.push(token);
+      token = cookieOf(res)!;
+    }
+    expect(resolveSession(token)!.user.id).toBe("u-chef");
+    for (const t of old) expect(resolveSession(t)).toBeNull(); // no earlier role stays usable
+    // Refresh: the same page opens as the same role, with no new cookie.
+    const refresh = proxy(req("/stock?tab=expiry", token));
+    expect(where(refresh)).toBeNull();
+    expect(cookieOf(refresh)).toBeUndefined();
+    // Back to a page only the previous role could open: home page, same role.
+    const back = proxy(req("/money?tab=flags", token));
+    expect(where(back)).toBe("/stock");
+    expect(cookieOf(back)).toBeUndefined();
+    expect(resolveSession(token)!.user.id).toBe("u-chef");
+  });
+
   it("opens deep links directly, as a role that may see the page", () => {
     const first = proxy(req("/forecast?tab=buy"));
     expect(where(first)).toBe("/forecast?tab=buy");
