@@ -14,7 +14,7 @@ import { STOCK_AREAS, STOCK_GROUPS, groupByStock, stockAreaOf, stockGroupOf, typ
 import { can } from "@/lib/domain/access";
 import { countVariance, countVarianceValue } from "@/lib/domain/inventory";
 import { VARIANCE_RULES } from "@/lib/domain/variance";
-import { useCtx, useView } from "@/lib/hooks";
+import { useCtx, useServerStock, useView } from "@/lib/hooks";
 import { StripTrend } from "@/components/charts";
 import { useDailyTotals, useUnexplained } from "@/lib/strip-data";
 import type { MonthPlanOut, PlanItem, StockHealth } from "@/lib/server/purchasing";
@@ -59,10 +59,14 @@ function AllItems({ plan, area, initialShow = "all" }: { plan: MonthPlanOut; are
   const [q, setQ] = useState("");
   const [show, setShow] = useState<"all" | StockHealth>(initialShow);
   const { sort, toggle: flip } = useSort<"name" | "onHand" | "par" | "value" | "days" | "health">({ key: "health", dir: "asc" });
+  // Value on hand at the hotel's valuation method, from the purchase prices actually paid.
+  const valued = useServerStock(plan.propertyId).data;
+  const costOf = useMemo(() => new Map((valued?.rows ?? []).map((r) => [r.ingredientId, r.valuationCost])), [valued]);
+  const worth = (r: PlanItem) => r.onHand * (costOf.get(r.ingredientId) ?? r.unitPrice);
   const toggle = (k: typeof sort.key) => flip(k, k === "onHand" || k === "par" || k === "value" ? "desc" : "asc");
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase();
-    const value = (r: PlanItem): number | string => ({ name: name(r), onHand: r.onHand, par: r.par, value: r.onHand * r.unitPrice, days: r.daysUntilOut ?? 9999, health: RANK[r.health] })[sort.key];
+    const value = (r: PlanItem): number | string => ({ name: name(r), onHand: r.onHand, par: r.par, value: worth(r), days: r.daysUntilOut ?? 9999, health: RANK[r.health] })[sort.key];
     return plan.items.filter((r) => (show === "all" || r.health === show) && (!term || name(r).toLowerCase().includes(term))).sort((a, b) => {
       // Critical items stay on top, whatever the sort.
       const pin = Number(b.health === "critical") - Number(a.health === "critical");
@@ -71,7 +75,7 @@ function AllItems({ plan, area, initialShow = "all" }: { plan: MonthPlanOut; are
       const d = typeof x === "string" ? x.localeCompare(y as string) : (x as number) - (y as number);
       return (sort.dir === "asc" ? d : -d) || (a.daysUntilOut ?? 9999) - (b.daysUntilOut ?? 9999);
     });
-  }, [plan.items, q, show, sort]);
+  }, [plan.items, q, show, sort, costOf]); // eslint-disable-line react-hooks/exhaustive-deps
   const groups = groupByStock(rows, (r) => r.ingredientId);
   const note = (list: PlanItem[]) => { const n = list.filter((r) => r.health === "critical").length; return `${list.length} ${list.length === 1 ? "item" : "items"}${n ? `, ${n} critical` : ""}`; };
   const count = (h: StockHealth) => plan.items.filter((i) => i.health === h).length;
@@ -106,7 +110,7 @@ function AllItems({ plan, area, initialShow = "all" }: { plan: MonthPlanOut; are
                 <Th sortKey="name" sort={sort} onSort={toggle}>Item</Th>
                 <Th sortKey="onHand" sort={sort} onSort={toggle} align="right">On hand</Th>
                 <Th sortKey="par" sort={sort} onSort={toggle} align="right">Target stock</Th>
-                <Th sortKey="value" sort={sort} onSort={toggle} align="right">Value on hand</Th>
+                <Th sortKey="value" sort={sort} onSort={toggle} align="right">Value on hand{valued?.valuation && <span className="block text-[11px] font-normal text-steel">{valued.valuation.label}</span>}</Th>
                 <Th sortKey="days" sort={sort} onSort={toggle} align="right">Runs out in</Th>
                 <Th sortKey="health" sort={sort} onSort={toggle}>Status</Th>
               </tr></thead>
@@ -116,7 +120,7 @@ function AllItems({ plan, area, initialShow = "all" }: { plan: MonthPlanOut; are
                     <Td><Link href={`/stock?tab=inventory&item=${r.ingredientId}`} className="text-ink underline-offset-4 hover:underline">{name(r)}</Link></Td>
                     <Td align="right"><span className="text-ink">{fmtQty(r.onHand, r.unit)}</span></Td>
                     <Td align="right">{fmtQty(r.par, r.unit)}</Td>
-                    <Td align="right">{fmtMoney(r.onHand * r.unitPrice, propertyById[plan.propertyId].currency)}</Td>
+                    <Td align="right">{fmtMoney(worth(r), propertyById[plan.propertyId].currency)}</Td>
                     <Td align="right"><span className={r.health === "critical" ? "text-neg" : r.health === "low" ? "text-warn" : "text-ink"}>{daysWords(r, plan.period.to)}</span></Td>
                     <Td><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill>{why(r) && <span className="mt-0.5 block text-xs text-steel">{why(r)}</span>}</Td>
                   </tr>
@@ -217,7 +221,10 @@ export function StockPage() {
   const unexplained = useUnexplained(plan?.propertyId ?? null);
   const currency = plan ? propertyById[plan.propertyId].currency : sel.currency;
   const local = (n: number) => fmtMoney(n, currency, { compact: n >= 10000 });
-  const onHandValue = plan ? sum(plan.items, (i) => i.onHand * i.unitPrice) : 0;
+  // Stock on hand is valued by the hotel's method (weighted average cost unless the controller chose otherwise), and says so.
+  const valued = useServerStock(plan?.propertyId ?? null).data;
+  const planned = new Set(plan?.items.map((i) => i.ingredientId) ?? []);
+  const onHandValue = valued ? sum(valued.rows.filter((r) => planned.has(r.ingredientId)), (r) => r.value) : plan ? sum(plan.items, (i) => i.onHand * i.unitPrice) : 0;
   const parValue = plan ? sum(plan.items, (i) => i.par * i.unitPrice) : 0;
   const halfPar = plan?.items.filter((i) => i.par > 0 && i.onHand < i.par / 2).length ?? 0;
   const used = daily.map(({ date, t }) => ({ date, value: Math.round(t.theoCost + t.waste + t.breakage) }));
@@ -233,7 +240,7 @@ export function StockPage() {
             items={[
               { label: "Critical", value: by("critical"), tone: by("critical") ? "neg" : "pos", compare: { text: by("critical") ? "Order today" : "Nothing critical", good: by("critical") ? false : true }, href: "/stock?show=critical" },
               { label: "Low", value: by("low"), tone: by("low") ? "warn" : "pos", compare: { text: `${halfPar} under half of target stock`, good: null }, href: "/stock?show=low" },
-              { label: "Stock on hand", value: local(onHandValue), compare: { text: `${fmtPct(parValue ? onHandValue / parValue : 0, 0)} of target stock value`, good: null }, href: "/stock?show=all" },
+              { label: "Stock on hand", value: local(onHandValue), compare: { text: `${valued?.valuation ? `${valued.valuation.label}. ` : ""}${fmtPct(parValue ? onHandValue / parValue : 0, 0)} of target stock value`, good: null }, href: "/stock?show=all" },
               ...(unexplained ? [{ label: "Missing, needing a look", value: local(unexplained.value), tone: unexplained.value > 0 ? "warn" as const : undefined, compare: { text: `${unexplained.items} ${unexplained.items === 1 ? "item" : "items"} to check`, good: unexplained.items ? false : true }, href: "/stock?tab=where" }] : []),
             ]}
             trend={!daily.some(({ t }) => t.theoCost > 0) ? undefined : <StripTrend goodWhen="none" title="Stock used per day, last 30 days" points={used} format={(n) => fmtMoney(n, sel.currency)} explain="Stock used each day at cost: what the recipes of sold dishes needed, plus waste and breakage." series={[
@@ -247,7 +254,7 @@ export function StockPage() {
               </>
             ) : undefined}
           />
-          <Tabs value={tab} onChange={setTab} tabs={[{ value: "stock", label: "Stock" }, { value: "analysis", label: "Analysis" }]} />
+          <Tabs value={tab as "stock" | "analysis" | "expiry"} onChange={(v) => (v === "expiry" ? router.push("/stock?tab=expiry") : setTab(v))} tabs={[{ value: "stock", label: "Stock" }, { value: "expiry", label: "Expiring soon" }, { value: "analysis", label: "Analysis" }]} />
           {tab === "stock" ? (
             <>
               <CriticalItems plan={plan} />

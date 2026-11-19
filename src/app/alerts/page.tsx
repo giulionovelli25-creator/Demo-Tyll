@@ -13,7 +13,7 @@ import { sum } from "@/lib/util";
 type Filter = "all" | "stock" | "money" | "waste";
 const FIRST = 3;
 const FILTERS: { value: Filter; label: string }[] = [{ value: "all", label: "All" }, { value: "stock", label: "Stock" }, { value: "money", label: "Money" }, { value: "waste", label: "Waste" }];
-const inFilter = (k: AlertKind, f: Filter) => f === "all" || (f === "stock" ? k === "stock" || k === "supplier" || k === "delivery" : f === "money" ? k === "money" || k === "margin" || k === "pour" : k === "waste");
+const inFilter = (k: AlertKind, f: Filter) => f === "all" || (f === "stock" ? k === "stock" || k === "supplier" || k === "delivery" || k === "expiry" : f === "money" ? k === "money" || k === "margin" || k === "pour" : k === "waste");
 
 /** Every flag across stock, money and waste, sorted by money at risk. */
 export default function AlertsPage() {

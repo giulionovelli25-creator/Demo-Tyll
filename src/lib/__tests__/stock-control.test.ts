@@ -189,7 +189,7 @@ describe("reconciliation rules", () => {
     const r = C.cashFor(U("u-fc"), "lis");
     if (!r.ok) throw new Error(r.error);
     expect(r.rows.length).toBeGreaterThan(10);
-    const planted = r.rows.find((x) => x.outletId === "lis-lobby" && x.flagged && x.diff === -85);
+    const planted = r.rows.find((x) => x.outletId === "lis-lobby" && x.flagged && x.diff < 0);
     expect(planted).toBeTruthy();
     expect(planted!.comparedWith).toContain("cash sales on the till");
     // A cash-up entered in Tyll replaces the simulated count, and a difference notifies the controller.

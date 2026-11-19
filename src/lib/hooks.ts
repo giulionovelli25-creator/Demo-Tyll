@@ -174,7 +174,7 @@ export function useVariancePeriods(propertyId: string | null) {
 /** Stock worked out on the server from every outlet's use of the shared store. */
 export function useServerStock(propertyId: string | null) {
   const entries = useSessionEntries();
-  return usePost<{ rows: StockRowOut[] }>("/api/stock", propertyId ? { propertyId, ...entries } : null);
+  return usePost<{ rows: StockRowOut[]; valuation?: { method: string; label: string } }>("/api/stock", propertyId ? { propertyId, ...entries } : null);
 }
 
 /** Forecast and purchase suggestions worked out on the server. Slider changes are sent after a short pause. */

@@ -210,6 +210,8 @@ export interface ParRow {
   onHand: number; onHandAt: string | null; onOrder: number; min: number; max: number; source: ParRecord["source"]; suggested: Par; avgDaily: number;
   below: boolean; qty: number; covered: boolean;
   supplierId: string; supplierName: string; packSize: number; packLabel: string; unitPrice: number; vatRate: number; value: number;
+  /** A draft purchase order of this user's that already has the item. Drafts are not orders yet, so they do not count as on order. */
+  inDraft?: string;
 }
 
 /** Every par level the user can see, with stock against it: the main store from the stock position, an outlet from its last count. */
@@ -218,6 +220,8 @@ export function parRows(user: User, propertyId: string, entries: SessionEntries)
   const p = procurementOf(s);
   const onOrder = onOrderMap(propertyId, s);
   const stock = new Map(stockFor(user, propertyId, entries).map((r) => [r.ingredientId, r]));
+  const drafts = s.requests.filter((r) => r.propertyId === propertyId && r.status === "draft" && r.createdBy === user.id && r.supplierId);
+  const draftOf = (g: string) => drafts.find((r) => r.lines.some((l) => l.ingredientId === g && l.qty > 0))?.id;
   const outlets = new Set(allowedOutlets(user));
   const checks = getOutletStock().checks;
   const lastCheck = (outletId: string, ingredientId: string) => checks.filter((c) => c.outletId === outletId && c.ingredientId === ingredientId).sort((a, b) => a.date.localeCompare(b.date) || a.min - b.min).at(-1);
@@ -239,7 +243,7 @@ export function parRows(user: User, propertyId: string, entries: SessionEntries)
       const onHand = Math.max(0, row.estimated);
       const ordered = onOrder.get(par.ingredientId) ?? 0;
       const t = parTrigger(onHand, ordered, par, line.packSize);
-      return [{ ...base, action: "order", onHand: r3(onHand), onHandAt: null, onOrder: r3(ordered), suggested: suggestPar(row.avgDaily, acct?.leadDays ?? ingredientById[par.ingredientId].leadDays, cycle, 1, line.packSize), avgDaily: r3(row.avgDaily), below: t.below, qty: t.qty, covered: t.covered, value: round2(t.qty * line.agreedPrice) }];
+      return [{ ...base, action: "order", inDraft: draftOf(par.ingredientId), onHand: r3(onHand), onHandAt: null, onOrder: r3(ordered), suggested: suggestPar(row.avgDaily, acct?.leadDays ?? ingredientById[par.ingredientId].leadDays, cycle, 1, line.packSize), avgDaily: r3(row.avgDaily), below: t.below, qty: t.qty, covered: t.covered, value: round2(t.qty * line.agreedPrice) }];
     }
     const check = lastCheck(par.location, par.ingredientId);
     const onHand = check?.counted ?? 0;
@@ -451,14 +455,15 @@ export function purchaseOrderPdf(r: PurchaseRequest): Buffer {
   field(310, 160, "Deliver to", r.outletIds.length === 1 ? `${outletById[r.outletIds[0]].name}, ${prop.name}` : `Receiving, ${prop.name}`);
   field(310, 188, "Cost centre", r.costCentre ?? "Not set");
   let y = 226;
-  const cols = { code: L, item: L + 62, pack: L + 214, qty: L + 330, price: L + 405, vat: L + 440, net: R };
+  // Right edges for the figures, so they line up and never touch.
+  const cols = { code: L, item: L + 60, pack: L + 200, qty: L + 352, price: L + 412, vat: L + 444, net: R };
   doc.rect(L, y - 4, R - L, 18, 0.93);
   doc.text(cols.code + 4, y, "Code", { size: 8, bold: true });
   doc.text(cols.item, y, "Item", { size: 8, bold: true });
   doc.text(cols.pack, y, "Pack", { size: 8, bold: true });
   doc.text(cols.qty, y, "Quantity", { size: 8, bold: true, align: "right" });
   doc.text(cols.price, y, "Unit price", { size: 8, bold: true, align: "right" });
-  doc.text(cols.vat + 22, y, "VAT", { size: 8, bold: true, align: "right" });
+  doc.text(cols.vat, y, "VAT", { size: 8, bold: true, align: "right" });
   doc.text(cols.net - 4, y, "Net", { size: 8, bold: true, align: "right" });
   y += 22;
   for (const l of r.lines) {
@@ -466,11 +471,11 @@ export function purchaseOrderPdf(r: PurchaseRequest): Buffer {
     const g = ingredientById[l.ingredientId];
     const c = catalogueLine(r.propertyId, l.supplierId, l.ingredientId);
     doc.text(cols.code + 4, y, c?.code ?? "", { size: 8, gray: 0.35 });
-    doc.fit(cols.item, y, g.name, 146, { size: 9 });
-    doc.fit(cols.pack, y, l.packLabel ?? "", 100, { size: 8, gray: 0.35 });
+    doc.fit(cols.item, y, g.name, 134, { size: 9 });
+    doc.fit(cols.pack, y, l.packLabel ?? "", 96, { size: 8, gray: 0.35 });
     doc.text(cols.qty, y, `${r3(l.qty)} ${unitWord(l.ingredientId)}`, { size: 9, align: "right" });
     doc.text(cols.price, y, money(l.unitPrice), { size: 9, align: "right" });
-    doc.text(cols.vat + 22, y, `${Math.round((l.vatRate ?? 0) * 100)}%`, { size: 9, align: "right" });
+    doc.text(cols.vat, y, `${Math.round((l.vatRate ?? 0) * 100)}%`, { size: 9, align: "right" });
     doc.text(cols.net - 4, y, money(l.qty * l.unitPrice), { size: 9, align: "right" });
     y += 16;
     doc.line(L, y - 4, R, y - 4, 0.3, 0.88);

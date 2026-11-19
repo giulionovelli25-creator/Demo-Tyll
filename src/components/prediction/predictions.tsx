@@ -217,7 +217,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
   const bump = usePlanDrafts((s) => s.bump);
   const { data } = useLiveGet<{ requests: PurchaseRequest[] }>("/api/purchasing");
   const [busy, setBusy] = useState(false);
-  const [built, setBuilt] = useState<{ request: PurchaseRequest; lines: number; total: number } | null>(null);
+  const [built, setBuilt] = useState<{ request: PurchaseRequest; requests: PurchaseRequest[]; warnings: string[]; lines: number; total: number } | null>(null);
   const mayBuild = can(user, "purchase.create");
   const local = (n: number) => fmtMoney(n, propertyById[propertyId ?? "lis"].currency);
   const edits = usePlanEdits((s) => s.qty);
@@ -227,7 +227,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
   const build = async () => {
     setBusy(true);
     try {
-      const r = await api<{ request: PurchaseRequest; lines: number; total: number }>("/api/plan/month", { method: "POST", body: { action: "build", propertyId, quantities: edits, ...entries } });
+      const r = await api<{ request: PurchaseRequest; requests: PurchaseRequest[]; warnings: string[]; lines: number; total: number }>("/api/plan/month", { method: "POST", body: { action: "build", propertyId, quantities: edits, ...entries } });
       clearEdits();
       setBuilt(r);
       bump();
@@ -240,16 +240,11 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
   };
 
   const rows = useMemo(() => (plan?.items ?? []).filter((i) => i.orderQty > 0).sort((a, b) => (a.orderBy ?? "").localeCompare(b.orderBy ?? "") || b.cost - a.cost), [plan]);
-  const groups = useMemo(() => {
-    if (!built) return [];
-    const m = new Map<string, PurchaseRequest["lines"]>();
-    for (const l of built.request.lines) m.set(l.supplierId, [...(m.get(l.supplierId) ?? []), l]);
-    return [...m].map(([supplierId, lines]) => ({ supplierId, lines, total: sum(lines, (l) => l.qty * l.unitPrice) })).sort((a, b) => b.total - a.total);
-  }, [built]);
+  const groups = useMemo(() => (built?.requests ?? []).map((r) => ({ id: r.id, supplierId: r.supplierId ?? r.lines[0]?.supplierId ?? "", deliveryDate: r.deliveryDate, lines: r.lines, total: sum(r.lines, (l) => l.qty * l.unitPrice) })).sort((a, b) => b.total - a.total), [built]);
   const requests = data?.requests ?? [];
   const next = rows[0]?.orderBy;
   const dueToday = rows.filter((r) => r.orderBy === DEMO_TODAY && r.nextQty > 0);
-  const draft = built?.request ?? requests.find((r) => r.status === "draft" && r.createdBy === user.id);
+  const myDrafts = requests.filter((r) => r.status === "draft" && r.createdBy === user.id && r.supplierId);
   const ctx = useCtx();
   const daily = useDailyTotals(30, plan?.propertyId);
   const critical = plan?.items.filter((i) => i.health === "critical").length ?? 0;
@@ -276,6 +271,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
   return (
     <div className="space-y-6">
       <PageHeader title="Predictions" question="What do I need to order?" lead="An estimate from forecast covers, events and recent use. Simulated data." />
+      <p className="rounded-panel border border-line bg-paper px-5 py-3 text-[13px] leading-relaxed text-graphite shadow-panel sm:px-6"><span className="font-medium text-ink">Where the figures come from.</span> Tyll&rsquo;s own forecasting model works out every quantity from your sales history, bookings, events, hotel occupancy, waste and current stock. No AI chooses a quantity. The plain-language explanations beside each figure are written from fixed rules in this demo.</p>
       {error ? <WidgetError>The stock prediction could not load.</WidgetError> : !plan ? (
         <div className="space-y-4" aria-busy><Skeleton className="h-24 w-full" /><Skeleton className="h-64 w-full" /></div>
       ) : (
@@ -290,8 +286,8 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
             trend={<StripTrend goodWhen="none" title={usage.some((u) => u.value !== null) ? "Stock used per day, then predicted" : `Predicted stock use per day to ${fmtDate(plan.period.to)}`} points={usage} format={local} summary={`Stock used per day at cost over the last 30 days, then predicted use per day to month end.`} note="at cost" />}
             action={mayBuild ? (
               <>
-                <Button variant="primary" onClick={build} disabled={busy || rows.length === 0}>{busy ? "Building…" : draft ? "Update draft order" : "Build order"}</Button>
-                {draft && <Link href={`/forecast?tab=approvals&request=${draft.id}`} className={cn(textLink, "mt-3 justify-center")}>Open draft {draft.id}</Link>}
+                <Button variant="primary" onClick={build} disabled={busy || rows.length === 0}>{busy ? "Building…" : myDrafts.length ? "Update draft orders" : "Build orders"}</Button>
+                {myDrafts.length > 0 && <Link prefetch={false} href="/forecast?tab=approvals&queue=drafts" className={cn(textLink, "mt-3 justify-center")}>{myDrafts.length} draft {myDrafts.length === 1 ? "order" : "orders"} in Orders</Link>}
               </>
             ) : undefined}
           />
@@ -332,12 +328,14 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
         </>
       )}
 
-      <Drawer open={!!built} onClose={() => setBuilt(null)} title={built ? `Draft order ${built.request.id}` : ""} description={built ? `${built.lines} items from ${groups.length} suppliers, ${local(built.total)}. Nothing is sent until it is approved.` : undefined}>
+      <Drawer open={!!built} onClose={() => setBuilt(null)} title={built ? `${groups.length} draft purchase ${groups.length === 1 ? "order" : "orders"}` : ""} description={built ? `${built.lines} items, ${local(built.total)} before VAT, one order per supplier. Nothing is sent until it is approved.` : undefined}>
         {built && (
           <div className="space-y-6">
+            {built.warnings.length > 0 && <div className="rounded-2xl border border-warn/30 bg-warn-soft px-4 py-3 text-[13px] text-ink"><p className="font-medium">To check</p><ul className="mt-1 list-disc space-y-1 ps-5 text-graphite">{built.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>}
             {groups.map((g) => (
-              <section key={g.supplierId}>
-                <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2"><h3 className="text-[15px] font-medium text-ink">{supplierName(g.supplierId)}</h3><span className="num text-sm text-ink">{local(g.total)}</span></div>
+              <section key={g.id}>
+                <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2"><h3 className="text-[15px] font-medium text-ink">{supplierName(g.supplierId)} <Link prefetch={false} href={`/forecast?tab=approvals&request=${g.id}`} className="ms-2 text-[13px] font-normal text-accent-ink underline-offset-4 hover:underline">{g.id}</Link></h3><span className="num text-sm text-ink">{local(g.total)}</span></div>
+                {g.deliveryDate && <p className="pt-1 text-xs text-steel">Delivery {fmtDate(g.deliveryDate, true)}</p>}
                 <ul className="mt-1">
                   {g.lines.map((l) => {
                     const it = ingredientById[l.ingredientId];
@@ -346,8 +344,8 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
                 </ul>
               </section>
             ))}
-            <Link href={`/forecast?tab=approvals&request=${built.request.id}`} className={cn(linkButton("primary"), "w-full")}>Open in Orders</Link>
-            <Note>Fresh items keep only a few days, so this draft covers their next delivery. Build it again whenever you need the next one. Building again updates this draft.</Note>
+            <Link prefetch={false} href="/forecast?tab=approvals&queue=drafts" className={cn(linkButton("primary"), "w-full")}>Open the drafts in Orders</Link>
+            <Note>Quantities are rounded up to each supplier&rsquo;s packs. Fresh items keep only a few days, so these drafts cover their next delivery. Building again updates the same drafts.</Note>
           </div>
         )}
       </Drawer>

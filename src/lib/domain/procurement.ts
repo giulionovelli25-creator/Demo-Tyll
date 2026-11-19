@@ -175,6 +175,8 @@ export function threeWayLine(x: MatchLineIn): MatchLine {
   return { ...x, flags, unitsOver, qtyMoney, priceMoney, difference: round2(qtyMoney + priceMoney) };
 }
 
+export type ThreeWay = ReturnType<typeof threeWay>;
+
 export function threeWay(lines: readonly MatchLineIn[]) {
   const out = lines.map(threeWayLine);
   return {
@@ -276,6 +278,8 @@ export function expiryAction(x: { left: number; daysLeft: number; dailyUse: numb
   const days = Math.max(1, x.daysLeft + 1);
   if (x.dailyUse * days >= x.left - 1e-9) return { kind: "use_first", text: `Normal use covers it (${round2(x.dailyUse)} ${x.unitWord} a day). Use this batch first.` };
   const extra = round2(x.left - x.dailyUse * days);
+  // A few grams or one unit over is not worth a transfer or a special.
+  if (extra <= Math.max(0.05 * x.left, x.unitWord === "units" ? 1 : 0.25)) return { kind: "use_first", text: `Normal use covers nearly all of it (${round2(x.dailyUse)} ${x.unitWord} a day). Use this batch first.` };
   if (x.transferTo && x.transferTo.canUse >= extra - 1e-9) return { kind: "transfer", text: `Transfer ${extra} ${x.unitWord} to ${x.transferTo.name}, which can use ${round2(x.transferTo.canUse)} before it expires.` };
   if (x.dish) return { kind: "special", text: `Use ${extra} ${x.unitWord} in a special, such as ${x.dish}.` };
   return { kind: "staff_meal", text: `Use ${extra} ${x.unitWord} in the staff meal.` };

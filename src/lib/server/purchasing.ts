@@ -18,7 +18,7 @@ import { deptById } from "../data/workforce";
 import { CATEGORIES, categoryOf, type CategoryId } from "../data/locations";
 import { orderPack } from "../domain/inventory";
 import { stockFor, type SessionEntries } from "./stock";
-import { applyReceipt, fullyReceived, outstanding, receiptLine } from "../domain/procurement";
+import { applyReceipt, ceilToPack, fullyReceived, outstanding, receiptLine } from "../domain/procurement";
 import { createPurchaseOrders } from "./procurement";
 import type { ReceiptLine } from "../types";
 
@@ -731,6 +731,17 @@ export function saveRequest(user: User, body: Record<string, unknown>): Result<{
   if (!outletIds) return fail(403, "This outlet is outside your access.");
   const read = readLines(user, propertyId, body.lines, !!eventId);
   if (!read.ok) return read;
+  // A purchase order keeps its supplier's catalogue lines: agreed price, pack and VAT. Only the quantity changes,
+  // in whole packs, and no item from another supplier is added to it.
+  if (existing?.supplierId) {
+    const kept: RequestLine[] = [];
+    for (const l of read.lines) {
+      const old = existing.lines.find((x) => x.ingredientId === l.ingredientId);
+      if (!old) return fail(400, `${ingredientById[l.ingredientId].name} is not on this purchase order. Raise it on an order to its own supplier.`);
+      kept.push({ ...old, qty: ceilToPack(l.qty, old.packSize ?? 0) });
+    }
+    read.lines = kept;
+  }
   // One open request per shortage: the same department asking again for an item already on its way is sent to that request.
   if (deptId && !existing) {
     const open = loadStore().requests.find((r) => r.deptId === deptId && !["received", "rejected"].includes(r.status) && r.lines.some((l) => read.lines.some((n) => n.ingredientId === l.ingredientId)));
@@ -841,6 +852,7 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
           changes.push({ ingredientId: line.ingredientId, from: line.qty, to: c.qty, reason });
           line.qty = Math.round(c.qty * 1000) / 1000;
         }
+        if (typeof c.supplierId === "string" && c.supplierId !== line.supplierId && r.supplierId) return fail(400, "A purchase order goes to one supplier. Raise a separate order for another supplier.");
         if (typeof c.supplierId === "string" && c.supplierId !== line.supplierId) {
           const q = quotesFor(line.ingredientId, r.propertyId, DEMO_TODAY).find((x) => x.supplierId === c.supplierId);
           if (!q) return fail(400, "That supplier does not quote for this item.");
@@ -869,7 +881,7 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       if (!can(user, "purchase.approveFnb") && !can(user, "purchase.approveManager")) return fail(403, `Only the ${APPROVAL_POLICY[r.propertyId].fnbLabel} or the general manager can give this approval.`);
       if (r.status !== "fnb") return fail(409, `This request is not waiting for the ${APPROVAL_POLICY[r.propertyId].fnbLabel}.`);
       if (r.createdBy === user.id) return fail(403, "You cannot approve your own request.");
-      return decide("fnb", `${APPROVAL_POLICY[r.propertyId].fnbLabel} approval`);
+      return decide("fnb", APPROVAL_POLICY[r.propertyId].fnbLabel);
     }
     case "manager": {
       if (!can(user, "purchase.approveManager")) return fail(403, `Only a ${APPROVAL_POLICY[r.propertyId].managerLabel.toLowerCase()} can give this approval.`);

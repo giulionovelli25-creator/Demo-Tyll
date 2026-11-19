@@ -1,5 +1,5 @@
 // The few alerts shown first. One from each area where there is one, so money and Pour Control are not crowded out by stock.
-const AREAS: ((kind: string) => boolean)[] = [(k) => k === "stock" || k === "supplier" || k === "delivery", (k) => k === "money" || k === "margin" || k === "waste", (k) => k === "pour"];
+const AREAS: ((kind: string) => boolean)[] = [(k) => k === "stock" || k === "supplier" || k === "delivery" || k === "expiry", (k) => k === "money" || k === "margin" || k === "waste", (k) => k === "pour"];
 
 export function topAlerts<T extends { kind: string; rag: string; amount: number | null }>(open: readonly T[], count = 3): T[] {
   const rank = (a: T, b: T) => Number(b.rag === "red") - Number(a.rag === "red") || Number(b.kind === "delivery") - Number(a.kind === "delivery") || (b.amount ?? -1) - (a.amount ?? -1);

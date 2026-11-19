@@ -4,7 +4,7 @@ import { BellOff, Check, RotateCcw } from "lucide-react";
 import { OutletDot, StatusPill, cn, toast } from "@/components/ui";
 import { useAlertMemory, type AlertState, type FeedAlert } from "@/lib/alert-feed";
 
-const KIND_WORDS: Record<FeedAlert["kind"], string> = { stock: "Stock", money: "Money", pour: "Over pouring", waste: "Waste", margin: "Menu", supplier: "Supplier", delivery: "Delivery" };
+const KIND_WORDS: Record<FeedAlert["kind"], string> = { stock: "Stock", money: "Money", pour: "Over pouring", waste: "Waste", margin: "Menu", supplier: "Supplier", delivery: "Delivery", expiry: "Expiry" };
 
 /** What happened, why it matters in money, and the one next step. */
 export function AlertRow({ alert, money, userId, state, compact, grouped }: { alert: FeedAlert; money: (n: number) => string; userId?: string; state?: AlertState; compact?: boolean; grouped?: boolean }) {

@@ -145,6 +145,20 @@ describe("supplier delivery days and codes", () => {
   });
 });
 
+describe("a purchase order keeps its catalogue lines", () => {
+  it("saving or submitting a draft keeps the agreed price, pack and VAT, rounds to packs, and refuses another supplier's item", () => {
+    const nadia = U("u-buy");
+    const po = ok(X.createPurchaseOrders(nadia, "lis", [{ ingredientId: "wine", qty: 27 }], { source: "par" })).orders[0];
+    const before = po.lines[0];
+    expect(before).toMatchObject({ vatRate: 0.23, packSize: 9, packLabel: "Case of 12 × 75 cl" });
+    const saved = ok(P.saveRequest(nadia, { id: po.id, lines: [{ ingredientId: "wine", qty: 30, supplierId: "wine" }] })).request;
+    expect(saved.lines[0]).toMatchObject({ qty: 36, unitPrice: before.unitPrice, vatRate: 0.23, packLabel: "Case of 12 × 75 cl" });
+    expect(P.saveRequest(nadia, { id: po.id, lines: [{ ingredientId: "wine", qty: 27 }, { ingredientId: "chicken", qty: 10 }] }).ok).toBe(false);
+    ok(P.actOnRequest(nadia, po.id, { action: "submit" }));
+    expect(P.actOnRequest(nadia, po.id, { action: "purchasing", decision: "approve", changes: [{ ingredientId: "wine", supplierId: "bev-alt", reason: "cheaper" }] }).ok).toBe(false);
+  });
+});
+
 describe("end to end: low stock to a credit request", () => {
   it("stock below the minimum, PO, approvals, email with PDF, short delivery, dearer invoice, both differences flagged, credit drafted", () => {
     const sara = U("u-rm"), nadia = U("u-buy"), priya = U("u-fc"), marco = U("u-fnb"), ahmed = U("u-store");
@@ -212,6 +226,9 @@ describe("end to end: low stock to a credit request", () => {
     expect(line.unitsOver).toBe(5);
     expect(m.match.qtyMoney).toBe(Math.round(5 * (agreed + 2.5) * 100) / 100);
     expect(m.match.priceMoney).toBe(112.5);
+
+    // The order still opens with its budget once an invoice is recorded against it.
+    expect(F.budgetForRequest("lis", "fnb", po.id).budget).toBeGreaterThan(0);
 
     // 8. The credit request is drafted from those differences.
     const credit = ok(X.draftCredit(priya, po.id)).credit;

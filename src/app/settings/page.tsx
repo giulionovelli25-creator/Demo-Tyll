@@ -1,4 +1,5 @@
 "use client";
+import { PurchasingSettings } from "@/components/purchasing/purchasing-settings";
 import { Check, Download, Minus, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { Badge, Button, EmptyState, Note, PageHeader, Panel, TableWrap, Td, Th, cn, rowClass, toast } from "@/components/ui";
@@ -106,6 +107,7 @@ export default function SettingsPage() {
         </TableWrap>
       </Panel>
 
+      {canOpen(user, "forecast") && <PurchasingSettings propertyId={allowedProperties(user)[0] ?? "lis"} />}
       <Panel title="Detection thresholds" description="The rules behind Finance's flags. A hotel agrees these during onboarding. They are fixed in this demo.">
         <dl className="grid grid-cols-2 gap-x-8 gap-y-4 text-sm md:grid-cols-4">
           <div><dt className="text-[13px] text-steel">Discount limit</dt><dd className="num text-lg">{POLICY.discountMaxPct}%</dd></div>

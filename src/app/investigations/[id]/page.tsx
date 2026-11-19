@@ -115,7 +115,9 @@ export default function InvestigationPage() {
       >
         <Badge tone={closed ? (inv.outcome === "confirmed_loss" ? "neg" : inv.outcome === "recovered" ? "pos" : "neutral") : "warn"}>{closed ? OUTCOME_LABEL[inv.outcome!] : STATUS_LABEL[inv.status]}</Badge>
         <Badge>{TYPE_LABEL[inv.type]}</Badge>
+        {inv.basis && <Badge tone={inv.basis === "confirmed" ? "ink" : "neutral"}>{inv.basis === "confirmed" ? "Confirmed by a stock take" : "Estimate until a stock take"}</Badge>}
       </PageHeader>
+      {inv.comparedWith && <p className="rounded-panel border border-line bg-paper px-5 py-3 text-[13px] leading-relaxed text-graphite shadow-panel sm:px-6"><span className="font-medium text-ink">What it was compared against. </span>{inv.comparedWith.replace(/^Compared with /, "")}</p>}
 
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.7fr_1fr]">
         <div className="space-y-5">

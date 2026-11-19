@@ -1,7 +1,7 @@
 // The sidebar, grouped into the three sections of tyll.ai. One list, read by the sidebar, the phone menu, the page colour and the Back button.
 // Each page appears once. Similar pages are merged into one item and reached by the tabs on that page.
 import {
-  Banknote, Bell, CalendarClock, ClipboardCheck, FileText, Flag, LayoutDashboard, LayoutGrid, Package, Settings, ShoppingCart, Trash2, Truck, ClipboardList, Wine, type LucideIcon,
+  Banknote, Bell, CalendarClock, ClipboardCheck, ListChecks, Store, FileText, Flag, LayoutDashboard, LayoutGrid, Package, Settings, ShoppingCart, Trash2, Truck, ClipboardList, Wine, type LucideIcon,
 } from "lucide-react";
 import { moduleOfPath, type ModuleId, type Permission } from "./domain/access";
 
@@ -37,18 +37,20 @@ export const SECTIONS: NavSection[] = [
   {
     id: "stock", title: "Stock and waste", icon: Package, tone: "teal",
     items: [
-      { id: "stock", label: "Stock levels", short: "Stock", href: "/stock", icon: Package },
+      { id: "stock", label: "Stock levels", short: "Stock", href: "/stock", icon: Package, also: ["/stock?tab=expiry"] },
       { id: "waste", label: "Waste and breakage", short: "Waste", href: "/waste", icon: Trash2 },
-      { id: "missing", label: "Counts and missing stock", short: "Counts", href: "/stock?tab=where", icon: ClipboardCheck, also: ["/stock?tab=counts"] },
+      { id: "missing", label: "Stock takes and missing stock", short: "Counts", href: "/stock?tab=takes", icon: ClipboardCheck, also: ["/stock?tab=where", "/stock?tab=counts"] },
       { id: "drinks", label: "Over pouring", short: "Pouring", href: "/drinks", icon: Wine },
     ],
   },
   {
     id: "purchasing", title: "Purchasing", icon: ShoppingCart, tone: "blue",
     items: [
+      { id: "toorder", label: "To order", short: "To order", href: "/forecast?tab=toorder", icon: ListChecks, also: ["/forecast?tab=pars"], needs: ["purchase.create"] },
       { id: "auto", label: "Automatic ordering", short: "Auto order", href: "/forecast?tab=auto", icon: CalendarClock, needs: ["purchase.create"] },
       { id: "predictions", label: "Predictions", short: "Predict", href: "/forecast", icon: ShoppingCart, also: ["/forecast?tab=prep", "/forecast?tab=outlook"] },
       { id: "orders", label: "Orders", href: "/forecast?tab=approvals", icon: ClipboardList, also: ["/forecast?tab=buy"] },
+      { id: "suppliers", label: "Suppliers", href: "/forecast?tab=suppliers", icon: Store, also: ["/forecast?tab=catalogue"], needs: ["purchase.create"] },
       { id: "deliveries", label: "Deliveries and invoices", short: "Deliveries", href: "/stock?tab=suppliers", icon: Truck, also: ["/finance?tab=invoices", "/finance?tab=approvals", "/finance?tab=reports"] },
     ],
   },
@@ -56,7 +58,7 @@ export const SECTIONS: NavSection[] = [
     id: "revenue", title: "Revenue and reconciliation", icon: Banknote, tone: "violet",
     items: [
       { id: "revenue", label: "Revenue", href: "/money", icon: Banknote, also: ["/money?tab=outlets"] },
-      { id: "flags", label: "Flagged transactions", short: "Flags", href: "/money?tab=flags", icon: Flag, also: ["/money?tab=mistakes"] },
+      { id: "flags", label: "Flagged transactions", short: "Flags", href: "/money?tab=flags", icon: Flag, also: ["/money?tab=mistakes", "/money?tab=cash"] },
       { id: "reports", label: "Reports", href: "/reports", icon: FileText },
     ],
   },

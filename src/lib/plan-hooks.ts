@@ -99,10 +99,16 @@ export const usePrepPlans = () => useLive<{ plans: PrepPlan[]; assignees: Record
 export interface RequestDetail {
   request: PurchaseRequest;
   total: number;
-  steps: ("purchasing" | "accounting" | "manager")[];
-  policy: { accountingAbove: number; managerAbove: number; managerLabel: string };
+  steps: ("purchasing" | "accounting" | "fnb" | "manager")[];
+  policy: { accountingAbove: number; fnbAbove: number; fnbLabel: string; managerAbove: number; managerLabel: string };
   budget: { month: string; label: string; budget: number; spentBefore: number; committed: number; available: number };
   quotes: Record<string, { supplierId: string; name: string; unitPrice: number; leadDays: number; usual: boolean }[]>;
+  poStatus: import("./domain/procurement").PoStatus;
+  totals: import("./domain/procurement").Totals;
+  currency: import("./types").Currency;
+  supplier: import("./types").SupplierAccount | null;
+  costCentres: string[];
+  match: (import("./domain/procurement").ThreeWay & { invoices: { id: string; supplierRef: string; status: string; date: string }[] }) | null;
 }
 
 /** Sends a change to the server and reloads every list that depends on it. */

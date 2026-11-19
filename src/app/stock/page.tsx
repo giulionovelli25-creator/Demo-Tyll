@@ -1,4 +1,6 @@
 "use client";
+import { Expiring } from "@/components/stock/expiring";
+import { StockTakes } from "@/components/stock/stock-takes";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Counts } from "@/components/stock/counts";
@@ -16,10 +18,10 @@ import { PurchasingTabs } from "@/components/finance/purchasing-tabs";
 import { allowedProperties, canOpen } from "@/lib/domain/access";
 import { useView } from "@/lib/hooks";
 
-type Tab = "inventory" | "where" | "counts" | "recipes" | "suppliers" | "log";
+type Tab = "inventory" | "where" | "counts" | "recipes" | "suppliers" | "log" | "expiry" | "takes";
 
-const QUESTION: Partial<Record<Tab, string>> = { where: "What went missing between counts?", counts: "What did each count find?", suppliers: "Did we get, and pay for, what we ordered?", inventory: "What happened to each item?", recipes: "What does each dish cost to make?" };
-const LABEL: Record<Tab, string> = { inventory: "Item history", where: "Counts and missing stock", counts: "Counts and missing stock", recipes: "Recipes and costs", suppliers: "Deliveries and invoices", log: "Log waste or breakage" };
+const QUESTION: Partial<Record<Tab, string>> = { expiry: "What expires in the next days, and what do we do with it?", takes: "What did each stock take find, and is it approved?", where: "What went missing between counts?", counts: "What did each count find?", suppliers: "Did we get, and pay for, what we ordered?", inventory: "What happened to each item?", recipes: "What does each dish cost to make?" };
+const LABEL: Record<Tab, string> = { expiry: "Expiring soon", takes: "Stock takes and missing stock", inventory: "Item history", where: "Stock takes and missing stock", counts: "Stock takes and missing stock", recipes: "Recipes and costs", suppliers: "Deliveries and invoices", log: "Log waste or breakage" };
 
 /** Stock is one full page. The older detail screens stay reachable from the links at its foot, and by their old addresses. */
 export default function StockRoute() {
@@ -27,7 +29,7 @@ export default function StockRoute() {
   const params = useSearchParams();
   const router = useRouter();
   const employee = user.role === "employee";
-  const valid: Tab[] = employee ? ["log", "counts"] : (["inventory", "where", "counts", "recipes", "suppliers"] as Tab[]).filter((t) => t !== "where" || canOpen(user, "investigations"));
+  const valid: Tab[] = employee ? ["log", "counts"] : (["inventory", "where", "counts", "recipes", "suppliers", "expiry", "takes"] as Tab[]).filter((t) => t !== "where" || canOpen(user, "investigations"));
   const [tab, setTab] = useSection<Tab>("/stock", valid, employee ? "log" : null);
   const props = allowedProperties(user);
   const [picked, setPicked] = useState(props[0]);
@@ -42,7 +44,7 @@ export default function StockRoute() {
   if (tab === null) return <StockPage />;
   const label = LABEL[tab];
   // Header, then the numbers, then the parts of the page: the same order as every other page.
-  const countTabs = valid.includes("where") ? <Tabs value={tab} onChange={setTab} tabs={[{ value: "where", label: "Missing stock" }, { value: "counts", label: "Count records" }]} /> : null;
+  const countTabs = <Tabs value={tab} onChange={setTab} tabs={[{ value: "takes" as Tab, label: "Stock takes" }, ...(valid.includes("where") ? [{ value: "where" as Tab, label: "Missing stock" }] : []), { value: "counts" as Tab, label: "Count records" }]} />;
   return (
     <div className="space-y-6">
       <PageHeader
@@ -60,6 +62,8 @@ export default function StockRoute() {
       {tab === "where" && <WhereDidItGo key={pid} propertyId={pid} tabs={countTabs} />}
       {tab === "log" && <WasteLogger key={pid} propertyId={pid} />}
       {tab === "counts" && <Counts propertyId={pid} />}
+      {tab === "expiry" && <><Tabs value="expiry" onChange={(v) => router.push(v === "expiry" ? "/stock?tab=expiry" : "/stock")} tabs={[{ value: "stock", label: "Stock" }, { value: "expiry", label: "Expiring soon" }, { value: "analysis", label: "Analysis" }]} /><Expiring key={pid} propertyId={pid} /></>}
+      {tab === "takes" && <StockTakes key={pid} propertyId={pid} tabs={countTabs} />}
       {tab === "recipes" && <Recipes />}
       {tab === "suppliers" && <Suppliers propertyId={pid} tabs={employee ? null : <PurchasingTabs here="deliveries" />} />}
     </div>

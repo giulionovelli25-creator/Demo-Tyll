@@ -55,6 +55,8 @@ export function expiringFor(user: User, propertyId: string, entries: SessionEntr
   const from = addDays(DEMO_TODAY, -28);
   const byOutlet = outletsOfProperty(propertyId).map((o) => ({ o, use: usageFromSales(getDataset().dayItems, (r) => r.outletId === o.id && r.date >= from && r.date < DEMO_TODAY) }));
   const rows: ExpiryRow[] = [];
+  const sold = new Map<string, number>();
+  for (const d of getDataset().dayItems) if (d.date >= from && d.date < DEMO_TODAY && outletById[d.outletId]?.propertyId === propertyId) sold.set(d.itemId, (sold.get(d.itemId) ?? 0) + d.units);
   let noBatch = 0;
   for (const r of stockFor(user, propertyId, entries)) {
     const mine = batches.filter((b) => b.ingredientId === r.ingredientId);
@@ -67,7 +69,9 @@ export function expiringFor(user: User, propertyId: string, entries: SessionEntr
       // The outlet that uses the most of it, other than by the hotel's normal use, could take what normal use will not.
       const outlets = byOutlet.map(({ o, use }) => ({ name: o.name, daily: (use.get(r.ingredientId) ?? 0) / 28 })).sort((a, b) => b.daily - a.daily);
       const others = outlets.slice(1).find((x) => x.daily > 0);
-      const dish = MENU_ITEMS.find((m) => (m.recipe ?? []).some((x) => x.ingredientId === r.ingredientId) && outletsOfProperty(propertyId).some((o) => o.menu.some((e) => e.itemId === m.id)));
+      // The dish that sells most among those using it: the easiest special to push.
+      const dish = MENU_ITEMS.filter((m) => (m.recipe ?? []).some((x) => x.ingredientId === r.ingredientId) && outletsOfProperty(propertyId).some((o) => o.menu.some((e) => e.itemId === m.id)))
+        .map((m) => ({ m, sold: sold.get(m.id) ?? 0 })).sort((a, b) => b.sold - a.sold)[0]?.m;
       const action = expiryAction({ left: b.left, daysLeft: d, dailyUse: r.avgDaily, unitWord: unitWord(r.ingredientId), transferTo: others ? { name: others.name, canUse: others.daily * Math.max(1, d + 1) } : undefined, dish: dish?.name });
       rows.push({ ingredientId: r.ingredientId, name: ingredientById[r.ingredientId].name, unit: unitWord(r.ingredientId), batch: b.batch, expiry: b.expiry, daysLeft: d, left: b.left, value: round2(b.left * r.valuationCost), received: b.received, source: b.source, first: i === 0, action, atRisk: action.kind !== "use_first" });
     });

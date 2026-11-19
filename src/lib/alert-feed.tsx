@@ -8,15 +8,16 @@ import { persist } from "zustand/middleware";
 import type { Rag } from "@/components/ui";
 import { MENU_ITEMS, ingredientById, outletById, propertyById, supplierById } from "./data/catalog";
 import { orderStage } from "./domain/order-stage";
-import { allowedProperties, canOpen } from "./domain/access";
+import { allowedProperties, can, canOpen } from "./domain/access";
 import { buildIssues, type Issue } from "./domain/issues";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "./hooks";
 import { useMonthPlan, useRequests } from "./plan-hooks";
+import { useExpiring } from "./procurement-hooks";
 import type { PourOut } from "./server/pour";
 import type { MonthPlanOut } from "./server/purchasing";
 import { fmtDate, fxRate } from "./util";
 
-export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier" | "delivery";
+export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier" | "delivery" | "expiry";
 export type AlertState = "open" | "snoozed" | "resolved";
 
 export interface FeedAlert {
@@ -91,6 +92,9 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
   const pourRes = useApi<{ pour: PourOut }>(canOpen(user, "money") && pid ? `/api/pour?propertyId=${pid}&outlets=${outlets}` : null);
   const pour = pourRes.data?.pour;
   const orders = useRequests().data?.requests;
+  // Batches that normal use will not finish before they expire, in the next three days.
+  const seesBatches = can(user, "stock.count") || can(user, "stock.review") || can(user, "purchase.create");
+  const expiring = useExpiring(canOpen(user, "stock") && seesBatches && user.role !== "employee" ? pid : null, 3).data;
 
   const value = useMemo<Feed>(() => {
     const out: FeedAlert[] = [];
@@ -157,6 +161,16 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
         also: { label: "Order from backup supplier", href: `/forecast?tab=buy&focus=${r.lines[0]?.ingredientId ?? ""}` },
       });
     }
+    if (expiring && expiring.totals.atRisk > 0) {
+      const risky = expiring.rows.filter((r) => r.atRisk);
+      const soonest = risky[0];
+      out.push({
+        id: `expiry-${risky.map((r) => r.batch).join(",")}`, kind: "expiry", rag: risky.some((r) => r.daysLeft <= 0) ? "red" : "amber",
+        what: `${risky.length} ${risky.length === 1 ? "batch expires" : "batches expire"} in the next 3 days`,
+        why: `${soonest.name}, batch ${soonest.batch}, ${soonest.daysLeft < 0 ? "has expired" : soonest.daysLeft === 0 ? "expires today" : `expires in ${soonest.daysLeft} ${soonest.daysLeft === 1 ? "day" : "days"}`}. ${soonest.action.text}`,
+        where: pid ? propertyById[pid].name : "", amount: expiring.totals.atRiskValue * (pid ? fxRate(propertyById[pid].currency, sel.currency) : 1), amountWord: "at risk", next: { label: "See expiring soon", href: "/stock?tab=expiry" },
+      });
+    }
     // Most urgent first, then the most money inside each level.
     const RANK = { red: 0, amber: 1, green: 2 } as const;
     out.sort((a, b) => RANK[a.rag as keyof typeof RANK] - RANK[b.rag as keyof typeof RANK] || Number(b.kind === "delivery") - Number(a.kind === "delivery") || (b.amount ?? -1) - (a.amount ?? -1));
@@ -165,7 +179,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
       alerts: out, open: out.filter((a) => state(a) === "open"), snoozed: out.filter((a) => state(a) === "snoozed"), resolved: out.filter((a) => state(a) === "resolved"),
       loading: planned.loading, error: planned.error, plan, pour, propertyId: pid,
     };
-  }, [ctx, sel, investigations, patterns, plan, pour, orders, pid, user, money, memory, planned.loading, planned.error]);
+  }, [ctx, sel, investigations, patterns, plan, pour, orders, expiring, pid, user, money, memory, planned.loading, planned.error]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -94,7 +94,7 @@ function datasetInvoices(s: Shape, props: Set<string>): InvoiceView[] {
 }
 
 function tyllInvoices(s: Shape, props: Set<string>): InvoiceView[] {
-  return s.finance.invoices.filter((i) => props.has(i.propertyId)).map((i) => {
+  return s.finance.invoices.filter((i) => props.has(i.propertyId) && s.requests.some((x) => x.id === i.requestId)).map((i) => {
     const r = s.requests.find((x) => x.id === i.requestId)!;
     const raw = i.lines.map((l) => {
       const rl = r.lines.find((x) => x.ingredientId === l.ingredientId)!;
@@ -317,10 +317,12 @@ export function budgetRows(s: Shape, propertyId: string, period = "month"): Budg
 
 /** The budget figure Purchasing and approvers see on a request: the same records as Finance, for that department. */
 export function budgetForRequest(propertyId: string, dept: FinDept, exceptId?: string) {
-  const s = loadStore();
-  const row = budgetRows({ ...s, requests: s.requests.filter((r) => r.id !== exceptId) }, propertyId).find((r) => r.dept === dept)!;
+  const all = loadStore();
+  // Everything except this order, and except the invoices against it, so nothing is counted twice or looked up missing.
+  const s = { ...all, requests: all.requests.filter((r) => r.id !== exceptId), finance: { ...all.finance, invoices: all.finance.invoices.filter((i) => i.requestId !== exceptId) } };
+  const row = budgetRows(s, propertyId).find((r) => r.dept === dept)!;
   // Tyll's own approved orders are shown as one figure; everything else already recorded or invoiced is "spent before".
-  const tyll = spendEntries({ ...s, requests: s.requests.filter((r) => r.id !== exceptId) }, propertyId).filter((e) => e.dept === dept && e.source === "tyll" && e.stage !== "requested" && (e.stage !== "recorded" || inPeriod(e.date, "month")));
+  const tyll = spendEntries(s, propertyId).filter((e) => e.dept === dept && e.source === "tyll" && e.stage !== "requested" && (e.stage !== "recorded" || inPeriod(e.date, "month")));
   const committed = r2(tyll.reduce((t, e) => t + e.amount, 0));
   const spentBefore = r2(row.recorded + row.invoices + row.committed - committed);
   return { month: BUDGET_MONTH.label, label: FIN_DEPT_LABEL[dept], budget: row.budget, spentBefore, committed, available: r2(row.budget - spentBefore - committed) };

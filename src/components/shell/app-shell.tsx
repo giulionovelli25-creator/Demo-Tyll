@@ -28,7 +28,7 @@ import type { Dept, User } from "@/lib/types";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
 import { BreakageFab, BreakageSheet, mayLogBreakage, useBreakageSheet } from "./breakage";
 import { CommandPalette } from "./command-palette";
-import { CountFlow } from "@/components/stock/count-flow";
+import { CountRoute } from "@/components/stock/take-count";
 import { Login } from "./login";
 import { Welcome } from "./welcome";
 import { GuidedPath, WhatsNew, startGuidedPath } from "./early-access";
@@ -339,11 +339,11 @@ function StaffFrame({ user, children }: { user: User; children: ReactNode }) {
   return (
     <div className="min-h-screen bg-paper">
       <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-hair bg-paper/90 px-4 backdrop-blur">
-        <Link href="/staff" className="flex items-center gap-2" aria-label="Tyll Staff home"><TyllLogo height={20} /><span className="text-[13px] text-steel">Staff</span></Link>
+        <Link prefetch={false} href="/staff" className="flex items-center gap-2" aria-label="Tyll Staff home"><TyllLogo height={20} /><span className="text-[13px] text-steel">Staff</span></Link>
         <span className="flex items-center gap-1">
           <TakeTourButton user={user} label="Tour" className="border-0 px-2" />
           <NotificationBell />
-          {others.length > 0 && <Link href={MODULE_PATH[others[0]]} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Full Tyll</Link>}
+          {others.length > 0 && <Link prefetch={false} href={MODULE_PATH[others[0]]} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Full Tyll</Link>}
           <LanguagePicker />
           {!publicDemo && <button type="button" onClick={leave} className="rounded-full px-3 py-2 text-[13px] text-graphite hover:bg-mist">Sign out</button>}
         </span>
@@ -402,7 +402,7 @@ function BackToMain({ user }: { user: User }) {
   const body = <><ArrowLeft size={16} aria-hidden /> Back to {label}</>;
   return (
     <div className="mx-auto w-full max-w-[1760px] px-4 pb-2 sm:px-6 lg:px-8">
-      {publicDemo && !demoRoleFits(user, moduleOfPath(target.split("?")[0])) ? <a href={target} className={style}>{body}</a> : <Link href={target} className={style}>{body}</Link>}
+      {publicDemo && !demoRoleFits(user, moduleOfPath(target.split("?")[0])) ? <a href={target} className={style}>{body}</a> : <Link prefetch={false} href={target} className={style}>{body}</Link>}
     </div>
   );
 }
@@ -427,7 +427,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
   useEffect(() => { document.title = `${NAV[current].label}, Tyll demo`; }, [current]);
   if (current === "staff" && allowed) return <StaffFrame user={user}>{children}</StaffFrame>;
   // The count is a full screen flow: nothing else competes for a thumb.
-  if (pathname === "/count" && allowed) return <div data-mod={MODULE_TONE.stock}><CountFlow /><Toaster /></div>;
+  if (pathname === "/count" && allowed) return <div data-mod={MODULE_TONE.stock}><CountRoute /><Toaster /></div>;
   const preview = IN_DEVELOPMENT.includes(current) || pathname === "/performance";
   const canBreak = mayLogBreakage(user);
   return (
@@ -447,7 +447,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
           {allowed ? (
             children
           ) : (
-            <EmptyState title="This area is outside your role" action={<Link href={homePath(user)}><Button variant="primary">Go to your home page</Button></Link>}>
+            <EmptyState title="This area is outside your role" action={<Link prefetch={false} href={homePath(user)}><Button variant="primary">Go to your home page</Button></Link>}>
               {ROLE_LABEL[user.role]} accounts cannot open {NAV[current].label}.
             </EmptyState>
           )}
@@ -468,7 +468,7 @@ function Sidebar({ user }: { user: User }) {
   return (
     <aside className="no-print sticky top-0 z-30 hidden h-screen w-[88px] shrink-0 flex-col border-e border-nav-line bg-nav backdrop-blur-xl md:flex xl:w-[244px]">
       <div className="flex h-16 shrink-0 items-center justify-center gap-2 px-2 xl:justify-start xl:px-5">
-        <Link href={homePath(user)} aria-label="Tyll home" className="flex items-center rounded-md">
+        <Link prefetch={false} href={homePath(user)} aria-label="Tyll home" className="flex items-center rounded-md">
           <span className="hidden xl:block"><TyllLogo height={24} priority /></span>
           <span className="xl:hidden"><TyllMark size={22} /></span>
         </Link>
@@ -528,7 +528,7 @@ function PhoneBar({ user }: { user: User }) {
               <li key={item.id} className="min-w-0 flex-1">
                 {/* Log waste opens where you stand: staff use it mid shift. */}
                 {isLog && pathname !== "/waste" ? <button type="button" onClick={() => openLog(true)} className={cell}>{body}</button>
-                  : <Link href={item.href} aria-current={lit ? "page" : undefined} className={cell}>{body}</Link>}
+                  : <Link prefetch={false} href={item.href} aria-current={lit ? "page" : undefined} className={cell}>{body}</Link>}
               </li>
             );
           })}
@@ -625,7 +625,7 @@ function Topbar({ user }: { user: User }) {
     <>
     <div className="no-print sticky top-0 z-20 border-b border-nav-line bg-paper/80 backdrop-blur-xl">
       <div className="mx-auto flex min-h-16 w-full max-w-[1760px] flex-wrap items-center gap-x-2 gap-y-2 px-4 py-2 sm:px-6 lg:gap-x-4 lg:px-8">
-        <Link href={homePath(user)} aria-label="Tyll home" className="-my-2.5 flex items-center gap-2 rounded-md py-2.5 md:hidden">
+        <Link prefetch={false} href={homePath(user)} aria-label="Tyll home" className="-my-2.5 flex items-center gap-2 rounded-md py-2.5 md:hidden">
           <TyllLogo height={20} priority />
         </Link>
         {showScope ? (

@@ -12,6 +12,7 @@ import { OutletFinance } from "@/components/finance/outlets";
 import type { ChartPoint } from "@/components/home/chart";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
+import { CashUps } from "@/components/money/cash";
 import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
@@ -25,9 +26,9 @@ import { useDemo } from "@/lib/store";
 import type { ChargeSource, ExceptionType, Order } from "@/lib/types";
 import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
 
-type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips";
+type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips" | "cash";
 
-const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charges", tips: "Tips (preview)" };
+const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charges", tips: "Tips (preview)", cash: "Cash on hand against cash sales" };
 const RevenueProfitChart = dynamic(() => import("@/components/home/chart").then((m) => m.RevenueProfitChart), { ssr: false, loading: () => <div className="h-[264px] animate-pulse rounded-[var(--radius-control)] bg-mist" /> });
 
 /** The period for the detail below it. The top of the page always shows today, 7 days and 30 days. */
@@ -39,8 +40,8 @@ function Period() {
 
 /** Revenue: today, this week and this month first. Flags, outlets and transactions are one click away. */
 export default function MoneyPage() {
-  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips"], null);
-  const { sel, money, currency } = useView();
+  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips", "cash"], null);
+  const { sel, money, currency, propertyId } = useView();
   const ctx = useCtx();
   const router = useRouter();
   const investigations = useInvestigations();
@@ -83,7 +84,8 @@ export default function MoneyPage() {
   if (sub) {
     return (
       <div className="space-y-6">
-        <PageHeader title={sub} />
+        <PageHeader title={sub} question={tab === "cash" ? "Does the cash in the drawer match the cash the till took?" : undefined} lead={tab === "cash" ? "Per outlet and shift. Simulated data." : undefined} />
+        {tab === "cash" && <CashUps propertyId={propertyId ?? "lis"} />}
         {tab === "orders" && <><Period /><Orders /></>}
         {tab === "rooms" && <RoomCharges />}
         {tab === "tips" && <Tips />}
@@ -132,6 +134,7 @@ export default function MoneyPage() {
           <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds and removed items" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
             <Mistakes />
           </Section>
+          <SectionLink href="/money?tab=cash" title="Cash on hand against cash sales" summary="Each outlet's drawer at the end of the shift against the bills paid in cash. Card payments are reconciled by the payment provider." />
         </>
       ) : (
         <>
@@ -253,7 +256,7 @@ function Mistakes() {
               <tbody>
                 {[...inPeriod].sort((a, b) => Number(a.status === "closed") - Number(b.status === "closed") || toDisplay(b.propertyId, b.exposure) - toDisplay(a.propertyId, a.exposure)).slice(0, 8).map((i) => (
                   <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
-                    <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}</span></Td>
+                    <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}{i.basis === "estimate" ? ", estimate until a stock take confirms it" : i.basis === "confirmed" ? ", confirmed by a stock take" : ""}</span>{i.comparedWith && <span className="mt-0.5 line-clamp-2 block max-w-[460px] text-xs text-graphite">{i.comparedWith}</span>}</Td>
                     <Td>{i.outletId ? outletLabel(i.outletId) : "None"}</Td>
                     <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
                     <Td align="right">{money(toDisplay(i.propertyId, i.exposure))}</Td>

@@ -45,7 +45,7 @@ export function cashSales(propertyId: string, from: string, to: string) {
 /** The simulated count for a past shift: almost always within a few euros, with two planted differences. */
 function simulatedCount(outletId: string, date: string, shift: Shift, expected: number): { counted: number; note?: string } {
   const lastFriday = (() => { for (let i = 1; i <= 7; i++) { const d = addDays(DEMO_TODAY, -i); if (new Date(`${d}T00:00:00Z`).getUTCDay() === 5) return d; } return addDays(DEMO_TODAY, -1); })();
-  if (outletId === "lis-lobby" && date === lastFriday && shift === "night") return { counted: round2(expected - 85) };
+  if (outletId === "lis-lobby" && date === lastFriday && shift === "night") return { counted: round2(expected - Math.min(85, Math.round(expected * 0.4))) };
   if (outletId === "lis-terrace" && date === addDays(DEMO_TODAY, -2) && shift === "day") return { counted: round2(expected + 20), note: "Tip left in the drawer, moved to the tip box next day" };
   const wobble = ((hashString(`${outletId}|${date}|${shift}`) % 9) - 4) / 2;
   return { counted: round2(Math.max(0, expected + wobble)) };
