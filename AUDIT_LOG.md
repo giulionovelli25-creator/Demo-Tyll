@@ -77,3 +77,8 @@ Resume from this file if a session runs out of context.
 - **Not built:** a real sender. There is no "sending", "failed" or "retry" state because no transport exists; when an email provider is connected, those states are needed (the notification emails in `notify.ts` already have queued, sent and failed). BLOCKED on choosing a provider.
 - **Follow-up (checked in the app):** a quick double click asked twice and posted twice; the server refused the second, which showed an error. Order actions now run one at a time (`inflight` ref in `RequestView`), so three quick clicks give one confirmation, one log entry and one success message.
 - **Checked in the running app:** approved order PR-LIS-0008 shows "1 approved and not sent" on Orders (F7); sending it logs "Order logged for Peixaria Atlântico …" and the panel reads "Sent to the supplier (demo: logged, not emailed)" (F5). F2: Nadia's edited beer quantity is kept for her and not shown to Marco after a switch.
+
+## Phase D and E
+
+- Walked 19 pages as the F&B director in a production build: every API request 200, no script errors. Waste logging at 375 px: no sideways scroll.
+- Final checks and open issues: see `REPORT.md`.
