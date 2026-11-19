@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowDown, ArrowLeft, Check } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge, Button, EmptyState, Field, Note, Panel, TableWrap, Td, Th, TextArea, cn, rowClass, textLink, toast } from "@/components/ui";
 import { ingredientById, outletById, propertyById } from "@/lib/data/catalog";
 import { supplierName } from "@/lib/data/purchasing-rules";
@@ -335,6 +335,8 @@ function RequestView({ id, base }: { id: string; base: string }) {
   const [recv, setRecv] = useState<Record<string, { delivered?: number; damaged?: number; batch?: string; expiry?: string }>>({});
   const [final, setFinal] = useState(false);
   const [busy, setBusy] = useState(false);
+  // One action at a time: a double click must not post twice before the button disables.
+  const inflight = useRef(false);
   const sent = useSearchParams().get("sent") === "1";
   if (data === undefined && !error) return <Panel><EmptyState title="Loading the request" /></Panel>;
   if (!data) return <Panel><EmptyState title="This request is not available" action={<Button onClick={() => router.push(base)}>Back to approvals</Button>}>It does not exist, or it is outside your access.</EmptyState></Panel>;
@@ -370,8 +372,10 @@ function RequestView({ id, base }: { id: string; base: string }) {
   const waitingFor = !step && ["purchasing", "accounting", "fnb", "manager"].includes(r.status) ? STATUS[r.status].label : null;
 
   const run = async (url: string, body: unknown, ok: string) => {
+    if (inflight.current) return false;
+    inflight.current = true;
     setBusy(true);
-    const res = await mutate(url, body);
+    const res = await mutate(url, body).finally(() => { inflight.current = false; });
     setBusy(false);
     if (!res.ok) return toast.error(res.error), false;
     toast.done(ok);
