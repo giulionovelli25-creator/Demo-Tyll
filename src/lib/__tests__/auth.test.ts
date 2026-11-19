@@ -239,15 +239,19 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     // A role that may already open the page keeps its session.
     const fnb = cookieOf(proxy(req("/events")))!;
     expect(where(proxy(req("/stock", fnb)))).toBeNull();
-    // Finance links switch to the role that reconciles invoices.
+    // The role never changes on its own: only the role switcher changes it. A page the role cannot open leads to its home page.
     const gm = cookieOf(proxy(req("/rooms")))!;
-    expect(resolveSession(cookieOf(proxy(req("/finance?tab=invoices", gm)))!)!.user.id).toBe("u-fc");
-    // Purchasing links switch away from a role that only approves.
-    const fc = cookieOf(proxy(req("/finance")))!;
-    expect(resolveSession(cookieOf(proxy(req("/forecast?tab=buy", fc)))!)!.user.id).toBe("u-buy");
-    // Home changes to a role that may see it, because Home is one click from anywhere.
+    const toFinance = proxy(req("/finance?tab=invoices", gm));
+    expect(cookieOf(toFinance)).toBeUndefined();
+    expect(resolveSession(gm)!.user.id).toBe("u-gm");
     const buyer = cookieOf(proxy(req("/forecast")))!;
-    expect(resolveSession(cookieOf(proxy(req("/", buyer)))!)!.user.id).toBe("u-fnb");
+    const home = proxy(req("/", buyer));
+    expect(where(home)).toBe("/stock");
+    expect(cookieOf(home)).toBeUndefined();
+    expect(resolveSession(buyer)!.user.id).toBe("u-buy");
+    const fc = cookieOf(proxy(req("/finance")))!;
+    expect(cookieOf(proxy(req("/forecast?tab=buy", fc)))).toBeUndefined();
+    expect(resolveSession(fc)!.user.id).toBe("u-fc");
   });
 });
 

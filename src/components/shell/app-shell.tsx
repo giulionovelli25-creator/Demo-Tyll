@@ -18,7 +18,7 @@ import { LanguageLayer, LanguagePicker } from "./language";
 import { SilverWave } from "./silver-wave";
 import { AlertFeedProvider, useAlertFeed } from "@/lib/alert-feed";
 import type { Snapshot } from "@/lib/server/snapshot";
-import { MODULE_PATH, allowedOutlets, can, demoRoleFits, allowedProperties, canOpen, clampScope, hasWholeProperty, homePath, moduleOfPath, modulesFor, type ModuleId } from "@/lib/domain/access";
+import { MODULE_PATH, allowedOutlets, can, allowedProperties, canOpen, clampScope, hasWholeProperty, homePath, moduleOfPath, modulesFor, type ModuleId } from "@/lib/domain/access";
 import { deliveryOvercharge } from "@/lib/domain/inventory";
 import { assessArrival } from "@/lib/domain/operations";
 import { useInvestigations, useUser } from "@/lib/hooks";
@@ -77,13 +77,11 @@ function useNavCounts(): Record<string, NavCount> {
 
 /** In the public demo every area is open: the link changes role when it must. Otherwise only what the role may open. */
 function useMayOpen(user: User) {
-  const publicDemo = useSession((s) => !!s.demoRoles);
-  return useCallback((i: NavItem) => (!i.needs || i.needs.some((p) => can(user, p))) && (publicDemo || canOpen(user, moduleOfItem(i))), [publicDemo, user]);
+  // The same rule in the public demo as in the product: each role sees only the pages it may open.
+  return useCallback((i: NavItem) => (!i.needs || i.needs.some((p) => can(user, p))) && canOpen(user, moduleOfItem(i)), [user]);
 }
 
-function NavLink({ item, user, active, count, compact, onPick }: { item: NavItem; user: User; active: boolean; count?: NavCount; compact?: boolean; onPick?: () => void }) {
-  const publicDemo = useSession((s) => !!s.demoRoles);
-  const reload = publicDemo && !demoRoleFits(user, moduleOfItem(item));
+function NavLink({ item, active, count, compact, onPick }: { item: NavItem; active: boolean; count?: NavCount; compact?: boolean; onPick?: () => void }) {
   const Icon = item.icon;
   const className = cn(
     "relative flex items-center rounded-[var(--radius-control)] text-nav-quiet transition-colors duration-150 ease-tyll hover:bg-nav-hover hover:text-nav-ink",
@@ -98,10 +96,7 @@ function NavLink({ item, user, active, count, compact, onPick }: { item: NavItem
       {count && <span className={cn("num rounded-full bg-warn-soft px-1.5 text-center text-xs font-medium leading-[18px] text-warn", compact ? "absolute end-1 top-1 min-w-[18px]" : "ms-auto min-w-[20px]")}><span aria-hidden>{count.n}</span><span className="sr-only">{count.label}</span></span>}
     </>
   );
-  // A full load lets the public demo change role on the server first.
-  return reload
-    ? <a href={item.href} aria-current={active ? "page" : undefined} className={className} onClick={onPick}>{body}</a>
-    : <Link href={item.href} prefetch={false} aria-current={active ? "page" : undefined} className={className} onClick={onPick}>{body}</Link>;
+  return <Link href={item.href} prefetch={false} aria-current={active ? "page" : undefined} className={className} onClick={onPick}>{body}</Link>;
 }
 
 /** Overview and Alerts, then the three sections of tyll.ai. Each section is a title that opens its pages; only one is open at a time, starting with the one you are in. */
@@ -116,7 +111,7 @@ function NavTree({ user, compact, onPick }: { user: User; compact?: boolean; onP
   if (current !== seen) { setSeen(current); if (current) setOpen(current); }
   const may = useMayOpen(user);
   const counts = useNavCounts();
-  const item = (i: NavItem) => <li key={i.id}><NavLink item={i} user={user} active={active?.id === i.id} count={counts[i.id]} compact={compact} onPick={onPick} /></li>;
+  const item = (i: NavItem) => <li key={i.id}><NavLink item={i} active={active?.id === i.id} count={counts[i.id]} compact={compact} onPick={onPick} /></li>;
   return (
     <>
       <ul data-mod="indigo" className="space-y-0.5">{PINNED.filter(may).map(item)}</ul>
@@ -174,7 +169,7 @@ function FootGroup({ user, compact, onPick }: { user: User; compact?: boolean; o
       )}
       {open && (
         <ul className={cn("space-y-0.5", !compact && !here && "ms-[22px] border-s border-nav-line ps-2")}>
-          {FOOT.filter(may).filter((i) => !(publicDemo && i.id === "more")).map((i) => <li key={i.id}><NavLink item={i} user={user} active={pathname === i.href} compact={compact} onPick={onPick} /></li>)}
+          {FOOT.filter(may).filter((i) => !(publicDemo && i.id === "more")).map((i) => <li key={i.id}><NavLink item={i} active={pathname === i.href} compact={compact} onPick={onPick} /></li>)}
           <li>
             {publicDemo ? (
               <button type="button" onClick={() => { onPick?.(); startGuidedPath(); }} className={row}><CircleHelp size={17} aria-hidden /><span>Help and tour</span></button>
@@ -393,7 +388,7 @@ function BackToMain({ user }: { user: User }) {
   const noMainPage = (pathname === "/stock" && user.role === "employee") || (pathname === "/forecast" && (user.role === "employee" || !canOpen(user, "stock")));
   const wanted = noMainPage || !canOpen(user, moduleOfPath(pathname)) ? null : backTarget(pathname, params, lastMainPage, publicDemo ? "" : homePath(user));
   if (!wanted) return null;
-  const target = publicDemo || canOpen(user, moduleOfPath(wanted)) ? wanted : homePath(user);
+  const target = canOpen(user, moduleOfPath(wanted)) ? wanted : homePath(user);
   // Sent home because the role cannot open the main page, and already there.
   if (target !== wanted && target.split("?")[0] === pathname) return null;
   const [tPath, tQuery] = target.split("?");
@@ -402,7 +397,7 @@ function BackToMain({ user }: { user: User }) {
   const body = <><ArrowLeft size={16} aria-hidden /> Back to {label}</>;
   return (
     <div className="mx-auto w-full max-w-[1760px] px-4 pb-2 sm:px-6 lg:px-8">
-      {publicDemo && !demoRoleFits(user, moduleOfPath(target.split("?")[0])) ? <a href={target} className={style}>{body}</a> : <Link prefetch={false} href={target} className={style}>{body}</Link>}
+      <Link prefetch={false} href={target} className={style}>{body}</Link>
     </div>
   );
 }
@@ -414,7 +409,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
   const current = moduleOfPath(pathname);
   const allowed = canOpen(user, current);
   const publicDemo = useSession((s) => !!s.demoRoles);
-  // Following a module link can change role in the public demo, so say so.
+  // Confirms the switch after picking another role in the public demo.
   useEffect(() => {
     if (!publicDemo) return;
     try {

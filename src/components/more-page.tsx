@@ -45,7 +45,7 @@ function Card({ e, reload }: { e: Entry; reload: boolean }) {
 export function MorePage() {
   const { user } = useView();
   const publicDemo = useSession((s) => !!s.demoRoles);
-  const shown = (list: Entry[]) => list.filter((e) => canOpen(user, e.m) || (publicDemo && e.m !== "tasks" && e.m !== "staff"));
+  const shown = (list: Entry[]) => list.filter((e) => canOpen(user, e.m));
   const live = shown(AVAILABLE);
   const soon = shown(COMING);
   return (
