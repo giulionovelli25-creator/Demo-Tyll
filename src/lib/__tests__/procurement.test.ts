@@ -249,3 +249,10 @@ describe("end to end: low stock to a credit request", () => {
     expect(E.exportDocuments(U("u-rm"), "lis", "invoices").ok).toBe(false);
   });
 });
+
+describe("the export field list document", () => {
+  it("names every exported field, so the mapping document never drifts from the code", () => {
+    const doc = fs.readFileSync(path.join(process.cwd(), "docs", "procurement-export.md"), "utf8");
+    for (const kind of Object.keys(E.EXPORT_FIELDS) as (keyof typeof E.EXPORT_FIELDS)[]) for (const f of E.EXPORT_FIELDS[kind]) expect(doc, `${kind}.${f.name}`).toContain(`\`${f.name}\``);
+  });
+});

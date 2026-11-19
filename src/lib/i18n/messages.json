@@ -354,6 +354,11 @@
 "Approvazioni",
 "الموافقات"
 ],
+"Approve and adjust stock": [
+"Freigeben und Bestand anpassen",
+"Approva e rettifica le scorte",
+"الموافقة وتعديل المخزون"
+],
 "Approve distribution": [
 "Verteilung freigeben",
 "Approva distribuzione",
@@ -394,6 +399,11 @@
 "Arrivo",
 "الوصول"
 ],
+"Arrived": [
+"Angekommen",
+"Arrivato",
+"وصل"
+],
 "Arrives tomorrow at {0}:{1}.": [
 "Ankunft morgen um {0}:{1}.",
 "Arriva domani alle {0}:{1}.",
@@ -424,6 +434,11 @@
 "Assegnato",
 "مُسند"
 ],
+"At risk": [
+"Gefährdet",
+"A rischio",
+"معرّض للخطر"
+],
 "At risk of running out": [
 "Droht auszugehen",
 "A rischio di esaurimento",
@@ -438,6 +453,11 @@
 "Prüfprotokoll",
 "Registro di controllo",
 "سجل التدقيق"
+],
+"Automatic ordering": [
+"Automatische Bestellung",
+"Ordini automatici",
+"الطلب التلقائي"
 ],
 "Available": [
 "Verfügbar",
@@ -604,6 +624,21 @@
 "Bar (bevande)",
 "البار (مشروبات)"
 ],
+"Batch": [
+"Charge",
+"Lotto",
+"الدفعة"
+],
+"Batches by use-by date": [
+"Chargen nach Verbrauchsdatum",
+"Lotti per data di scadenza",
+"الدفعات حسب تاريخ الانتهاء"
+],
+"Batches expiring": [
+"Ablaufende Chargen",
+"Lotti in scadenza",
+"دفعات تنتهي صلاحيتها"
+],
 "Bath towels": [
 "Badetücher",
 "Asciugamani da bagno",
@@ -629,6 +664,11 @@
 "Capo facchini",
 "كبير الحمالين"
 ],
+"Below minimum": [
+"Unter Mindestbestand",
+"Sotto il minimo",
+"أقل من الحد الأدنى"
+],
 "Berry cheesecake": [
 "Beeren-Käsekuchen",
 "Cheesecake ai frutti di bosco",
@@ -652,7 +692,7 @@
 "Blind count": [
 "Blindzählung",
 "Conteggio alla cieca",
-"جرد أعمى"
+"عدّ دون عرض الكمية"
 ],
 "Booked": [
 "Gebucht",
@@ -889,10 +929,25 @@
 "Continua con {0}",
 "تابع {0}"
 ],
+"Cash on hand against cash sales": [
+"Bargeldbestand gegen Barumsätze",
+"Contanti in cassa rispetto alle vendite in contanti",
+"النقد في الصندوق مقابل المبيعات النقدية"
+],
+"Cash sales on the till": [
+"Barumsätze laut Kasse",
+"Vendite in contanti alla cassa",
+"المبيعات النقدية في نقطة البيع"
+],
 "Casual restaurant": [
 "Casual-Restaurant",
 "Ristorante informale",
 "مطعم غير رسمي"
+],
+"Catalogue and prices": [
+"Katalog und Preise",
+"Catalogo e prezzi",
+"الكتالوج والأسعار"
 ],
 "Category": [
 "Kategorie",
@@ -1139,6 +1194,11 @@
 "Chiudi l'offerta del percorso guidato",
 "أغلق عرض الجولة الإرشادية"
 ],
+"Close the order": [
+"Bestellung abschließen",
+"Chiudi l'ordine",
+"إغلاق الطلب"
+],
 "Closed": [
 "Geschlossen",
 "Chiuso",
@@ -1228,6 +1288,11 @@
 "Kommentar:",
 "Commento:",
 "تعليق:"
+],
+"Compared with": [
+"Verglichen mit",
+"Confrontato con",
+"مقارنةً بـ"
 ],
 "Complete order history": [
 "Vollständiger Bestellverlauf",
@@ -1354,6 +1419,11 @@
 "Costo",
 "التكلفة"
 ],
+"Cost centre": [
+"Kostenstelle",
+"Centro di costo",
+"مركز التكلفة"
+],
 "Cost change": [
 "Kostenänderung",
 "Variazione costo",
@@ -1437,7 +1507,7 @@
 "Counted": [
 "Gezählt",
 "Contato",
-"المجرود"
+"المعدود"
 ],
 "Counted by": [
 "Gezählt von",
@@ -1504,6 +1574,11 @@
 "Personalizzato",
 "مخصص"
 ],
+"Cut-off": [
+"Bestellschluss",
+"Orario limite",
+"آخر موعد للطلب"
+],
 "Daily": [
 "Täglich",
 "Giornaliero",
@@ -1538,6 +1613,11 @@
 "Milchprodukte und Eier, noch {0}, reicht {1} Tage",
 "Latticini e uova, restano {0}, finisce tra {1} giorni",
 "ألبان وبيض، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"Damaged": [
+"Beschädigt",
+"Danneggiato",
+"تالف"
 ],
 "Damaged goods": [
 "Beschädigte Ware",
@@ -1609,6 +1689,11 @@
 "Cancella l'ultima cifra",
 "حذف آخر رقم"
 ],
+"Deliver to": [
+"Lieferung an",
+"Consegna a",
+"التوريد إلى"
+],
 "Delivered": [
 "Geliefert",
 "Consegnato",
@@ -1654,10 +1739,20 @@
 "Consegne, conteggi e consumi",
 "التوريدات والجرد والاستخدام"
 ],
+"Delivers": [
+"Liefert",
+"Consegna",
+"يورّد"
+],
 "Delivery": [
 "Lieferung",
 "Consegna",
 "التوريد"
+],
+"Delivery date": [
+"Liefertermin",
+"Data di consegna",
+"تاريخ التوريد"
 ],
 "Demo PIN: {0}": [
 "Demo-PIN: {0}",
@@ -1768,6 +1863,11 @@
 "Entwurf",
 "Bozza",
 "مسودة"
+],
+"Draft credit request": [
+"Gutschriftanforderung entwerfen",
+"Prepara richiesta di nota di credito",
+"إعداد طلب إشعار دائن"
 ],
 "Draft order {0}": [
 "Bestellentwurf {0}",
@@ -1913,6 +2013,11 @@
 "E-Mail für wichtige Anfragen:",
 "Email per richieste importanti:",
 "البريد للطلبات المهمة:"
+],
+"Email the order": [
+"Bestellung per E-Mail senden",
+"Invia l'ordine via email",
+"إرسال الطلب بالبريد الإلكتروني"
 ],
 "Emerald": [
 "Smaragd",
@@ -2173,6 +2278,16 @@
 "Soll, nur bei Abweichung ändern",
 "Previsto, cambialo solo se diverso",
 "المتوقع، غيّره فقط إذا اختلف"
+],
+"Expired": [
+"Abgelaufen",
+"Scaduto",
+"منتهي الصلاحية"
+],
+"Expiring soon": [
+"Läuft bald ab",
+"In scadenza",
+"ينتهي قريباً"
 ],
 "Export CSV": [
 "CSV exportieren",
@@ -3194,6 +3309,16 @@
 "Ultimo conteggio completo, {0}",
 "آخر جرد كامل، {0}"
 ],
+"Last invoiced": [
+"Zuletzt berechnet",
+"Ultimo fatturato",
+"آخر سعر مفوتر"
+],
+"Last purchase price": [
+"Letzter Einkaufspreis",
+"Ultimo prezzo d'acquisto",
+"آخر سعر شراء"
+],
 "Last {0} days": [
 "Letzte {0} Tage",
 "Ultimi {0} giorni",
@@ -3263,6 +3388,11 @@
 "Am wenigsten verkauft",
 "Meno venduti",
 "الأقل مبيعًا"
+],
+"Leave, counts are saved": [
+"Verlassen, Zählungen sind gespeichert",
+"Esci, i conteggi sono salvati",
+"خروج، تم حفظ العدّ"
 ],
 "Legal review of staff-related monitoring and of tip rules in each jurisdiction.": [
 "Rechtliche Prüfung personalbezogener Überwachung und der Trinkgeldregeln je Rechtsraum.",
@@ -3428,6 +3558,11 @@
 "Nicht erfassten Abfall, Verschüttetes oder Bruch eintragen.",
 "Registra scarti, versamenti o rotture non registrati.",
 "سجل أي هدر أو انسكاب أو كسر لم يُسجل."
+],
+"Log expired stock": [
+"Abgelaufenen Bestand erfassen",
+"Registra le scorte scadute",
+"تسجيل المخزون المنتهي"
 ],
 "Log for this period": [
 "Für diesen Zeitraum erfassen",
@@ -3599,6 +3734,11 @@
 "Abbinamento fatture, riconciliazione scorte, report sugli scostamenti",
 "مطابقة الفواتير وتسوية المخزون وتقارير الفروقات"
 ],
+"Maximum": [
+"Maximum",
+"Massimo",
+"الحد الأقصى"
+],
 "Mayonnaise and sauces": [
 "Mayonnaise und Saucen",
 "Maionese e salse",
@@ -3668,6 +3808,16 @@
 "Minibar-, Spa- und Wäschebuchungen sind für die letzten {0} Tage simuliert. Die Prüfung von Zimmerschäden ist geplant und nicht Teil dieser Demo.",
 "Le registrazioni di minibar, spa e lavanderia sono simulate per gli ultimi {0} giorni. La verifica dei danni in camera è prevista e non fa parte della demo.",
 "ترحيلات الميني بار والسبا والغسيل محاكاة لآخر {0} أيام. التحقق من رسوم أضرار الغرف مخطط له وليس ضمن هذه النسخة."
+],
+"Minimum": [
+"Minimum",
+"Minimo",
+"الحد الأدنى"
+],
+"Minimum order": [
+"Mindestbestellwert",
+"Ordine minimo",
+"الحد الأدنى للطلب"
 ],
 "Missing": [
 "Fehlend",
@@ -3774,6 +3924,11 @@
 "Monitoraggio, allarmi e gestione degli incidenti.",
 "المراقبة والتنبيه وآلية للحوادث."
 ],
+"Month-end report": [
+"Monatsabschluss",
+"Report di fine mese",
+"تقرير نهاية الشهر"
+],
 "Monthly": [
 "Monatlich",
 "Mensile",
@@ -3873,6 +4028,11 @@
 "Braucht Sie heute",
 "Ti serve oggi",
 "يحتاجك اليوم"
+],
+"Net": [
+"Netto",
+"Netto",
+"الصافي"
 ],
 "Net profit": [
 "Nettogewinn",
@@ -4094,6 +4254,11 @@
 "Non ancora",
 "ليس بعد"
 ],
+"Notes for the supplier": [
+"Hinweise für den Lieferanten",
+"Note per il fornitore",
+"ملاحظات للمورّد"
+],
 "Nothing below the threshold": [
 "Nichts unter dem Schwellenwert",
 "Nulla sotto la soglia",
@@ -4225,14 +4390,19 @@
 "زيت زيتون"
 ],
 "On hand": [
-"Bestand",
-"Giacenza",
+"Vorhanden",
+"Disponibile",
 "المتوفر"
 ],
 "On hand is an estimate from the last count, deliveries and sales. Critical means an order placed today would arrive too late.": [
 "Der Bestand ist eine Schätzung aus letzter Zählung, Lieferungen und Verkäufen. Kritisch heißt: Eine heutige Bestellung käme zu spät.",
 "La giacenza è una stima da ultimo conteggio, consegne e vendite. Critico significa che un ordine di oggi arriverebbe troppo tardi.",
 "المتوفر تقدير من آخر جرد والتوريدات والمبيعات. وتعني حرج أن الطلب الذي يُرسل اليوم سيصل متأخرًا."
+],
+"On order": [
+"Bestellt",
+"In ordine",
+"قيد الطلب"
 ],
 "On the final bill": [
 "Auf der Endrechnung",
@@ -4389,6 +4559,11 @@
 "Apri la Lista recuperi e ordina per scadenza.",
 "افتح قائمة استرداد الأموال ورتب حسب الموعد النهائي."
 ],
+"Open the PDF that was sent": [
+"Gesendetes PDF öffnen",
+"Apri il PDF inviato",
+"فتح ملف PDF المرسل"
+],
 "Open the first alert": [
 "Erste Warnung öffnen",
 "Apri il primo avviso",
@@ -4488,6 +4663,11 @@
 "Beim Ersatzlieferanten bestellen",
 "Ordina dal fornitore di riserva",
 "اطلب من المورد البديل"
+],
+"Order from suppliers": [
+"Bei Lieferanten bestellen",
+"Ordina dai fornitori",
+"الطلب من المورّدين"
 ],
 "Order history": [
 "Bestellverlauf",
@@ -4639,6 +4819,11 @@
 "Punto vendita da verificare",
 "المنفذ المطلوب التحقيق فيه"
 ],
+"Outlet top-ups": [
+"Auffüllungen der Outlets",
+"Rifornimenti dei punti vendita",
+"تزويد المنافذ"
+],
 "Outlets": [
 "Outlets",
 "Punti vendita",
@@ -4714,6 +4899,11 @@
 "Livello par",
 "المستوى المستهدف"
 ],
+"Par levels": [
+"Mindest- und Höchstbestände",
+"Livelli di scorta",
+"مستويات المخزون"
+],
 "Par {0}. Last count {1} on {2}.": [
 "Soll {0}. Letzte Zählung {1} am {2}.",
 "Par {0}. Ultimo conteggio {1} il {2}.",
@@ -4758,6 +4948,11 @@
 "Muster, Mindestanteil",
 "Schema, quota minima",
 "النمط، الحد الأدنى للحصة"
+],
+"Payment": [
+"Zahlung",
+"Pagamento",
+"الدفع"
 ],
 "Payment reconciliation": [
 "Zahlungsabgleich",
@@ -4954,6 +5149,11 @@
 "Anteprima",
 "معاينة"
 ],
+"Preview the PDF": [
+"PDF-Vorschau",
+"Anteprima PDF",
+"معاينة ملف PDF"
+],
 "Preview.": [
 "Vorschau.",
 "Anteprima.",
@@ -5003,6 +5203,11 @@
 "Nur Prioritätsartikel",
 "Solo articoli prioritari",
 "الأصناف ذات الأولوية فقط"
+],
+"Procurement export": [
+"Beschaffungsexport",
+"Esportazione acquisti",
+"تصدير المشتريات"
 ],
 "Profit": [
 "Gewinn",
@@ -5189,6 +5394,11 @@
 "Registra",
 "سجل"
 ],
+"Record a cash-up": [
+"Kassenabschluss erfassen",
+"Registra una chiusura di cassa",
+"تسجيل إقفال الصندوق"
+],
 "Record a recount": [
 "Nachzählung erfassen",
 "Registra un nuovo conteggio",
@@ -5207,7 +5417,7 @@
 "Record delivery": [
 "Lieferung erfassen",
 "Registra consegna",
-"سجل التوريد"
+"تسجيل التوريد"
 ],
 "Record difference": [
 "Differenz erfassen",
@@ -5227,7 +5437,7 @@
 "Record the delivery": [
 "Lieferung erfassen",
 "Registra la consegna",
-"سجل التوريد"
+"تسجيل التوريد"
 ],
 "Record the verified cause and any corrective action, then resolve the case.": [
 "Bestätigte Ursache und Korrekturmaßnahme erfassen, dann den Fall abschließen.",
@@ -5824,6 +6034,11 @@
 "Salvato subito nel registro di oggi. Dati simulati.",
 "يُحفظ في سجل اليوم فورًا. بيانات محاكاة."
 ],
+"Scan or type a barcode": [
+"Barcode scannen oder eingeben",
+"Scansiona o digita un codice a barre",
+"امسح الباركود أو اكتبه"
+],
 "Sea bass fillet": [
 "Wolfsbarschfilet",
 "Filetto di branzino",
@@ -5979,6 +6194,16 @@
 "Prezzo di vendita",
 "سعر البيع"
 ],
+"Send for approval": [
+"Zur Freigabe senden",
+"Invia per approvazione",
+"إرسال للموافقة"
+],
+"Send to the supplier": [
+"An den Lieferanten senden",
+"Invia al fornitore",
+"إرسال إلى المورّد"
+],
 "Sent": [
 "Gesendet",
 "Inviato",
@@ -5993,6 +6218,11 @@
 "Zur Zubereitung geschickt, dann entfernt oder storniert",
 "Inviato in preparazione, poi rimosso o annullato",
 "أُرسل للتحضير ثم حُذف أو أُلغي"
+],
+"Sent to the supplier": [
+"An den Lieferanten gesendet",
+"Inviato al fornitore",
+"أُرسل إلى المورّد"
 ],
 "Sent to {0} (simulated)": [
 "An {0} gesendet (simuliert)",
@@ -6434,10 +6664,20 @@
 "Avvia un conteggio scorte",
 "ابدأ جرد المخزون"
 ],
+"Start a stock take": [
+"Inventur starten",
+"Avvia un inventario",
+"بدء الجرد"
+],
 "Start count": [
 "Zählung starten",
 "Avvia conteggio",
 "ابدأ الجرد"
+],
+"Start counting": [
+"Zählen beginnen",
+"Inizia a contare",
+"ابدأ العدّ"
 ],
 "Start guided path": [
 "Rundgang starten",
@@ -6569,6 +6809,16 @@
 "Scorte prelevate senza autorizzazione",
 "مخزون أُخذ دون تصريح"
 ],
+"Stock takes": [
+"Inventuren",
+"Inventari",
+"عمليات الجرد"
+],
+"Stock takes and missing stock": [
+"Inventuren und fehlender Bestand",
+"Inventari e scorte mancanti",
+"الجرد والمخزون المفقود"
+],
 "Stock teal, Predictions violet, Revenue blue": [
 "Bestand Türkis, Prognosen Violett, Umsatz Blau",
 "Scorte verde acqua, Previsioni viola, Ricavi blu",
@@ -6588,6 +6838,11 @@
 "Verbrauch pro Tag, dann Prognose",
 "Scorte usate al giorno, poi previste",
 "المخزون المستخدم يوميًا ثم المتوقع"
+],
+"Stock valuation": [
+"Bestandsbewertung",
+"Valutazione delle scorte",
+"تقييم المخزون"
 ],
 "Stock, Tyll demo": [
 "Bestand, Tyll Demo",
@@ -6634,6 +6889,11 @@
 "Zucchero",
 "سكر"
 ],
+"Suggested": [
+"Vorgeschlagen",
+"Suggerito",
+"المقترح"
+],
 "Supplier": [
 "Lieferant",
 "Fornitore",
@@ -6667,7 +6927,7 @@
 "Suppliers": [
 "Lieferanten",
 "Fornitori",
-"الموردون"
+"المورّدون"
 ],
 "Supplies": [
 "Liefert",
@@ -6869,6 +7129,11 @@
 "Tre cose da fare oggi",
 "ثلاثة أمور اليوم"
 ],
+"Three way match": [
+"Dreifachabgleich",
+"Confronto a tre vie",
+"المطابقة الثلاثية"
+],
 "Till, card company and bank matching": [
 "Abgleich von Kasse, Kartenanbieter und Bank",
 "Abbinamento di cassa, circuiti e banca",
@@ -6893,6 +7158,11 @@
 "Eingenommenes Trinkgeld",
 "Mance raccolte",
 "الإكراميات المحصلة"
+],
+"To order": [
+"Zu bestellen",
+"Da ordinare",
+"للطلب"
 ],
 "To query": [
 "Zu klären",
@@ -6968,6 +7238,11 @@
 "Heute Abend in {0}: Artikel entfernt, nachdem er an die Bar ging",
 "Stasera a {0}: articolo rimosso dopo l'invio al bar",
 "الليلة في {0}: حذف صنف بعد إرساله إلى البار"
+],
+"Top up outlets from the main store": [
+"Outlets aus dem Hauptlager auffüllen",
+"Rifornisci i punti vendita dal magazzino centrale",
+"تزويد المنافذ من المخزن الرئيسي"
 ],
 "Total": [
 "Gesamt",
@@ -7279,6 +7554,16 @@
 "Consumo oltre le vendite · {0}",
 "استخدام يفوق المبيعات · {0}"
 ],
+"Use by": [
+"Verbrauchen bis",
+"Da consumare entro",
+"يُستخدم قبل"
+],
+"Use first": [
+"Zuerst verwenden",
+"Usa per primo",
+"استخدمه أولاً"
+],
 "Use in the past week": [
 "Verbrauch letzte Woche",
 "Consumo nell'ultima settimana",
@@ -7338,6 +7623,16 @@
 "Vanilleeis",
 "Gelato alla vaniglia",
 "آيس كريم فانيلا"
+],
+"Variance by group": [
+"Abweichung nach Gruppe",
+"Scostamento per gruppo",
+"الفرق حسب المجموعة"
+],
+"Variance by item": [
+"Abweichung nach Artikel",
+"Scostamento per articolo",
+"الفرق حسب الصنف"
 ],
 "View the demo as": [
 "Demo ansehen als",
@@ -7494,6 +7789,11 @@
 "Settimanale",
 "أسبوعي"
 ],
+"Weighted average cost": [
+"Gewichteter Durchschnittspreis",
+"Costo medio ponderato",
+"متوسط التكلفة المرجح"
+],
 "What Tyll checks": [
 "Was Tyll prüft",
 "Cosa controlla Tyll",
@@ -7598,6 +7898,11 @@
 "Was ist der Rechnungsabgleich?",
 "Cos'è la riconciliazione fatture?",
 "ما مطابقة الفواتير؟"
+],
+"What is below its minimum, and how much brings it back to the maximum?": [
+"Was liegt unter dem Mindestbestand, und wie viel bringt es zurück auf den Höchstbestand?",
+"Cosa è sotto il minimo, e quanto serve per tornare al massimo?",
+"ما الذي يقل عن الحد الأدنى، وكم يلزم للعودة إلى الحد الأقصى؟"
 ],
 "What is connected, who can see what, and the change log.": [
 "Was verbunden ist, wer was sieht, und das Änderungsprotokoll.",
@@ -7714,6 +8019,11 @@
 "Dove il consumo supera le scorte, senza un nuovo ordine lo scaffale è vuoto. La linea tratteggiata è la data limite.",
 "عندما يتجاوز الاستخدام المخزون، يفرغ الرف دون طلب جديد. الخط المتقطع هو آخر موعد للطلب."
 ],
+"Where the figures come from.": [
+"Woher die Zahlen kommen.",
+"Da dove vengono i numeri.",
+"من أين تأتي الأرقام."
+],
 "Where the money went, by department and category.": [
 "Wohin das Geld ging, nach Abteilung und Kategorie.",
 "Dove sono andati i soldi, per reparto e categoria.",
@@ -7733,6 +8043,11 @@
 "Weißer Rum",
 "Rum bianco",
 "رم أبيض"
+],
+"Who do we buy from, and on what terms?": [
+"Bei wem kaufen wir ein, und zu welchen Bedingungen?",
+"Da chi acquistiamo, e a quali condizioni?",
+"ممن نشتري، وبأي شروط؟"
 ],
 "Whole order voided after items were sent for preparation": [
 "Ganze Bestellung storniert, nachdem Artikel zur Zubereitung geschickt wurden",
