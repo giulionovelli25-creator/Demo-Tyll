@@ -131,6 +131,10 @@ describe("stock take end to end", () => {
     expect(done.status).toBe("approved");
     expect(done.countIds).toHaveLength(2);
     expect(stockFor(manager, "lis", none).find((r) => r.ingredientId === g)!.estimated).toBeCloseTo(counted, 3);
+    // The counts are dated on the day of the count, which the month-end uses.
+    expect(loadStore().stockLog.counts.filter((c) => done.countIds!.includes(c.id)).every((c) => c.date === take.date)).toBe(true);
+    // Someone who counted a line cannot approve, and is not offered the button.
+    expect(T.stockTakeFor(counter, take.id).ok && (T.stockTakeFor(counter, take.id) as { mayDecide: boolean }).mayDecide).toBe(false);
 
     // Month-end shows the approved stock take and its variance.
     const month = T.monthEnd(manager, "lis", DEMO_TODAY.slice(0, 7));

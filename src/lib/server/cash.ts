@@ -57,9 +57,14 @@ export function cashFor(user: User, propertyId: string, days = 14) {
   const outlets = new Set(allowedOutlets(user));
   const from = addDays(DEMO_TODAY, -days);
   const sales = cashSales(propertyId, from, DEMO_TODAY);
+  // A shift with a cash-up entered but no cash bills still gets its row, so a counted difference is never hidden.
+  for (const c of (loadStore().cashUps ?? []).filter((x) => outletById[x.outletId]?.propertyId === propertyId && x.date >= from)) {
+    const key = `${c.outletId}|${c.date}|${c.shift}`;
+    if (!sales.has(key)) sales.set(key, { expected: 0, bills: 0 });
+  }
   const entered = (loadStore().cashUps ?? []).filter((c) => outletById[c.outletId]?.propertyId === propertyId);
   const currency = propertyById[propertyId].currency;
-  const money = (n: number) => fmtMoney(n, currency, { decimals: true });
+  const money = (n: number) => fmtMoney(n, currency);
   const rows: CashRow[] = [];
   for (const [key, s] of sales) {
     const [outletId, date, shift] = key.split("|") as [string, string, Shift];
@@ -95,6 +100,7 @@ export function recordCashUp(user: User, body: Record<string, unknown>) {
   if (!ISO.test(date) || date > DEMO_TODAY || date < addDays(DEMO_TODAY, -14)) return fail(400, "Choose a day in the last two weeks.");
   const shift = body.shift === "day" || body.shift === "night" ? body.shift : null;
   if (!shift) return fail(400, "Choose the day or night shift.");
+  if (date === DEMO_TODAY && (shift === "night" || DEMO_NOW_MIN < SHIFT_SPLIT)) return fail(400, "This shift is still open. Record the cash-up after it closes.");
   const counted = Number(body.counted);
   if (!Number.isFinite(counted) || counted < 0 || counted > 1e6) return fail(400, "Enter the cash counted.");
   const note = typeof body.note === "string" ? body.note.trim().slice(0, 200) || undefined : undefined;
@@ -105,7 +111,7 @@ export function recordCashUp(user: User, body: Record<string, unknown>) {
     x.cashUps ??= [];
     const c: CashUp = { id: `CU-${String(nextNumber(x, "CU")).padStart(5, "0")}`, outletId, date, shift, counted: round2(counted), by: user.id, at: new Date().toISOString(), note };
     x.cashUps.push(c);
-    if (check.flagged) notify(x, { to: peopleWith("finance.review", propertyId), type: "cash-diff", ref: c.id, propertyId, from: user.id, title: `Cash ${check.diff < 0 ? "short" : "over"} at ${outletById[outletId].name}`, body: `${date}, ${shift} shift: ${fmtMoney(check.diff, propertyById[propertyId].currency, { decimals: true })} against the till's cash sales.`, href: "/money?tab=cash" });
+    if (check.flagged) notify(x, { to: peopleWith("finance.review", propertyId), type: "cash-diff", ref: c.id, propertyId, from: user.id, title: `Cash ${check.diff < 0 ? "short" : "over"} at ${outletById[outletId].name}`, body: `${date}, ${shift} shift: ${fmtMoney(check.diff, propertyById[propertyId].currency)} against the till's cash sales.`, href: "/money?tab=cash" });
     return c;
   });
   return { ok: true as const, cashUp: cash, check };

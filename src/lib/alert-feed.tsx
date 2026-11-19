@@ -161,14 +161,15 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
         also: { label: "Order from backup supplier", href: `/forecast?tab=buy&focus=${r.lines[0]?.ingredientId ?? ""}` },
       });
     }
-    if (expiring && expiring.totals.atRisk > 0) {
-      const risky = expiring.rows.filter((r) => r.atRisk);
+    if (expiring && (expiring.totals.atRisk > 0 || expiring.totals.expired > 0)) {
+      const risky = expiring.rows.filter((r) => r.atRisk || r.daysLeft < 0);
       const soonest = risky[0];
+      const gone = risky.filter((r) => r.daysLeft < 0).length;
       out.push({
-        id: `expiry-${risky.map((r) => r.batch).join(",")}`, kind: "expiry", rag: risky.some((r) => r.daysLeft <= 0) ? "red" : "amber",
-        what: `${risky.length} ${risky.length === 1 ? "batch expires" : "batches expire"} in the next 3 days`,
+        id: `expiry-${risky.map((r) => r.batch).join(",")}`, kind: "expiry", rag: gone ? "red" : "amber",
+        what: gone ? `${gone} expired ${gone === 1 ? "batch is" : "batches are"} still on the shelf` : `${risky.length} ${risky.length === 1 ? "batch expires" : "batches expire"} in the next 3 days`,
         why: `${soonest.name}, batch ${soonest.batch}, ${soonest.daysLeft < 0 ? "has expired" : soonest.daysLeft === 0 ? "expires today" : `expires in ${soonest.daysLeft} ${soonest.daysLeft === 1 ? "day" : "days"}`}. ${soonest.action.text}`,
-        where: pid ? propertyById[pid].name : "", amount: expiring.totals.atRiskValue * (pid ? fxRate(propertyById[pid].currency, sel.currency) : 1), amountWord: "at risk", next: { label: "See expiring soon", href: "/stock?tab=expiry" },
+        where: pid ? propertyById[pid].name : "", amount: risky.reduce((t, r) => t + r.value, 0) * (pid ? fxRate(propertyById[pid].currency, sel.currency) : 1), amountWord: "at risk", next: { label: "See expiring soon", href: "/stock?tab=expiry" },
       });
     }
     // Most urgent first, then the most money inside each level.

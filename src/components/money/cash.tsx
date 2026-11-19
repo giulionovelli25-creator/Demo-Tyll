@@ -10,7 +10,7 @@ import { DEMO_TODAY, addDays, fmtDate, fmtMoney } from "@/lib/util";
 export function CashUps({ propertyId }: { propertyId: string }) {
   const { data, error } = useCash(propertyId);
   const act = useProcAction();
-  const money = (n: number) => fmtMoney(n, propertyById[propertyId].currency, { decimals: true });
+  const money = (n: number) => fmtMoney(n, propertyById[propertyId].currency);
   const [only, setOnly] = useState<"flagged" | "all">("flagged");
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ outletId: "", date: addDays(DEMO_TODAY, -1), shift: "night" as "day" | "night", counted: "", note: "" });
@@ -29,7 +29,7 @@ export function CashUps({ propertyId }: { propertyId: string }) {
       <SummaryBar
         items={[
           { label: "Shifts checked", value: data.totals.shifts, compare: { text: `Last ${data.days} days, ${money(data.totals.cash)} cash on the tills`, good: null } },
-          { label: "Cash differences", value: data.totals.flagged, tone: data.totals.flagged ? "warn" : "pos", compare: { text: data.totals.flagged ? `${money(data.totals.short)} short, ${money(data.totals.over)} over` : "Every drawer within the limit", good: data.totals.flagged ? false : true } },
+          { label: "Cash differences", value: data.totals.flagged, tone: data.totals.flagged ? "warn" : "pos", compare: { text: data.totals.flagged ? `${money(Math.abs(data.totals.short))} short, ${money(data.totals.over)} over` : "Every drawer within the limit", good: data.totals.flagged ? false : true } },
         ]}
         action={data.mayRecord ? <Button variant="primary" onClick={() => setAdding(true)}>Record a cash-up</Button> : undefined}
       />

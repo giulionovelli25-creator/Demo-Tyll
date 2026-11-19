@@ -30,7 +30,7 @@ export function PurchasingSettings({ propertyId }: { propertyId: string }) {
       <div className="space-y-6 text-sm">
         <section>
           <h3 className="text-[13px] font-medium text-ink">Stock valuation</h3>
-          <div className="mt-2"><Segmented label="Valuation method" value={chosen} onChange={(v) => setMethod(v)} options={METHODS.map((m) => ({ value: m.value, label: m.label }))} /></div>
+          <div className="mt-2">{data.mayChange ? <Segmented label="Valuation method" value={chosen} onChange={(v) => setMethod(v)} options={METHODS.map((m) => ({ value: m.value, label: m.label }))} /> : <Badge tone="ink">{METHODS.find((m) => m.value === chosen)!.label}</Badge>}</div>
           <p className="mt-2 text-graphite">{METHODS.find((m) => m.value === chosen)!.text}</p>
           {data.mayChange ? (method && method !== data.settings.valuation && <Button className="mt-3" variant="primary" onClick={save}>Use this method</Button>) : <Note className="mt-2">The financial controller or the general manager chooses the method.</Note>}
         </section>

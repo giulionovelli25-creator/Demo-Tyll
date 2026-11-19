@@ -256,3 +256,55 @@ describe("the export field list document", () => {
     for (const kind of Object.keys(E.EXPORT_FIELDS) as (keyof typeof E.EXPORT_FIELDS)[]) for (const f of E.EXPORT_FIELDS[kind]) expect(doc, `${kind}.${f.name}`).toContain(`\`${f.name}\``);
   });
 });
+
+describe("review fixes", () => {
+  const { orderStage } = await_import();
+  function approvedPo(qty: number, creator = "u-rm") {
+    const po = ok(X.createPurchaseOrders(U(creator), "lis", [{ ingredientId: "wagyu", qty }], { source: "manual" })).orders[0];
+    ok(P.actOnRequest(U(creator), po.id, { action: "submit" }));
+    ok(P.actOnRequest(U("u-buy"), po.id, { action: "purchasing", decision: "approve" }));
+    ok(P.actOnRequest(U("u-fc"), po.id, { action: "accounting", decision: "approve" }));
+    if (loadStore().requests.find((r) => r.id === po.id)!.status === "fnb") ok(P.actOnRequest(U("u-fnb"), po.id, { action: "fnb", decision: "approve" }));
+    return po.id;
+  }
+  it("invoices a part delivery now and the rest later, and keeps the open part in the budget", () => {
+    const id = approvedPo(20);
+    ok(P.actOnRequest(U("u-store"), id, { action: "receive", lines: [{ ingredientId: "wagyu", delivered: 12 }] }));
+    const price = loadStore().requests.find((r) => r.id === id)!.lines[0].unitPrice;
+    ok(F.recordInvoice(U("u-fc"), { requestId: id, supplierId: "meat", supplierRef: "PART-1", lines: [{ ingredientId: "wagyu", qty: 12, unitPrice: price }] }));
+    const open = F.spendEntries(loadStore(), "lis").find((e) => e.id === `${id}-meat`);
+    expect(open?.amount).toBeCloseTo(8 * price, 2);
+    ok(P.actOnRequest(U("u-store"), id, { action: "receive", lines: [{ ingredientId: "wagyu", delivered: 8 }] }));
+    const second = ok(F.recordInvoice(U("u-fc"), { requestId: id, supplierId: "meat", supplierRef: "PART-2", lines: [{ ingredientId: "wagyu", qty: 8, unitPrice: price }] }));
+    expect(second.invoice.overcharge).toBe(0);
+    expect(F.recordInvoice(U("u-fc"), { requestId: id, supplierId: "meat", supplierRef: "PART-3", lines: [{ ingredientId: "wagyu", qty: 1, unitPrice: price }] }).ok).toBe(false);
+  });
+  it("a partly received order is on its way, not late", () => {
+    const id = approvedPo(20);
+    ok(X.sendPurchaseOrder(U("u-buy"), id));
+    ok(P.actOnRequest(U("u-store"), id, { action: "receive", lines: [{ ingredientId: "wagyu", delivered: 5 }] }));
+    const r = loadStore().requests.find((x) => x.id === id)!;
+    expect(orderStage({ ...r, expectedAt: `${addDays(DEMO_TODAY, -1)}T07:00` })).toBe("on_the_way");
+  });
+  it("one person signs one approval step: the general manager cannot sign both the F&B and the manager step", () => {
+    const po = ok(X.createPurchaseOrders(U("u-fnb"), "lis", [{ ingredientId: "wagyu", qty: 150 }], { source: "manual" })).orders[0];
+    ok(P.actOnRequest(U("u-fnb"), po.id, { action: "submit" }));
+    ok(P.actOnRequest(U("u-buy"), po.id, { action: "purchasing", decision: "approve" }));
+    ok(P.actOnRequest(U("u-fc"), po.id, { action: "accounting", decision: "approve" }));
+    ok(P.actOnRequest(U("u-gm"), po.id, { action: "fnb", decision: "approve" }));
+    expect(loadStore().requests.find((r) => r.id === po.id)!.status).toBe("manager");
+    expect(P.actOnRequest(U("u-gm"), po.id, { action: "manager", decision: "approve" }).ok).toBe(false);
+  });
+  it("automatic sending never goes above the F&B director's limit", async () => {
+    const A = await import("../server/auto-order");
+    const { SEND_LIMITS } = await import("../domain/auto-order");
+    expect(Math.max(...SEND_LIMITS)).toBeLessThanOrEqual(2000);
+    expect(A.saveAutoSettings(U("u-fnb"), "lis", { sendUnder: 5000 }).ok).toBe(false);
+  });
+});
+
+function await_import() {
+  return { orderStage: (r: Parameters<typeof import("../domain/order-stage").orderStage>[0]) => orderStageMod!.orderStage(r) };
+}
+let orderStageMod: typeof import("../domain/order-stage") | null = null;
+beforeEach(async () => { orderStageMod = await import("../domain/order-stage"); });

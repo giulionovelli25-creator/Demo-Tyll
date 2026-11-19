@@ -5,7 +5,6 @@
 import { MENU_ITEMS, ingredientById, outletById, outletsOfProperty, propertyById } from "../data/catalog";
 import { getDataset } from "../data/generate";
 import { allowedProperties, can } from "../domain/access";
-import { usageFromSales } from "../domain/inventory";
 import { daysToExpiry, expiryAction, remainingByFefo, type Batch, type ExpiryAction } from "../domain/procurement";
 import type { User } from "../types";
 import { DEMO_TODAY, addDays, round2, unitLabel } from "../util";
@@ -53,7 +52,6 @@ export function expiringFor(user: User, propertyId: string, entries: SessionEntr
   const s = loadStore();
   const batches = batchesFor(propertyId, s);
   const from = addDays(DEMO_TODAY, -28);
-  const byOutlet = outletsOfProperty(propertyId).map((o) => ({ o, use: usageFromSales(getDataset().dayItems, (r) => r.outletId === o.id && r.date >= from && r.date < DEMO_TODAY) }));
   const rows: ExpiryRow[] = [];
   const sold = new Map<string, number>();
   for (const d of getDataset().dayItems) if (d.date >= from && d.date < DEMO_TODAY && outletById[d.outletId]?.propertyId === propertyId) sold.set(d.itemId, (sold.get(d.itemId) ?? 0) + d.units);
@@ -63,17 +61,17 @@ export function expiringFor(user: User, propertyId: string, entries: SessionEntr
     if (!mine.length) continue;
     const left = remainingByFefo(Math.max(0, r.estimated), mine);
     noBatch += left.noBatch > 0 && ingredientById[r.ingredientId].shelfLifeDays <= 7 ? 1 : 0;
+    // The batch to use first is the first one that has not already expired.
+    const firstOk = left.batches.findIndex((b) => daysToExpiry(b.expiry, DEMO_TODAY) >= 0);
     left.batches.forEach((b, i) => {
       const d = daysToExpiry(b.expiry, DEMO_TODAY);
       if (d > days) return;
-      // The outlet that uses the most of it, other than by the hotel's normal use, could take what normal use will not.
-      const outlets = byOutlet.map(({ o, use }) => ({ name: o.name, daily: (use.get(r.ingredientId) ?? 0) / 28 })).sort((a, b) => b.daily - a.daily);
-      const others = outlets.slice(1).find((x) => x.daily > 0);
+      // Stock in the hotel store is drawn by every outlet already, so moving it between them uses nothing up: no transfer is offered.
       // The dish that sells most among those using it: the easiest special to push.
       const dish = MENU_ITEMS.filter((m) => (m.recipe ?? []).some((x) => x.ingredientId === r.ingredientId) && outletsOfProperty(propertyId).some((o) => o.menu.some((e) => e.itemId === m.id)))
         .map((m) => ({ m, sold: sold.get(m.id) ?? 0 })).sort((a, b) => b.sold - a.sold)[0]?.m;
-      const action = expiryAction({ left: b.left, daysLeft: d, dailyUse: r.avgDaily, unitWord: unitWord(r.ingredientId), transferTo: others ? { name: others.name, canUse: others.daily * Math.max(1, d + 1) } : undefined, dish: dish?.name });
-      rows.push({ ingredientId: r.ingredientId, name: ingredientById[r.ingredientId].name, unit: unitWord(r.ingredientId), batch: b.batch, expiry: b.expiry, daysLeft: d, left: b.left, value: round2(b.left * r.valuationCost), received: b.received, source: b.source, first: i === 0, action, atRisk: action.kind !== "use_first" });
+      const action = expiryAction({ left: b.left, daysLeft: d, dailyUse: r.avgDaily, unitWord: unitWord(r.ingredientId), transferTo: undefined, dish: dish?.name });
+      rows.push({ ingredientId: r.ingredientId, name: ingredientById[r.ingredientId].name, unit: unitWord(r.ingredientId), batch: b.batch, expiry: b.expiry, daysLeft: d, left: b.left, value: round2(b.left * r.valuationCost), received: b.received, source: b.source, first: i === firstOk, action, atRisk: action.kind !== "use_first" && action.kind !== "waste" });
     });
   }
   rows.sort((a, b) => a.daysLeft - b.daysLeft || Number(b.atRisk) - Number(a.atRisk) || b.value - a.value);

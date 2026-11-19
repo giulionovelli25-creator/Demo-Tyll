@@ -41,8 +41,10 @@ export function startStockTake(user: User, body: Record<string, unknown>, entrie
   if (location !== "main" && outletById[location]?.propertyId !== propertyId) return fail(400, "Choose a location at this hotel.");
   const areas = kind === "full" ? AREAS : (Array.isArray(body.areas) ? (body.areas as unknown[]).map(String) : []).filter((a) => AREAS.includes(a));
   if (!areas.length) return fail(400, "Choose at least one area to count.");
-  const open = loadStore().stockTakes?.find((t) => t.propertyId === propertyId && t.location === location && t.status === "counting" && t.startedBy === user.id);
+  // One count of an area at a time: a second person joins the stock take already under way.
+  const open = loadStore().stockTakes?.find((t) => t.propertyId === propertyId && t.location === location && t.status === "counting" && t.areas.some((a) => areas.includes(a)));
   if (open) return { ok: true, take: view(open) };
+  if (loadStore().stockTakes?.some((t) => t.propertyId === propertyId && t.location === location && t.status === "submitted" && t.areas.some((a) => areas.includes(a)))) return fail(409, "A stock take of these areas is waiting for approval. Approve or reject it first.");
   const rows = stockFor(user, propertyId, entries).filter((r) => (location === "main" ? r.store === null : r.store === location) && areas.includes(locationOf(r.ingredientId)));
   if (!rows.length) return fail(409, "Nothing is held in those areas at this location.");
   const route = loadStore().countRoutes?.[propertyId] ?? AREAS;
@@ -138,7 +140,7 @@ export function decideStockTake(user: User, id: string, body: Record<string, unk
     for (const l of y.lines) {
       if (l.counted === null) continue;
       const n = nextNumber(x, "CS");
-      const c: SharedCount = { id: `C-S-${n}`, propertyId: y.propertyId, ingredientId: l.ingredientId, date: DEMO_TODAY, expected: l.system, counted: l.counted, by: l.by ?? y.startedBy, byUser: l.by ?? y.startedBy, at: l.at ?? y.startedAt, seq: 1_000_000 + n, status: "accepted", allocation: {}, note: `Stock take ${y.id}`, reviewedBy: user.id, reviewedAt: y.decidedAt, reviewNote: "Approved with the stock take" };
+      const c: SharedCount = { id: `C-S-${n}`, propertyId: y.propertyId, ingredientId: l.ingredientId, date: y.date, expected: l.system, counted: l.counted, by: l.by ?? y.startedBy, byUser: l.by ?? y.startedBy, at: l.at ?? y.startedAt, seq: 1_000_000 + n, status: "accepted", allocation: {}, note: `Stock take ${y.id}`, reviewedBy: user.id, reviewedAt: y.decidedAt, reviewNote: "Approved with the stock take" };
       x.stockLog.counts.push(c);
       y.countIds.push(c.id);
     }
@@ -157,7 +159,7 @@ export function stockTakesFor(user: User, propertyId: string): Result<{ takes: S
 export function stockTakeFor(user: User, id: string): Result<{ take: StockTakeView; mayDecide: boolean }> {
   const t = findTake(user, id);
   if (!t) return fail(404, "This stock take is not available.");
-  return { ok: true, take: view(t), mayDecide: mayDecide(user) && t.startedBy !== user.id };
+  return { ok: true, take: view(t), mayDecide: mayDecide(user) && t.startedBy !== user.id && !t.lines.some((l) => l.by === user.id) };
 }
 
 /** Month end: approved stock takes in the month, their variance by group, and the totals accounting books. */
@@ -180,7 +182,7 @@ export function monthEnd(user: User, propertyId: string, month: string) {
 }
 
 /** Whether an approved stock take on or after a date counted this item: stock based losses are confirmed only then. */
-export function confirmedByStockTake(propertyId: string, ingredientId: string, date: string): string | null {
-  const t = (loadStore().stockTakes ?? []).find((x) => x.propertyId === propertyId && x.status === "approved" && x.date >= date && x.lines.some((l) => l.ingredientId === ingredientId && l.counted !== null));
+export function confirmedByStockTake(propertyId: string, ingredientId: string, date: string, location = "main"): string | null {
+  const t = (loadStore().stockTakes ?? []).find((x) => x.propertyId === propertyId && x.location === location && x.status === "approved" && x.date >= date && x.lines.some((l) => l.ingredientId === ingredientId && l.counted !== null));
   return t?.id ?? null;
 }

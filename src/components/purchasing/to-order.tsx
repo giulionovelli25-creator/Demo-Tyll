@@ -15,7 +15,7 @@ import type { ParRow } from "@/lib/server/procurement";
 import type { PurchaseRequest } from "@/lib/types";
 import { fmtDate, fmtMoney, fmtNum, sum } from "@/lib/util";
 
-const qtyText = (n: number) => fmtNum(n, n % 1 === 0 ? 0 : n * 10 % 1 === 0 ? 1 : 2);
+const qtyText = (n: number) => fmtNum(n, Math.abs(n % 1) < 1e-9 ? 0 : 1);
 
 function usePid() {
   const { propertyId: feedPid } = useAlertFeed();
@@ -73,8 +73,32 @@ export function ToOrder({ tabs }: { tabs?: ReactNode }) {
           {tabs}
           <Panel title="Order from suppliers" description="Grouped by supplier, the way orders are placed. Quantities are in the supplier's packs; untick a line to leave it out." flush>
             {coveredCount > 0 && <p className="px-5 pb-2 text-[13px] text-graphite sm:px-6">{coveredCount} more {coveredCount === 1 ? "item is" : "items are"} below the minimum but already covered by open orders. <button type="button" className="font-medium text-accent-ink underline-offset-4 hover:underline" onClick={() => setShowCovered(!showCovered)}>{showCovered ? "Hide them" : "Show them"}</button></p>}
-            {order.length === 0 ? <div className="p-6"><EmptyState title="Nothing to order">{coveredCount ? "Open orders cover every item below its minimum." : "Stock covers every par level in the main store."}</EmptyState></div> : (
-              <TableWrap>
+            {order.length === 0 ? <div className="p-6"><EmptyState title="Nothing to order">{coveredCount ? "Open orders cover every item below its minimum." : "Stock covers every par level in the main store."}</EmptyState></div> : (<>
+              <ul className="md:hidden">
+                {groups.map((g) => (
+                  <Fragment key={g.s}>
+                    <li className="flex justify-between border-t border-hair bg-cloud px-4 py-2 text-[13px]"><span className="font-semibold text-ink">{g.name}</span><span className="num font-semibold text-ink">{money(sum(g.list.filter((r) => !skip[r.ingredientId]), (r) => qtyOf(r) * r.unitPrice))}</span></li>
+                    {g.list.map((r) => (
+                      <li key={r.ingredientId} className={cn("border-t border-hair px-4 py-3", skip[r.ingredientId] && "opacity-50")}>
+                        <div className="flex items-start gap-3">
+                          <input type="checkbox" aria-label={`Include ${r.name}`} checked={!skip[r.ingredientId] && qtyOf(r) > 0} disabled={r.covered && !qty[r.ingredientId]} onChange={(e) => setSkip({ ...skip, [r.ingredientId]: !e.target.checked })} className="mt-1 h-5 w-5 accent-[var(--color-accent)]" />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-baseline justify-between gap-2"><span className="text-sm font-medium text-ink">{r.name}</span><span className="num text-sm text-ink">{money(qtyOf(r) * r.unitPrice)}</span></div>
+                            <p className="mt-0.5 text-xs text-steel">On hand {qtyText(r.onHand)} {r.unit}, minimum {qtyText(r.min)}, maximum {qtyText(r.max)}{r.onOrder ? `, ${qtyText(r.onOrder)} on order` : ""}.</p>
+                            <label className="mt-2 flex items-center gap-2"><span className="text-xs text-graphite">Order</span>
+                              <input type="number" min={0} step={r.packSize} value={qtyOf(r)} onChange={(e) => { const v = Number(e.target.value); if (Number.isFinite(v) && v >= 0) setQty({ ...qty, [r.ingredientId]: v }); }} className="num h-9 w-24 rounded-full border border-line bg-paper px-3 text-end text-sm" />
+                              <span className="text-xs text-steel">{r.unit}</span>
+                            </label>
+                            <p className="mt-1 text-xs text-steel">{packsText(qtyOf(r), r.packSize, r.packLabel, r.unit)}</p>
+                            {r.inDraft && <Link prefetch={false} href={`/forecast?tab=approvals&request=${r.inDraft}`} className="mt-1 block text-xs text-accent-ink underline-offset-4 hover:underline">In your draft {r.inDraft}</Link>}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </Fragment>
+                ))}
+              </ul>
+              <TableWrap className="hidden md:block">
                 <table className="w-full min-w-[860px] text-table">
                   <thead><tr><Th className="w-10"><span className="sr-only">Include</span></Th><Th>Item</Th><Th align="right">On hand</Th><Th align="right">Min / max</Th><Th align="right">On order</Th><Th align="right">To order</Th><Th align="right">Cost</Th></tr></thead>
                   <tbody>
@@ -85,9 +109,9 @@ export function ToOrder({ tabs }: { tabs?: ReactNode }) {
                           <tr key={r.ingredientId} className={cn(rowClass, skip[r.ingredientId] && "opacity-50")}>
                             <Td><input type="checkbox" aria-label={`Include ${r.name}`} checked={!skip[r.ingredientId] && qtyOf(r) > 0} disabled={r.covered && !qty[r.ingredientId]} onChange={(e) => setSkip({ ...skip, [r.ingredientId]: !e.target.checked })} className="h-4 w-4 accent-[var(--color-accent)]" /></Td>
                             <Td><span className="text-ink">{r.name}</span><span className="block text-xs text-steel">{r.locationName}{r.covered ? ", already covered by open orders" : ""}</span>{r.inDraft && <Link prefetch={false} href={`/forecast?tab=approvals&request=${r.inDraft}`} className="mt-0.5 block text-xs text-accent-ink underline-offset-4 hover:underline">In your draft {r.inDraft}</Link>}</Td>
-                            <Td align="right"><span className="font-medium text-warn">{qtyText(r.onHand)}</span> <span className="text-xs text-steel">{r.unit}</span></Td>
-                            <Td align="right">{qtyText(r.min)} / {qtyText(r.max)}</Td>
-                            <Td align="right">{r.onOrder ? qtyText(r.onOrder) : <span className="text-steel">None</span>}</Td>
+                            <Td align="right"><span className="font-medium text-ink">{qtyText(r.onHand)}</span> <span className="text-xs text-steel">{r.unit}</span></Td>
+                            <Td align="right">{qtyText(r.min)} / {qtyText(r.max)} <span className="text-xs text-steel">{r.unit}</span></Td>
+                            <Td align="right">{r.onOrder ? <>{qtyText(r.onOrder)} <span className="text-xs text-steel">{r.unit}</span></> : <span className="text-steel">None</span>}</Td>
                             <Td align="right">
                               <label className="inline-flex items-center gap-1.5"><span className="sr-only">Quantity of {r.name}</span>
                                 <input type="number" min={0} step={r.packSize} value={qtyOf(r)} onChange={(e) => { const v = Number(e.target.value); if (Number.isFinite(v) && v >= 0) setQty({ ...qty, [r.ingredientId]: v }); }} className="num h-8 w-20 rounded-full border border-line bg-paper px-2.5 text-end text-sm hover:border-fog" />
@@ -103,7 +127,7 @@ export function ToOrder({ tabs }: { tabs?: ReactNode }) {
                   </tbody>
                 </table>
               </TableWrap>
-            )}
+            </>)}
             <Note className="px-6 py-4">Prices are the agreed catalogue prices, before VAT. A supplier&rsquo;s minimum order and delivery days are checked when the drafts are made. Nothing goes to a supplier until a draft is approved and sent.</Note>
           </Panel>
           <section id="top-ups" className="scroll-mt-24">
@@ -194,7 +218,7 @@ export function ParLevels({ tabs }: { tabs?: ReactNode }) {
               { label: "Below minimum", value: rows.filter((r) => r.location === where && r.below).length, tone: rows.some((r) => r.location === where && r.below) ? "warn" : "pos", compare: { text: "Listed in To order", good: null }, onClick: () => setOnlyBelow(true) },
               { label: "Set by hand", value: rows.filter((r) => r.location === where && r.source === "set").length, compare: { text: `${rows.filter((r) => r.location === where && r.source === "suggested").length} from the prediction's suggestion`, good: null } },
             ]}
-            action={data.mayEdit ? <Button variant="primary" disabled={busy || !shown.length} onClick={applyAll}>Use suggested levels for these {shown.length}</Button> : undefined}
+            action={data.mayEdit ? <Button disabled={busy || !shown.length} onClick={() => { if (window.confirm(`Replace the levels of these ${shown.length} items with the suggested ones?`)) applyAll(); }}>Use suggested levels for these {shown.length}</Button> : undefined}
           />
           {tabs}
           <Panel flush>

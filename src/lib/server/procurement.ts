@@ -303,7 +303,7 @@ export function toOrderFor(user: User, propertyId: string, entries: SessionEntri
 
 // ---- Purchase orders by supplier ---------------------------------------------------------------------------------
 
-const costCentreFor = (lines: { ingredientId: string }[], settings: PurchasingSettings) => {
+export const costCentreFor = (lines: { ingredientId: string }[], settings: PurchasingSettings) => {
   const areas = lines.map((l) => stockAreaOf(l.ingredientId));
   const id = areas.every((a) => a === "drinks") ? "4200" : areas.every((a) => a === "inventory") ? "4500" : "4100";
   return settings.costCentres.find((c) => c.id === id) ? `${id} ${settings.costCentres.find((c) => c.id === id)!.name}` : settings.costCentres[0] ? `${settings.costCentres[0].id} ${settings.costCentres[0].name}` : undefined;
@@ -523,7 +523,8 @@ export function sendPurchaseOrder(user: User, id: string): Result<{ request: Pur
   const prop = propertyById[r.propertyId];
   const t = orderTotals(r.lines);
   const date = r.deliveryDate ?? r.period.from;
-  const at = `${DEMO_TODAY}T${hhmm(DEMO_NOW_MIN)}`;
+  // The time it was sent, in the hotel's local time, so it agrees with the order's history.
+  const at = `${DEMO_TODAY}T${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Lisbon" })}`;
   const email: OutboxEmail = {
     id: "", at: now(), by: user.id, propertyId: r.propertyId, ref: r.id, to: acct.orderEmail,
     subject: `Purchase order ${po} from ${prop.name}, delivery ${date}`,
@@ -585,7 +586,8 @@ export function draftCredit(user: User, id: string): Result<{ credit: CreditRequ
   };
   const out = mutateStore((x) => {
     const y = x.requests.find((z) => z.id === id)!;
-    credit.id = `CR-${poRef(y).replace(/^PO-/, "")}-${(y.credits?.length ?? 0) + 1}`;
+    // One above the highest number used, so a redrafted request never reuses the id of one already sent.
+    credit.id = `CR-${poRef(y).replace(/^PO-/, "")}-${Math.max(0, ...(y.credits ?? []).map((k) => Number(k.id.split("-").pop()) || 0)) + 1}`;
     y.credits = [...(y.credits ?? []).filter((k) => k.status !== "draft"), credit];
     y.updatedAt = now();
     y.history.push({ at: y.updatedAt, by: user.id, action: `Credit request drafted for ${money(c.amount)}`, status: y.status });

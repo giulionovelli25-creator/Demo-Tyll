@@ -1,4 +1,5 @@
 "use client";
+import { useRemembered } from "@/components/disclosure";
 import { Expiring } from "@/components/stock/expiring";
 import { StockTakes } from "@/components/stock/stock-takes";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,6 +29,8 @@ export default function StockRoute() {
   const { user, propertyId } = useView();
   const params = useSearchParams();
   const router = useRouter();
+  // The Stock page remembers its own tab, so Analysis here opens Analysis there.
+  const [, setStockTab] = useRemembered<"stock" | "analysis">("stock.tab", "stock");
   const employee = user.role === "employee";
   const valid: Tab[] = employee ? ["log", "counts"] : (["inventory", "where", "counts", "recipes", "suppliers", "expiry", "takes"] as Tab[]).filter((t) => t !== "where" || canOpen(user, "investigations"));
   const [tab, setTab] = useSection<Tab>("/stock", valid, employee ? "log" : null);
@@ -62,7 +65,7 @@ export default function StockRoute() {
       {tab === "where" && <WhereDidItGo key={pid} propertyId={pid} tabs={countTabs} />}
       {tab === "log" && <WasteLogger key={pid} propertyId={pid} />}
       {tab === "counts" && <Counts propertyId={pid} />}
-      {tab === "expiry" && <><Tabs value="expiry" onChange={(v) => router.push(v === "expiry" ? "/stock?tab=expiry" : "/stock")} tabs={[{ value: "stock", label: "Stock" }, { value: "expiry", label: "Expiring soon" }, { value: "analysis", label: "Analysis" }]} /><Expiring key={pid} propertyId={pid} /></>}
+      {tab === "expiry" && <><Tabs value="expiry" onChange={(v) => { if (v === "expiry") return; setStockTab(v as "stock" | "analysis"); router.push("/stock"); }} tabs={[{ value: "stock", label: "Stock" }, { value: "expiry", label: "Expiring soon" }, { value: "analysis", label: "Analysis" }]} /><Expiring key={pid} propertyId={pid} /></>}
       {tab === "takes" && <StockTakes key={pid} propertyId={pid} tabs={countTabs} />}
       {tab === "recipes" && <Recipes />}
       {tab === "suppliers" && <Suppliers propertyId={pid} tabs={employee ? null : <PurchasingTabs here="deliveries" />} />}

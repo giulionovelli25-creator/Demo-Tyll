@@ -8,8 +8,9 @@ import { RUN_TIMES, SEND_LIMITS, defaultAuto, reviewReason, type AutoRun, type A
 import type { PurchaseRequest, User } from "../types";
 import { DEMO_TODAY, addDays, fmtMoney, sum } from "../util";
 import { handoff, monthPlanFor, requestTotal, canSee, type PlanItem, type Result } from "./purchasing";
-import { catalogueLine, sendPurchaseOrder, settingsOf as purchasingSettings, supplierAccount } from "./procurement";
-import { nextDeliveryDate } from "../domain/procurement";
+import { catalogueLine, costCentreFor, sendPurchaseOrder, settingsOf as purchasingSettings, supplierAccount } from "./procurement";
+import { APPROVAL_POLICY } from "../data/purchasing-rules";
+import { ceilToPack, nextDeliveryDate } from "../domain/procurement";
 import { DEMO_NOW_MIN } from "../util";
 import { loadStore, mutateStore } from "./purchasing-store";
 import type { SessionEntries } from "./stock";
@@ -29,7 +30,9 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
   if (done || !set?.on) return done ?? null;
   // The run works with the access of the person who set the rules, never wider.
   const owner = userById[set.changedBy] ?? userById["u-fnb"];
-  const res = monthPlanFor(owner, propertyId, entries);
+  // The run uses the hotel's shared records only, never whatever one browser sent with the request that started it.
+  const res = monthPlanFor(owner, propertyId, { waste: [], counts: [], overrides: [], recipes: [], receipts: [] });
+  void entries;
   if (!res.ok) return null;
   const plan = res.plan;
   // Items due today, and tomorrow's too: one day early costs a day of stock, one day late can cost a service.
@@ -55,19 +58,21 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
       // The supplier's catalogue line gives the pack and VAT, so an automatic order is a full purchase order.
       const lines = items.map((i) => {
         const c = catalogueLine(propertyId, supplierId, i.ingredientId, s);
-        return { ingredientId: i.ingredientId, qty: i.nextQty, suggested: i.nextQty, requirement: Math.round(i.predicted * 1000) / 1000, available: Math.round(i.onHand * 1000) / 1000, incoming: Math.round(i.incoming * 1000) / 1000, safety: Math.round(i.buffer * 1000) / 1000, supplierId, unitPrice: c?.agreedPrice ?? i.unitPrice, vatRate: c?.vatRate, packSize: c?.packSize, packLabel: c?.packLabel };
+        return { ingredientId: i.ingredientId, qty: c?.packSize ? ceilToPack(i.nextQty, c.packSize) : i.nextQty, suggested: i.nextQty, requirement: Math.round(i.predicted * 1000) / 1000, available: Math.round(i.onHand * 1000) / 1000, incoming: Math.round(i.incoming * 1000) / 1000, safety: Math.round(i.buffer * 1000) / 1000, supplierId, unitPrice: c?.agreedPrice ?? i.unitPrice, vatRate: c?.vatRate, packSize: c?.packSize, packLabel: c?.packLabel };
       });
       const acct = supplierAccount(propertyId, supplierId, s);
       const deliveryDate = nextDeliveryDate(DEMO_TODAY, Math.min(DEMO_NOW_MIN, 6 * 60), acct?.cutOff ?? "14:00", Math.max(acct?.leadDays ?? 1, ...items.map((i) => i.leadDays)), acct?.deliveryDays ?? []);
-      const cc = purchasingSettings(propertyId, s).costCentres;
-      const costCentre = cc.length ? `${cc.find((c) => c.id === (lines.every((l) => l.vatRate === 0.23) ? "4200" : "4100"))?.id ?? cc[0].id} ${cc.find((c) => c.id === (lines.every((l) => l.vatRate === 0.23) ? "4200" : "4100"))?.name ?? cc[0].name}` : undefined;
+      const costCentre = costCentreFor(lines, purchasingSettings(propertyId, s));
       const total = requestTotal({ lines });
-      const reviews = items.map((i) => ({ i, why: reviewReason(i, i.nextQty, plan) })).filter((x): x is { i: PlanItem; why: string } => !!x.why);
-      const held = reviews.length > 0 || total > set.sendUnder;
+      const qtyOf = (g: string) => lines.find((l) => l.ingredientId === g)!.qty;
+      const reviews = items.map((i) => ({ i, why: reviewReason(i, qtyOf(i.ingredientId), plan) })).filter((x): x is { i: PlanItem; why: string } => !!x.why);
+      // Sending without approval never goes above the F&B director's limit, whatever the stored rule says.
+      const limit = Math.min(set.sendUnder, APPROVAL_POLICY[propertyId]?.fnbAbove ?? set.sendUnder);
+      const held = reviews.length > 0 || total > limit;
       const why = reviews.length
         ? `${reviews.map((x) => `${ingredientById[x.i.ingredientId].name}: ${x.why}`).join("; ")}.`
-        : total > set.sendUnder ? `Over the ${money(set.sendUnder)} limit for sending without approval.`
-        : `Under ${money(set.sendUnder)}, usual supplier, nothing to review.`;
+        : total > limit ? `Over the ${money(limit)} limit for sending without approval.`
+        : `Under ${money(limit)}, usual supplier, nothing to review.`;
       const r: PurchaseRequest = {
         id, propertyId, outletIds: outletsOfProperty(propertyId).map((o) => o.id), period: plan.period, createdBy: owner.id, createdAt: stamp, updatedAt: stamp,
         status: held ? "purchasing" : "approved", lines, supplierId, deliveryDate, costCentre,

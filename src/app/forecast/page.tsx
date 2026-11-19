@@ -37,7 +37,7 @@ export default function ForecastPage() {
     can(user, "purchase.create") && (hasOutlets || can(user, "events.plan")) && "buy",
     (can(user, "prep.plan") || can(user, "prep.complete")) && "prep",
     hasOutlets && "outlook",
-    predicts && can(user, "purchase.create") && "auto",
+    can(user, "purchase.create") && "auto",
     can(user, "purchase.create") && "toorder",
     can(user, "purchase.create") && "pars",
     can(user, "purchase.create") && "suppliers",

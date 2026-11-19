@@ -30,7 +30,7 @@ describe("automatic ordering", () => {
     expect(new Set(orders.map((r) => r.lines[0].supplierId)).size).toBe(orders.length);
     for (const r of orders) expect(new Set(r.lines.map((l) => l.supplierId)).size).toBe(1);
     expect(orders.flatMap((r) => r.lines.map((l) => l.ingredientId)).sort()).toEqual(due.map((i) => i.ingredientId).sort());
-    for (const l of orders.flatMap((r) => r.lines)) expect(l.qty).toBe(due.find((i) => i.ingredientId === l.ingredientId)!.nextQty);
+    for (const l of orders.flatMap((r) => r.lines)) { const due1 = due.find((i) => i.ingredientId === l.ingredientId)!; expect(l.suggested).toBe(due1.nextQty); expect(l.qty).toBeGreaterThanOrEqual(due1.nextQty); }
     // A second call the same day does nothing new.
     const again = A.ensureAutoRun("lis", none)!;
     expect(again.requestIds).toEqual(run.requestIds);
@@ -44,6 +44,7 @@ describe("automatic ordering", () => {
       const total = P.requestTotal(r);
       if (r.auto!.decision === "sent") {
         expect(total).toBeLessThanOrEqual(1500);
+        expect(total).toBeLessThanOrEqual(2000);
         expect(r.status).toBe("approved");
         expect(r.poNumber).toBeTruthy();
         // Sent as a full purchase order: PDF kept, email logged, catalogue pack and VAT on its lines.

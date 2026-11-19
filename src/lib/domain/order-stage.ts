@@ -12,6 +12,8 @@ export function orderStage(r: PurchaseRequest): OrderStage {
   if (r.status === "rejected" || r.status === "changes") return "returned";
   if (r.status === "received") return r.lines.some((l) => (l.received ?? l.qty) < l.qty) ? "short" : "delivered";
   if (r.status !== "approved") return "waiting";
+  // Part of it has arrived: the rest is on its way, not late.
+  if (r.receipts?.some((x) => x.lines.some((l) => l.delivered > 0))) return "on_the_way";
   if (r.expectedAt && r.expectedAt < nowStamp()) return "late";
   if (r.expectedAt && r.expectedAt.slice(0, 10) === DEMO_TODAY) return "on_the_way";
   return "sent";

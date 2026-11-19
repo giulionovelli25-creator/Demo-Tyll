@@ -37,9 +37,9 @@ export function Expiring({ propertyId }: { propertyId: string }) {
                   <tbody>
                     {data.rows.map((r) => (
                       <tr key={`${r.ingredientId}|${r.batch}|${r.expiry}`} className={cn(rowClass, r.daysLeft < 0 && "bg-neg-soft/40")}>
-                        <Td><span className="text-ink">{r.name}</span>{r.first && <Badge tone="ink" className="ms-2">Use first</Badge>}</Td>
+                        <Td><span className="text-ink">{r.name}</span>{r.first && r.daysLeft >= 0 && r.action.kind !== "use_first" && <Badge tone="ink" className="ms-2">Use first</Badge>}</Td>
                         <Td><span className="num text-graphite">{r.batch}</span><span className="block text-xs text-steel">Received {fmtDate(r.received, true)}, {r.source}</span></Td>
-                        <Td><span className={cn(r.daysLeft <= 0 ? "font-medium text-neg" : r.daysLeft === 1 ? "font-medium text-warn" : "text-ink")}>{when(r.daysLeft)}</span><span className="block text-xs text-steel">{fmtDate(r.expiry, true)}</span></Td>
+                        <Td><span className={cn(r.daysLeft < 0 ? "font-medium text-neg" : r.daysLeft <= 1 ? "font-medium text-warn" : "text-ink")}>{when(r.daysLeft)}</span><span className="block text-xs text-steel">{fmtDate(r.expiry, true)}</span></Td>
                         <Td align="right">{fmtNum(r.left, r.left % 1 ? 1 : 0)} {r.unit}</Td>
                         <Td align="right" className="num text-ink">{money(r.value)}</Td>
                         <Td><Badge tone={KIND[r.action.kind].tone}>{KIND[r.action.kind].label}</Badge><span className="mt-1 block max-w-[340px] text-[13px] text-graphite">{r.action.text}</span></Td>

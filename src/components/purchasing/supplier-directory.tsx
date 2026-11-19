@@ -68,13 +68,13 @@ function PriceHistory({ pid, line, onClose }: { pid: string; line: CatalogueView
     <div className="space-y-5">
       <dl className="grid grid-cols-2 gap-3 text-sm">
         <div className="rounded-[var(--radius-control)] bg-cloud px-3 py-2"><dt className="text-xs text-steel">Agreed price</dt><dd className="num font-medium text-ink">{money(line.agreedPrice)} per {line.unit === "units" ? "unit" : line.unit}</dd></div>
-        <div className="rounded-[var(--radius-control)] bg-cloud px-3 py-2"><dt className="text-xs text-steel">Last invoiced</dt><dd className={cn("num font-medium", line.aboveAgreed ? "text-warn" : "text-ink")}>{line.lastPrice === null ? "No invoice yet" : money(line.lastPrice)}</dd></div>
+        <div className="rounded-[var(--radius-control)] bg-cloud px-3 py-2"><dt className="text-xs text-steel">Last invoiced</dt><dd className="num font-medium text-ink">{line.lastPrice === null ? "No invoice yet" : money(line.lastPrice)}</dd></div>
       </dl>
       <div>
         <h3 className="text-[13px] font-medium text-ink">Every invoiced price</h3>
         {points.length === 0 ? <p className="mt-1 text-sm text-steel">No invoices for this item from this supplier yet.</p> : (
           <ul className="mt-2 divide-y divide-hair text-table">
-            {points.map((p) => <li key={`${p.ref}-${p.date}`} className="flex items-baseline justify-between gap-3 py-1.5"><span className="text-graphite">{fmtDate(p.date, true)} <span className="text-xs text-steel">{p.ref}</span></span><span className={cn("num", p.above ? "font-medium text-warn" : "text-ink")}>{money(p.price)}{p.above && <span className="ms-2 text-xs">above agreed</span>}</span></li>)}
+            {points.map((p) => <li key={`${p.ref}-${p.date}`} className="flex items-baseline justify-between gap-3 py-1.5"><span className="text-graphite">{fmtDate(p.date, true)} <span className="text-xs text-steel">{p.ref}</span></span><span className={cn("num", p.above ? "font-semibold text-ink" : "text-ink")}>{money(p.price)}{p.above && <Badge tone="warn" className="ms-2">Above agreed</Badge>}</span></li>)}
           </ul>
         )}
       </div>
@@ -156,7 +156,7 @@ export function SupplierDirectory({ view, tabs }: { view: "suppliers" | "catalog
                             <Td>{suppliers.find((s) => s.id === c.supplierId)?.name ?? c.supplierId}{c.preferred ? <Badge className="ms-2">Preferred</Badge> : null}</Td>
                             <Td className="text-graphite">{c.packLabel}</Td>
                             <Td align="right">{money(c.agreedPrice, true)}<span className="block text-xs text-steel">per {c.unit === "units" ? "unit" : c.unit}</span></Td>
-                            <Td align="right">{c.lastPrice === null ? <span className="text-steel">No invoice</span> : <span className={c.aboveAgreed ? "font-medium text-warn" : "text-ink"}>{money(c.lastPrice, true)}</span>}{c.lastDate && <span className="block text-xs text-steel">{fmtDate(c.lastDate, true)}</span>}</Td>
+                            <Td align="right">{c.lastPrice === null ? <span className="text-steel">No invoice</span> : <><span className={c.aboveAgreed ? "font-semibold text-ink" : "text-ink"}>{money(c.lastPrice, true)}</span>{c.aboveAgreed && <Badge tone="warn" className="ms-2">Above agreed</Badge>}</>}{c.lastDate && <span className="block text-xs text-steel">{fmtDate(c.lastDate, true)}</span>}</Td>
                             <Td align="right">{fmtPct(c.vatRate, 0)}</Td>
                             <Td><button type="button" className={textLink} onClick={() => setPriced(c)}>Prices</button></Td>
                           </tr>

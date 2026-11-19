@@ -270,8 +270,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Predictions" question="What do I need to order?" lead="An estimate from forecast covers, events and recent use. Simulated data." />
-      <p className="rounded-panel border border-line bg-paper px-5 py-3 text-[13px] leading-relaxed text-graphite shadow-panel sm:px-6"><span className="font-medium text-ink">Where the figures come from.</span> Tyll&rsquo;s own forecasting model works out every quantity from your sales history, bookings, events, hotel occupancy, waste and current stock. No AI chooses a quantity. The plain-language explanations beside each figure are written from fixed rules in this demo.</p>
+      <PageHeader title="Predictions" question="What do I need to order?" lead="Tyll's own forecasting model works out every quantity from sales history, bookings, events, hotel occupancy and current stock. No AI chooses a quantity. Simulated data." />
       {error ? <WidgetError>The stock prediction could not load.</WidgetError> : !plan ? (
         <div className="space-y-4" aria-busy><Skeleton className="h-24 w-full" /><Skeleton className="h-64 w-full" /></div>
       ) : (

@@ -824,6 +824,9 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
   };
   const decide = (stage: "purchasing" | "accounting" | "fnb" | "manager", label: string) => {
     if (!decision) return fail(400, "Choose approve, request changes or reject.");
+    // One person signs one step of an approval round, so two different people always see an order above a limit.
+    const lastSubmit = r.history.map((h) => h.action).findLastIndex((a) => /^(Submitted|Resubmitted) to purchasing/.test(a));
+    if (decision === "approve" && stage !== "purchasing" && r.history.slice(Math.max(0, lastSubmit)).some((h) => h.by === user.id && / approved$/.test(h.action) && !/^Purchasing/.test(h.action))) return fail(403, "You have already approved this order at another step. Someone else signs this one.");
     if (decision !== "approve" && comment.length < 3) return fail(400, "Say what needs to change, or why it is rejected.");
     return apply((x) => { x.status = decision === "approve" ? nextAfter(x, stage) : decision === "changes" ? "changes" : "rejected"; },
       decision === "approve" ? `${label} approved` : decision === "changes" ? `${label}: changes requested` : `${label}: rejected`);
@@ -918,7 +921,7 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       const final = legacy || body.final === true;
       if (!final && !lines.some((l) => l.delivered > 0)) return fail(400, "Enter what arrived, or close the order as delivered short.");
       return apply((x, store) => {
-        const receipt = { id: `GR-${(x.poNumber ?? x.id).replace(/^P[OR]-/, "")}-${(x.receipts?.length ?? 0) + 1}`, at: `${DEMO_TODAY}T${String(Math.floor(DEMO_NOW_MIN / 60)).padStart(2, "0")}:${String(DEMO_NOW_MIN % 60).padStart(2, "0")}`, by: user.id, final, lines };
+        const receipt = { id: `GR-${(x.poNumber ?? x.id).replace(/^P[OR]-/, "")}-${(x.receipts?.length ?? 0) + 1}`, at: `${DEMO_TODAY}T${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Lisbon" })}`, by: user.id, final, lines };
         x.receipts = [...(x.receipts ?? []), receipt];
         x.lines = applyReceipt(x.lines, lines).map((l) => ({ ...l, receiveNote: lines.find((y) => y.ingredientId === l.ingredientId)?.note ?? l.receiveNote }));
         if (final || fullyReceived(x.lines)) x.status = "received";
@@ -964,10 +967,14 @@ export function alertsFor(user: User, entries: SessionEntries): PlanAlert[] {
   if (can(user, "purchase.approveManager") && waiting("manager").length) {
     out.push({ id: `mgr-${waiting("manager").map((r) => r.id).join(",")}`, text: `${waiting("manager").length === 1 ? "One purchase request needs" : `${waiting("manager").length} purchase requests need`} your approval.`, href: "/forecast?tab=approvals&queue=manager", action: "Review" });
   }
+  if (can(user, "purchase.approveFnb") && waiting("fnb").length) {
+    const n = waiting("fnb").length;
+    out.push({ id: `fnb-${waiting("fnb").map((r) => r.id).join(",")}`, text: `${n === 1 ? "One purchase request needs" : `${n} purchase requests need`} your approval.`, href: n === 1 ? `/forecast?tab=approvals&request=${waiting("fnb")[0].id}` : "/forecast?tab=approvals&queue=fnb", action: "Review" });
+  }
   // A request over the remaining demo budget.
-  for (const r of visible.filter((x) => ["accounting", "manager"].includes(x.status))) {
+  for (const r of visible.filter((x) => ["accounting", "fnb", "manager"].includes(x.status))) {
     const b = budgetFor(r);
-    if (requestTotal(r) > b.available && (can(user, "purchase.approveFinance") || can(user, "purchase.approveManager"))) {
+    if (requestTotal(r) > b.available && (can(user, "purchase.approveFinance") || can(user, "purchase.approveFnb") || can(user, "purchase.approveManager"))) {
       out.push({ id: `budget-${r.id}`, text: `${r.id} would take ${outletLabelFor(r)} over this month's demo purchasing budget.`, href: `/forecast?tab=approvals&request=${r.id}`, action: "Review" });
       break;
     }

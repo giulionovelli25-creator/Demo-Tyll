@@ -63,7 +63,9 @@ export function snapshotFor(user: User): Snapshot {
 function withBasis(snap: Snapshot): Snapshot {
   const confirm = (e: Exception): Exception => {
     if ((e.type !== "usage_variance" && e.type !== "stock_shortfall") || !e.ingredientId) return e;
-    const take = confirmedByStockTake(e.propertyId, e.ingredientId, e.date);
+    // Confirmed only by a stock take of the same place: the outlet for its working stock, otherwise the store holding it.
+    const location = e.type === "usage_variance" && e.outletId ? e.outletId : storeOwner(e.propertyId, e.ingredientId) ?? "main";
+    const take = confirmedByStockTake(e.propertyId, e.ingredientId, e.date, location);
     return take ? { ...e, basis: "confirmed", comparedWith: `${e.comparedWith ?? ""} Confirmed by stock take ${take}.`.trim() } : { ...e, basis: "estimate" };
   };
   return { ...snap, exceptions: snap.exceptions.map(confirm) };

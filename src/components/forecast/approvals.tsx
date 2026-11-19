@@ -43,7 +43,12 @@ const suppliersOf = (r: PurchaseRequest) => [...new Set(r.lines.map((l) => suppl
 const approverOf = (r: PurchaseRequest) => r.history.find((h) => h.action === "Purchasing review approved")?.by;
 const arrival = (r: PurchaseRequest) => arrivalText(r.expectedAt, fmtDate, addDays(DEMO_TODAY, 1));
 const unitOf = (g: string) => (ingredientById[g].unit === "each" ? "units" : ingredientById[g].unit);
-const where = (r: PurchaseRequest) => (r.deptId ? deptById[r.deptId]?.name ?? r.deptId : r.eventId ? "Event" : r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : `${r.outletIds.length} outlets`);
+const where = (r: PurchaseRequest) => (r.deptId ? deptById[r.deptId]?.name ?? r.deptId : r.eventId ? "Event" : r.outletIds.length === 1 ? outletById[r.outletIds[0]].name : r.supplierId ? "Main store" : `${r.outletIds.length} outlets`);
+/** Times are the hotel's local time, whoever looks at them and from wherever. */
+export const hotelTime = (iso?: string) => (iso ? new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Lisbon" }) : "");
+const hotelDate = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+/** When a supplier's order is due, or the period an older request covers. */
+const forWhen = (r: PurchaseRequest, withDay = false) => (r.deliveryDate ? `Delivery ${fmtDate(r.deliveryDate, withDay)}` : `${fmtDate(r.period.from, withDay)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, withDay)}` : ""}`);
 
 /** Purchase requests and their approvals. Finance opens the same list and records from its own page. */
 export function Approvals({ base = "/forecast?tab=approvals" }: { base?: string }) {
@@ -93,8 +98,8 @@ function RequestList({ base }: { base: string }) {
                   <tbody>
                     {shown.map((r) => (
                       <tr key={r.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`${base}&request=${r.id}`)}>
-                        <Td><button type="button" className="num text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`${base}&request=${r.id}`); }}>{r.id}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
-                        <Td>{where(r)}<span className="block text-xs text-steel">{fmtDate(r.period.from)}{r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to)}` : ""}</span></Td>
+                        <Td><button type="button" className="num whitespace-nowrap text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`${base}&request=${r.id}`); }}>{r.id}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
+                        <Td>{where(r)}<span className="block text-xs text-steel">{forWhen(r)}</span></Td>
                         <Td>{suppliersOf(r)}</Td>
                         <Td>{r.auto ? <Badge tone="accent">Automatic</Badge> : personName(r.createdBy)}</Td>
                         <Td>{r.auto?.decision === "sent" ? "Automatic rule" : approverOf(r) ? personName(approverOf(r)!) : <span className="text-steel">Not yet</span>}</Td>
@@ -125,11 +130,11 @@ function Progress({ d }: { d: RequestDetail }) {
     { key: "draft", label: r.auto ? "Created automatically" : "Draft", at: r.history[0]?.at, done: true },
     ...(auto ? [] : [{ key: "submitted", label: "Submitted", at: submitted?.at, done: !!submitted }, ...d.steps.map((s) => ({ key: s, label: names[s], at: stepsDone(s)?.at, done: !!stepsDone(s) }))]),
     { key: "approved", label: auto ? "Approved by the rule" : "Approved", at: r.history.find((h) => h.status === "approved")?.at, done: r.status === "approved" || r.status === "received" },
-    { key: "sent", label: "Sent", at: r.history.find((h) => h.action.startsWith("Sent to"))?.at, done: !!r.sentAt },
+    { key: "sent", label: "Sent", at: r.history.find((h) => h.action.startsWith("Sent to") || h.action.startsWith("Emailed to"))?.at, done: !!r.sentAt },
     { key: "delivered", label: d.poStatus === "partly_received" ? "Partly received" : orderStage(r) === "short" ? "Delivered short" : "Delivered", at: r.history.find((h) => h.status === "received")?.at ?? r.receipts?.[0]?.at, done: r.status === "received" || d.poStatus === "partly_received" },
     ...(r.closed ? [{ key: "closed", label: "Closed", at: r.closed.at, done: true }] : []),
   ];
-  const time = (at?: string) => (at ? new Date(at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "");
+  const time = hotelTime;
   return (
     <ol className="flex flex-wrap items-start gap-x-2 gap-y-3 text-[13px]">
       {items.map((s, i) => (
@@ -371,7 +376,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
       </div>
       <Panel
         title={<span className="flex flex-wrap items-center gap-3"><span className="num">{r.id}</span><OrderBadge r={r} />{r.poNumber && <Badge>{r.poNumber}</Badge>}{r.auto && <Badge tone="accent">Automatic</Badge>}</span>}
-        description={`${where(r)}, ${propertyById[r.propertyId].name}. For ${fmtDate(r.period.from, true)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, true)}` : ""}. ${r.auto ? `Created by automatic ordering on ${personName(r.createdBy)}'s rules.` : `Raised by ${personName(r.createdBy)}.`}`}
+        description={`${where(r)}, ${propertyById[r.propertyId].name}. ${r.deliveryDate ? `Delivery ${fmtDate(r.deliveryDate, true)}` : `For ${fmtDate(r.period.from, true)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, true)}` : ""}`}. ${r.auto ? `Created by automatic ordering on ${personName(r.createdBy)}'s rules.` : `Raised by ${personName(r.createdBy)}.`}`}
       >
         {sent && r.status !== "draft" && (
           <div role="status" className="mb-5 rounded-2xl border border-pos/25 bg-pos-soft px-5 py-4">
@@ -400,10 +405,10 @@ function RequestView({ id, base }: { id: string; base: string }) {
         <section className="mt-5">
           <h3 className="text-[13px] font-medium text-ink">Status history</h3>
           <ol className="mt-2 space-y-1.5 text-[13px]">
-            {r.history.map((h, i) => <li key={i} className="flex gap-3"><span className="num w-28 shrink-0 text-steel">{fmtDate(h.at.slice(0, 10))} {h.at.slice(11, 16)}</span><span className="text-graphite"><span className="text-ink">{h.action}</span>, {personName(h.by)}{h.comment ? `. ${h.comment}` : ""}</span></li>)}
+            {r.history.map((h, i) => <li key={i} className="flex gap-3"><span className="num w-28 shrink-0 text-steel">{fmtDate(hotelDate(h.at))} {hotelTime(h.at)}</span><span className="text-graphite"><span className="text-ink">{h.action}</span>, {personName(h.by)}{h.comment ? `. ${h.comment}` : ""}</span></li>)}
           </ol>
         </section>
-        {r.comment && <p className="mt-4 text-sm text-graphite"><span className="text-steel">Comment: </span>{r.comment}</p>}
+        {r.comment && !r.supplierId && <p className="mt-4 text-sm text-graphite"><span className="text-steel">Comment: </span>{r.comment}</p>}
         {r.prepPlanId && <p className="mt-1 text-[13px] text-steel">Raised from prep plan {r.prepPlanId}.</p>}
       </Panel>
 
@@ -513,7 +518,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
         <SendPanel d={data} user={user} run={run} busy={busy} />
         {showMoney && <MatchPanel d={data} user={user} run={run} busy={busy} />}
         <Receipts r={r} />
-        {showMoney && (can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveManager")) && (
+        {showMoney && (can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveFnb") || can(user, "purchase.approveManager")) && (
           <Panel title="Budget and approval rules" action={<Badge>Demo estimate</Badge>}>
             <dl className="space-y-1.5 text-sm">
               <div className="flex justify-between"><dt className="text-steel">{data.budget.label} budget, {data.budget.month}</dt><dd className="num">{money(data.budget.budget)}</dd></div>
@@ -530,7 +535,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
           <ul className="space-y-3">
             {r.history.slice().reverse().map((h, i) => (
               <li key={i} className="text-sm">
-                <p className="flex flex-wrap justify-between gap-2"><span className="text-ink">{h.action}</span><span className="text-xs text-steel">{personName(h.by)} · {new Date(h.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span></p>
+                <p className="flex flex-wrap justify-between gap-2"><span className="text-ink">{h.action}</span><span className="text-xs text-steel">{personName(h.by)} · {hotelTime(h.at)}</span></p>
                 {h.comment && <p className="text-graphite">{h.comment}</p>}
                 {h.changes?.map((c, j) => <p key={j} className="text-xs text-steel">{ingredientById[c.ingredientId].name}: {c.from !== c.to ? `${fmtQty(c.from, ingredientById[c.ingredientId].unit)} to ${fmtQty(c.to, ingredientById[c.ingredientId].unit)}. ` : ""}{c.reason}</p>)}
               </li>

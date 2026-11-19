@@ -93,12 +93,24 @@ function datasetInvoices(s: Shape, props: Set<string>): InvoiceView[] {
   });
 }
 
+/** Quantity of an item already invoiced on an order by invoices recorded before this one. */
+const invoicedBefore = (s: Shape, requestId: string, ingredientId: string, beforeId?: string) => {
+  let q = 0;
+  for (const i of s.finance.invoices) {
+    if (i.id === beforeId) break;
+    if (i.requestId === requestId) q += i.lines.filter((l) => l.ingredientId === ingredientId).reduce((t, l) => t + l.qty, 0);
+  }
+  return q;
+};
+
 function tyllInvoices(s: Shape, props: Set<string>): InvoiceView[] {
   return s.finance.invoices.filter((i) => props.has(i.propertyId) && s.requests.some((x) => x.id === i.requestId)).map((i) => {
     const r = s.requests.find((x) => x.id === i.requestId)!;
+    // A later invoice on a part-delivered order is checked against what arrived since the earlier invoices.
     const raw = i.lines.map((l) => {
       const rl = r.lines.find((x) => x.ingredientId === l.ingredientId)!;
-      return { ingredientId: l.ingredientId, ordered: rl.qty, received: rl.received ?? 0, invoiced: l.qty, poPrice: rl.unitPrice, invoicePrice: l.unitPrice };
+      const before = invoicedBefore(s, r.id, l.ingredientId, i.id);
+      return { ingredientId: l.ingredientId, ordered: Math.max(0, rl.qty - before), received: Math.max(0, (rl.received ?? 0) - before), invoiced: l.qty, poPrice: rl.unitPrice, invoicePrice: l.unitPrice };
     });
     return view({ id: i.id, source: "tyll", propertyId: i.propertyId, supplierId: i.supplierId, supplierRef: i.supplierRef, poNumber: i.poNumber, requestId: i.requestId, date: i.date, dept: deptOfRequest(r), status: i.status, corrected: !!i.original, history: i.history }, raw);
   });
@@ -113,9 +125,10 @@ export function invoicesFor(user: User, propertyId?: string): Result<{ invoices:
   // Received Tyll orders still waiting for a supplier's invoice, one per supplier on the order.
   const received = (r: PurchaseRequest) => r.status === "received" || (r.status === "approved" && !!r.receipts?.length);
   const toInvoice = s.requests.filter((r) => received(r) && !r.deliveryId && props.has(r.propertyId)).flatMap((r) =>
-    [...new Set(r.lines.map((l) => l.supplierId))].filter((sup) => !s.finance.invoices.some((i) => i.requestId === r.id && i.supplierId === sup)).map((sup) => ({
+    // Anything received and not yet invoiced can be invoiced: a part delivery now, the rest later.
+    [...new Set(r.lines.map((l) => l.supplierId))].filter((sup) => r.lines.some((l) => l.supplierId === sup && (l.received ?? 0) > invoicedBefore(s, r.id, l.ingredientId) + 1e-9)).map((sup) => ({
       requestId: r.id, poNumber: r.poNumber ?? r.id, propertyId: r.propertyId, supplierId: sup, supplierName: supplierById[sup]?.name ?? sup, currency: propertyById[r.propertyId].currency,
-      receivedValue: r2(r.lines.filter((l) => l.supplierId === sup).reduce((t, l) => t + (l.received ?? 0) * l.unitPrice, 0)),
+      receivedValue: r2(r.lines.filter((l) => l.supplierId === sup).reduce((t, l) => t + Math.max(0, (l.received ?? 0) - invoicedBefore(s, r.id, l.ingredientId)) * l.unitPrice, 0)),
     })));
   return { ok: true, invoices: allInvoices(s, props), toInvoice };
 }
@@ -152,7 +165,7 @@ export function recordInvoice(user: User, body: Record<string, unknown>): Result
   const supplierId = String(body.supplierId ?? "");
   const mine = r.lines.filter((l) => l.supplierId === supplierId);
   if (!mine.length) return fail(400, "That supplier is not on this order.");
-  if (s.finance.invoices.some((i) => i.requestId === r.id && i.supplierId === supplierId)) return fail(409, "An invoice from this supplier is already recorded for this order.");
+  if (!mine.some((l) => (l.received ?? 0) > invoicedBefore(s, r.id, l.ingredientId) + 1e-9) && s.finance.invoices.some((i) => i.requestId === r.id && i.supplierId === supplierId)) return fail(409, "Everything received on this order is already invoiced. Record the next delivery first.");
   const ref = text(body.supplierRef, 40);
   if (ref.length < 2) return fail(400, "Enter the supplier's invoice number.");
   if (s.finance.invoices.some((i) => i.supplierId === supplierId && i.supplierRef.toLowerCase() === ref.toLowerCase())) return fail(409, `Invoice ${ref} from this supplier is already recorded.`);
@@ -277,10 +290,11 @@ export function spendEntries(s: Shape, propertyId: string): SpendEntry[] {
   for (const r of s.requests.filter((x) => x.propertyId === propertyId && !["draft", "rejected"].includes(x.status) && !x.deliveryId)) {
     const dept = deptOfRequest(r);
     for (const sup of new Set(r.lines.map((l) => l.supplierId))) {
-      if (s.finance.invoices.some((i) => i.requestId === r.id && i.supplierId === sup)) continue;
-      const ls = r.lines.filter((l) => l.supplierId === sup);
+      // What is not yet on an invoice stays at its stage: still to come is committed, arrived is received.
+      const ls = r.lines.filter((l) => l.supplierId === sup).map((l) => ({ l, open: Math.max(0, (r.status === "received" ? l.received ?? 0 : l.qty) - invoicedBefore(s, r.id, l.ingredientId)) })).filter((x) => x.open > 1e-9);
+      if (!ls.length) continue;
       const stage: SpendStage = r.status === "received" ? "received" : r.status === "approved" ? "committed" : "requested";
-      const amount = r2(ls.reduce((t, l) => t + (stage === "received" ? l.received ?? 0 : l.qty) * l.unitPrice, 0));
+      const amount = r2(ls.reduce((t, x) => t + x.open * x.l.unitPrice, 0));
       out.push({ id: `${r.id}-${sup}`, ref: r.poNumber ?? r.id, propertyId, dept, category: categoryOf(dept), date: r.updatedAt.slice(0, 10) > DEMO_TODAY ? DEMO_TODAY : r.updatedAt.slice(0, 10), supplier: supplierById[sup]?.name ?? sup, description: `${r.id}, ${ls.length} item${ls.length === 1 ? "" : "s"}`, amount, stage, source: "tyll", href: `/forecast?tab=approvals&request=${r.id}` });
     }
   }

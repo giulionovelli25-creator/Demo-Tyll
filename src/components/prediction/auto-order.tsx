@@ -11,6 +11,7 @@ import { INGREDIENTS, ingredientById, propertyById } from "@/lib/data/catalog";
 import { supplierName } from "@/lib/data/purchasing-rules";
 import { RUN_TIMES, SEND_LIMITS, type AutoSettings } from "@/lib/domain/auto-order";
 import { orderStage } from "@/lib/domain/order-stage";
+import { OrderBadge } from "@/components/forecast/approvals";
 import { personName } from "@/lib/hooks";
 import { useAutoOrder, usePlanDrafts } from "@/lib/plan-hooks";
 import type { PurchaseRequest } from "@/lib/types";
@@ -39,11 +40,8 @@ function OrderRow({ r, money }: { r: PurchaseRequest; money: (n: number) => stri
         <span className="num text-[15px] font-medium text-ink">{money(total(r))}</span>
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-2">
-        {sent
-          ? <Badge tone="pos">{stage === "delivered" || stage === "short" ? "Delivered" : `Sent, arrives ${r.expectedAt ? when(r.expectedAt.slice(0, 10)) : "soon"}`}</Badge>
-          : r.status === "approved" ? <Badge tone="pos">Approved and sent</Badge>
-          : r.status === "rejected" ? <Badge tone="neg">Rejected</Badge>
-          : <Badge tone="warn">Waiting for approval</Badge>}
+        <OrderBadge r={r} />
+        {(stage === "sent" || stage === "on_the_way") && r.expectedAt && <span className="text-xs text-steel">Arrives {when(r.expectedAt.slice(0, 10))}</span>}
         <span className="text-xs text-steel">{r.lines.length} {r.lines.length === 1 ? "item" : "items"}</span>
       </div>
       <p className="mt-2 text-[13px] text-graphite">{r.lines.map((l) => `${ingredientById[l.ingredientId].name} ${fmtQty(l.qty, ingredientById[l.ingredientId].unit)}`).join(", ")}.</p>

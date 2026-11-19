@@ -108,7 +108,7 @@ function Detail({ id }: { id: string }) {
         <TableWrap>
           <table className="w-full min-w-[640px] text-table">
             <thead><tr><Th>Group</Th><Th align="right">Counted</Th><Th align="right">Missing</Th><Th align="right">Surplus</Th><Th align="right">Net</Th></tr></thead>
-            <tbody>{t.report.groups.filter((g) => g.counted).sort((a, b) => a.net - b.net).map((g) => <tr key={g.group} className={rowClass}><Td className="text-ink">{g.group}</Td><Td align="right">{g.counted} of {g.items}</Td><Td align="right">{g.missing ? money(g.missing) : "None"}</Td><Td align="right">{g.surplus ? money(g.surplus) : "None"}</Td><Td align="right" className={cn("font-medium", g.net < 0 ? "text-neg" : "text-ink")}>{signed(g.net, money)}</Td></tr>)}</tbody>
+            <tbody>{t.report.groups.filter((g) => g.counted).sort((a, b) => a.net - b.net).map((g) => <tr key={g.group} className={rowClass}><Td className="text-ink">{g.group}</Td><Td align="right">{g.counted} of {g.items}</Td><Td align="right">{g.missing ? money(-g.missing) : "None"}</Td><Td align="right">{g.surplus ? money(g.surplus) : "None"}</Td><Td align="right" className={cn("font-medium", g.net < 0 ? "text-neg" : "text-ink")}>{signed(g.net, money)}</Td></tr>)}</tbody>
           </table>
         </TableWrap>
       </Panel>
@@ -141,10 +141,10 @@ function MonthEnd({ propertyId }: { propertyId: string }) {
           <TableWrap>
             <table className="w-full min-w-[760px] text-table">
               <thead><tr><Th>Stock take</Th><Th>Location</Th><Th align="right">Counted value</Th><Th align="right">Missing</Th><Th align="right">Surplus</Th><Th align="right">Net</Th></tr></thead>
-              <tbody>{data.takes.map((t) => <tr key={t.id} className={rowClass}><Td><Link prefetch={false} href={`/stock?tab=takes&take=${t.id}`} className="num text-ink underline-offset-4 hover:underline">{t.id}</Link><span className="block text-xs text-steel">{fmtDate(t.date, true)}, {t.kind === "full" ? "full" : "partial"}</span></Td><Td>{t.location}</Td><Td align="right">{money(t.countedValue)}</Td><Td align="right">{money(t.missing)}</Td><Td align="right">{money(t.surplus)}</Td><Td align="right" className={cn("font-medium", t.net < 0 ? "text-neg" : "text-ink")}>{signed(t.net, money)}</Td></tr>)}</tbody>
+              <tbody>{data.takes.map((t) => <tr key={t.id} className={rowClass}><Td><Link prefetch={false} href={`/stock?tab=takes&take=${t.id}`} className="num text-ink underline-offset-4 hover:underline">{t.id}</Link><span className="block text-xs text-steel">{fmtDate(t.date, true)}, {t.kind === "full" ? "full" : "partial"}</span></Td><Td>{t.location}</Td><Td align="right">{money(t.countedValue)}</Td><Td align="right">{money(-t.missing)}</Td><Td align="right">{money(t.surplus)}</Td><Td align="right" className={cn("font-medium", t.net < 0 ? "text-neg" : "text-ink")}>{signed(t.net, money)}</Td></tr>)}</tbody>
             </table>
           </TableWrap>
-          <p className="flex flex-wrap justify-end gap-x-6 px-6 py-4 text-sm text-graphite"><span>Missing {money(data.totals.missing)}</span><span>Surplus {money(data.totals.surplus)}</span><span className="text-ink">Net <span className={cn("num ms-1 font-medium", data.totals.net < 0 ? "text-neg" : "text-ink")}>{signed(data.totals.net, money)}</span></span></p>
+          <p className="flex flex-wrap justify-end gap-x-6 px-6 py-4 text-sm text-graphite"><span>Missing {money(-data.totals.missing)}</span><span>Surplus {money(data.totals.surplus)}</span><span className="text-ink">Net <span className={cn("num ms-1 font-medium", data.totals.net < 0 ? "text-neg" : "text-ink")}>{signed(data.totals.net, money)}</span></span></p>
         </>
       )}
     </Panel>

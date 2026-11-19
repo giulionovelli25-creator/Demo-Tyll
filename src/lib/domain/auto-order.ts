@@ -33,7 +33,8 @@ export interface AutoShape {
 }
 
 export const RUN_TIMES = ["05:00", "06:00", "07:00"] as const;
-export const SEND_LIMITS = [500, 1000, 1500, 2500, 5000] as const;
+/** Never above the F&B director's approval limit (€2,000): automatic sending must not skip an approval the hotel requires. */
+export const SEND_LIMITS = [500, 1000, 1500, 2000] as const;
 
 export const defaultAuto = (): AutoShape => ({
   settings: { lis: { on: true, time: "06:00", sendUnder: 1500, never: ["lobster", "wagyu"], changedBy: "u-fnb", changedAt: `${addDays(DEMO_TODAY, -14)}T10:00` } },
@@ -46,7 +47,7 @@ const daysLeft = (plan: MonthPlanOut) => Math.max(1, eachDay({ from: addDays(DEM
 export function reviewReason(r: PlanItem, qty: number, plan: MonthPlanOut): string | null {
   const perDay = r.predicted / daysLeft(plan);
   if (r.lastFourWeeks > 0 && qty > r.lastFourWeeks * 1.5) return `more than 1.5 times the last 4 weeks of use (${fmtQty(r.lastFourWeeks, r.unit)})`;
-  if (r.shelfLifeDays <= 3 && perDay > 0 && qty / perDay > r.shelfLifeDays + 0.5) return `keeps ${r.shelfLifeDays} days, and this covers ${fmtNum(qty / perDay, 0)}`;
+  if (r.shelfLifeDays <= 3 && perDay > 0 && qty / perDay > r.shelfLifeDays + 0.5) return `keeps ${r.shelfLifeDays} days, and this covers ${fmtNum(qty / perDay, 0)} days of use`;
   if (plan.inputs.confidence === "low") return "the forecast confidence is low this month";
   return null;
 }
