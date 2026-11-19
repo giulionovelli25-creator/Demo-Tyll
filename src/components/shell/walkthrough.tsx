@@ -44,11 +44,13 @@ const TOURS: Partial<Record<User["role"], (u: User) => TourStep[]>> = {
     { path: "/", target: "kpis", title: "Your four main tools", text: "Log waste, Stock, Predictions and Revenue. Each card has one number, one line and one button.", module: "overview" },
     S.page("/stock", "Stock", "How much is left, with critical items first. Start count is on top, and everything else is one click away.", "stock"),
     S.page("/stock?tab=where", "Where did it go?", "Stock used that sales do not explain, item by item. Open one to see the calculation and what to check.", "investigations"),
+    S.page("/forecast?tab=auto", "Automatic ordering", "Every morning Tyll orders what must go today, one order per supplier. Small orders go straight to the supplier; the rest wait for approval.", "forecast"),
     S.page("/forecast", "Predictions", "What to order and how much for the month. Build order makes one draft for approval.", "forecast"),
     S.hub("/events", "Events and staff support", "Ask other teams for staff, or answer their requests for yours.", "events"),
     S.nav("/"), S.search("/"), S.bell("/"),
   ],
   purchasing: () => [
+    S.page("/forecast?tab=auto", "Automatic ordering", "What Tyll ordered this morning. Orders over the limit, or with an item to review, wait for you in Orders.", "forecast"),
     S.page("/forecast", "Predictions", "What to order and how much for the month. Orders holds requests, purchase orders and deliveries.", "forecast"),
     S.page("/forecast?tab=approvals&queue=purchasing", "Requests to review", "Open a request to check quantities and choose the supplier, then approve or send it back.", "forecast"),
     S.bell("/forecast?tab=approvals"),

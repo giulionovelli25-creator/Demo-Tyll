@@ -762,7 +762,7 @@ export function saveRequest(user: User, body: Record<string, unknown>): Result<{
 }
 
 /** Who is told about a request at each step: the next reviewer, then the person who asked. */
-function handoff(s: Shape, r: PurchaseRequest, user: User) {
+export function handoff(s: Shape, r: PurchaseRequest, user: User) {
   const ref = r.id, propertyId = r.propertyId, from = user.id;
   const href = `/forecast?tab=approvals&request=${r.id}`;
   const where = r.deptId ? deptById[r.deptId]?.name ?? "A department" : r.eventId ? "Events" : outletLabelFor(r);

@@ -132,3 +132,10 @@ export function useMonthPlan(propertyId: string | null) {
   const version = usePlanDrafts((s) => s.version);
   return usePost<{ plan: MonthPlanOut }>("/api/plan/month", propertyId ? { propertyId, version, ...entries } : null);
 }
+
+/** Automatic ordering for one hotel: this morning's run, its orders and the rules. */
+export function useAutoOrder(propertyId: string | null) {
+  const entries = useSessionEntries();
+  const version = usePlanDrafts((s) => s.version);
+  return usePost<{ auto: import("./server/auto-order").AutoOut }>("/api/auto-order", propertyId ? { propertyId, version, ...entries } : null);
+}

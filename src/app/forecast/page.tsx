@@ -5,6 +5,7 @@ import { WhatToBuy } from "@/components/forecast/buy";
 import { WhatToPrep } from "@/components/forecast/prep";
 import { useSection } from "@/components/module-hub";
 import { Outlook } from "@/components/prediction/outlook";
+import { AutoOrdering } from "@/components/prediction/auto-order";
 import { Predictions } from "@/components/prediction/predictions";
 import { PageHeader, PageTabs, SummaryBar, Tabs, linkButton } from "@/components/ui";
 import type { ReactNode } from "react";
@@ -18,9 +19,9 @@ import type { PurchaseRequest } from "@/lib/types";
 import { fmtMoney, sum } from "@/lib/util";
 import { orderStage } from "@/lib/domain/order-stage";
 
-type Tab = "approvals" | "buy" | "prep" | "outlook";
+type Tab = "approvals" | "buy" | "prep" | "outlook" | "auto";
 
-const LABEL: Record<Tab, string> = { approvals: "Orders", buy: "Order by hand", prep: "Plan the prep", outlook: "Next 7 days" };
+const LABEL: Record<Tab, string> = { approvals: "Orders", buy: "Order by hand", prep: "Plan the prep", outlook: "Next 7 days", auto: "Automatic ordering" };
 const WAITING: PurchaseRequest["status"][] = ["purchasing", "accounting", "manager"];
 
 /** Predictions come first. Orders is a page of its own, with its own filters. */
@@ -34,6 +35,7 @@ export default function ForecastPage() {
     can(user, "purchase.create") && (hasOutlets || can(user, "events.plan")) && "buy",
     (can(user, "prep.plan") || can(user, "prep.complete")) && "prep",
     hasOutlets && "outlook",
+    predicts && can(user, "purchase.create") && "auto",
   ].filter(Boolean) as Tab[]);
   const [tab, setTab] = useSection<Tab>("/forecast", tabs, predicts ? null : "approvals");
   // Predictions, Plan the prep and Next 7 days are one item: what is coming and what to buy for it.
@@ -42,6 +44,7 @@ export default function ForecastPage() {
     return parts.length > 1 && predicts ? <PageTabs tabs={parts.map((p) => ({ href: p.href, label: p.label, active: p.id === here }))} /> : null;
   };
   if (tab === null) return <Predictions tabs={planTabs(null)} />;
+  if (tab === "auto") return <AutoOrdering />;
   return <Orders tab={tab} tabs={tabs} setTab={setTab} predicts={predicts} planTabs={planTabs(tab)} />;
 }
 

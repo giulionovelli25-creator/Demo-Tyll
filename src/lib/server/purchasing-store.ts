@@ -11,6 +11,7 @@ import { seedGuest, type GuestShape } from "./guest-seed";
 import { emptyNotify, type NotifyShape } from "./notify";
 import { seedStage6, type FinanceShape, type SalesShape, type StockLogShape } from "./stage6-seed";
 import { DEMO_TODAY, addDays, diffDays } from "../util";
+import { defaultAuto, type AutoShape } from "../domain/auto-order";
 
 export interface Shape {
   version: 1;
@@ -34,6 +35,8 @@ export interface Shape {
   notify: NotifyShape;
   /** The walking order for stock counts, per hotel. Absent until a manager sets one. */
   countRoutes?: Record<string, string[]>;
+  /** Automatic ordering: the rules per hotel and each morning's run. Added on first use. */
+  autoOrder?: AutoShape;
   /** The business date the records were last moved to, and the shape of the demo data they were built for. */
   businessDate?: string;
   dataVersion?: number;
@@ -50,7 +53,7 @@ function moveToToday(data: Shape): Shape {
   return { ...(JSON.parse(text) as Shape), businessDate: DEMO_TODAY };
 }
 
-const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
+const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? dataFile("purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
@@ -73,6 +76,7 @@ export function loadStore(): Shape {
     writeStore({ ...cache.data, guest: seedGuest() });
   }
   if (!cache.data.notify) writeStore({ ...cache.data, notify: emptyNotify() });
+  if (!cache.data.autoOrder) writeStore({ ...cache.data, autoOrder: defaultAuto() });
   if (!cache.data.finance || !cache.data.sales || !cache.data.stockLog) {
     const add = seedStage6();
     writeStore({ ...cache.data, finance: cache.data.finance ?? add.finance, sales: cache.data.sales ?? add.sales, stockLog: cache.data.stockLog ?? add.stockLog });

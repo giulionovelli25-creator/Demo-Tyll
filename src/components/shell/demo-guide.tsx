@@ -44,6 +44,16 @@ export const SCENARIOS: Scenario[] = [
     ],
   },
   {
+    id: "auto", main: true, scope: "purchasing", title: "Let Tyll order automatically every morning", summary: "The prediction becomes orders by itself. Small orders go straight to the supplier, the rest wait for approval.",
+    steps: [
+      { as: "u-fnb", href: "/forecast?tab=auto", text: "Marco opens Automatic ordering (Purchasing in the menu). At 06:00 Tyll turned what must be ordered today or tomorrow into one order per supplier." },
+      { text: "Each order says why it went straight to the supplier (under the limit, nothing to review) or why it waits (over the limit, or an item that needs a manager's eye)." },
+      { text: "Choose Change the rules: the limit for sending without approval, the run time, and the items always ordered by hand. Changes apply from the next run." },
+      { as: "u-buy", href: "/forecast?tab=approvals&queue=purchasing", text: "Nadia (Purchasing) sees only the orders that wait, marked Automatic, with the reason. She approves them as usual." },
+      { as: "u-store", href: "/staff?do=receive", text: "Ahmed (Storekeeper) is told a delivery is on its way and records what arrives. In this demo nothing reaches a real supplier." },
+    ],
+  },
+  {
     id: "forecast", main: true, scope: "purchasing", title: "Predict a shortage and order what we need", summary: "One purchase request travels from the restaurant to purchasing, accounting and the storeroom.",
     steps: [
       { as: "u-rm", href: "/forecast?tab=buy", text: "Sara opens Order by hand (Purchasing, More, Order by hand). Change the expected guests and watch the quantities recalculate." },

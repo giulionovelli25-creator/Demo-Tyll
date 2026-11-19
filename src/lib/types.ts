@@ -604,6 +604,8 @@ export interface PurchaseRequest {
   expectedAt?: string;
   /** The delivery record this order arrived as, for the ordered, delivered and invoiced view. */
   deliveryId?: string;
+  /** Created by the morning automatic ordering run, with the rule that decided whether it was sent or held. */
+  auto?: { runAt: string; decision: "sent" | "held"; why: string };
   history: RequestEvent[];
 }
 

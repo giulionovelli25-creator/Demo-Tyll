@@ -20,7 +20,9 @@ import { useCtx, useSessionEntries, useView } from "@/lib/hooks";
 import { StripTrend } from "@/components/charts";
 import { useDailyTotals } from "@/lib/strip-data";
 import { usePilot } from "@/lib/pilot";
-import { usePlanDrafts } from "@/lib/plan-hooks";
+import { useAutoOrder, usePlanDrafts } from "@/lib/plan-hooks";
+import { reviewReason } from "@/lib/domain/auto-order";
+export { reviewReason };
 import type { MonthPlanOut, PlanItem } from "@/lib/server/purchasing";
 import type { PurchaseRequest } from "@/lib/types";
 import { DEMO_TODAY, addDays, eachDay, unitLabel, fmtDate, fmtMoney, fmtNum, fmtPct, fmtQty, sum } from "@/lib/util";
@@ -75,15 +77,6 @@ export const usePlanEdits = create<{ qty: Record<string, number>; set(id: string
 );
 
 const daysLeft = (plan: MonthPlanOut) => Math.max(1, eachDay({ from: addDays(DEMO_TODAY, 1), to: plan.period.to }).length);
-
-/** Why a recommendation needs a manager's eye. A rule, said in words, never a black box. */
-export function reviewReason(r: PlanItem, qty: number, plan: MonthPlanOut): string | null {
-  const perDay = r.predicted / daysLeft(plan);
-  if (r.lastFourWeeks > 0 && qty > r.lastFourWeeks * 1.5) return `more than 1.5 times the last 4 weeks of use (${fmtQty(r.lastFourWeeks, r.unit)})`;
-  if (r.shelfLifeDays <= 3 && perDay > 0 && qty / perDay > r.shelfLifeDays + 0.5) return `keeps ${r.shelfLifeDays} days, and this covers ${fmtNum(qty / perDay, 0)}`;
-  if (plan.inputs.confidence === "low") return "the forecast confidence is low this month";
-  return null;
-}
 
 /** The figures behind one recommendation, with the manager's quantity if they changed it. */
 function useRec(r: PlanItem, plan: MonthPlanOut) {
@@ -276,6 +269,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
     if (past.length) past[past.length - 1].predicted = past[past.length - 1].value;
     return [...past, ...future];
   }, [daily, plan]);
+  const autoOrder = useAutoOrder(mayBuild && plan ? plan.propertyId : null).data?.auto;
   const [allOpen, setAllOpen] = useState(false);
   const openAll = () => { setAllOpen(true); requestAnimationFrame(() => document.getElementById("all-recommended")?.scrollIntoView({ block: "start", behavior: "smooth" })); };
 
@@ -302,6 +296,11 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
             ) : undefined}
           />
           {tabs}
+          {autoOrder?.settings.on && (
+            <p className="rounded-panel border border-line bg-paper px-5 py-3 text-[13px] text-graphite shadow-panel sm:px-6">
+              <span className="font-medium text-ink">Automatic ordering is on.</span> Every morning at {autoOrder.settings.time} Tyll orders the items due that day or the next{autoOrder.orders.length ? `; this morning it placed ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, so they no longer show here` : ""}. Find them under Automatic ordering in the menu.
+            </p>
+          )}
           <section id="order" className="scroll-mt-24">
             <Panel title={dueToday.length ? `Order today: ${dueToday.length} ${dueToday.length === 1 ? "item" : "items"}, ${local(sum(dueToday, (r) => r.nextCost))}` : "Order these first"} flush>
               {rows.length === 0 ? <div className="px-4 pb-6 sm:px-6"><EmptyState title="Nothing to order">Stock covers the month.</EmptyState></div> : (

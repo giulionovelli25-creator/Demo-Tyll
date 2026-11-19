@@ -12,7 +12,8 @@ import { useAlertFeed } from "@/lib/alert-feed";
 import { outletById, propertyById } from "@/lib/data/catalog";
 import { compare, computeTotals, exceptionInSel } from "@/lib/domain/metrics";
 import { topAlerts } from "@/lib/domain/top-alerts";
-import type { ModuleId } from "@/lib/domain/access";
+import { can, type ModuleId } from "@/lib/domain/access";
+import { useAutoOrder } from "@/lib/plan-hooks";
 import { useCtx, useInvestigations, useView } from "@/lib/hooks";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, fmtDate, fmtMoney, fmtPct, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
 
@@ -125,6 +126,8 @@ export function Home() {
   const { plan, open, pour, error, loading } = useAlertFeed();
   const investigations = useInvestigations();
   const checks = useDeliveryChecks(plan?.propertyId ?? propertyId ?? "lis");
+  // What automatic ordering placed this morning, for the Predictions card. Only for roles that order.
+  const autoOrder = useAutoOrder(can(user, "purchase.create") && plan ? plan.propertyId : null).data?.auto;
   const wasteRows = useMemo(() => wasteInCurrency(ctx, sel.outletIds, sel.currency), [ctx, sel.outletIds, sel.currency]);
   const pourRate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
   const pourDaily = useMemo(() => (pour?.wine.daily ?? []).map((d, i) => ({ date: d.date, value: (d.gapValue + (pour?.spirits.daily[i]?.gapValue ?? 0)) * pourRate })), [pour, pourRate]);
@@ -274,8 +277,10 @@ export function Home() {
         />
         <Card
           module="forecast" title="Predictions" picture={<Split parts={[{ n: dueToday, className: "bg-money" }, { n: dueWeek, className: "bg-money/50" }, { n: dueLater, className: "bg-money/20" }]} />} number={local(sum(toOrder, (i) => i.cost))} loading={!plan && loading}
-          line={`Buying planned to ${plan ? fmtDate(plan.period.to) : "month end"}: ${toOrder.length} items.${nextDate ? ` Next order ${nextDate === DEMO_TODAY ? "today" : fmtDate(nextDate, true)}.` : ""}`}
-          cta="See what to order" href="/forecast"
+          line={autoOrder?.run && autoOrder.orders.length
+            ? `Ordered automatically at ${autoOrder.run.time}: ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, ${local(sum(autoOrder.orders, (r) => sum(r.lines, (l) => l.qty * l.unitPrice)))}. ${autoOrder.orders.filter((r) => r.auto?.decision === "held").length} waiting for approval.`
+            : `Buying planned to ${plan ? fmtDate(plan.period.to) : "month end"}: ${toOrder.length} items.${nextDate ? ` Next order ${nextDate === DEMO_TODAY ? "today" : fmtDate(nextDate, true)}.` : ""}`}
+          cta={autoOrder?.run && autoOrder.orders.length ? "See automatic orders" : "See what to order"} href={autoOrder?.run && autoOrder.orders.length ? "/forecast?tab=auto" : "/forecast"}
         />
         <Card
           module="money" title="Revenue" picture={<Spark values={dailyRevenue.slice(-7).map((d) => d.value)} />} number={money(net, { compact: true })}

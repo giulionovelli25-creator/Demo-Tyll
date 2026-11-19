@@ -93,8 +93,8 @@ function RequestList({ base }: { base: string }) {
                         <Td><button type="button" className="num text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`${base}&request=${r.id}`); }}>{r.id}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
                         <Td>{where(r)}<span className="block text-xs text-steel">{fmtDate(r.period.from)}{r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to)}` : ""}</span></Td>
                         <Td>{suppliersOf(r)}</Td>
-                        <Td>{personName(r.createdBy)}</Td>
-                        <Td>{approverOf(r) ? personName(approverOf(r)!) : <span className="text-steel">Not yet</span>}</Td>
+                        <Td>{r.auto ? <Badge tone="accent">Automatic</Badge> : personName(r.createdBy)}</Td>
+                        <Td>{r.auto?.decision === "sent" ? "Automatic rule" : approverOf(r) ? personName(approverOf(r)!) : <span className="text-steel">Not yet</span>}</Td>
                         <Td align="right">{fmtMoney(total(r), propertyById[r.propertyId].currency)}</Td>
                         <Td><Badge tone={STAGE_LABEL[orderStage(r)].tone}>{STAGE_LABEL[orderStage(r)].label}</Badge></Td>
                         <Td className={cn("whitespace-nowrap", orderStage(r) === "late" ? "font-medium text-neg" : "text-graphite")}>{arrival(r) || <span className="text-steel">Not sent</span>}</Td>
@@ -116,11 +116,11 @@ function Progress({ d }: { d: RequestDetail }) {
   const names: Record<string, string> = { purchasing: "Purchasing review", accounting: "Accounting review", manager: d.policy.managerLabel };
   const stepsDone = (s: string) => r.history.find((h) => h.action.toLowerCase().startsWith(names[s]?.toLowerCase() ?? s) && h.action.endsWith("approved"));
   const submitted = r.history.find((h) => h.action.startsWith("Submitted") || h.action.startsWith("Resubmitted"));
+  const auto = r.auto?.decision === "sent";
   const items = [
-    { key: "draft", label: "Draft", at: r.history[0]?.at, done: true },
-    { key: "submitted", label: "Submitted", at: submitted?.at, done: !!submitted },
-    ...d.steps.map((s) => ({ key: s, label: names[s], at: stepsDone(s)?.at, done: !!stepsDone(s) })),
-    { key: "approved", label: "Approved", at: r.history.find((h) => h.status === "approved")?.at, done: r.status === "approved" || r.status === "received" },
+    { key: "draft", label: r.auto ? "Created automatically" : "Draft", at: r.history[0]?.at, done: true },
+    ...(auto ? [] : [{ key: "submitted", label: "Submitted", at: submitted?.at, done: !!submitted }, ...d.steps.map((s) => ({ key: s, label: names[s], at: stepsDone(s)?.at, done: !!stepsDone(s) }))]),
+    { key: "approved", label: auto ? "Approved by the rule" : "Approved", at: r.history.find((h) => h.status === "approved")?.at, done: r.status === "approved" || r.status === "received" },
     { key: "sent", label: "Sent", at: r.history.find((h) => h.action.startsWith("Sent to"))?.at, done: !!r.sentAt },
     { key: "delivered", label: orderStage(r) === "short" ? "Delivered short" : "Delivered", at: r.history.find((h) => h.status === "received")?.at, done: r.status === "received" },
   ];
@@ -189,12 +189,18 @@ function RequestView({ id, base }: { id: string; base: string }) {
       </div>
       <Panel
         title={<span className="flex flex-wrap items-center gap-3"><span className="num">{r.id}</span><Badge tone={STAGE_LABEL[orderStage(r)].tone}>{STAGE_LABEL[orderStage(r)].label}</Badge>{r.poNumber && <Badge>{r.poNumber}</Badge>}</span>}
-        description={`${where(r)}, ${propertyById[r.propertyId].name}. For ${fmtDate(r.period.from, true)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, true)}` : ""}. Raised by ${personName(r.createdBy)}.`}
+        description={`${where(r)}, ${propertyById[r.propertyId].name}. For ${fmtDate(r.period.from, true)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, true)}` : ""}. ${r.auto ? `Created by automatic ordering on ${personName(r.createdBy)}'s rules.` : `Raised by ${personName(r.createdBy)}.`}`}
       >
         {sent && r.status !== "draft" && (
           <div role="status" className="mb-5 rounded-2xl border border-pos/25 bg-pos-soft px-5 py-4">
             <p className="text-sm font-medium text-ink">Request sent to Purchasing</p>
             <p className="mt-1 text-sm text-graphite">{r.id} · {r.lines.map((l) => `${ingredientById[l.ingredientId].name} ${l.qty} ${unitOf(l.ingredientId)}`).slice(0, 4).join(", ")}{r.lines.length > 4 ? ` and ${r.lines.length - 4} more` : ""}. Now with: {STATUS[r.status].label.toLowerCase()}. You will be notified of each decision.</p>
+          </div>
+        )}
+        {r.auto && (
+          <div className="mb-5 rounded-2xl border border-line bg-cloud px-5 py-4">
+            <p className="text-sm font-medium text-ink">{r.auto.decision === "sent" ? `Ordered automatically at ${r.auto.runAt.slice(11, 16)} and sent without waiting` : `Created automatically at ${r.auto.runAt.slice(11, 16)}, waiting for approval`}</p>
+            <p className="mt-1 text-sm text-graphite">{r.auto.decision === "sent" ? "Why it went straight to the supplier: " : "Why it waits: "}{r.auto.why} The quantities are the prediction&rsquo;s, with the reasoning on Predictions. In this demo nothing is sent to a supplier.</p>
           </div>
         )}
         <Progress d={data} />

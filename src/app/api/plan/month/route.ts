@@ -2,6 +2,8 @@ import type { NextRequest } from "next/server";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
 import { buildMonthOrder, monthPlanFor } from "@/lib/server/purchasing";
 import { cleanEntries } from "@/lib/server/stock";
+import { ensureAutoRun } from "@/lib/server/auto-order";
+import { allowedProperties } from "@/lib/domain/access";
 
 /** The Stock page's plan to month end. action "build" also creates or updates a draft purchase order. */
 export async function POST(req: NextRequest) {
@@ -11,6 +13,8 @@ export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
   const entries = cleanEntries(g.user, body);
   const propertyId = String(body.propertyId ?? "");
+  // This morning's automatic orders come first, so every page shows the plan after them.
+  if (allowedProperties(g.user).includes(propertyId)) ensureAutoRun(propertyId, entries);
   if (body.action === "build") {
     // Quantities the manager changed on the Predictions page. Anything that is not a sensible number is ignored.
     const raw = body.quantities && typeof body.quantities === "object" ? (body.quantities as Record<string, unknown>) : {};
