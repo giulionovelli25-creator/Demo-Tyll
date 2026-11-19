@@ -9,6 +9,8 @@ import { historicalPrepRatio } from "../domain/operations";
 import { orderTotals } from "../domain/orders";
 import type { Order, User } from "../types";
 import { publicDemo } from "./auth";
+import { confirmedByStockTake } from "./stocktake";
+import type { Exception } from "../types";
 
 /** The dataset as sent to the browser: no orders (fetched one by one) and no lookup maps. */
 export type Snapshot = Omit<Dataset, "orders" | "ordersById" | "chargesById"> & { prepRatios: Record<string, number> };
@@ -18,7 +20,7 @@ const cache = new Map<string, Snapshot>();
 export function snapshotFor(user: User): Snapshot {
   const key = `${publicDemo()}|${user.role}|${JSON.stringify(user.propertyIds)}|${JSON.stringify(user.outletIds)}`;
   const hit = cache.get(key);
-  if (hit) return hit;
+  if (hit) return withBasis(hit);
   const d = getDataset();
   const outlets = new Set(allowedOutlets(user));
   const props = new Set(allowedProperties(user));
@@ -54,7 +56,17 @@ export function snapshotFor(user: User): Snapshot {
     prepRatios: Object.fromEntries([...outlets].map((id) => [id, historicalPrepRatio(d.orders, id)])),
   };
   cache.set(key, snap);
-  return snap;
+  return withBasis(snap);
+}
+
+/** Stock based losses stay estimates until an approved stock take on or after the flag counted the item. */
+function withBasis(snap: Snapshot): Snapshot {
+  const confirm = (e: Exception): Exception => {
+    if ((e.type !== "usage_variance" && e.type !== "stock_shortfall") || !e.ingredientId) return e;
+    const take = confirmedByStockTake(e.propertyId, e.ingredientId, e.date);
+    return take ? { ...e, basis: "confirmed", comparedWith: `${e.comparedWith ?? ""} Confirmed by stock take ${take}.`.trim() } : { ...e, basis: "estimate" };
+  };
+  return { ...snap, exceptions: snap.exceptions.map(confirm) };
 }
 
 export const canSeeOrder = (user: User, o: Order) => user.role !== "employee" && allowedOutlets(user).includes(o.outletId);

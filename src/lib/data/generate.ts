@@ -627,6 +627,8 @@ function varianceExceptions(stock: OutletStock): Exception[] {
       id: `EX-VAR-${code}-${p.ingredientId.toUpperCase()}-${p.to.date.slice(5).replace("-", "")}`,
       type: "usage_variance" as const, propertyId: p.propertyId, outletId: p.outletId, date: p.to.date, min: p.to.min,
       ingredientId: p.ingredientId, exposure: Math.round(v.value * 100) / 100, headline: headlineFor(p, v), period: p,
+      comparedWith: `Compared with sales: the outlet's counts on ${p.from.date} and ${p.to.date} show more used than the recipes of what was sold, after recorded waste and issues.`,
+      basis: "estimate" as const,
     }];
   });
 }

@@ -2,6 +2,7 @@
 // shown again. Only in demo mode, only for the owner or general manager, and only the demo store is touched:
 // accounts, sessions, the audit log and every file outside the store stay as they are.
 import { defaultAuto } from "../domain/auto-order";
+import { seedProcurement } from "./procurement-seed";
 import { userById } from "../data/catalog";
 import type { User } from "../types";
 import { emptyNotify } from "./notify";
@@ -25,8 +26,8 @@ export function resetDemo(user: User, raw: unknown): { ok: true; scope: ResetSco
   const has = (s: ResetScope) => scope === "all" || scope === s;
   mutateStore((x) => {
     const six = seedStage6();
-    if (has("stock")) x.stockLog = six.stockLog;
-    if (has("purchasing") || has("events")) { x.requests = seedRequests(); x.plans = []; x.finance = six.finance; x.seq = x.requests.length; x.autoOrder = defaultAuto(); }
+    if (has("stock")) { x.stockLog = six.stockLog; x.stockTakes = []; x.cashUps = []; }
+    if (has("purchasing") || has("events")) { x.requests = seedRequests(); x.plans = []; x.finance = six.finance; x.seq = x.requests.length; x.autoOrder = defaultAuto(); x.procurement = seedProcurement(); }
     if (has("events") || has("sales")) { const ops = seedOps(); x.events = ops.events; x.support = ops.support; x.assignments = ops.assignments; Object.assign(x.counters, ops.counters); for (const k of Object.keys(x.counters)) if (/^(SR|EVT)-/.test(k) && !(k in ops.counters)) delete x.counters[k]; }
     if (has("sales")) x.sales = six.sales;
     if (has("guest")) x.guest = seedGuest();

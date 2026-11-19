@@ -271,14 +271,14 @@ export interface ExpiryAction { kind: ExpiryActionKind; text: string }
  * What to do with a batch before it expires, by fixed rules in this order: expired, log it as waste; normal use covers
  * it, use it first; another outlet uses enough, transfer it; a dish uses it, put it in a special; otherwise staff meal.
  */
-export function expiryAction(x: { left: number; daysLeft: number; dailyUse: number; unitWord: string; transferTo?: { name: string; dailyUse: number }; dish?: string }): ExpiryAction {
+export function expiryAction(x: { left: number; daysLeft: number; dailyUse: number; unitWord: string; transferTo?: { name: string; canUse: number }; dish?: string }): ExpiryAction {
   if (x.daysLeft < 0) return { kind: "waste", text: "Expired. Remove it and log it as waste with the reason Expired." };
   const days = Math.max(1, x.daysLeft + 1);
   if (x.dailyUse * days >= x.left - 1e-9) return { kind: "use_first", text: `Normal use covers it (${round2(x.dailyUse)} ${x.unitWord} a day). Use this batch first.` };
-  const extra = x.left - x.dailyUse * days;
-  if (x.transferTo && x.transferTo.dailyUse * days >= extra - 1e-9) return { kind: "transfer", text: `Transfer ${round2(extra)} ${x.unitWord} to ${x.transferTo.name}, which uses ${round2(x.transferTo.dailyUse)} a day.` };
-  if (x.dish) return { kind: "special", text: `Use ${round2(extra)} ${x.unitWord} in a special, such as ${x.dish}.` };
-  return { kind: "staff_meal", text: `Use ${round2(extra)} ${x.unitWord} in the staff meal.` };
+  const extra = round2(x.left - x.dailyUse * days);
+  if (x.transferTo && x.transferTo.canUse >= extra - 1e-9) return { kind: "transfer", text: `Transfer ${extra} ${x.unitWord} to ${x.transferTo.name}, which can use ${round2(x.transferTo.canUse)} before it expires.` };
+  if (x.dish) return { kind: "special", text: `Use ${extra} ${x.unitWord} in a special, such as ${x.dish}.` };
+  return { kind: "staff_meal", text: `Use ${extra} ${x.unitWord} in the staff meal.` };
 }
 
 // ---- Stock take variance -----------------------------------------------------------------------------------------

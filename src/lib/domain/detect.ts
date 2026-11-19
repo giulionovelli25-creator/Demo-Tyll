@@ -1,8 +1,8 @@
 // Rule-based detection of unusual restaurant transactions and room-charge postings.
 // Every rule reads recorded facts only. Nothing here decides intent or blame.
-import { itemById, outletById } from "../data/catalog";
+import { itemById, outletById, propertyById } from "../data/catalog";
 import type { Exception, ExceptionType, Order, RoomCharge } from "../types";
-import { addDays, round2 } from "../util";
+import { addDays, fmtMoney, fmtTime, round2 } from "../util";
 import { lineValue, orderTotals } from "./orders";
 
 /** Thresholds a hotel would agree with Tyll during onboarding. */
@@ -43,12 +43,15 @@ const names = (o: Order, pred: (i: number) => boolean) =>
 
 export function detectOrderException(o: Order): Exception | null {
   const propertyId = outletById[o.outletId].propertyId;
+  const money = (n: number) => fmtMoney(n, propertyById[propertyId].currency);
+  const yes = (v: unknown, what: string) => (v ? `${what} recorded` : `no ${what}`);
   const base = { id: `EX-${o.id}`, propertyId, outletId: o.outletId, date: o.date, orderId: o.id, staffId: o.staffId };
   const t = orderTotals(o);
 
   if (o.voided) {
     if (t.removedPost > 0 && (!o.voided.reason || !o.voided.approvedBy)) {
-      return { ...base, type: "unexplained_void", min: o.voided.min, exposure: t.removedPost, headline: "Whole order voided after items were sent for preparation" };
+      return { ...base, type: "unexplained_void", min: o.voided.min, exposure: t.removedPost, headline: "Whole order voided after items were sent for preparation",
+        comparedWith: `Compared with the void rule: an order voided after items were sent needs a reason and a manager's approval. This void: ${yes(o.voided.reason, "reason")}, ${yes(o.voided.approvedBy, "approval")}.` };
     }
     return null;
   }
@@ -63,7 +66,8 @@ export function detectOrderException(o: Order): Exception | null {
     const what = names(o, (i) => flagged[i]);
     const station = itemById[first.itemId].station;
     if (flaggedLines.length >= 2) {
-      return { ...base, type: "bill_mismatch", staffId: first.removedBy ?? o.staffId, min, exposure, headline: `${flaggedLines.length} items sent for preparation are missing from the final bill` };
+      return { ...base, type: "bill_mismatch", staffId: first.removedBy ?? o.staffId, min, exposure, headline: `${flaggedLines.length} items sent for preparation are missing from the final bill`,
+        comparedWith: `Compared with the kitchen and bar display: ${flaggedLines.length} items were sent for preparation and are not on the final bill, with no manager approval for removing them.` };
     }
     const prepared = first.completedMin !== undefined && first.completedMin <= (first.removedMin ?? 0);
     return {
@@ -75,6 +79,9 @@ export function detectOrderException(o: Order): Exception | null {
       headline: prepared
         ? `${what} was marked ready by the kitchen, then removed from the bill`
         : `${what} removed ${wait} min after it was sent to the ${station}`,
+      comparedWith: prepared
+        ? `Compared with the kitchen display: marked ready at ${fmtTime(first.completedMin!)}, removed from the bill at ${fmtTime(first.removedMin ?? o.closeMin)}, with no manager approval.`
+        : `Compared with the ${station} display: sent at ${fmtTime(first.sentMin ?? 0)}, removed at ${fmtTime(first.removedMin ?? o.closeMin)}, with no manager approval.`,
     };
   }
 
@@ -89,6 +96,7 @@ export function detectOrderException(o: Order): Exception | null {
         min: o.refund.min,
         exposure: o.refund.amount,
         headline: !o.refund.reason ? "Refund issued with no reason recorded" : `Refund of ${Math.round(share * 100)}% of the bill, ${late} min after payment`,
+        comparedWith: `Compared with the refund rule: a reason, at most ${Math.round(POLICY.refundMaxShare * 100)}% of the bill, within ${POLICY.refundLateMinutes} min of payment. This refund: ${yes(o.refund.reason, "reason")}, ${Math.round(share * 100)}% of the bill, ${late} min after payment.`,
       };
     }
   }
@@ -100,6 +108,7 @@ export function detectOrderException(o: Order): Exception | null {
       min: o.closeMin - 2,
       exposure: t.discounts,
       headline: o.discountPct > POLICY.discountMaxPct ? `${o.discountPct}% discount, above the ${POLICY.discountMaxPct}% policy limit` : `${o.discountPct}% discount with no ${!o.discountReason ? "reason" : "approval"} recorded`,
+      comparedWith: `Compared with the discount rule: at most ${POLICY.discountMaxPct}%, with a reason and a manager's approval. This discount: ${o.discountPct}%, ${yes(o.discountReason, "reason")}, ${yes(o.discountApprovedBy, "approval")}.`,
     };
   }
 
@@ -111,6 +120,7 @@ export function detectOrderException(o: Order): Exception | null {
       min: o.closeMin - 2,
       exposure: t.comps,
       headline: t.comps > POLICY.compMaxValue ? "Complimentary items above the agreed limit" : "Complimentary item with no reason or approval recorded",
+      comparedWith: `Compared with the comp rule: up to ${money(POLICY.compMaxValue)} an order, each item with a reason and an approval. This order: ${money(t.comps)} complimentary, ${comped.filter((l) => !l.reason || !l.approvedBy).length} of ${comped.length} without a reason or approval.`,
     };
   }
   return null;
@@ -119,15 +129,16 @@ export function detectOrderException(o: Order): Exception | null {
 export function detectRoomChargeException(c: RoomCharge): Exception | null {
   const base = { id: `EX-${c.id}`, propertyId: c.propertyId, outletId: c.outletId, date: c.date, min: c.min, chargeId: c.id, orderId: c.orderId };
   const what = c.source === "restaurant" || c.source === "room_service" ? "charge" : `${c.source} charge`;
+  const money = (n: number) => fmtMoney(n, propertyById[c.propertyId].currency, { decimals: true });
   if (c.posted.length === 0) {
-    return { ...base, type: "room_charge_missing", exposure: c.expected, headline: `Room ${c.room}: ${what} has not reached the guest bill` };
+    return { ...base, type: "room_charge_missing", exposure: c.expected, headline: `Room ${c.room}: ${what} has not reached the guest bill`, comparedWith: `Compared with the guest folio in the PMS: the till charged ${money(c.expected)} to room ${c.room}; the folio has no matching posting.` };
   }
   if (c.posted.length > 1) {
-    return { ...base, type: "room_charge_duplicate", exposure: round2(c.posted.slice(1).reduce((s, x) => s + x, 0)), headline: `Room ${c.room}: ${what} posted ${c.posted.length} times` };
+    return { ...base, type: "room_charge_duplicate", exposure: round2(c.posted.slice(1).reduce((s, x) => s + x, 0)), headline: `Room ${c.room}: ${what} posted ${c.posted.length} times`, comparedWith: `Compared with the guest folio in the PMS: one charge of ${money(c.expected)} on the till, ${c.posted.length} postings on the folio.` };
   }
   const diff = round2(c.posted[0] - c.expected);
   if (Math.abs(diff) > POLICY.roomChargeTolerance) {
-    return { ...base, type: "room_charge_incorrect", exposure: Math.abs(diff), headline: `Room ${c.room}: guest bill shows ${diff > 0 ? "more" : "less"} than the ${what}` };
+    return { ...base, type: "room_charge_incorrect", exposure: Math.abs(diff), headline: `Room ${c.room}: guest bill shows ${diff > 0 ? "more" : "less"} than the ${what}`, comparedWith: `Compared with the guest folio in the PMS: ${money(c.expected)} on the till, ${money(c.posted[0])} on the folio. Differences up to ${money(POLICY.roomChargeTolerance)} are ignored.` };
   }
   return null;
 }
