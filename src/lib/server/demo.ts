@@ -35,6 +35,7 @@ export function resetDemo(user: User, raw: unknown): { ok: true; scope: ResetSco
     if (has("stock")) for (const k of Object.keys(x.counters)) if (/^(ST-|CU$)/.test(k)) delete x.counters[k];
     // Notices may point at records that no longer exist; start the inbox afresh for the reset area.
     x.notify = scope === "all" ? emptyNotify() : { ...x.notify, notices: [], emails: x.notify.emails };
+    x.expiryChecks = {};
   });
   audit(user.id, "Demo data reset", `Scope: ${scope}`, "");
   return { ok: true, scope };

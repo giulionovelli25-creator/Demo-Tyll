@@ -1,7 +1,7 @@
 // The sidebar, grouped into the three sections of tyll.ai. One list, read by the sidebar, the phone menu, the page colour and the Back button.
 // Each page appears once. Similar pages are merged into one item and reached by the tabs on that page.
 import {
-  Banknote, Bell, CalendarClock, ClipboardCheck, ListChecks, Store, FileText, Flag, LayoutDashboard, LayoutGrid, Package, Settings, ShoppingCart, Trash2, Truck, ClipboardList, Wine, type LucideIcon,
+  Banknote, Bell, CalendarClock, CalendarX, ClipboardCheck, ListChecks, Store, FileText, Flag, LayoutDashboard, LayoutGrid, Package, Settings, ShoppingCart, Trash2, Truck, ClipboardList, Wine, type LucideIcon,
 } from "lucide-react";
 import { moduleOfPath, type ModuleId, type Permission } from "./domain/access";
 
@@ -37,7 +37,8 @@ export const SECTIONS: NavSection[] = [
   {
     id: "stock", title: "Stock and waste", icon: Package, tone: "teal",
     items: [
-      { id: "stock", label: "Stock levels", short: "Stock", href: "/stock", icon: Package, also: ["/stock?tab=expiry"] },
+      { id: "stock", label: "Stock levels", short: "Stock", href: "/stock", icon: Package },
+      { id: "expiry", label: "Expiring soon", short: "Expiry", href: "/stock?tab=expiry", icon: CalendarX },
       { id: "waste", label: "Waste and breakage", short: "Waste", href: "/waste", icon: Trash2 },
       { id: "missing", label: "Stock takes and missing stock", short: "Counts", href: "/stock?tab=takes", icon: ClipboardCheck, also: ["/stock?tab=where", "/stock?tab=counts"] },
       { id: "drinks", label: "Over pouring", short: "Pouring", href: "/drinks", icon: Wine },

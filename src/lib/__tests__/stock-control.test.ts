@@ -207,3 +207,17 @@ describe("reconciliation rules", () => {
     expect(loadStore().notify.notices.some((n) => n.type === "cash-diff")).toBe(true);
   });
 });
+
+describe("expiry bell notice", () => {
+  it("tells the kitchen, outlet managers, F&B director and storekeeper once a day, and nobody else", () => {
+    const rows = ok(X.expiringFor(U("u-gm"), "lis", none, 1)).rows;
+    X.ensureExpiryNotice("lis");
+    X.ensureExpiryNotice("lis");
+    const notices = loadStore().notify.notices.filter((n) => n.type === "expiry");
+    expect(loadStore().expiryChecks?.lis).toBe(DEMO_TODAY);
+    if (!rows.length) return void expect(notices).toEqual([]);
+    expect(new Set(notices.map((n) => n.to))).toEqual(new Set(["u-chef", "u-rm", "u-lby", "u-fnb", "u-store"]));
+    expect(notices.every((n) => n.ref === `EXP-lis-${DEMO_TODAY}` && n.href === "/stock?tab=expiry")).toBe(true);
+    expect(notices[0].title).toMatch(/to use today or tomorrow|expired/);
+  });
+});

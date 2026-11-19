@@ -41,6 +41,8 @@ export interface Shape {
   autoOrder?: AutoShape;
   /** Suppliers, catalogues, par levels, purchasing settings and the supplier email log. Added on first use. */
   procurement?: ProcurementShape;
+  /** The day each hotel's expiry summary was last worked out, so the bell notice is sent once a day. */
+  expiryChecks?: Record<string, string>;
   /** Stock takes, kept for month-end accounting whatever their outcome. */
   stockTakes?: StockTake[];
   /** Cash counted at the end of shifts, entered in Tyll. */

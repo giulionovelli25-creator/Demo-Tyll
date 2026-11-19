@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowDown, ArrowLeft, Check } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, EmptyState, Field, Note, Panel, TableWrap, Td, Th, TextArea, cn, rowClass, textLink, toast } from "@/components/ui";
 import { ingredientById, outletById, propertyById } from "@/lib/data/catalog";
@@ -352,6 +352,23 @@ function RequestView({ id, base }: { id: string; base: string }) {
   const afterBudget = data.budget.available - liveTotal;
   const showMoney = user.role !== "chef";
 
+  const m = data.match;
+  const maySend = data.poStatus === "approved" && !r.sent && !!r.supplierId && !!data.supplier && (can(user, "purchase.review") || r.createdBy === user.id);
+  const mayCredit = can(user, "purchase.review") || can(user, "finance.review") || can(user, "purchase.approveFnb");
+  const creditDraft = (r.credits ?? []).some((c) => c.status === "draft");
+  const step: Step | null = author
+    ? { title: r.status === "changes" ? "Update the request and send it again" : "Send this request to Purchasing", text: r.status === "changes" ? "Changes were asked for. Adjust the quantities, then send it back." : "Check the quantities, then send it. Purchasing reviews it next.", target: "order-action", label: "Go to sending" }
+    : reviewing
+      ? { title: "Your approval is needed", text: `Check the items${showMoney ? " and the total" : ""}, then approve, ask for changes or reject.`, target: "order-action", label: "Go to approval" }
+      : maySend
+        ? { title: "Approved: email it to the supplier", text: `${data.supplier!.name} receives ${r.poNumber ?? r.id} as a PDF.`, target: "order-send", label: "Go to sending" }
+        : mayReceive
+          ? { title: "Record the delivery when it arrives", text: `Expected ${r.deliveryDate ? fmtDate(r.deliveryDate, true) : "on the next delivery day"}. Enter what arrived, anything damaged, the batch and the use-by date.`, target: "order-action", label: "Go to receiving" }
+          : showMoney && mayCredit && m && m.invoices.length > 0 && m.difference > 0 && (creditDraft || !(r.credits ?? []).length)
+            ? { title: creditDraft ? "Send the credit request" : `The invoice is ${money(m.difference)} above what arrived`, text: creditDraft ? "A credit request is drafted. Check it, then send it to the supplier." : "Draft a credit request from the three way match.", target: "order-match", label: "Go to the match" }
+            : null;
+  const waitingFor = !step && ["purchasing", "accounting", "fnb", "manager"].includes(r.status) ? STATUS[r.status].label : null;
+
   const run = async (url: string, body: unknown, ok: string) => {
     setBusy(true);
     const res = await mutate(url, body);
@@ -374,6 +391,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => router.push(base)}><ArrowLeft size={15} /> All requests</Button>
       </div>
+      {step ? <NextStep step={step} /> : waitingFor && <p role="status" className="rounded-panel border border-line bg-cloud px-5 py-3 text-sm text-graphite"><span className="font-medium text-ink">{waitingFor}.</span> Nothing is needed from you now; you will be notified of the decision.</p>}
       <Panel
         title={<span className="flex flex-wrap items-center gap-3"><span className="num">{r.id}</span><OrderBadge r={r} />{r.poNumber && <Badge>{r.poNumber}</Badge>}{r.auto && <Badge tone="accent">Automatic</Badge>}</span>}
         description={`${where(r)}, ${propertyById[r.propertyId].name}. ${r.deliveryDate ? `Delivery ${fmtDate(r.deliveryDate, true)}` : `For ${fmtDate(r.period.from, true)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, true)}` : ""}`}. ${r.auto ? `Created by automatic ordering on ${personName(r.createdBy)}'s rules.` : `Raised by ${personName(r.createdBy)}.`}`}
@@ -467,7 +485,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
 
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1fr_1fr]">
         {(reviewing || author || mayReceive) && (
-          <Panel title={author ? "Your request" : mayReceive ? "Record the delivery" : stage === "purchasing" ? "Purchasing review" : stage === "accounting" ? "Accounting review" : stage === "fnb" ? `${data.policy.fnbLabel} approval` : `${data.policy.managerLabel} approval`}>
+          <div id="order-action" className="scroll-mt-24"><Panel title={author ? "Your request" : mayReceive ? "Record the delivery" : stage === "purchasing" ? "Purchasing review" : stage === "accounting" ? "Accounting review" : stage === "fnb" ? `${data.policy.fnbLabel} approval` : `${data.policy.managerLabel} approval`}>
             {author && (
               <div className="space-y-3">
                 {r.status === "changes" && <Note>{r.history.slice().reverse().find((h) => h.status === "changes")?.comment}</Note>}
@@ -512,11 +530,11 @@ function RequestView({ id, base }: { id: string; base: string }) {
                 <Button variant="primary" disabled={busy} onClick={async () => { if (await run(`/api/purchasing/${r.id}`, { action: "receive", final, lines: r.lines.filter((l) => outstanding(l) > 0).map((l) => ({ ingredientId: l.ingredientId, delivered: recv[l.ingredientId]?.delivered ?? outstanding(l), damaged: recv[l.ingredientId]?.damaged ?? 0, batch: recv[l.ingredientId]?.batch, expiry: recv[l.ingredientId]?.expiry })) }, "Delivery recorded. Stock is updated.")) { setRecv({}); setFinal(false); } }}>Record delivery</Button>
               </div>
             )}
-          </Panel>
+          </Panel></div>
         )}
 
-        <SendPanel d={data} user={user} run={run} busy={busy} />
-        {showMoney && <MatchPanel d={data} user={user} run={run} busy={busy} />}
+        <div id="order-send" className="scroll-mt-24 empty:hidden"><SendPanel d={data} user={user} run={run} busy={busy} /></div>
+        {showMoney && <div id="order-match" className="scroll-mt-24 empty:hidden xl:col-span-2"><MatchPanel d={data} user={user} run={run} busy={busy} /></div>}
         <Receipts r={r} />
         {showMoney && (can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveFnb") || can(user, "purchase.approveManager")) && (
           <Panel title="Budget and approval rules" action={<Badge>Demo estimate</Badge>}>
@@ -548,5 +566,29 @@ function RequestView({ id, base }: { id: string; base: string }) {
         </Panel>
       </div>
     </div>
+  );
+}
+
+interface Step { title: string; text: string; target: string; label: string }
+
+/** The one thing this person needs to do on this order, at the top, with a button that jumps to it and moves focus there. */
+function NextStep({ step }: { step: Step }) {
+  const go = () => {
+    const el = document.getElementById(step.target);
+    if (!el) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Focus first: focusing after a smooth scroll starts cancels the scroll.
+    el.querySelector<HTMLElement>("textarea, input, button, a[href]")?.focus({ preventScroll: true });
+    el.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+  };
+  return (
+    <section aria-labelledby="next-step" className="flex flex-col gap-3 rounded-panel border-2 border-ink bg-paper px-5 py-4 shadow-panel sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="min-w-0">
+        <p className="text-[13px] text-steel">Next step</p>
+        <h2 id="next-step" className="text-lg font-semibold leading-snug text-ink">{step.title}</h2>
+        <p className="mt-0.5 text-sm text-graphite">{step.text}</p>
+      </div>
+      <Button variant="primary" onClick={go} className="shrink-0">{step.label}<ArrowDown size={15} aria-hidden /></Button>
+    </section>
   );
 }

@@ -1,5 +1,7 @@
 import type { NextRequest } from "next/server";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
+import { allowedProperties } from "@/lib/domain/access";
+import { ensureExpiryNotice } from "@/lib/server/expiry";
 import { deliverQueued, emailsFor, markRead, noticesFor, setEmailPref } from "@/lib/server/notify";
 
 /** This person's notifications. Any queued emails are handed to the provider, when one is configured. */
@@ -7,6 +9,7 @@ export async function GET(req: NextRequest) {
   const g = guard(req, {});
   if (!g.ok) return g.response;
   void deliverQueued();
+  for (const p of allowedProperties(g.user)) ensureExpiryNotice(p);
   return json({ ...noticesFor(g.user), emails: req.nextUrl.searchParams.get("emails") ? emailsFor(g.user) : undefined });
 }
 

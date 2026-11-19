@@ -2,14 +2,15 @@
 // delivery day). Stock is used first expiring, first out, so what is on the shelf is the batches that expire last.
 // Batches expiring within three days get a suggested action by fixed rules: use it first, transfer it, a special or
 // the staff meal. An expired batch is to be logged as waste with the reason Expired.
-import { MENU_ITEMS, ingredientById, outletById, outletsOfProperty, propertyById } from "../data/catalog";
+import { MENU_ITEMS, USERS, ingredientById, outletById, outletsOfProperty, propertyById } from "../data/catalog";
 import { getDataset } from "../data/generate";
 import { allowedProperties, can } from "../domain/access";
 import { daysToExpiry, expiryAction, remainingByFefo, type Batch, type ExpiryAction } from "../domain/procurement";
 import type { User } from "../types";
 import { DEMO_TODAY, addDays, round2, unitLabel } from "../util";
 import { poRef } from "./procurement";
-import { loadStore, type Shape } from "./purchasing-store";
+import { notify } from "./notify";
+import { loadStore, mutateStore, type Shape } from "./purchasing-store";
 import { stockFor, type SessionEntries } from "./stock";
 
 type Fail = { ok: false; status: number; error: string };
@@ -82,4 +83,27 @@ export function expiringFor(user: User, propertyId: string, entries: SessionEntr
     noBatchItems: noBatch,
     outlets: outletsOfProperty(propertyId).map((o) => outletById[o.id].name),
   };
+}
+
+/** Who hears each morning what to use today: the kitchen, outlet managers, the F&B director and the storekeeper. */
+const EXPIRY_ROLES = new Set(["chef", "restaurant_manager", "fnb_director", "storekeeper"]);
+const NO_ENTRIES: SessionEntries = { waste: [], counts: [], overrides: [], recipes: [], receipts: [] };
+const qty = (r: ExpiryRow) => `${r.left % 1 ? r.left.toFixed(1) : r.left} ${r.unit}`;
+
+/** Once a day per hotel: a bell notice listing the batches to use today or tomorrow, and any expired on the shelf. */
+export function ensureExpiryNotice(propertyId: string) {
+  if (loadStore().expiryChecks?.[propertyId] === DEMO_TODAY) return;
+  const reader = USERS.find((u) => u.role === "gm" && allowedProperties(u).includes(propertyId)) ?? USERS.find((u) => u.role === "owner");
+  const r = reader ? expiringFor(reader, propertyId, NO_ENTRIES, 1) : null;
+  mutateStore((x) => {
+    x.expiryChecks = { ...x.expiryChecks, [propertyId]: DEMO_TODAY };
+    if (!r?.ok || !r.rows.length) return;
+    const soon = r.rows.filter((b) => b.daysLeft >= 0);
+    const expired = r.rows.length - soon.length;
+    const listed = soon.slice(0, 3).map((b) => `${b.name}, ${qty(b)} ${b.daysLeft === 0 ? "today" : "by tomorrow"}`).join("; ");
+    const title = soon.length ? `${soon.length} ${soon.length === 1 ? "batch" : "batches"} to use today or tomorrow` : `${expired} expired ${expired === 1 ? "batch" : "batches"} on the shelf`;
+    const body = [soon.length ? `Use first: ${listed}${soon.length > 3 ? `, and ${soon.length - 3} more` : ""}.` : "", expired ? `${expired} ${expired === 1 ? "batch has" : "batches have"} expired: log ${expired === 1 ? "it" : "them"} as waste, reason Expired.` : ""].filter(Boolean).join(" ");
+    const to = USERS.filter((u) => EXPIRY_ROLES.has(u.role) && allowedProperties(u).includes(propertyId));
+    notify(x, { to, type: "expiry", ref: `EXP-${propertyId}-${DEMO_TODAY}`, propertyId, title, body, href: "/stock?tab=expiry" });
+  });
 }

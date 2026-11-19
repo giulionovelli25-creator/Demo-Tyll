@@ -2,10 +2,12 @@
 // Expiring soon: batches on the shelf that expire in the next days, what they are worth, and what to do about each,
 // by fixed rules. Stock is used first expiring, first out, so the batch to use first is marked.
 import Link from "next/link";
+import { AlertTriangle, CheckCircle2, Clock } from "lucide-react";
 import { useState } from "react";
 import { Badge, EmptyState, Note, Panel, Segmented, Skeleton, SummaryBar, TableWrap, Td, Th, WidgetError, cn, linkButton, rowClass } from "@/components/ui";
 import { propertyById } from "@/lib/data/catalog";
 import { useExpiring } from "@/lib/procurement-hooks";
+import type { ExpiryRow } from "@/lib/server/expiry";
 import { fmtDate, fmtMoney, fmtNum } from "@/lib/util";
 
 const KIND: Record<string, { label: string; tone: "neutral" | "warn" | "pos" | "neg" | "ink" | "accent" }> = {
@@ -21,6 +23,7 @@ export function Expiring({ propertyId }: { propertyId: string }) {
     <div className="space-y-6">
       {error ? <WidgetError>Expiry could not load.</WidgetError> : !data ? <Skeleton className="h-64 w-full" /> : (
         <>
+          <UseToday rows={data.rows.filter((r) => r.daysLeft <= 1)} money={money} />
           <SummaryBar
             items={[
               { label: "Batches expiring", value: data.totals.batches, compare: { text: `Within ${days} ${days === "1" ? "day" : "days"}, ${money(data.totals.value)}`, good: null } },
@@ -54,5 +57,42 @@ export function Expiring({ propertyId }: { propertyId: string }) {
         </>
       )}
     </div>
+  );
+}
+
+/** The first thing on the page: what the kitchen should use or remove today, in large type, with words and icons, not colour alone. */
+function UseToday({ rows, money }: { rows: ExpiryRow[]; money: (n: number) => string }) {
+  const expired = rows.filter((r) => r.daysLeft < 0);
+  const soon = rows.filter((r) => r.daysLeft >= 0);
+  return (
+    <section aria-labelledby="use-today" className="rounded-panel border-2 border-ink bg-paper p-5 shadow-panel sm:p-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 id="use-today" className="text-[22px] font-semibold leading-tight text-ink">Use today</h2>
+        <p className="text-sm text-graphite">{rows.length ? `${soon.length} to use by tomorrow${expired.length ? `, ${expired.length} expired` : ""}` : "Nothing urgent"}</p>
+      </div>
+      {rows.length === 0 ? (
+        <p className="mt-3 flex items-center gap-2 text-base text-ink"><CheckCircle2 size={20} className="shrink-0 text-pos" aria-hidden />Nothing needs using up today. Every batch keeps at least two more days.</p>
+      ) : (
+        <ul className="mt-4 divide-y divide-line">
+          {rows.map((r) => {
+            const gone = r.daysLeft < 0;
+            const Icon = gone ? AlertTriangle : Clock;
+            return (
+              <li key={`${r.ingredientId}|${r.batch}|${r.expiry}`} className="flex gap-3 py-3.5 first:pt-0 last:pb-0">
+                <Icon size={22} className={cn("mt-0.5 shrink-0", gone ? "text-neg" : "text-warn")} aria-hidden />
+                <div className="min-w-0 flex-1">
+                  <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-lg font-semibold text-ink">{r.name}</span>
+                    <span className={cn("text-[15px] font-medium", gone ? "text-neg" : "text-ink")}>{gone ? when(r.daysLeft) : r.daysLeft === 0 ? "Use by today" : "Use by tomorrow"}</span>
+                  </p>
+                  <p className="mt-0.5 text-[15px] text-graphite">{fmtNum(r.left, r.left % 1 ? 1 : 0)} {r.unit} left, worth {money(r.value)}. Batch <span className="num whitespace-nowrap">{r.batch}</span>.</p>
+                  <p className="mt-1 text-[15px] text-ink">{gone ? "Remove it from the shelf and log it as waste, reason Expired." : r.action.text}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }

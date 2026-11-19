@@ -254,7 +254,7 @@ export function StockPage() {
               </>
             ) : undefined}
           />
-          <Tabs value={tab as "stock" | "analysis" | "expiry"} onChange={(v) => (v === "expiry" ? router.push("/stock?tab=expiry") : setTab(v))} tabs={[{ value: "stock", label: "Stock" }, { value: "expiry", label: "Expiring soon" }, { value: "analysis", label: "Analysis" }]} />
+          <Tabs value={tab as "stock" | "analysis"} onChange={setTab} tabs={[{ value: "stock", label: "Stock" }, { value: "analysis", label: "Analysis" }]} />
           {tab === "stock" ? (
             <>
               <CriticalItems plan={plan} />

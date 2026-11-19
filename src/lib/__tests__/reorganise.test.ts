@@ -23,7 +23,7 @@ describe("sidebar in three sections", () => {
     expect(SECTIONS.map((s) => s.title)).toEqual(["Stock and waste", "Purchasing", "Revenue and reconciliation"]);
     // Purchasing is the flow hotels save most time in, so the owner asked for it to be the most visible (19 November 2026):
     // To order, Automatic ordering, Predictions, Orders, Suppliers, Deliveries and invoices. The other sections keep four.
-    for (const s of SECTIONS) expect(s.items.length).toBeLessThanOrEqual(s.id === "purchasing" ? 6 : 4);
+    for (const s of SECTIONS) expect(s.items.length).toBeLessThanOrEqual(s.id === "purchasing" ? 6 : s.id === "stock" ? 5 : 4); // Expiry has its own item: the kitchen must find it at once.
     for (const href of ["/", "/alerts", "/stock", "/waste", "/drinks", "/forecast", "/money", "/reports", "/settings", "/more"]) expect(hrefs).toContain(href);
   });
 
@@ -35,7 +35,7 @@ describe("sidebar in three sections", () => {
     expect(activeItem("/finance", "invoices")?.label).toBe("Deliveries and invoices");
     expect(activeItem("/stock", "counts")?.label).toBe("Stock takes and missing stock");
     expect(activeItem("/stock", "takes")?.label).toBe("Stock takes and missing stock");
-    expect(activeItem("/stock", "expiry")?.label).toBe("Stock levels");
+    expect(activeItem("/stock", "expiry")?.label).toBe("Expiring soon");
     expect(activeItem("/forecast", "pars")?.label).toBe("To order");
     expect(activeItem("/forecast", "catalogue")?.label).toBe("Suppliers");
     expect(activeItem("/money", "cash")?.label).toBe("Flagged transactions");

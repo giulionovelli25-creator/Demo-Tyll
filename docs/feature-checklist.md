@@ -25,7 +25,7 @@ Prepared 19 November 2026 from the Tyll demo (branch `feature/purchasing-stock-c
 | Manager approval of a stock take, then stock adjusts | Working and tested | The person who counted cannot approve. |
 | Every stock take kept; month-end report with CSV | Working and tested | |
 | Batches with use-by dates from deliveries and receiving | Working, logic tested | Earlier deliveries get the item's shelf life as their use-by date. |
-| Expiring soon view and alert (next 1 to 3 days) with value and a suggested action | Working and tested | Actions by fixed rules: use first, transfer, special, staff meal. |
+| Expiring soon: own menu item, a "Use today" list at the top, and a daily bell notice to the chef, outlet managers, F&B director and storekeeper | Working and tested | Actions by fixed rules: use first, transfer, special, staff meal. The notice is worked out when someone opens the demo that day, not on a server timer. |
 | First expiring, first out | Working, logic tested | Used to work out what is left of each batch and which to use first; not enforced when stock is issued. |
 | "Expired" waste reason | Working, logic tested | |
 | Waste and breakage logging in two taps | Working and tested | Existing feature. |
