@@ -38,3 +38,9 @@ Resume from this file if a session runs out of context.
 - **Root cause:** `src/proxy.ts` started a new demo session for a role that fits whenever the current role could not open the page; the menu also listed those pages, and links did a full reload to let it happen.
 - **Fix (eb8cec9):** the proxy keeps the session and sends the role to its home page; menus, tabs and Other tools list only pages the role may open; no forced reloads.
 - **Tests:** `auth.test.ts` "switches deterministically" (10 switches, last wins, earlier sessions dead, refresh, Back) fails on the old proxy and passes now. Checked in the running app: 10 pages opened as the chef, still the chef.
+
+### F2, Predictions edits carried over to the next person (P1): FIXED
+- **Repro:** as Nadia, change a quantity on Predictions (Order quantities). Switch to Marco: the same quantity shows as "Changed from the suggested …", and building the order as Marco uses Nadia's number.
+- **Root cause:** `usePlanEdits` in `predictions.tsx` kept one map per browser (`tyll-plan-edits-v1`), not per person. Other drafts (`tyll-plan-drafts`, count progress, remembered tabs) were already per person.
+- **Fix:** `src/lib/plan-edits.ts` keeps edits per person (`tyll-plan-edits-v2`; old shared edits are dropped); building an order clears only that person's edits.
+- **Test:** `plan-edits.test.ts`.

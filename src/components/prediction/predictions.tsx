@@ -3,8 +3,6 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { AlertTriangle, Minus, Plus, Search } from "lucide-react";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { Fragment, useMemo, useState, type ReactNode } from "react";
 import { Section, useRemembered } from "@/components/disclosure";
 import { Button, Drawer, EmptyState, Note, PageHeader, Panel, Segmented, Skeleton, StatusPill, SummaryBar, TableWrap, Td, Th, WidgetError, cn, linkButton, rowClass, textLink, toast, useSort, type Rag } from "@/components/ui";
@@ -21,6 +19,7 @@ import { StripTrend } from "@/components/charts";
 import { useDailyTotals } from "@/lib/strip-data";
 import { usePilot } from "@/lib/pilot";
 import { useAutoOrder, usePlanDrafts } from "@/lib/plan-hooks";
+import { useMyPlanEdits } from "@/lib/plan-edits";
 import { reviewReason } from "@/lib/domain/auto-order";
 export { reviewReason };
 import type { MonthPlanOut, PlanItem } from "@/lib/server/purchasing";
@@ -67,20 +66,12 @@ function OrderBy({ r }: { r: PlanItem }) {
   return <span className={r.orderBy === DEMO_TODAY ? "font-medium text-neg" : "text-ink"}>{r.orderBy === DEMO_TODAY ? "Today" : fmtDate(r.orderBy!, true)}</span>;
 }
 
-/** Quantities changed by hand before the order is built, kept in this browser until the order is built. */
-export const usePlanEdits = create<{ qty: Record<string, number>; set(id: string, q: number | null): void; clear(): void }>()(
-  persist((set) => ({
-    qty: {},
-    set: (id, q) => set((s) => { const next = { ...s.qty }; if (q === null) delete next[id]; else next[id] = q; return { qty: next }; }),
-    clear: () => set({ qty: {} }),
-  }), { name: "tyll-plan-edits-v1" }),
-);
 
 const daysLeft = (plan: MonthPlanOut) => Math.max(1, eachDay({ from: addDays(DEMO_TODAY, 1), to: plan.period.to }).length);
 
 /** The figures behind one recommendation, with the manager's quantity if they changed it. */
 function useRec(r: PlanItem, plan: MonthPlanOut) {
-  const edited = usePlanEdits((s) => s.qty[r.ingredientId]);
+  const edited = useMyPlanEdits().qty[r.ingredientId];
   const suggested = r.nextQty > 0 ? r.nextQty : r.orderQty;
   const qty = edited ?? suggested;
   const perDay = r.predicted / daysLeft(plan);
@@ -96,7 +87,7 @@ function useRec(r: PlanItem, plan: MonthPlanOut) {
 }
 
 function QtyEditor({ r, qty, step }: { r: PlanItem; qty: number; step: number }) {
-  const setQty = usePlanEdits((s) => s.set);
+  const setQty = useMyPlanEdits().set;
   return (
     <div className="flex items-center justify-end gap-1" role="group" aria-label={`Quantity of ${name(r)}`}>
       <button type="button" aria-label="Less" onClick={() => setQty(r.ingredientId, Math.max(0, Math.round((qty - step) * 10) / 10))} className="flex h-8 w-8 items-center justify-center rounded-full border border-line text-ink hover:bg-cloud"><Minus size={14} aria-hidden /></button>
@@ -111,7 +102,7 @@ function QtyEditor({ r, qty, step }: { r: PlanItem; qty: number; step: number })
 }
 
 function Notes({ r, x }: { r: PlanItem; x: ReturnType<typeof useRec> }) {
-  const setQty = usePlanEdits((s) => s.set);
+  const setQty = useMyPlanEdits().set;
   return (
     <>
       {x.edited !== undefined && x.edited !== x.suggested && <p className="mt-1 text-xs text-steel">Changed from the suggested {fmtQty(x.suggested, r.unit)}. <button type="button" onClick={() => setQty(r.ingredientId, null)} className="font-medium text-accent-ink underline-offset-4 hover:underline">Use the suggestion</button></p>}
@@ -151,7 +142,7 @@ function RecCard({ r, plan, edit }: { r: PlanItem; plan: MonthPlanOut; edit: boo
 
 /** Recommended items grouped by supplier, the way orders are placed, with a total per supplier. One header row for the whole table. */
 function RecTable({ rows, plan, edit }: { rows: PlanItem[]; plan: MonthPlanOut; edit: boolean }) {
-  const edits = usePlanEdits((s) => s.qty);
+  const edits = useMyPlanEdits().qty;
   const money = (n: number) => fmtMoney(n, propertyById[plan.propertyId].currency);
   const qtyOf = (r: PlanItem) => edits[r.ingredientId] ?? (r.nextQty > 0 ? r.nextQty : r.orderQty);
   const groups = [...new Set(rows.map((r) => r.supplierId))].map((supplierId) => {
@@ -220,8 +211,8 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
   const [built, setBuilt] = useState<{ request: PurchaseRequest; requests: PurchaseRequest[]; warnings: string[]; lines: number; total: number } | null>(null);
   const mayBuild = can(user, "purchase.create");
   const local = (n: number) => fmtMoney(n, propertyById[propertyId ?? "lis"].currency);
-  const edits = usePlanEdits((s) => s.qty);
-  const clearEdits = usePlanEdits((s) => s.clear);
+  const edits = useMyPlanEdits().qty;
+  const clearEdits = useMyPlanEdits().clear;
   const earnPilot = usePilot((s) => s.earn);
 
   const build = async () => {
