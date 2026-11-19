@@ -29,6 +29,7 @@ export const REASON_LABEL: Record<WasteReason, { en: string; ar: string }> = {
   breakage: { en: "Breakage", ar: "كسر" },
   spoilage: { en: "Spoilage", ar: "تلف" },
   damaged: { en: "Damaged goods", ar: "بضاعة تالفة" },
+  expired: { en: "Expired", ar: "منتهي الصلاحية" },
   other: { en: "Other", ar: "أخرى" },
 };
 

@@ -132,7 +132,7 @@ function useMyTasks(user: User): TaskRow[] {
 
 // ---- Waste and breakage --------------------------------------------------------------------------------------------
 
-const REASONS: Record<"waste" | "breakage", WasteReason[]> = { waste: ["waste", "spoilage", "other"], breakage: ["breakage", "damaged"] };
+const REASONS: Record<"waste" | "breakage", WasteReason[]> = { waste: ["waste", "spoilage", "expired", "other"], breakage: ["breakage", "damaged"] };
 
 function QuickLog({ kind }: { kind: "waste" | "breakage" }) {
   const { user } = useView();

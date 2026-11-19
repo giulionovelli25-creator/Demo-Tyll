@@ -34,8 +34,8 @@ export const ItemIcon = ({ g, size }: { g: Ingredient; size: number }) => create
 
 interface Reason { id: string; label: string; reason: WasteReason }
 const REASONS: Record<StockArea, Reason[]> = {
-  food: [{ id: "spoiled", label: "Spoiled", reason: "spoilage" }, { id: "overmade", label: "Made too much", reason: "waste" }, { id: "dropped", label: "Dropped", reason: "waste" }],
-  drinks: [{ id: "spilled", label: "Spilled", reason: "waste" }, { id: "spoiled", label: "Gone off", reason: "spoilage" }, { id: "dropped", label: "Dropped", reason: "damaged" }],
+  food: [{ id: "spoiled", label: "Spoiled", reason: "spoilage" }, { id: "expired", label: "Expired", reason: "expired" }, { id: "overmade", label: "Made too much", reason: "waste" }, { id: "dropped", label: "Dropped", reason: "waste" }],
+  drinks: [{ id: "spilled", label: "Spilled", reason: "waste" }, { id: "expired", label: "Expired", reason: "expired" }, { id: "spoiled", label: "Gone off", reason: "spoilage" }, { id: "dropped", label: "Dropped", reason: "damaged" }],
   inventory: [{ id: "dropped", label: "Dropped", reason: "breakage" }, { id: "guest", label: "Guest", reason: "breakage" }, { id: "chipped", label: "Chipped", reason: "damaged" }],
 };
 const FALLBACK: Record<StockArea, WasteReason> = { food: "waste", drinks: "waste", inventory: "breakage" };

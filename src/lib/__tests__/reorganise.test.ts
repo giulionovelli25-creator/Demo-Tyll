@@ -64,8 +64,10 @@ describe("edited order quantities", () => {
     const item = plan.plan.items.find((i) => i.nextQty > 0)!;
     const r = P.buildMonthOrder(u, "lis", none, { [item.ingredientId]: item.nextQty + 3 });
     if (!r.ok) throw new Error(r.error);
-    const line = r.request.lines.find((l) => l.ingredientId === item.ingredientId)!;
-    expect(line.qty).toBe(item.nextQty + 3);
+    const line = r.requests.flatMap((x) => x.lines).find((l) => l.ingredientId === item.ingredientId)!;
+    // A purchase order goes in the supplier's whole packs, so the manager's quantity is rounded up and the change is said.
+    expect(line.qty).toBe(Math.round(Math.ceil((item.nextQty + 3) / line.packSize! - 1e-9) * line.packSize! * 1000) / 1000);
+    expect(line.qty).toBeGreaterThanOrEqual(item.nextQty + 3);
     expect(line.suggested).toBe(item.nextQty);
   });
 
@@ -76,7 +78,7 @@ describe("edited order quantities", () => {
     const item = plan.plan.items.find((i) => i.nextQty > 0)!;
     const r = P.buildMonthOrder(u, "lis", none, { [item.ingredientId]: 0 });
     if (!r.ok) throw new Error(r.error);
-    expect(r.request.lines.some((l) => l.ingredientId === item.ingredientId)).toBe(false);
+    expect(r.requests.flatMap((x) => x.lines).some((l) => l.ingredientId === item.ingredientId)).toBe(false);
   });
 });
 

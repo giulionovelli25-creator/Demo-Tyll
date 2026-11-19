@@ -1,10 +1,14 @@
 // Demo purchasing rules. Each hotel sets its own approval thresholds and budget; nothing here is sent to a supplier.
 import { ingredientCostAt } from "../domain/pricing";
 import { ingredientById, propertyById, supplierById } from "./catalog";
+import { approvalStepsFor, type ApprovalStep } from "../domain/procurement";
 
 export interface ApprovalPolicy {
   /** Requests above this total (hotel currency) need accounting approval. 0 means every request. */
   accountingAbove: number;
+  /** Requests above this total need the F&B director's approval. */
+  fnbAbove: number;
+  fnbLabel: string;
   /** Requests above this total also need a senior manager's sign-off. */
   managerAbove: number;
   managerLabel: string;
@@ -12,7 +16,7 @@ export interface ApprovalPolicy {
 
 /** Demo policy. Every request goes to accounting; above the limit the general manager approves too. */
 export const APPROVAL_POLICY: Record<string, ApprovalPolicy> = {
-  lis: { accountingAbove: 0, managerAbove: 5000, managerLabel: "General manager" },
+  lis: { accountingAbove: 0, fnbAbove: 2000, fnbLabel: "F&B director", managerAbove: 5000, managerLabel: "General manager" },
 };
 
 
@@ -46,11 +50,7 @@ export function quotesFor(ingredientId: string, propertyId: string, date: string
 
 export const supplierName = (id: string) => supplierById[id]?.name ?? Object.values(ALTERNATIVES).find((a) => a.id === id)?.name ?? id;
 
-/** The approval steps a request of this size needs at this hotel, in order. */
-export function approvalSteps(propertyId: string, total: number): ("purchasing" | "accounting" | "manager")[] {
-  const p = APPROVAL_POLICY[propertyId];
-  const steps: ("purchasing" | "accounting" | "manager")[] = ["purchasing"];
-  if (total > p.accountingAbove) steps.push("accounting");
-  if (total > p.managerAbove) steps.push("manager");
-  return steps;
+/** The approval steps a request of this size (net of VAT) needs at this hotel, in order. */
+export function approvalSteps(propertyId: string, total: number): ApprovalStep[] {
+  return approvalStepsFor(total, APPROVAL_POLICY[propertyId]);
 }

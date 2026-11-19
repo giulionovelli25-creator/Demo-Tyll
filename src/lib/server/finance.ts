@@ -111,7 +111,8 @@ export function invoicesFor(user: User, propertyId?: string): Result<{ invoices:
   const props = new Set(allowedProperties(user).filter((p) => !propertyId || p === propertyId));
   const s = loadStore();
   // Received Tyll orders still waiting for a supplier's invoice, one per supplier on the order.
-  const toInvoice = s.requests.filter((r) => r.status === "received" && !r.deliveryId && props.has(r.propertyId)).flatMap((r) =>
+  const received = (r: PurchaseRequest) => r.status === "received" || (r.status === "approved" && !!r.receipts?.length);
+  const toInvoice = s.requests.filter((r) => received(r) && !r.deliveryId && props.has(r.propertyId)).flatMap((r) =>
     [...new Set(r.lines.map((l) => l.supplierId))].filter((sup) => !s.finance.invoices.some((i) => i.requestId === r.id && i.supplierId === sup)).map((sup) => ({
       requestId: r.id, poNumber: r.poNumber ?? r.id, propertyId: r.propertyId, supplierId: sup, supplierName: supplierById[sup]?.name ?? sup, currency: propertyById[r.propertyId].currency,
       receivedValue: r2(r.lines.filter((l) => l.supplierId === sup).reduce((t, l) => t + (l.received ?? 0) * l.unitPrice, 0)),
@@ -146,7 +147,8 @@ export function recordInvoice(user: User, body: Record<string, unknown>): Result
   const s = loadStore();
   const r = s.requests.find((x) => x.id === body.requestId);
   if (!r || !allowedProperties(user).includes(r.propertyId)) return fail(404, "This order is not available.");
-  if (r.status !== "received") return fail(409, "Record the delivery before the invoice, so the three figures can be compared.");
+  // An invoice can arrive after the first delivery, before the order is complete.
+  if (r.status !== "received" && !(r.status === "approved" && r.receipts?.length)) return fail(409, "Record the delivery before the invoice, so the three figures can be compared.");
   const supplierId = String(body.supplierId ?? "");
   const mine = r.lines.filter((l) => l.supplierId === supplierId);
   if (!mine.length) return fail(400, "That supplier is not on this order.");

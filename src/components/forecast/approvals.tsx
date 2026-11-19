@@ -20,6 +20,7 @@ export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "w
   draft: { label: "Draft", tone: "neutral" },
   purchasing: { label: "Waiting for purchasing", tone: "warn" },
   accounting: { label: "Waiting for accounting", tone: "warn" },
+  fnb: { label: "Waiting for the F&B director", tone: "warn" },
   manager: { label: "Waiting for manager approval", tone: "warn" },
   approved: { label: "Approved, order placed", tone: "pos" },
   received: { label: "Received", tone: "pos" },

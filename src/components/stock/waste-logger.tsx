@@ -1,6 +1,6 @@
 "use client";
 import { useLanguage } from "@/components/shell/language";
-import { Apple, Beef, Check, ChevronLeft, CloudOff, Coffee, Delete, Fish, GlassWater, Hammer, HelpCircle, Milk, PackageX, Salad, Soup, Trash2, Wheat, Wine, type LucideIcon } from "lucide-react";
+import { Apple, Beef, CalendarX, Check, ChevronLeft, CloudOff, Coffee, Delete, Fish, GlassWater, Hammer, HelpCircle, Milk, PackageX, Salad, Soup, Trash2, Wheat, Wine, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, Field, Note, Panel, Select, cn, report, toast } from "@/components/ui";
 import { INGREDIENTS, ingredientById, itemById, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
@@ -22,7 +22,7 @@ const T = {
   ar: { title: "تسجيل الهدر", pin: "أدخل الرقم السري", pinHint: "الرقم التجريبي: 2580", wrong: "الرقم السري غير صحيح. حاول مرة أخرى.", step1: "ما هو الصنف؟", step2: "ما الكمية؟", step3: "ما السبب؟", ingredients: "مكونات", dishes: "أطباق", glass: "زجاج وأطباق", back: "رجوع", next: "التالي", saved: "تم الحفظ", savedOffline: "تم الحفظ على هذا الجهاز", another: "تسجيل آخر", offline: "غير متصل", lock: "قفل" },
 };
 
-const REASON_ICON: Record<WasteReason, LucideIcon> = { waste: Trash2, breakage: Hammer, spoilage: Apple, damaged: PackageX, other: HelpCircle };
+const REASON_ICON: Record<WasteReason, LucideIcon> = { waste: Trash2, breakage: Hammer, spoilage: Apple, damaged: PackageX, expired: CalendarX, other: HelpCircle };
 
 function iconFor(id: string, kind: "ingredient" | "dish"): LucideIcon {
   if (kind === "dish") return Soup;

@@ -113,9 +113,10 @@ export const isWeekend = (iso: string, city: string) => {
 };
 
 // ---- Money ------------------------------------------------------------------
-// The demo hotel reports in euros. fxRate stays so a second currency can be added later without touching callers.
+// Each hotel reports in its own currency: EUR, AED or SAR. Amounts in different currencies are never added together,
+// so fxRate only ever converts a currency to itself.
 export const fxRate = (from: Currency, to: Currency) => (from === to ? 1 : 1);
-const SIGN: Record<Currency, string> = { EUR: "€" };
+const SIGN: Record<Currency, string> = { EUR: "€", AED: "AED\u00a0", SAR: "SAR\u00a0" };
 
 export const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 

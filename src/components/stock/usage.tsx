@@ -259,7 +259,7 @@ export function UsageTimeline({ p, v }: { p: UsagePeriod; v: Variance }) {
 }
 
 const REASONS: { value: WasteReason; label: string }[] = [
-  { value: "waste", label: "Waste" }, { value: "spoilage", label: "Spoilage" }, { value: "breakage", label: "Breakage or spillage" }, { value: "other", label: "Other, such as a tasting" },
+  { value: "waste", label: "Waste" }, { value: "spoilage", label: "Spoilage" }, { value: "expired", label: "Expired" }, { value: "breakage", label: "Breakage or spillage" }, { value: "other", label: "Other, such as a tasting" },
 ];
 
 /** Corrections a manager can make from the evidence: a recount, a late waste entry, and, where authorised, the standard quantity. */

@@ -25,6 +25,8 @@ export type Permission =
   | "purchase.review"
   /** Accounting review of the spend. */
   | "purchase.approveFinance"
+  /** F&B director sign-off for orders above the hotel's F&B limit. */
+  | "purchase.approveFnb"
   /** Senior manager sign-off where a hotel's policy asks for it. */
   | "purchase.approveManager"
   /** Record that an approved order has arrived. Stock rises only then. */
@@ -91,10 +93,10 @@ const MODULES: Record<Role, ModuleId[]> = {
 };
 
 const PERMISSIONS: Record<Role, Permission[]> = {
-  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "finance.view", "sales.view"],
-  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "hk.manage", "fo.desk", "concierge", "bell.dispatch", "gc.respond", "finance.view", "sales.view", "sales.approve", "stock.review"],
+  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "finance.view", "sales.view"],
+  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "hk.manage", "fo.desk", "concierge", "bell.dispatch", "gc.respond", "finance.view", "sales.view", "sales.approve", "stock.review"],
   controller: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.editPrices", "reports.export", "settings.reset", "settings.audit", "purchase.approveFinance", "finance.view", "finance.review"],
-  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "events.plan", "staff.request", "staff.lend", "gc.respond", "stock.review"],
+  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "purchase.approveFnb", "prep.plan", "events.plan", "staff.request", "staff.lend", "gc.respond", "stock.review"],
   restaurant_manager: ["investigation.assign", "investigation.note", "investigation.close", "stock.logWaste", "stock.count", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "staff.lend", "gc.respond", "stock.review"],
   front_office: ["settings.reset", "rooms.view", "fo.desk", "concierge", "staff.request", "staff.lend"],
   housekeeping_manager: ["settings.reset", "rooms.view", "hk.manage", "staff.request", "staff.lend", "purchase.create"],

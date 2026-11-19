@@ -12,7 +12,7 @@ export type Result<T = object> = ({ ok: true } & T) | Fail;
 const fail = (status: number, error: string): Fail => ({ ok: false, status, error });
 const now = () => new Date().toISOString();
 const text = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
-const REASONS: WasteReason[] = ["waste", "breakage", "spoilage", "damaged", "other"];
+const REASONS: WasteReason[] = ["waste", "breakage", "spoilage", "damaged", "expired", "other"];
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Shared waste with the latest correction applied. Cancelled entries drop out; the originals stay on record. */

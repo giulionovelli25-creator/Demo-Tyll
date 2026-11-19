@@ -103,15 +103,18 @@ describe("month plan", () => {
     }
   });
 
-  it("Build order makes one draft with lines from several suppliers, and building again updates it", () => {
+  it("Build order makes one draft purchase order per supplier, and building again updates the same drafts", () => {
     const first = buildMonthOrder(buyer, "lis", entries);
     if (!first.ok) throw new Error(first.error);
-    expect(first.request.status).toBe("draft");
-    expect(first.request.period.to).toBe("2026-10-31");
-    expect(new Set(first.request.lines.map((l) => l.supplierId)).size).toBeGreaterThan(1);
+    expect(first.requests.length).toBeGreaterThan(1);
+    for (const r of first.requests) {
+      expect(r.status).toBe("draft");
+      expect(new Set(r.lines.map((l) => l.supplierId))).toEqual(new Set([r.supplierId]));
+      expect(r.deliveryDate! > "2026-10-13").toBe(true);
+    }
     const again = buildMonthOrder(buyer, "lis", entries);
     if (!again.ok) throw new Error(again.error);
-    expect(again.request.id).toBe(first.request.id);
+    expect(again.requests.map((r) => r.id).sort()).toEqual(first.requests.map((r) => r.id).sort());
     expect(buildMonthOrder(userById["u-fc"], "lis", entries).ok).toBe(false);
   });
 });

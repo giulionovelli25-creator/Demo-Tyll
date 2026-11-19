@@ -18,6 +18,9 @@ import { deptById } from "../data/workforce";
 import { CATEGORIES, categoryOf, type CategoryId } from "../data/locations";
 import { orderPack } from "../domain/inventory";
 import { stockFor, type SessionEntries } from "./stock";
+import { applyReceipt, fullyReceived, outstanding, receiptLine } from "../domain/procurement";
+import { createPurchaseOrders } from "./procurement";
+import type { ReceiptLine } from "../types";
 
 export type Result<T = object> = ({ ok: true } & T) | { ok: false; status: number; error: string };
 const fail = (status: number, error: string): { ok: false; status: number; error: string } => ({ ok: false, status, error });
@@ -97,8 +100,9 @@ function arrivalsFor(propertyId: string, period: Period) {
     // An event's order is counted for that event as already on order, not as storeroom stock.
     if (r.eventId) continue;
     for (const l of r.lines) {
-      const arrive = addDays(DEMO_TODAY, ingredientById[l.ingredientId].leadDays);
-      if (arrive <= period.to) add(l.ingredientId, arrive < period.from ? period.from : arrive, l.qty);
+      const arrive = r.deliveryDate ?? addDays(DEMO_TODAY, ingredientById[l.ingredientId].leadDays);
+      const left = outstanding(l);
+      if (left > 0 && arrive <= period.to) add(l.ingredientId, arrive < period.from ? period.from : arrive, left);
     }
   }
   return out;
@@ -109,7 +113,7 @@ function openRequested(propertyId: string, outletIds: string[], exceptId?: strin
   const out = new Map<string, number>();
   for (const r of loadStore().requests) {
     // For an event, approved orders not yet received are also on order for it.
-    const open = eventId ? ["purchasing", "accounting", "manager", "approved"] : ["purchasing", "accounting", "manager"];
+    const open = eventId ? ["purchasing", "accounting", "fnb", "manager", "approved"] : ["purchasing", "accounting", "fnb", "manager"];
     if (r.id === exceptId || r.propertyId !== propertyId || !open.includes(r.status)) continue;
     // An event's requests count only for that event; an outlet's only for its outlets.
     if (eventId ? r.eventId !== eventId : r.eventId || !r.outletIds.some((o) => outletIds.includes(o))) continue;
@@ -417,10 +421,10 @@ export function monthPlanFor(user: User, propertyId: string, entries: SessionEnt
   };
 }
 
-const BUILT_NOTE = "Built from the Stock page: the next delivery of each item, to reach month end with a safe buffer.";
+const BUILT_NOTE = "Built from Predictions: the next delivery of each item, to reach month end with a safe buffer.";
 
-/** Build order: one draft purchase order, its lines grouped by supplier when shown. Building again updates the same draft. */
-export function buildMonthOrder(user: User, propertyId: string, entries: SessionEntries, quantities: Record<string, number> = {}): Result<{ request: PurchaseRequest; lines: number; total: number }> {
+/** Build order: draft purchase orders from the recommended order, one per supplier, at the catalogue's agreed prices. Building again updates the same drafts. */
+export function buildMonthOrder(user: User, propertyId: string, entries: SessionEntries, quantities: Record<string, number> = {}): Result<{ request: PurchaseRequest; requests: PurchaseRequest[]; warnings: string[]; lines: number; total: number }> {
   if (!can(user, "purchase.create")) return fail(403, "Your role cannot create purchase requests.");
   const res = monthPlanFor(user, propertyId, entries);
   if (!res.ok) return res;
@@ -428,18 +432,10 @@ export function buildMonthOrder(user: User, propertyId: string, entries: Session
   const qtyOf = (i: PlanItem) => (i.ingredientId in quantities ? quantities[i.ingredientId] : i.nextQty);
   const picked = res.plan.items.filter((i) => i.nextQty > 0 && qtyOf(i) > 0);
   if (!picked.length) return fail(409, "Nothing needs ordering right now.");
-  const draft = loadStore().requests.find((r) => r.createdBy === user.id && r.status === "draft" && r.comment === BUILT_NOTE && r.propertyId === propertyId);
-  const saved = saveRequest(user, {
-    id: draft?.id, propertyId, period: "custom", from: res.plan.period.from, to: res.plan.period.to, comment: BUILT_NOTE,
-    lines: picked.map((i) => ({ ingredientId: i.ingredientId, qty: qtyOf(i), suggested: i.nextQty, requirement: i.predicted, available: i.onHand, incoming: i.incoming, safety: i.buffer, supplierId: i.supplierId })),
-  });
-  if (!saved.ok) return saved;
-  const request = mutateStore((s) => {
-    const r = s.requests.find((x) => x.id === saved.request.id)!;
-    r.period = res.plan.period;
-    return r;
-  });
-  return { ok: true, request, lines: picked.length, total: Math.round(sum(picked, (i) => qtyOf(i) * i.unitPrice) * 100) / 100 };
+  const made = createPurchaseOrders(user, propertyId, picked.map((i) => ({ ingredientId: i.ingredientId, qty: qtyOf(i), suggested: i.nextQty, requirement: i.predicted, available: i.onHand, incoming: i.incoming })), { source: "prediction", notes: BUILT_NOTE });
+  if (!made.ok) return made;
+  const lines = sum(made.orders, (r) => r.lines.length);
+  return { ok: true, request: made.orders[0], requests: made.orders, warnings: made.warnings, lines, total: Math.round(sum(made.orders, (r) => sum(r.lines, (l) => l.qty * l.unitPrice)) * 100) / 100 };
 }
 
 /** Lines to buy for one event. Empty when the user cannot see the event's purchasing. */
@@ -768,7 +764,7 @@ export function handoff(s: Shape, r: PurchaseRequest, user: User) {
   const where = r.deptId ? deptById[r.deptId]?.name ?? "A department" : r.eventId ? "Events" : outletLabelFor(r);
   resolve(s, ["pr-review", "pr-result"], ref);
   const stage: Record<string, { perm: Parameters<typeof peopleWith>[0]; who: string }> = {
-    purchasing: { perm: "purchase.review", who: "purchasing review" }, accounting: { perm: "purchase.approveFinance", who: "accounting approval" }, manager: { perm: "purchase.approveManager", who: "the general manager's approval" },
+    purchasing: { perm: "purchase.review", who: "purchasing review" }, accounting: { perm: "purchase.approveFinance", who: "accounting approval" }, fnb: { perm: "purchase.approveFnb", who: "the F&B director's approval" }, manager: { perm: "purchase.approveManager", who: "the general manager's approval" },
   };
   const next = stage[r.status];
   if (next) {
@@ -782,7 +778,7 @@ export function handoff(s: Shape, r: PurchaseRequest, user: User) {
   }
 }
 
-const nextAfter = (r: PurchaseRequest, stage: "purchasing" | "accounting" | "manager"): RequestStatus => {
+const nextAfter = (r: PurchaseRequest, stage: "purchasing" | "accounting" | "fnb" | "manager"): RequestStatus => {
   const steps = approvalSteps(r.propertyId, requestTotal(r));
   return (steps[steps.indexOf(stage) + 1] ?? "approved") as RequestStatus;
 };
@@ -803,8 +799,9 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       change(x, s);
       x.updatedAt = now();
       if (x.status === "approved" && !x.poNumber) x.poNumber = `PO-${x.id.slice(3)}`;
-      // In the demo an approved order counts as sent at once, arriving on the supplier's next delivery morning.
-      if (x.status === "approved" && !x.sentAt) {
+      // A purchase order to one supplier is sent from the order, by email with its PDF. An older request that mixes
+      // suppliers counts as sent at once, arriving on the supplier's next delivery morning.
+      if (x.status === "approved" && !x.sentAt && !x.supplierId) {
         x.sentAt = `${DEMO_TODAY}T${String(Math.floor(DEMO_NOW_MIN / 60)).padStart(2, "0")}:${String(DEMO_NOW_MIN % 60).padStart(2, "0")}`;
         x.expectedAt = `${addDays(DEMO_TODAY, Math.max(1, ...x.lines.map((l) => ingredientById[l.ingredientId]?.leadDays ?? 1)))}T07:30`;
       }
@@ -814,7 +811,7 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
     });
     return { ok: true as const, request };
   };
-  const decide = (stage: "purchasing" | "accounting" | "manager", label: string) => {
+  const decide = (stage: "purchasing" | "accounting" | "fnb" | "manager", label: string) => {
     if (!decision) return fail(400, "Choose approve, request changes or reject.");
     if (decision !== "approve" && comment.length < 3) return fail(400, "Say what needs to change, or why it is rejected.");
     return apply((x) => { x.status = decision === "approve" ? nextAfter(x, stage) : decision === "changes" ? "changes" : "rejected"; },
@@ -867,6 +864,13 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       if (r.createdBy === user.id) return fail(403, "You cannot approve your own request.");
       return decide("accounting", "Accounting review");
     }
+    case "fnb": {
+      // The general manager may sign in the F&B director's place, for instance when the director raised the order.
+      if (!can(user, "purchase.approveFnb") && !can(user, "purchase.approveManager")) return fail(403, `Only the ${APPROVAL_POLICY[r.propertyId].fnbLabel} or the general manager can give this approval.`);
+      if (r.status !== "fnb") return fail(409, `This request is not waiting for the ${APPROVAL_POLICY[r.propertyId].fnbLabel}.`);
+      if (r.createdBy === user.id) return fail(403, "You cannot approve your own request.");
+      return decide("fnb", `${APPROVAL_POLICY[r.propertyId].fnbLabel} approval`);
+    }
     case "manager": {
       if (!can(user, "purchase.approveManager")) return fail(403, `Only a ${APPROVAL_POLICY[r.propertyId].managerLabel.toLowerCase()} can give this approval.`);
       if (r.status !== "manager") return fail(409, "This request is not waiting for a manager's approval.");
@@ -877,16 +881,42 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       const mayReceive = can(user, "purchase.receive") || (can(user, "stock.count") && r.outletIds.some((o) => allowedOutlets(user).includes(o)));
       if (!mayReceive) return fail(403, "Your role cannot record deliveries.");
       if (r.status !== "approved") return fail(409, "Only an approved order can be received.");
-      const raw = Array.isArray(body.received) ? (body.received as Record<string, unknown>[]) : [];
-      const received = new Map(raw.filter((x) => num(x.qty, 0, 100000)).map((x) => [String(x.ingredientId), x.qty as number]));
-      const notes = new Map(raw.filter((x) => typeof x.note === "string" && x.note.trim()).map((x) => [String(x.ingredientId), String(x.note).trim().slice(0, 200)]));
+      // A delivery: what arrived per line, damaged goods refused, batch and expiry. An order can arrive in several deliveries.
+      // The older form (received quantities, everything else as ordered) records one final delivery.
+      const legacy = !Array.isArray(body.lines);
+      const lines: ReceiptLine[] = [];
+      if (legacy) {
+        const raw = Array.isArray(body.received) ? (body.received as Record<string, unknown>[]) : [];
+        const qty = new Map(raw.filter((x) => num(x.qty, 0, 100000)).map((x) => [String(x.ingredientId), x.qty as number]));
+        const notes = new Map(raw.filter((x) => typeof x.note === "string" && x.note.trim()).map((x) => [String(x.ingredientId), String(x.note).trim().slice(0, 200)]));
+        for (const l of r.lines) lines.push(receiptLine(l.ingredientId, qty.has(l.ingredientId) ? qty.get(l.ingredientId)! : outstanding(l), 0, { note: notes.get(l.ingredientId) }));
+      } else {
+        for (const x of body.lines as Record<string, unknown>[]) {
+          const l = r.lines.find((y) => y.ingredientId === x.ingredientId);
+          if (!l) return fail(400, "That item is not on this order.");
+          if (!num(x.delivered, 0, 100000)) return fail(400, `Enter what arrived of ${ingredientById[l.ingredientId].name}.`);
+          const damaged = x.damaged === undefined || x.damaged === "" ? 0 : Number(x.damaged);
+          if (!num(damaged, 0, x.delivered as number)) return fail(400, `Damaged ${ingredientById[l.ingredientId].name} cannot be more than what arrived.`);
+          const expiry = typeof x.expiry === "string" && x.expiry ? x.expiry : undefined;
+          if (expiry && !ISO.test(expiry)) return fail(400, `Enter the expiry date of ${ingredientById[l.ingredientId].name} as a date.`);
+          if (lines.some((y) => y.ingredientId === l.ingredientId)) return fail(400, "Each item can appear once.");
+          lines.push(receiptLine(l.ingredientId, x.delivered as number, damaged, { batch: typeof x.batch === "string" ? x.batch.trim().slice(0, 40) || undefined : undefined, expiry, note: typeof x.note === "string" ? x.note.trim().slice(0, 200) || undefined : undefined }));
+        }
+      }
+      const final = legacy || body.final === true;
+      if (!final && !lines.some((l) => l.delivered > 0)) return fail(400, "Enter what arrived, or close the order as delivered short.");
       return apply((x, store) => {
-        x.lines = x.lines.map((l) => ({ ...l, received: received.has(l.ingredientId) ? received.get(l.ingredientId)! : l.qty, receiveNote: notes.get(l.ingredientId) }));
-        x.status = "received";
+        const receipt = { id: `GR-${(x.poNumber ?? x.id).replace(/^P[OR]-/, "")}-${(x.receipts?.length ?? 0) + 1}`, at: `${DEMO_TODAY}T${String(Math.floor(DEMO_NOW_MIN / 60)).padStart(2, "0")}:${String(DEMO_NOW_MIN % 60).padStart(2, "0")}`, by: user.id, final, lines };
+        x.receipts = [...(x.receipts ?? []), receipt];
+        x.lines = applyReceipt(x.lines, lines).map((l) => ({ ...l, receiveNote: lines.find((y) => y.ingredientId === l.ingredientId)?.note ?? l.receiveNote }));
+        if (final || fullyReceived(x.lines)) x.status = "received";
         // Bought for an event: the delivery is issued straight to it, so it is not also counted as storeroom stock.
         const ev = x.eventId ? store.events.find((e) => e.id === x.eventId) : undefined;
-        if (ev) for (const l of x.lines) if ((l.received ?? 0) > 0) ev.issued.push({ ingredientId: l.ingredientId, qty: l.received!, ref: `${x.poNumber ?? x.id}, received` });
-      }, "Delivery received", { changes: r.lines.filter((l) => received.has(l.ingredientId) && Math.abs(received.get(l.ingredientId)! - l.qty) > 1e-9).map((l) => ({ ingredientId: l.ingredientId, from: l.qty, to: received.get(l.ingredientId)!, reason: "Received quantity" })) });
+        if (ev) for (const l of lines) if (l.accepted > 0) ev.issued.push({ ingredientId: l.ingredientId, qty: l.accepted, ref: `${x.poNumber ?? x.id}, received` });
+      }, final || fullyReceived(applyReceipt(r.lines, lines)) ? "Delivery received" : "Part of the delivery received", {
+        changes: lines.filter((l) => { const o = r.lines.find((y) => y.ingredientId === l.ingredientId)!; return Math.abs(l.delivered - outstanding(o)) > 1e-9 || l.damaged > 0; })
+          .map((l) => { const o = r.lines.find((y) => y.ingredientId === l.ingredientId)!; return { ingredientId: l.ingredientId, from: outstanding(o), to: l.accepted, reason: l.damaged > 0 ? `${l.damaged} damaged and refused` : l.delivered < outstanding(o) ? "Delivered short" : "Received quantity" }; }),
+      });
     }
     case "comment": {
       if (comment.length < 2) return fail(400, "Write a comment first.");

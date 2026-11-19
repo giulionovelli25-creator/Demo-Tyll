@@ -12,6 +12,8 @@ import { emptyNotify, type NotifyShape } from "./notify";
 import { seedStage6, type FinanceShape, type SalesShape, type StockLogShape } from "./stage6-seed";
 import { DEMO_TODAY, addDays, diffDays } from "../util";
 import { defaultAuto, type AutoShape } from "../domain/auto-order";
+import { seedProcurement, type ProcurementShape } from "./procurement-seed";
+import type { CashUp, StockTake } from "../types";
 
 export interface Shape {
   version: 1;
@@ -37,6 +39,12 @@ export interface Shape {
   countRoutes?: Record<string, string[]>;
   /** Automatic ordering: the rules per hotel and each morning's run. Added on first use. */
   autoOrder?: AutoShape;
+  /** Suppliers, catalogues, par levels, purchasing settings and the supplier email log. Added on first use. */
+  procurement?: ProcurementShape;
+  /** Stock takes, kept for month-end accounting whatever their outcome. */
+  stockTakes?: StockTake[];
+  /** Cash counted at the end of shifts, entered in Tyll. */
+  cashUps?: CashUp[];
   /** The business date the records were last moved to, and the shape of the demo data they were built for. */
   businessDate?: string;
   dataVersion?: number;
@@ -53,7 +61,7 @@ function moveToToday(data: Shape): Shape {
   return { ...(JSON.parse(text) as Shape), businessDate: DEMO_TODAY };
 }
 
-const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
+const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), procurement: seedProcurement(), stockTakes: [], cashUps: [], businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? dataFile("purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
@@ -77,6 +85,7 @@ export function loadStore(): Shape {
   }
   if (!cache.data.notify) writeStore({ ...cache.data, notify: emptyNotify() });
   if (!cache.data.autoOrder) writeStore({ ...cache.data, autoOrder: defaultAuto() });
+  if (!cache.data.procurement || !cache.data.stockTakes || !cache.data.cashUps) writeStore({ ...cache.data, procurement: cache.data.procurement ?? seedProcurement(), stockTakes: cache.data.stockTakes ?? [], cashUps: cache.data.cashUps ?? [] });
   if (!cache.data.finance || !cache.data.sales || !cache.data.stockLog) {
     const add = seedStage6();
     writeStore({ ...cache.data, finance: cache.data.finance ?? add.finance, sales: cache.data.sales ?? add.sales, stockLog: cache.data.stockLog ?? add.stockLog });
@@ -107,18 +116,30 @@ export function resetPurchasingStore() {
 /** Takes the next number in a sequence, such as events or support requests at one hotel. */
 export const nextNumber = (s: Shape, key: string) => (s.counters[key] = (s.counters[key] ?? 0) + 1);
 
-/** Approved orders that have been received, as deliveries. This is the only way a request raises stock. */
+/** Deliveries recorded against orders, as stock movements. This is the only way a request raises stock. */
 export function receivedDeliveries(propertyId?: string): Delivery[] {
-  return loadStore().requests
+  const out: Delivery[] = [];
+  for (const r of loadStore().requests) {
     // Orders for events are issued to the event on receipt, not added to the storeroom.
     // Orders that arrived as a delivery in the dataset are already counted there.
-    .filter((r) => r.status === "received" && !r.eventId && !r.deliveryId && (!propertyId || r.propertyId === propertyId))
-    .map((r) => {
-      return {
-        id: r.poNumber ?? r.id, propertyId: r.propertyId, supplierId: ingredientById[r.lines[0]?.ingredientId]?.supplierId ?? "dry",
-        // Received on the demo day, whatever the real clock says.
-        date: DEMO_TODAY, status: "delivered" as const,
-        lines: r.lines.filter((l) => (l.received ?? 0) > 0).map((l) => ({ ingredientId: l.ingredientId, ordered: l.qty, delivered: l.received ?? 0, invoiced: l.received ?? 0, poPrice: l.unitPrice, invoicePrice: l.unitPrice })),
-      };
+    if (r.eventId || r.deliveryId || (propertyId && r.propertyId !== propertyId)) continue;
+    if (r.receipts?.length) {
+      for (const rc of r.receipts) {
+        const lines = rc.lines.filter((l) => l.accepted > 0).map((l) => {
+          const o = r.lines.find((x) => x.ingredientId === l.ingredientId);
+          return { ingredientId: l.ingredientId, ordered: o?.qty ?? l.delivered, delivered: l.accepted, invoiced: l.accepted, poPrice: o?.unitPrice ?? 0, invoicePrice: o?.unitPrice ?? 0 };
+        });
+        if (lines.length) out.push({ id: `${r.poNumber ?? r.id}-${rc.id}`, propertyId: r.propertyId, supplierId: r.supplierId ?? ingredientById[r.lines[0]?.ingredientId]?.supplierId ?? "dry", date: rc.at.slice(0, 10), status: "delivered", lines });
+      }
+      continue;
+    }
+    if (r.status !== "received") continue;
+    out.push({
+      id: r.poNumber ?? r.id, propertyId: r.propertyId, supplierId: ingredientById[r.lines[0]?.ingredientId]?.supplierId ?? "dry",
+      // Received on the demo day, whatever the real clock says.
+      date: DEMO_TODAY, status: "delivered" as const,
+      lines: r.lines.filter((l) => (l.received ?? 0) > 0).map((l) => ({ ingredientId: l.ingredientId, ordered: l.qty, delivered: l.received ?? 0, invoiced: l.received ?? 0, poPrice: l.unitPrice, invoicePrice: l.unitPrice })),
     });
+  }
+  return out;
 }

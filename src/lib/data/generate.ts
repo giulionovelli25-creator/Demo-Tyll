@@ -349,7 +349,7 @@ function buildWaste(): WasteLog[] {
           const g = r.weighted(pool, (x) => (x.shelfLifeDays <= 7 ? 5 : 1) * Math.sqrt(used.get(x.id) ?? 0.01));
           const scale = Math.min(1.6, 30 / g.cost);
           const qty = g.unit === "each" ? r.int(3, 18) : Math.round(r.between(0.25, 2.2) * scale * 100) / 100;
-          const reason = r.weighted<WasteReason>(["spoilage", "waste", "damaged", "other"], (x) => ({ spoilage: 0.45, waste: 0.4, damaged: 0.1, other: 0.05, breakage: 0 })[x]);
+          const reason = r.weighted<WasteReason>(["spoilage", "waste", "damaged", "other"], (x) => ({ spoilage: 0.45, waste: 0.4, damaged: 0.1, other: 0.05, breakage: 0, expired: 0 })[x]);
           out.push({ id, outletId: o.id, date, ingredientId: g.id, qty: Math.max(0.05, qty), reason, by, synced: true, seq: 0 });
         }
       }

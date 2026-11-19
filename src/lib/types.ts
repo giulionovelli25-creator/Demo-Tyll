@@ -1,6 +1,7 @@
 // Shared data model for every Tyll module. All screens read these shapes.
 
-export type Currency = "EUR";
+/** Each hotel reports in one currency. Amounts in different currencies are never added together. */
+export type Currency = "EUR" | "AED" | "SAR";
 export type Dept = "food" | "beverage";
 export type Station = "kitchen" | "bar";
 
@@ -220,6 +221,10 @@ export interface Exception {
   /** Potential value involved, in the property's own currency. */
   exposure: number;
   headline: string;
+  /** What the figure was compared against, in words, so anyone can check the flag. */
+  comparedWith?: string;
+  /** Stock based losses are estimates until a stock take confirms them. */
+  basis?: "estimate" | "confirmed";
 }
 
 export type InvestigationStatus = "new" | "assigned" | "in_review" | "closed";
@@ -250,7 +255,7 @@ export interface Investigation extends Exception, InvestigationState {}
 
 // ---- Stock ------------------------------------------------------------------
 
-export type WasteReason = "waste" | "breakage" | "spoilage" | "damaged" | "other";
+export type WasteReason = "waste" | "breakage" | "spoilage" | "damaged" | "expired" | "other";
 
 export interface WasteLog {
   id: string;
@@ -550,7 +555,7 @@ export interface AuditEntry {
 // ---- Purchasing and kitchen preparation ---------------------------------------
 // Stored on the server, so every department sees the same record.
 
-export type RequestStatus = "draft" | "purchasing" | "accounting" | "manager" | "approved" | "received" | "rejected" | "changes";
+export type RequestStatus = "draft" | "purchasing" | "accounting" | "fnb" | "manager" | "approved" | "received" | "rejected" | "changes";
 
 export interface RequestLine {
   ingredientId: string;
@@ -564,9 +569,55 @@ export interface RequestLine {
   supplierId: string;
   /** Quoted price, set on the server from the supplier's quote. */
   unitPrice: number;
+  /** Accepted into stock so far, over every delivery: delivered less damaged. */
   received?: number;
+  /** Delivered but refused as damaged, over every delivery. */
+  damaged?: number;
   /** What the receiver noted: damaged, missing or wrong items. */
   receiveNote?: string;
+  /** VAT rate on this line, from the supplier catalogue, such as 0.06. */
+  vatRate?: number;
+  /** How the supplier sells it: units of the item per pack, and the pack's name, such as "Case of 12". */
+  packSize?: number;
+  packLabel?: string;
+}
+
+/** One delivery against a purchase order. An order can arrive in several deliveries. */
+export interface Receipt {
+  id: string;
+  at: string;
+  by: string;
+  /** True when the receiver closed the order: nothing more is expected, whatever is still missing. */
+  final: boolean;
+  note?: string;
+  lines: ReceiptLine[];
+}
+
+export interface ReceiptLine {
+  ingredientId: string;
+  delivered: number;
+  damaged: number;
+  /** Delivered less damaged. Only this enters stock. */
+  accepted: number;
+  batch?: string;
+  /** Use-by or best-before date, YYYY-MM-DD. */
+  expiry?: string;
+  note?: string;
+}
+
+/** A credit the hotel asks a supplier for, worked out from the three way match. Drafted in Tyll; sending is simulated. */
+export interface CreditRequest {
+  id: string;
+  at: string;
+  by: string;
+  status: "draft" | "sent";
+  sentAt?: string;
+  invoiceId?: string;
+  lines: { ingredientId: string; reason: "short" | "damaged" | "price"; qty: number; amount: number; text: string }[];
+  amount: number;
+  to: string;
+  subject: string;
+  body: string;
 }
 
 export interface RequestEvent {
@@ -604,6 +655,19 @@ export interface PurchaseRequest {
   expectedAt?: string;
   /** The delivery record this order arrived as, for the ordered, delivered and invoiced view. */
   deliveryId?: string;
+  /** A purchase order goes to one supplier. Older requests may mix suppliers and leave this empty. */
+  supplierId?: string;
+  /** The supplier's delivery day the order is for. */
+  deliveryDate?: string;
+  /** Where the cost is booked, such as "4100 F&B food". */
+  costCentre?: string;
+  /** Every delivery recorded against the order, partial ones included. */
+  receipts?: Receipt[];
+  /** The email to the supplier with the order as a PDF. The PDF is kept; in this demo the email is logged, not sent. */
+  sent?: { at: string; by: string; to: string; subject: string; pdf: string; emailId: string };
+  /** Closed: received, invoiced and settled, or closed by hand with a reason. */
+  closed?: { at: string; by: string; note: string };
+  credits?: CreditRequest[];
   /** Created by the morning automatic ordering run, with the rule that decided whether it was sent or held. */
   auto?: { runAt: string; decision: "sent" | "held"; why: string };
   history: RequestEvent[];
@@ -987,4 +1051,129 @@ export interface SharedCount {
   reviewedAt?: string;
   reviewNote?: string;
   clientKey?: string;
+}
+
+// ---- Purchasing master data, stock takes and cash (purchasing and stock control) ----------------------------------
+
+export type ValuationMethod = "wac" | "fifo" | "last";
+export type VatScheme = "PT" | "AE" | "SA";
+
+/** A supplier as one hotel deals with it. Another hotel can deal with the same company on other terms, or not at all. */
+export interface SupplierAccount {
+  id: string;
+  propertyId: string;
+  name: string;
+  contact: string;
+  phone: string;
+  /** Where purchase orders go. Fictional addresses in this demo. */
+  orderEmail: string;
+  /** Days the supplier delivers, 0 Sunday to 6 Saturday. */
+  deliveryDays: number[];
+  /** Orders after this local time count from the next day. */
+  cutOff: string;
+  minOrderValue: number;
+  paymentTerms: string;
+  leadDays: number;
+  active: boolean;
+  notes?: string;
+}
+
+/** What a supplier sells a hotel: its code and barcode, the pack, and the agreed price per unit of the item. */
+export interface CatalogueLine {
+  propertyId: string;
+  supplierId: string;
+  ingredientId: string;
+  code: string;
+  /** EAN-13 on the pack. Fictional codes in the restricted 29 range in this demo. */
+  barcode: string;
+  /** Units of the item in one pack, such as 24 bottles or 5 kg. */
+  packSize: number;
+  packLabel: string;
+  /** Agreed price per unit of the item (per kg, litre or piece), before VAT. */
+  agreedPrice: number;
+  vatRate: number;
+  /** The supplier the hotel orders this item from first. */
+  preferred: boolean;
+}
+
+/** Minimum and maximum stock of an item at one location: the main store or an outlet's own store. */
+export interface ParRecord {
+  propertyId: string;
+  /** "main" for the hotel store, or an outlet id. */
+  location: string;
+  ingredientId: string;
+  min: number;
+  max: number;
+  by: string;
+  at: string;
+  source: "seed" | "set" | "suggested";
+}
+
+export interface PurchasingSettings {
+  valuation: ValuationMethod;
+  vatScheme: VatScheme;
+  costCentres: { id: string; name: string }[];
+}
+
+/** An email Tyll prepared, with its attachments kept. In this demo emails to suppliers are logged, never sent. */
+export interface OutboxEmail {
+  id: string;
+  at: string;
+  by: string;
+  propertyId: string;
+  ref: string;
+  to: string;
+  subject: string;
+  body: string;
+  attachments: { name: string; file: string; bytes: number }[];
+  status: "logged";
+  note: string;
+}
+
+export type StockTakeStatus = "counting" | "submitted" | "approved" | "rejected";
+
+export interface StockTakeLine {
+  ingredientId: string;
+  /** What the system said was there when the stock take started. */
+  system: number;
+  /** Null until counted. Items not counted change nothing. */
+  counted: number | null;
+  unitCost: number;
+  by?: string;
+  at?: string;
+  method?: "scan" | "manual";
+}
+
+/** A stock take of one location: full (every item) or partial (some areas). Stock changes only when a manager approves it. */
+export interface StockTake {
+  id: string;
+  propertyId: string;
+  /** "main" for the hotel store, or an outlet id. */
+  location: string;
+  areas: string[];
+  kind: "full" | "partial";
+  status: StockTakeStatus;
+  startedBy: string;
+  startedAt: string;
+  date: string;
+  submittedAt?: string;
+  decidedBy?: string;
+  decidedAt?: string;
+  note?: string;
+  lines: StockTakeLine[];
+  /** Counts created when it was approved: these move stock. */
+  countIds?: string[];
+  history: HistoryEntry[];
+}
+
+/** Cash counted at the end of a shift, against the till's cash sales for the same shift. */
+export interface CashUp {
+  id: string;
+  outletId: string;
+  date: string;
+  shift: "day" | "night";
+  counted: number;
+  by: string;
+  at: string;
+  note?: string;
 }

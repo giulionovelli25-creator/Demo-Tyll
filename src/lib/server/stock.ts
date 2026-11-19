@@ -9,6 +9,7 @@ import { buildForecast, defaultInputs, type Forecast, type ForecastInputs } from
 import { receivedAsCorrected, stockPosition, varianceAllocation, type StockInputs, type StockRow } from "../domain/inventory";
 import type { CountRecord, PriceChange, ReceiptCorrection, RecipeChange, User, WasteLog, WasteReason } from "../types";
 import { DEMO_TODAY } from "../util";
+import { valueRows } from "./procurement";
 
 /** Entries the user made in this session. They are held in the browser until actions move to the server. */
 export interface SessionEntries {
@@ -19,7 +20,7 @@ export interface SessionEntries {
   receipts: ReceiptCorrection[];
 }
 
-const REASONS: WasteReason[] = ["waste", "breakage", "spoilage", "damaged", "other"];
+const REASONS: WasteReason[] = ["waste", "breakage", "spoilage", "damaged", "expired", "other"];
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 const num = (v: unknown, lo: number, hi: number) => typeof v === "number" && Number.isFinite(v) && v >= lo && v <= hi;
 
@@ -72,13 +73,15 @@ const mayseeStore = (user: User, store: string | null) => store === null || allo
 export interface StockRowOut extends StockRow {
   /** How a count difference for this item is shared out, limited to the outlets this user may see. */
   allocation: Record<string, number>;
+  /** Cost per unit under the hotel's valuation method; `value` uses it. `unitCost` stays the standard cost. */
+  valuationCost: number;
 }
 
 export function stockFor(user: User, propertyId: string, e: SessionEntries): StockRowOut[] {
   const d = getDataset();
   const mine = new Set(allowedOutlets(user));
-  return stockPosition(propertyId, fullInputs(e), e.overrides)
-    .filter((r) => mayseeStore(user, r.store))
+  return valueRows(propertyId, stockPosition(propertyId, fullInputs(e), e.overrides)
+    .filter((r) => mayseeStore(user, r.store)))
     .map((r) => {
       // Counts recorded now are shared out by each outlet's use of the item over the past week.
       const full = varianceAllocation(d.dayItems, propertyId, r.ingredientId, DEMO_TODAY);
