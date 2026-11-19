@@ -8,6 +8,9 @@ import { RUN_TIMES, SEND_LIMITS, defaultAuto, reviewReason, type AutoRun, type A
 import type { PurchaseRequest, User } from "../types";
 import { DEMO_TODAY, addDays, fmtMoney, sum } from "../util";
 import { handoff, monthPlanFor, requestTotal, canSee, type PlanItem, type Result } from "./purchasing";
+import { catalogueLine, sendPurchaseOrder, settingsOf as purchasingSettings, supplierAccount } from "./procurement";
+import { nextDeliveryDate } from "../domain/procurement";
+import { DEMO_NOW_MIN } from "../util";
 import { loadStore, mutateStore } from "./purchasing-store";
 import type { SessionEntries } from "./stock";
 
@@ -40,7 +43,8 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
   const stamp = `${DEMO_TODAY}T${set.time}:00.000Z`;
   const money = (n: number) => fmtMoney(n, propertyById[propertyId].currency);
 
-  return mutateStore((s) => {
+  const toSend: string[] = [];
+  const result = mutateStore((s) => {
     s.autoOrder ??= defaultAuto();
     const again = s.autoOrder.runs.find((r) => r.propertyId === propertyId && r.date === DEMO_TODAY);
     if (again) return again;
@@ -48,7 +52,15 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
     for (const [supplierId, items] of [...bySupplier].sort((a, b) => sum(b[1], (i) => i.nextCost) - sum(a[1], (i) => i.nextCost))) {
       s.seq += 1;
       const id = `PR-${propertyId.toUpperCase()}-${String(s.seq).padStart(4, "0")}`;
-      const lines = items.map((i) => ({ ingredientId: i.ingredientId, qty: i.nextQty, suggested: i.nextQty, requirement: Math.round(i.predicted * 1000) / 1000, available: Math.round(i.onHand * 1000) / 1000, incoming: Math.round(i.incoming * 1000) / 1000, safety: Math.round(i.buffer * 1000) / 1000, supplierId, unitPrice: i.unitPrice }));
+      // The supplier's catalogue line gives the pack and VAT, so an automatic order is a full purchase order.
+      const lines = items.map((i) => {
+        const c = catalogueLine(propertyId, supplierId, i.ingredientId, s);
+        return { ingredientId: i.ingredientId, qty: i.nextQty, suggested: i.nextQty, requirement: Math.round(i.predicted * 1000) / 1000, available: Math.round(i.onHand * 1000) / 1000, incoming: Math.round(i.incoming * 1000) / 1000, safety: Math.round(i.buffer * 1000) / 1000, supplierId, unitPrice: c?.agreedPrice ?? i.unitPrice, vatRate: c?.vatRate, packSize: c?.packSize, packLabel: c?.packLabel };
+      });
+      const acct = supplierAccount(propertyId, supplierId, s);
+      const deliveryDate = nextDeliveryDate(DEMO_TODAY, Math.min(DEMO_NOW_MIN, 6 * 60), acct?.cutOff ?? "14:00", Math.max(acct?.leadDays ?? 1, ...items.map((i) => i.leadDays)), acct?.deliveryDays ?? []);
+      const cc = purchasingSettings(propertyId, s).costCentres;
+      const costCentre = cc.length ? `${cc.find((c) => c.id === (lines.every((l) => l.vatRate === 0.23) ? "4200" : "4100"))?.id ?? cc[0].id} ${cc.find((c) => c.id === (lines.every((l) => l.vatRate === 0.23) ? "4200" : "4100"))?.name ?? cc[0].name}` : undefined;
       const total = requestTotal({ lines });
       const reviews = items.map((i) => ({ i, why: reviewReason(i, i.nextQty, plan) })).filter((x): x is { i: PlanItem; why: string } => !!x.why);
       const held = reviews.length > 0 || total > set.sendUnder;
@@ -58,7 +70,7 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
         : `Under ${money(set.sendUnder)}, usual supplier, nothing to review.`;
       const r: PurchaseRequest = {
         id, propertyId, outletIds: outletsOfProperty(propertyId).map((o) => o.id), period: plan.period, createdBy: owner.id, createdAt: stamp, updatedAt: stamp,
-        status: held ? "purchasing" : "approved", lines,
+        status: held ? "purchasing" : "approved", lines, supplierId, deliveryDate, costCentre,
         comment: `Automatic order from the prediction: items due today or tomorrow from ${supplierName(supplierId)}.`,
         auto: { runAt, decision: held ? "held" : "sent", why },
         history: [{ at: stamp, by: owner.id, action: `Created by automatic ordering at ${set.time}`, status: "draft" }],
@@ -67,10 +79,8 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
         r.history.push({ at: stamp, by: owner.id, action: "Submitted to purchasing by automatic ordering", status: "purchasing", comment: why });
       } else {
         r.poNumber = `PO-${id.slice(3)}`;
-        r.sentAt = runAt;
-        r.expectedAt = `${addDays(DEMO_TODAY, Math.max(1, ...items.map((i) => i.leadDays)))}T07:30`;
         r.history.push({ at: stamp, by: owner.id, action: "Approved by the automatic ordering rule", status: "approved", comment: why });
-        r.history.push({ at: stamp, by: owner.id, action: `Sent to ${supplierName(supplierId)} (simulated)`, status: "approved" });
+        toSend.push(id);
       }
       s.requests.push(r);
       handoff(s, r, owner);
@@ -80,6 +90,9 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
     s.autoOrder.runs = [...s.autoOrder.runs.filter((x) => x.date >= addDays(DEMO_TODAY, -30)), run];
     return run;
   });
+  // Orders the rule approved go to the supplier as any purchase order does: by email with the PDF, kept with the order.
+  for (const id of toSend) sendPurchaseOrder(owner, id);
+  return result;
 }
 
 export interface AutoOut {

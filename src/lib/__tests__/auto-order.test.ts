@@ -46,6 +46,10 @@ describe("automatic ordering", () => {
         expect(total).toBeLessThanOrEqual(1500);
         expect(r.status).toBe("approved");
         expect(r.poNumber).toBeTruthy();
+        // Sent as a full purchase order: PDF kept, email logged, catalogue pack and VAT on its lines.
+        expect(r.sent?.pdf).toMatch(/\.pdf$/);
+        expect(r.lines.every((l) => l.vatRate !== undefined && !!l.packLabel)).toBe(true);
+        expect(r.supplierId).toBeTruthy();
       } else {
         expect(r.status).toBe("purchasing");
         expect(r.auto!.why.length).toBeGreaterThan(5);
