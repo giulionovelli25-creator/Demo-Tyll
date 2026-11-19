@@ -73,7 +73,8 @@ Prepared 19 November 2026 from the Tyll demo (branch `feature/purchasing-stock-c
 | Roles: purchasing manager, F&B director, head chef, financial controller (and more) | Working and tested | Server checks every action. |
 | Arabic interface with right-to-left layout | In progress | Main screens and the new purchasing and stock screens' titles and buttons are translated; longer explanations on the new screens are still English. |
 | Predictions from Tyll's own model; no AI chooses a quantity | Working and tested | Stated on the Predictions page. |
-| Visit tracking with consent, feedback button, privacy policy, Impressum | Planned | Waiting for approval of the plan. |
+| Demo visit tracking with consent: pages opened, time spent, role; team page at /admin/visits; Slack or email alerts | Working and tested | Only after a yes in the banner; Global Privacy Control counts as no; erased when turned off in Settings; kept 90 days. Alerts are logged, not sent, until Slack or email is configured. |
+| Feedback button, privacy policy, Impressum | Planned | Waiting for approval of the plan and the company details. |
 
 ## Not covered by this checklist
 

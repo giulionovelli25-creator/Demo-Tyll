@@ -9,6 +9,7 @@ import { allowedOutlets, allowedProperties, can, canOpen, type ModuleId, type Pe
 import { POLICY } from "@/lib/domain/detect";
 import { useApi, useUser } from "@/lib/hooks";
 import { NotificationSettings } from "@/components/shell/notification-settings";
+import { VisitConsentSetting } from "@/components/shell/visit-consent";
 import { api } from "@/lib/api";
 import { usePlanDrafts } from "@/lib/plan-hooks";
 import { useDemo } from "@/lib/store";
@@ -72,6 +73,10 @@ export default function SettingsPage() {
       </div>
 
       <NotificationSettings />
+
+      <Panel title="Recording your demo visit" description="Whether the Tyll team may see which pages you open in this demo. No name, email or IP address is recorded; records are kept for 90 days.">
+        <VisitConsentSetting />
+      </Panel>
 
       <Panel title="Data sources" description="Tyll reads from the hotel's existing systems and changes nothing in them. This is what stands behind each figure in the demo." flush>
         <TableWrap>

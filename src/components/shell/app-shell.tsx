@@ -25,6 +25,7 @@ import { useInvestigations, useUser } from "@/lib/hooks";
 import { currentRange, useDemo } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 import type { Dept, User } from "@/lib/types";
+import { VisitConsent } from "./visit-consent";
 import { caseIsPastDeadline } from "@/lib/domain/deadline";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtRange, fmtTime, type RangePreset } from "@/lib/util";
 import { BreakageFab, BreakageSheet, mayLogBreakage, useBreakageSheet } from "./breakage";
@@ -247,9 +248,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const hydrated = useHydrated();
   const pathname = usePathname();
   if (!hydrated) return <BrandLoader />;
+  // The Tyll team's pages: no demo frame and no visit recording.
+  if (pathname.startsWith("/admin")) return <>{children}</>;
   if (pathname === "/login") return <Login />;
   if (pathname === "/welcome") return <Welcome />;
-  return <><LanguageLayer /><SilverWave /><Authed>{children}</Authed></>;
+  return <><LanguageLayer /><SilverWave /><Authed>{children}</Authed><VisitConsent /></>;
 }
 
 /**

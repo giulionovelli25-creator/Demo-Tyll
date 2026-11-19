@@ -21,6 +21,8 @@ export function proxy(req: NextRequest) {
 
 function route(req: NextRequest): NextResponse {
   const { pathname, search } = req.nextUrl;
+  // The Tyll team's pages sit outside the demo: no demo session, no role. Their API checks the admin key itself.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return NextResponse.next();
   const view = resolveSession(req.cookies.get(SESSION_COOKIE)?.value, { touch: true });
 
   if (publicDemo()) {
