@@ -130,7 +130,7 @@ function Progress({ d }: { d: RequestDetail }) {
     { key: "draft", label: r.auto ? "Created automatically" : "Draft", at: r.history[0]?.at, done: true },
     ...(auto ? [] : [{ key: "submitted", label: "Submitted", at: submitted?.at, done: !!submitted }, ...d.steps.map((s) => ({ key: s, label: names[s], at: stepsDone(s)?.at, done: !!stepsDone(s) }))]),
     { key: "approved", label: auto ? "Approved by the rule" : "Approved", at: r.history.find((h) => h.status === "approved")?.at, done: r.status === "approved" || r.status === "received" },
-    { key: "sent", label: "Sent", at: r.history.find((h) => h.action.startsWith("Sent to") || h.action.startsWith("Emailed to"))?.at, done: !!r.sentAt },
+    { key: "sent", label: "Sent", at: r.history.find((h) => h.action.startsWith("Sent to") || h.action.startsWith("Emailed to") || h.action.startsWith("Order logged for"))?.at, done: !!r.sentAt },
     { key: "delivered", label: d.poStatus === "partly_received" ? "Partly received" : orderStage(r) === "short" ? "Delivered short" : "Delivered", at: r.history.find((h) => h.status === "received")?.at ?? r.receipts?.[0]?.at, done: r.status === "received" || d.poStatus === "partly_received" },
     ...(r.closed ? [{ key: "closed", label: "Closed", at: r.closed.at, done: true }] : []),
   ];
@@ -228,11 +228,11 @@ function SendPanel({ d, user, run, busy }: { d: RequestDetail; user: User; run: 
   if (!r.supplierId || !d.supplier) return null;
   if (r.sent) {
     return (
-      <Panel title="Sent to the supplier">
-        <p className="text-sm text-ink">Emailed to {r.sent.to} on {fmtDate(r.sent.at.slice(0, 10), true)} at {r.sent.at.slice(11, 16)}, with {r.sent.pdf}.</p>
+      <Panel title="Sent to the supplier (demo: logged, not emailed)">
+        <p className="text-sm text-ink">Prepared for {r.sent.to} on {fmtDate(r.sent.at.slice(0, 10), true)} at {r.sent.at.slice(11, 16)}, with {r.sent.pdf}, by {personName(r.sent.by)}.</p>
         <p className="mt-1 text-[13px] text-graphite">Expected {r.deliveryDate ? fmtDate(r.deliveryDate, true) : "on the next delivery day"}. The PDF is kept with the order.</p>
-        <a href={`/api/purchasing/${r.id}/pdf`} target="_blank" rel="noreferrer" className={cn(textLink, "mt-3")}>Open the PDF that was sent</a>
-        <Note className="mt-3">In this demo the email is logged with its PDF, not sent: no supplier is contacted.</Note>
+        <a href={`/api/purchasing/${r.id}/pdf`} target="_blank" rel="noreferrer" className={cn(textLink, "mt-3")}>Open the order PDF</a>
+        <Note className="mt-3">In this demo the email is logged with its PDF and never sent: no supplier is contacted. With an email provider connected, this would say when the provider accepted it.</Note>
       </Panel>
     );
   }
@@ -241,7 +241,7 @@ function SendPanel({ d, user, run, busy }: { d: RequestDetail; user: User; run: 
     <Panel title="Send to the supplier">
       <p className="text-sm text-ink">Email {r.poNumber ?? r.id} to {d.supplier.orderEmail} as a PDF. A copy is kept with the order.</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button variant="primary" disabled={busy} onClick={() => run(`/api/purchasing/${r.id}`, { action: "send" }, `Order emailed to ${d.supplier!.name}. Logged in this demo, not sent.`)}>Email the order</Button>
+        <Button variant="primary" disabled={busy} onClick={() => { if (window.confirm(`Send ${r.poNumber ?? r.id} to ${d.supplier!.name} (${d.supplier!.orderEmail})? In this demo the email is logged with its PDF, not sent.`)) void run(`/api/purchasing/${r.id}`, { action: "send" }, `${r.poNumber ?? r.id} logged for ${d.supplier!.name}. In this demo nothing is emailed.`); }}>Send the order</Button>
         <a href={`/api/purchasing/${r.id}/pdf`} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center rounded-full border border-line px-4 text-sm text-ink hover:bg-cloud">Preview the PDF</a>
       </div>
       <Note className="mt-3">In this demo the email is logged with its PDF, not sent.</Note>

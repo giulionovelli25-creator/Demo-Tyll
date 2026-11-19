@@ -68,3 +68,10 @@ Resume from this file if a session runs out of context.
 - **Root cause:** `src/app/forecast/page.tsx` and the "Awaiting delivery" filter counted every request with status approved.
 - **Fix:** `awaitingDelivery` and `awaitingSend` in `src/lib/domain/procurement.ts`. The header now reads "N approved and not sent" separately; the tile and filter count sent orders only.
 - **Test:** `procurement.test.ts`, approved then sent.
+
+### F5, the order page said "Emailed to" although nothing is emailed (P1): FIXED
+- **Repro:** approve a purchase order, click "Email the order". The history says "Emailed to …" and the panel "Emailed to … on …", while the outbox status is `logged` and no email exists.
+- **Root cause:** wording in `sendPurchaseOrder` (`procurement.ts`) and `SendPanel` (`approvals.tsx`) described a delivery the backend never confirms.
+- **Fix:** history "Order logged for …"; panel "Sent to the supplier (demo: logged, not emailed)" with who sent it; button "Send the order" asks for confirmation first, naming the order, supplier and address; the toast says it was logged. The lifecycle badge stays "Sent", the step the order is in.
+- **Test:** `procurement.test.ts` checks the history wording.
+- **Not built:** a real sender. There is no "sending", "failed" or "retry" state because no transport exists; when an email provider is connected, those states are needed (the notification emails in `notify.ts` already have queued, sent and failed). BLOCKED on choosing a provider.

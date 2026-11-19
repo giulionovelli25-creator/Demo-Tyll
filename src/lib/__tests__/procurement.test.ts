@@ -204,6 +204,9 @@ describe("end to end: low stock to a credit request", () => {
     expect(D.awaitingDelivery(sent.request)).toBe(true);
     expect(D.awaitingSend(sent.request)).toBe(false);
     expect(sent.email).toMatchObject({ to: "encomendas@carnes-ribeiro.example", status: "logged" });
+    // The record never says it was emailed: nothing is, in the demo.
+    expect(sent.request.history.at(-1)!.action).toMatch(/^Order logged for /);
+    expect(sent.request.history.some((h) => /emailed to/i.test(h.action))).toBe(false);
     const pdf = ok(X.readPurchaseOrderPdf(nadia, po.id));
     expect(pdf.bytes.subarray(0, 5).toString()).toBe("%PDF-");
     expect(pdf.bytes.toString("latin1")).toContain(approved.poNumber);

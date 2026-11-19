@@ -542,7 +542,7 @@ export function sendPurchaseOrder(user: User, id: string): Result<{ request: Pur
     y.sentAt = at;
     y.expectedAt = `${date}T07:30`;
     y.updatedAt = now();
-    y.history.push({ at: y.updatedAt, by: user.id, action: `Emailed to ${acct.name} (${acct.orderEmail}) with ${name}`, status: "approved", comment: "Logged in this demo, not sent. The PDF is kept with the order." });
+    y.history.push({ at: y.updatedAt, by: user.id, action: `Order logged for ${acct.name} (${acct.orderEmail}) with ${name}`, status: "approved", comment: "In this demo nothing is emailed. The PDF is kept with the order." });
     return y;
   });
   if (!out) return fail(409, "This order has already been sent.");
