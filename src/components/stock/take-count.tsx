@@ -67,13 +67,15 @@ function TakeCount({ id }: { id: string }) {
   const { data, error } = useStockTake(id);
   const act = useProcAction();
   const [values, setValues] = useState<Record<string, string>>({});
-  const [focus, setFocus] = useState<string | null>(null);
+  // The item to count next; the counter lets the same item be scanned twice in a row.
+  const [focus, setFocus] = useState<{ id: string; n: number } | null>(null);
   const [code, setCode] = useState("");
   const [blind, setBlind] = useState(true);
   const [camera, setCamera] = useState(false);
   const [busy, setBusy] = useState(false);
   const canCamera = typeof window !== "undefined" && !!window.BarcodeDetector && !!navigator.mediaDevices;
-  useEffect(() => { if (focus) { const el = document.getElementById(`qty-${focus}`) as HTMLInputElement | null; el?.scrollIntoView({ block: "center", behavior: "smooth" }); el?.focus(); el?.select(); } }, [focus]);
+  const ready = !!data;
+  useEffect(() => { if (focus && ready) { const el = document.getElementById(`qty-${focus.id}`) as HTMLInputElement | null; el?.scrollIntoView({ block: "center" }); el?.focus(); el?.select(); } }, [focus, ready]);
   if (error) return <div className="p-6"><WidgetError>This stock take could not load.</WidgetError></div>;
   if (!data) return <div className="p-6"><Skeleton className="h-64 w-full" /></div>;
   const t: StockTakeView = data.take;
@@ -92,7 +94,7 @@ function TakeCount({ id }: { id: string }) {
     if (!c) return;
     try {
       const r = await act<{ ingredientId: string }>("/api/stock/takes", { action: "count", id: t.id, barcode: c });
-      setFocus(r.ingredientId);
+      setFocus((f) => ({ id: r.ingredientId, n: (f?.n ?? 0) + 1 }));
       setCode("");
       toast.done(`${ingredientById[r.ingredientId].name}. Enter the quantity.`);
     } catch (e) { toast.error(e instanceof Error ? e.message : "Unknown barcode."); }
@@ -128,14 +130,14 @@ function TakeCount({ id }: { id: string }) {
               const g = ingredientById[l.ingredientId];
               const v = values[l.ingredientId] ?? (l.counted === null ? "" : String(l.counted));
               return (
-                <li key={l.ingredientId} className={cn("flex items-center gap-3 px-4 py-3", focus === l.ingredientId && "bg-accent-soft")}>
+                <li key={l.ingredientId} className={cn("flex items-center gap-3 px-4 py-3", focus?.id === l.ingredientId && "bg-accent-soft")}>
                   <span className="min-w-0 flex-1">
                     <span className="block text-[15px] text-ink">{g.name}</span>
                     <span className="text-xs text-steel">{blind ? unitLabel(g.unit === "each" ? "units" : g.unit) : `System ${fmtQty(l.system, g.unit)}`}{l.method === "scan" ? ", scanned" : ""}</span>
                   </span>
                   {l.counted !== null && <Check size={16} className="shrink-0 text-pos" aria-label="Counted" />}
                   <label className="shrink-0"><span className="sr-only">Counted {g.name}</span>
-                    <input id={`qty-${l.ingredientId}`} type="number" inputMode="decimal" min={0} step="any" value={v} placeholder="Count" onChange={(e) => setValues({ ...values, [l.ingredientId]: e.target.value })} onBlur={(e) => { if ((l.counted === null ? "" : String(l.counted)) !== e.target.value) save(l.ingredientId, e.target.value, focus === l.ingredientId ? "scan" : undefined); }} onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} className="num h-11 w-24 rounded-xl border border-line bg-paper px-3 text-end text-base text-ink" />
+                    <input id={`qty-${l.ingredientId}`} type="number" inputMode="decimal" min={0} step="any" value={v} placeholder="Count" onChange={(e) => setValues({ ...values, [l.ingredientId]: e.target.value })} onBlur={(e) => { if ((l.counted === null ? "" : String(l.counted)) !== e.target.value) save(l.ingredientId, e.target.value, focus?.id === l.ingredientId ? "scan" : undefined); }} onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} className="num h-11 w-24 rounded-xl border border-line bg-paper px-3 text-end text-base text-ink" />
                   </label>
                 </li>
               );

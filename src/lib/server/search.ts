@@ -42,6 +42,12 @@ export function matches(text: string, query: string): boolean {
 const FEATURES: { label: string; detail: string; href: string; module?: ModuleId; perm?: Permission; also?: string }[] = [
   { label: "What to order", detail: "Prediction to month end, and Build order", href: "/forecast", perm: "purchase.create", also: "order purchase shortage" },
   { label: "Automatic ordering", detail: "What Tyll ordered this morning, and the rules", href: "/forecast?tab=auto", perm: "purchase.create", also: "auto automatic order reorder rules supplier" },
+  { label: "To order", detail: "Items below their minimum, and one-click purchase orders by supplier", href: "/forecast?tab=toorder", perm: "purchase.create", also: "par minimum maximum low stock purchase order po reorder" },
+  { label: "Par levels", detail: "Minimum and maximum per item and location", href: "/forecast?tab=pars", perm: "purchase.create", also: "par level minimum maximum outlet" },
+  { label: "Suppliers", detail: "Contacts, delivery days, cut-off, minimum order and payment terms", href: "/forecast?tab=suppliers", perm: "purchase.create", also: "supplier vendor delivery days cut off terms" },
+  { label: "Catalogue and prices", detail: "Packs, barcodes, agreed prices and price history", href: "/forecast?tab=catalogue", perm: "purchase.create", also: "catalogue catalog price history agreed barcode pack case" },
+  { label: "Expiring soon", detail: "Batches that expire in the next days, with what to do", href: "/stock?tab=expiry", perm: "stock.count", also: "expiry expiring batch use by best before fefo" },
+  { label: "Stock takes", detail: "Count by area, variance report, approval and month end", href: "/stock?tab=takes", perm: "stock.count", also: "stock take stocktake inventory count variance month end barcode scan" },
   { label: "What to prep", detail: "Portions the kitchen should prepare", href: "/forecast?tab=prep", perm: "prep.plan", also: "kitchen preparation" },
   { label: "Purchase approvals", detail: "Requests waiting for a decision", href: "/forecast?tab=approvals", module: "forecast", also: "approve purchase order po" },
   { label: "Where did it go?", detail: "Stock used that sales do not explain", href: "/stock?tab=where", module: "investigations", also: "missing variance stock" },

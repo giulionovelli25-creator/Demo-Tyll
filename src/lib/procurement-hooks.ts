@@ -1,7 +1,7 @@
 "use client";
 // Data for the purchasing and stock control screens. Every read carries the plan version, so a change made on one
 // screen (an order created, a par level set, a stock take approved) refreshes the others.
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { api } from "./api";
 import { usePost, useSessionEntries, useApi } from "./hooks";
 import { usePlanDrafts } from "./plan-hooks";
@@ -42,7 +42,11 @@ export function useStockTakes(pid: string | null) {
 }
 export function useStockTake(id: string | null) {
   const version = usePlanDrafts((s) => s.version);
-  return useApi<{ take: StockTakeView; mayDecide: boolean }>(id ? `/api/stock/takes?id=${encodeURIComponent(id)}&v=${version}` : null);
+  const res = useApi<{ take: StockTakeView; mayDecide: boolean }>(id ? `/api/stock/takes?id=${encodeURIComponent(id)}&v=${version}` : null);
+  // Keep the last stock take on screen while a count saves and it reloads, so the list never blanks out mid-count.
+  const [last, setLast] = useState(res.data);
+  if (res.data && res.data !== last) setLast(res.data);
+  return { data: res.data ?? (last?.take.id === id ? last : undefined), error: res.error };
 }
 export interface MonthEndOut {
   month: string; currency: string;

@@ -50,6 +50,8 @@ const TOURS: Partial<Record<User["role"], (u: User) => TourStep[]>> = {
     S.nav("/"), S.search("/"), S.bell("/"),
   ],
   purchasing: () => [
+    S.page("/forecast?tab=toorder", "To order", "Everything below its minimum, with the quantity back to the maximum. One click makes draft purchase orders, one per supplier.", "forecast"),
+    S.page("/forecast?tab=suppliers", "Suppliers", "Each supplier's delivery days, cut-off, minimum order, terms and catalogue with agreed prices.", "forecast"),
     S.page("/forecast?tab=auto", "Automatic ordering", "What Tyll ordered this morning. Orders over the limit, or with an item to review, wait for you in Orders.", "forecast"),
     S.page("/forecast", "Predictions", "What to order and how much for the month. Orders holds requests, purchase orders and deliveries.", "forecast"),
     S.page("/forecast?tab=approvals&queue=purchasing", "Requests to review", "Open a request to check quantities and choose the supplier, then approve or send it back.", "forecast"),

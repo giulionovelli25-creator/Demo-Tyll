@@ -31,7 +31,8 @@ export function resetDemo(user: User, raw: unknown): { ok: true; scope: ResetSco
     if (has("events") || has("sales")) { const ops = seedOps(); x.events = ops.events; x.support = ops.support; x.assignments = ops.assignments; Object.assign(x.counters, ops.counters); for (const k of Object.keys(x.counters)) if (/^(SR|EVT)-/.test(k) && !(k in ops.counters)) delete x.counters[k]; }
     if (has("sales")) x.sales = six.sales;
     if (has("guest")) x.guest = seedGuest();
-    if (has("purchasing") || has("events")) for (const k of Object.keys(x.counters)) if (/^INV-/.test(k)) delete x.counters[k];
+    if (has("purchasing") || has("events")) for (const k of Object.keys(x.counters)) if (/^(INV-|MAIL)/.test(k)) delete x.counters[k];
+    if (has("stock")) for (const k of Object.keys(x.counters)) if (/^(ST-|CU$)/.test(k)) delete x.counters[k];
     // Notices may point at records that no longer exist; start the inbox afresh for the reset area.
     x.notify = scope === "all" ? emptyNotify() : { ...x.notify, notices: [], emails: x.notify.emails };
   });

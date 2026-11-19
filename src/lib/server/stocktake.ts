@@ -6,7 +6,7 @@ import { COUNT_LOCATIONS, STOCK_GROUPS, locationOf, stockGroupOf } from "../data
 import { allowedProperties, can } from "../domain/access";
 import { varianceReport } from "../domain/procurement";
 import type { SharedCount, StockTake, StockTakeLine, User } from "../types";
-import { DEMO_TODAY, round2 } from "../util";
+import { DEMO_TODAY, fmtMoney, round2 } from "../util";
 import { notify, peopleWith, resolve } from "./notify";
 import { procurementOf } from "./procurement";
 import { loadStore, mutateStore, nextNumber } from "./purchasing-store";
@@ -107,7 +107,7 @@ export function submitStockTake(user: User, id: string): Result<{ take: StockTak
   const take = mutateStore((x) => {
     const y = x.stockTakes!.find((z) => z.id === id)!;
     y.status = "submitted"; y.submittedAt = now();
-    y.history.push({ at: y.submittedAt, by: user.id, action: "Submitted for approval", note: `${r.totals.counted} items counted, ${r.totals.withDifference} with a difference, net ${round2(r.totals.net)}` });
+    y.history.push({ at: y.submittedAt, by: user.id, action: "Submitted for approval", note: `${r.totals.counted} items counted, ${r.totals.withDifference} with a difference, net ${fmtMoney(round2(r.totals.net), propertyById[y.propertyId].currency, { decimals: true })}` });
     notify(x, { to: peopleWith("stock.review", y.propertyId, (u) => u.id !== user.id && ["restaurant_manager", "fnb_director", "purchasing", "gm"].includes(u.role)), type: "stocktake-review", ref: y.id, propertyId: y.propertyId, from: user.id, title: `Stock take ${y.id} to approve`, body: `${locationName(y.location)}: ${r.totals.counted} items counted, ${r.totals.withDifference} with a difference. Check the variance report, then approve or send it back.`, href: `/stock?tab=counts&take=${y.id}` });
     return y;
   });
