@@ -532,10 +532,12 @@ export function sendPurchaseOrder(user: User, id: string): Result<{ request: Pur
     attachments: [{ name, file: `po/${name}`, bytes: bytes.length }], status: "logged", note: "Logged with its PDF. This demo never emails suppliers.",
   };
   const out = mutateStore((x) => {
+    // Checked again inside the write, against the store as saved: a second send never logs a second email.
+    const y = x.requests.find((z) => z.id === id)!;
+    if (y.sent || y.status !== "approved") return null;
     x.procurement ??= seedProcurement();
     email.id = `MAIL-${String(nextNumber(x, "MAIL")).padStart(5, "0")}`;
     x.procurement.outbox.push(email);
-    const y = x.requests.find((z) => z.id === id)!;
     y.sent = { at, by: user.id, to: acct.orderEmail, subject: email.subject, pdf: name, emailId: email.id };
     y.sentAt = at;
     y.expectedAt = `${date}T07:30`;
@@ -543,6 +545,7 @@ export function sendPurchaseOrder(user: User, id: string): Result<{ request: Pur
     y.history.push({ at: y.updatedAt, by: user.id, action: `Emailed to ${acct.name} (${acct.orderEmail}) with ${name}`, status: "approved", comment: "Logged in this demo, not sent. The PDF is kept with the order." });
     return y;
   });
+  if (!out) return fail(409, "This order has already been sent.");
   return { ok: true, request: out, email };
 }
 

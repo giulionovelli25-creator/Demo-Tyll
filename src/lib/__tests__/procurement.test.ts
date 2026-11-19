@@ -202,7 +202,10 @@ describe("end to end: low stock to a credit request", () => {
     const pdf = ok(X.readPurchaseOrderPdf(nadia, po.id));
     expect(pdf.bytes.subarray(0, 5).toString()).toBe("%PDF-");
     expect(pdf.bytes.toString("latin1")).toContain(approved.poNumber);
+    // A double click or a retry never logs a second email to the supplier.
     expect(X.sendPurchaseOrder(nadia, po.id).ok).toBe(false);
+    expect(X.sendPurchaseOrder(marco, po.id).ok).toBe(false);
+    expect(loadStore().procurement!.outbox.filter((e) => e.ref === po.id)).toHaveLength(1);
 
     // 5. Partly received: 5 kg short. Stock rises by what was accepted, the rest stays on order.
     const stockBefore = stockFor(sara, "lis", entries).find((r) => r.ingredientId === "wagyu")!.estimated;

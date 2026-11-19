@@ -57,3 +57,8 @@ Resume from this file if a session runs out of context.
 - **Fix:** `src/lib/domain/deadline.ts` (`isPastDeadline`, `caseIsPastDeadline`) holds the rule with its comment; all six use it. `Property.timeZone` holds the hotel's zone; `dayIn`/`timeIn` in `util.ts` give the hotel's day and time; order times and receipts use the property's zone.
 - **Tests:** `dates.test.ts`: yesterday, today, tomorrow, closed, deadline moved later, 23:59 and 00:00 hotel time, a UTC+4 hotel viewed from UTC+1.
 - **Note:** the demo has no task module with due dates; deadlines exist on investigations only. Bell and guest-request "overdue" are minutes against a service target, a different rule, left as is.
+
+### F6, "already sent" checked outside the store write (P2): FIXED (hardening)
+- **Finding:** `sendPurchaseOrder` checked `sent` on a snapshot read before the write. Within one Node process sends cannot interleave, and the button is disabled while sending, so a double click already gave one email. Two processes sharing the store file could both pass the check.
+- **Fix:** the check runs again inside `mutateStore`, against the saved store, before the outbox email is added.
+- **Test:** `procurement.test.ts`: a second send by the same and another person is refused and the outbox holds one email for the order. A true two-process race was not reproduced: UNVERIFIED beyond the code path.
