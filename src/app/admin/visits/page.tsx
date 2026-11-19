@@ -5,10 +5,13 @@ import { useCallback, useEffect, useState } from "react";
 import { Badge, Button, EmptyState, Field, Note, PageHeader, Panel, Segmented, Skeleton, SummaryBar, TableWrap, Td, Th, WidgetError, rowClass } from "@/components/ui";
 import { TyllLogo } from "@/components/brand";
 import { ALL_ITEMS } from "@/lib/nav";
-import type { VisitReport } from "@/lib/server/visits";
+import type { AdminWho } from "@/lib/server/admin";
+import type { VisitReport as Base } from "@/lib/server/visits";
+
+type VisitReport = Base & { who: AdminWho };
 
 type Days = "1" | "7" | "30" | "90";
-type State = { kind: "loading" } | { kind: "ready"; r: VisitReport } | { kind: "locked"; needsKey: boolean; error: string } | { kind: "error" };
+type State = { kind: "loading" } | { kind: "ready"; r: VisitReport } | { kind: "locked"; needsKey: boolean; github: boolean; error: string } | { kind: "error" };
 
 const dur = (s: number | null | undefined) => (s === null || s === undefined ? "" : s < 60 ? `${s}s` : s < 3600 ? `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s` : `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m`);
 const when = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -20,7 +23,7 @@ export default function VisitsPage() {
   const load = useCallback(async () => {
     const res = await fetch(`/api/admin/visits?days=${days}`, { cache: "no-store" }).catch(() => null);
     if (!res) return setState({ kind: "error" });
-    if (res.status === 401) { const j = await res.json(); return setState({ kind: "locked", needsKey: !!j.needsKey, error: j.error }); }
+    if (res.status === 401) { const j = await res.json(); return setState({ kind: "locked", needsKey: !!j.needsKey, github: !!j.github, error: j.error }); }
     if (!res.ok) return setState({ kind: "error" });
     setState({ kind: "ready", r: await res.json() });
   }, [days]);
@@ -39,32 +42,51 @@ export default function VisitsPage() {
           <span className="flex flex-wrap items-center gap-2">
             <Segmented label="Period" value={days} onChange={setDays} options={[{ value: "1", label: "24 hours" }, { value: "7", label: "7 days" }, { value: "30", label: "30 days" }, { value: "90", label: "90 days" }]} />
             <a href={`/api/admin/visits?days=${days}&format=csv`} className="inline-flex h-10 items-center rounded-full border border-line px-4 text-sm text-ink hover:bg-cloud">Download CSV</a>
+            {state.r.who.via !== "local" && <SignedIn who={state.r.who} onOut={() => void load()} />}
           </span>
         )}
       </PageHeader>
       {state.kind === "loading" && <Skeleton className="h-64 w-full" />}
       {state.kind === "error" && <WidgetError onRetry={() => void load()}>Visits could not load.</WidgetError>}
-      {state.kind === "locked" && <KeyForm needsKey={state.needsKey} error={state.error} onDone={() => void load()} />}
+      {state.kind === "locked" && <SignIn needsKey={state.needsKey} github={state.github} error={state.error} onDone={() => void load()} />}
       {state.kind === "ready" && <Report r={state.r} />}
     </main>
   );
 }
 
-function KeyForm({ needsKey, error, onDone }: { needsKey: boolean; error: string; onDone: () => void }) {
+function SignIn({ needsKey, github, error, onDone }: { needsKey: boolean; github: boolean; error: string; onDone: () => void }) {
   const [key, setKey] = useState("");
   const [msg, setMsg] = useState("");
-  if (!needsKey) return <Panel><EmptyState title="This page is not available here">{error}</EmptyState></Panel>;
+  // GitHub sends people back here with ?error= when the sign-in did not work.
+  const [returned] = useState(() => (typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("error")));
+  if (!needsKey && !github) return <Panel><EmptyState title="This page is not available here">{error}</EmptyState></Panel>;
   return (
-    <Panel title="Enter the admin key">
-      <form className="flex max-w-md flex-col gap-3" onSubmit={async (e) => {
-        e.preventDefault();
-        const r = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key }) });
-        if (r.ok) onDone(); else setMsg((await r.json()).error ?? "That key is not right.");
-      }}>
-        <Field label="Admin key" type="password" autoComplete="current-password" value={key} onChange={(e) => setKey(e.target.value)} error={msg || undefined} />
-        <Button type="submit" variant="primary" disabled={!key}>Open visits</Button>
-      </form>
+    <Panel title="Sign in to see demo visits" description="For the Tyll team only.">
+      {returned && <p role="alert" className="mb-4 rounded-xl border border-neg/25 bg-neg-soft px-4 py-3 text-sm text-ink">{returned === "github" ? "GitHub sign-in is not set up on this server." : returned}</p>}
+      <div className="flex max-w-md flex-col gap-5">
+        {github && <a href="/api/admin/github/start" className="inline-flex h-11 items-center justify-center rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-hover">Sign in with GitHub</a>}
+        {needsKey && (
+          <form className="flex flex-col gap-3" onSubmit={async (e) => {
+            e.preventDefault();
+            const r = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key }) });
+            if (r.ok) onDone(); else setMsg((await r.json()).error ?? "That key is not right.");
+          }}>
+            {github && <p className="text-[13px] text-steel">Or use the admin key.</p>}
+            <Field label="Admin key" type="password" autoComplete="current-password" value={key} onChange={(e) => setKey(e.target.value)} error={msg || undefined} />
+            <Button type="submit" variant={github ? "secondary" : "primary"} disabled={!key}>Open visits</Button>
+          </form>
+        )}
+      </div>
     </Panel>
+  );
+}
+
+function SignedIn({ who, onOut }: { who: AdminWho; onOut: () => void }) {
+  return (
+    <span className="flex items-center gap-2 text-[13px] text-graphite">
+      {who.via === "github" ? <>Signed in as <span className="font-medium text-ink">@{who.login}</span></> : "Signed in with the admin key"}
+      <Button size="sm" variant="ghost" onClick={async () => { await fetch("/api/admin/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }); window.history.replaceState(null, "", "/admin/visits"); onOut(); }}>Sign out</Button>
+    </span>
   );
 }
 
