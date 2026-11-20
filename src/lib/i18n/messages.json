@@ -1474,6 +1474,11 @@
 "Vendite in contanti alla cassa",
 "المبيعات النقدية في نقطة البيع"
 ],
+"Cash tip recorded on the bill": [
+"Bartrinkgeld auf der Rechnung erfasst",
+"Mancia in contanti registrata sul conto",
+"سُجّلت إكرامية نقدية على الفاتورة"
+],
 "Casual restaurant": [
 "Casual-Restaurant",
 "Ristorante informale",
@@ -1818,6 +1823,16 @@
 "Schließen",
 "Chiudi",
 "إغلاق"
+],
+"Close as a legitimate correction either way.": [
+"Schließen Sie den Fall in jedem Fall als berechtigte Korrektur.",
+"Chiudete in ogni caso come correzione legittima.",
+"أغلقوا الحالة في كل الأحوال كتصحيح مشروع."
+],
+"Close as a legitimate correction either way. The value is what the guest was charged, so a refund is not money recovered.": [
+"Schließen Sie den Fall in jedem Fall als berechtigte Korrektur. Der Betrag ist das, was dem Gast berechnet wurde, eine Erstattung ist also kein zurückgewonnenes Geld.",
+"Chiudete in ogni caso come correzione legittima. L'importo è ciò che è stato addebitato all'ospite, quindi un rimborso non è denaro recuperato.",
+"أغلقوا الحالة في كل الأحوال كتصحيح مشروع. القيمة هي ما حُسب على الضيف، لذا فالاسترداد ليس مالاً مستعاداً."
 ],
 "Close panel": [
 "Bereich schließen",
@@ -3284,6 +3299,21 @@
 "Tutto corrisponde. Niente da controllare.",
 "كل شيء مطابق. لا شيء للمراجعة."
 ],
+"Everything on the bill was served, or the extra was refunded to the guest.": [
+"Alles auf der Rechnung wurde serviert, oder der Mehrbetrag wurde dem Gast erstattet.",
+"Tutto ciò che è sul conto è stato servito, oppure l'eccedenza è stata rimborsata all'ospite.",
+"قُدّم كل ما في الفاتورة، أو أُعيد المبلغ الزائد إلى الضيف."
+],
+"Everything on the bill was served, or the extra was refunded to the guest. Note which.": [
+"Alles auf der Rechnung wurde serviert, oder der Mehrbetrag wurde dem Gast erstattet. Vermerken Sie, was zutrifft.",
+"Tutto ciò che è sul conto è stato servito, oppure l'eccedenza è stata rimborsata all'ospite. Annotate quale dei due.",
+"قُدّم كل ما في الفاتورة، أو أُعيد المبلغ الزائد إلى الضيف. سجّلوا أيهما."
+],
+"Everything on the bill was served.": [
+"Alles auf der Rechnung wurde serviert.",
+"Tutto ciò che è sul conto è stato servito.",
+"قُدّم كل ما في الفاتورة."
+],
 "Everything that needs a decision, in one list.": [
 "Alles, was entschieden werden muss, in einer Liste.",
 "Tutto ciò che richiede una decisione, in un elenco.",
@@ -3824,6 +3854,11 @@
 "Calici addebitati come riserva",
 "الكؤوس المحسوبة كنبيذ معتق"
 ],
+"Glasses poured and not rung up at all.": [
+"Gläser ausgeschenkt und gar nicht boniert.",
+"Bicchieri versati e mai battuti in cassa.",
+"كؤوس سُكبت ولم تُسجّل في الصندوق إطلاقاً."
+],
 "Glasses sold": [
 "Verkaufte Gläser",
 "Calici venduti",
@@ -4238,6 +4273,11 @@
 "Wurde dem Gast zu viel berechnet, erstatten Sie die Differenz und vermerken Sie es hier.",
 "Se all'ospite è stato addebitato troppo, rimborsate la differenza e annotatelo qui.",
 "إذا حُسب على الضيف أكثر من اللازم، فردّ الفرق وسجّل ذلك هنا."
+],
+"If the guest was charged for too many, refund the difference to the guest and note the refund here.": [
+"Wenn dem Gast zu viel berechnet wurde, erstatten Sie dem Gast die Differenz und vermerken Sie die Erstattung hier.",
+"Se all'ospite ne sono stati addebitati troppi, rimborsate la differenza all'ospite e annotate qui il rimborso.",
+"إذا حُسب على الضيف أكثر مما ينبغي، فأعيدوا الفرق إلى الضيف وسجّلوا الاسترداد هنا."
 ],
 "If the item is missing from the till's menu, add it so it is not rung by hand again.": [
 "Fehlt der Artikel in der Kassenkarte, legen Sie ihn an, damit er nicht wieder von Hand boniert wird.",
@@ -6023,6 +6063,11 @@
 "Notiz (optional)",
 "Nota (facoltativa)",
 "ملاحظة (اختيارية)"
+],
+"Note which.": [
+"Vermerken Sie, was zutrifft.",
+"Annotate quale dei due.",
+"سجّلوا أيهما."
 ],
 "Notes and history": [
 "Notizen und Verlauf",
@@ -9874,6 +9919,11 @@
 "La storia completa di ogni ordine: creazione, articoli, comande, modifiche, conto finale e pagamento.",
 "السجل الكامل لكل طلب: الإنشاء والأصناف والتذاكر المرسلة والتغييرات والفاتورة النهائية والدفع."
 ],
+"The extra was refunded to the guest before they left, so nothing was lost or recovered.": [
+"Der Mehrbetrag wurde dem Gast vor dem Gehen erstattet, es ging also nichts verloren und nichts wurde zurückgewonnen.",
+"L'eccedenza è stata rimborsata all'ospite prima che se ne andasse, quindi nulla è stato perso né recuperato.",
+"أُعيد المبلغ الزائد إلى الضيف قبل مغادرته، فلم يُفقد شيء ولم يُستعد شيء."
+],
 "The gap is at least {0} of what was used, and the part beyond the last delivery is worth at least {1}. That part is the amount at risk.": [
 "Die Lücke beträgt mindestens {0} des Verbrauchs, und der Teil über die letzte Lieferung hinaus ist mindestens {1} wert. Dieser Teil ist der gefährdete Betrag.",
 "Il divario è almeno il {0} dell'uso, e la parte oltre l'ultima consegna vale almeno {1}. Quella parte è l'importo a rischio.",
@@ -9904,10 +9954,20 @@
 "L'ospite ha dato un altro numero di camera, o ha cambiato camera durante il soggiorno.",
 "ذكر النزيل رقم غرفة مختلفًا، أو انتقل إلى غرفة أخرى أثناء الإقامة."
 ],
+"The guest had been charged for one too many.": [
+"Dem Gast war eines zu viel berechnet worden.",
+"All'ospite ne era stato addebitato uno di troppo.",
+"حُسب على الضيف صنف واحد زائد."
+],
 "The guest had been charged for one too many. The extra was refunded before the guest left.": [
 "Dem Gast war einer zu viel berechnet worden. Der Mehrbetrag wurde erstattet, bevor der Gast ging.",
 "All'ospite ne era stato addebitato uno in più. L'eccedenza è stata rimborsata prima che l'ospite partisse.",
 "حُسب على الضيف واحد زائد. رُدّ المبلغ الزائد قبل مغادرة الضيف."
+],
+"The guest had been charged for one too many. The extra was refunded to the guest before they left, so nothing was lost or recovered.": [
+"Dem Gast war eines zu viel berechnet worden. Der Mehrbetrag wurde dem Gast vor dem Gehen erstattet, es ging also nichts verloren und nichts wurde zurückgewonnen.",
+"All'ospite ne era stato addebitato uno di troppo. L'eccedenza è stata rimborsata all'ospite prima che se ne andasse, quindi nulla è stato perso né recuperato.",
+"حُسب على الضيف صنف واحد زائد. أُعيد المبلغ الزائد إلى الضيف قبل مغادرته، فلم يُفقد شيء ولم يُستعد شيء."
 ],
 "The guest had left and nobody on shift could say. Closed without a finding.": [
 "Der Gast war gegangen und niemand aus der Schicht konnte es sagen. Ohne Befund geschlossen.",
@@ -9953,6 +10013,16 @@
 "Der Gast war noch im Haus. Die Artikel wurden mit Zustimmung des Gastes aufs Zimmer gebucht.",
 "L'ospite era ancora in hotel. Gli articoli sono stati addebitati in camera con il consenso dell'ospite.",
 "كان الضيف لا يزال في الفندق. حُسبت الأصناف على الغرفة بموافقة الضيف."
+],
+"The guests confirmed {0} cappuccinos:": [
+"Die Gäste bestätigten {0} Cappuccinos:",
+"Gli ospiti hanno confermato {0} cappuccini:",
+"أكّد الضيوف {0} كابتشينو:"
+],
+"The guests confirmed {0} cappuccinos: colleagues joined them at the table after the order was taken. Everything on the bill was served.": [
+"Die Gäste bestätigten {0} Cappuccinos: Kollegen kamen nach der Bestellung an den Tisch dazu. Alles auf der Rechnung wurde serviert.",
+"Gli ospiti hanno confermato {0} cappuccini: dei colleghi li hanno raggiunti al tavolo dopo l'ordine. Tutto ciò che è sul conto è stato servito.",
+"أكّد الضيوف {0} كابتشينو: انضم إليهم زملاء على الطاولة بعد أخذ الطلب. قُدّم كل ما في الفاتورة."
 ],
 "The individual orders behind the figures above. Choose one to see its full history.": [
 "Die einzelnen Bestellungen hinter den Zahlen oben. Wählen Sie eine für den vollen Verlauf.",
@@ -10144,6 +10214,16 @@
 "Il valore coinvolto è tutto ciò che supera uno per ospite, {0}.",
 "القيمة المعنية هي كل ما يتجاوز واحدًا لكل ضيف، {0}."
 ],
+"The value is what the guest was charged, so a refund is not money recovered.": [
+"Der Betrag ist das, was dem Gast berechnet wurde, eine Erstattung ist also kein zurückgewonnenes Geld.",
+"L'importo è ciò che è stato addebitato all'ospite, quindi un rimborso non è denaro recuperato.",
+"القيمة هي ما حُسب على الضيف، لذا فالاسترداد ليس مالاً مستعاداً."
+],
+"The value was charged to the guest. Refund the guest if needed and close as a legitimate correction.": [
+"Der Betrag wurde dem Gast berechnet. Erstatten Sie ihn bei Bedarf dem Gast und schließen Sie den Fall als berechtigte Korrektur.",
+"L'importo è stato addebitato all'ospite. Rimborsate l'ospite se necessario e chiudete come correzione legittima.",
+"حُسبت القيمة على الضيف. أعيدوها إلى الضيف عند الحاجة وأغلقوا الحالة كتصحيح مشروع."
+],
 "The wrong price was typed.": [
 "Ein falscher Preis wurde eingetippt.",
 "È stato digitato il prezzo sbagliato.",
@@ -10279,6 +10359,16 @@
 "Questa settimana",
 "هذا الأسبوع"
 ],
+"Those entries charge for {0} and the table had {1} guest.": [
+"Diese Eingaben berechnen {0} und am Tisch saß {1} Gast.",
+"Quegli inserimenti ne addebitano {0} e al tavolo c'era {1} ospite.",
+"تحتسب هذه الإدخالات {0} وكان على الطاولة {1} ضيف."
+],
+"Those entries charge for {0} and the table had {1} guests.": [
+"Diese Eingaben berechnen {0} und am Tisch saßen {1} Gäste.",
+"Quegli inserimenti ne addebitano {0} e al tavolo c'erano {1} ospiti.",
+"تحتسب هذه الإدخالات {0} وكان على الطاولة {1} ضيوف."
+],
 "Three things to do today": [
 "Drei Aufgaben für heute",
 "Tre cose da fare oggi",
@@ -10303,6 +10393,11 @@
 "Abgleich von Kasse, Kartenanbieter und Bank",
 "Abbinamento di cassa, circuiti e banca",
 "مطابقة الصندوق وشركة البطاقات والبنك"
+],
+"Tip added to the room charge": [
+"Trinkgeld zur Zimmerbelastung hinzugefügt",
+"Mancia aggiunta all'addebito in camera",
+"أُضيفت إكرامية إلى الرسوم على الغرفة"
 ],
 "Tip distribution": [
 "Trinkgeldverteilung",
@@ -11869,10 +11964,20 @@
 "a oggi, una stima",
 "حتى اليوم، تقدير"
 ],
+"cash tip recorded on the bill": [
+"Bartrinkgeld auf der Rechnung erfasst",
+"mancia in contanti registrata sul conto",
+"سُجّلت إكرامية نقدية على الفاتورة"
+],
 "choose dates": [
 "Daten wählen",
 "scegli le date",
 "اختر التواريخ"
+],
+"colleagues joined them at the table after the order was taken.": [
+"Kollegen kamen nach der Bestellung an den Tisch dazu.",
+"dei colleghi li hanno raggiunti al tavolo dopo l'ordine.",
+"انضم إليهم زملاء على الطاولة بعد أخذ الطلب."
 ],
 "complimentary": [
 "gratis",
@@ -12333,6 +12438,11 @@
 "Trinkgeld zur Kartenzahlung hinzugefügt",
 "mancia aggiunta al pagamento con carta",
 "أُضيف إكرامية إلى الدفع بالبطاقة"
+],
+"tip added to the room charge": [
+"Trinkgeld zur Zimmerbelastung hinzugefügt",
+"mancia aggiunta all'addebito in camera",
+"أُضيفت إكرامية إلى الرسوم على الغرفة"
 ],
 "to order": [
 "zu bestellen",
@@ -13304,6 +13414,11 @@
 "{0} su {1} conto riaperto",
 "{0} من {1} فاتورة أُعيد فتحها"
 ],
+"{0} of {1} bill with a price set at the till": [
+"{0} von {1} Rechnung mit einem an der Kasse gesetzten Preis",
+"{0} di {1} conto con un prezzo impostato in cassa",
+"{0} من {1} فاتورة بسعر حُدّد عند الصندوق"
+],
 "{0} of {1} bill with a repeat entry": [
 "{0} von {1} Rechnung mit Wiederholungseingabe",
 "{0} su {1} conto con un inserimento ripetuto",
@@ -13313,6 +13428,11 @@
 "{0} von {1} wieder geöffneten Rechnungen",
 "{0} su {1} conti riaperti",
 "{0} من {1} فواتير أُعيد فتحها"
+],
+"{0} of {1} bills with a price set at the till": [
+"{0} von {1} Rechnungen mit einem an der Kasse gesetzten Preis",
+"{0} di {1} conti con un prezzo impostato in cassa",
+"{0} من {1} فواتير بسعر حُدّد عند الصندوق"
 ],
 "{0} of {1} bills with a repeat entry": [
 "{0} von {1} Rechnungen mit Wiederholungseingabe",
@@ -13513,6 +13633,16 @@
 "{0} auf der Taste {1} boniert.",
 "{0} battuto con il tasto {1}.",
 "سُجّل {0} على زر {1}."
+],
+"{0} rung twice {1} seconds apart, {2} in those entries for {3} guest": [
+"{0} zweimal im Abstand von {1} Sekunden boniert, {2} in diesen Eingaben für {3} Gast",
+"{0} battuto due volte a {1} secondi di distanza, {2} in quegli inserimenti per {3} ospite",
+"{0} سُجّل مرتين بفارق {1} ثوانٍ، {2} في هذه الإدخالات لعدد {3} ضيف"
+],
+"{0} rung twice {1} seconds apart, {2} in those entries for {3} guests": [
+"{0} zweimal im Abstand von {1} Sekunden boniert, {2} in diesen Eingaben für {3} Gäste",
+"{0} battuto due volte a {1} secondi di distanza, {2} in quegli inserimenti per {3} ospiti",
+"{0} سُجّل مرتين بفارق {1} ثوانٍ، {2} في هذه الإدخالات لعدد {3} ضيوف"
 ],
 "{0} rung twice {1} seconds apart, {2} on the bill for {3} guest": [
 "{0} zweimal im Abstand von {1} Sekunden boniert, {2} auf der Rechnung für {3} Gast",

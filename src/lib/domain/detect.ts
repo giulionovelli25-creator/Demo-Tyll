@@ -57,7 +57,23 @@ export const TILL_TYPES: ExceptionType[] = ["bill_reopened", "cheaper_item_rung"
 /** The till moment of a line, in seconds, when the till recorded seconds. */
 const enteredAt = (l: OrderLine) => (l.enteredSec === undefined ? undefined : l.enteredMin * 60 + l.enteredSec);
 
+/**
+ * The entries of one item rung in a burst with `start`: every timed line of the same item reached from it by steps of at
+ * most `duplicateSeconds`. Lines with no seconds recorded cannot be placed and are left out.
+ */
+function burstOf(kept: readonly OrderLine[], start: OrderLine): OrderLine[] {
+  const timed = kept.filter((l) => l.itemId === start.itemId && enteredAt(l) !== undefined).sort((x, y) => enteredAt(x)! - enteredAt(y)!);
+  const groups: OrderLine[][] = [];
+  for (const l of timed) {
+    const last = groups[groups.length - 1];
+    if (last && enteredAt(l)! - enteredAt(last[last.length - 1])! <= POLICY.duplicateSeconds) last.push(l);
+    else groups.push([l]);
+  }
+  return groups.find((g) => g.includes(start)) ?? [start];
+}
+
 export type RingFinding =
+  /** `total`: how many the entries of the burst add up to, which is what the rule compares with the guests. */
   | { kind: "twice"; first: OrderLine; second: OrderLine; seconds: number; total: number }
   | { kind: "quantity"; line: OrderLine };
 
@@ -74,13 +90,21 @@ export function ringFinding(o: Order): RingFinding | null {
       const [ta, tb] = [enteredAt(a), enteredAt(b)];
       if (a.itemId !== b.itemId || ta === undefined || tb === undefined) continue;
       const seconds = Math.abs(tb - ta);
-      const total = kept.filter((l) => l.itemId === a.itemId).reduce((s, l) => s + l.qty, 0);
-      if (seconds <= POLICY.duplicateSeconds && total > o.covers) return ta <= tb ? { kind: "twice", first: a, second: b, seconds, total } : { kind: "twice", first: b, second: a, seconds, total };
+      if (seconds > POLICY.duplicateSeconds) continue;
+      // Only the entries of this burst count: the same item entered within the window of one another. A second round
+      // rung later is ordinary and does not make two coffees for two guests look like one too many.
+      const burst = burstOf(kept, a);
+      const total = burst.reduce((s, l) => s + l.qty, 0);
+      if (total > o.covers) return ta <= tb ? { kind: "twice", first: a, second: b, seconds, total } : { kind: "twice", first: b, second: a, seconds, total };
     }
   }
   const big = kept.find((l) => l.qty >= POLICY.quantityMin && l.qty > POLICY.quantityPerGuest * o.covers);
   return big ? { kind: "quantity", line: big } : null;
 }
+
+/** How many of the burst's item the whole bill charges for, a later round included. */
+export const ringOnBill = (o: Order, ring: Extract<RingFinding, { kind: "twice" }>) =>
+  o.lines.filter((l) => l.state === "kept" && l.itemId === ring.second.itemId).reduce((s, l) => s + l.qty, 0);
 
 /**
  * Flags raised on a day of their own. A 30 day bought against used check did not happen on a day and is raised again
@@ -89,6 +113,21 @@ export function ringFinding(o: Order): RingFinding | null {
  */
 export const hasOwnDay = (e: { type: ExceptionType }) => e.type !== "bought_not_used";
 export const datedFlags = <T extends { type: ExceptionType }>(list: readonly T[]): T[] => list.filter(hasOwnDay);
+
+/**
+ * Flags whose value was charged to the guest, not lost by the hotel: an item rung twice or a quantity keyed too high
+ * overcharges the guest, and the remedy is a refund. They are prompts to check like any flag (open flags, value at risk,
+ * alerts), but they are never money lost or money recovered, so a refund is never counted as revenue recovered.
+ */
+export const GUEST_CHARGE_TYPES: ExceptionType[] = ["duplicate_ring"];
+export const chargedToGuest = (e: { type: ExceptionType }) => GUEST_CHARGE_TYPES.includes(e.type);
+
+/**
+ * The Overview's "Flagged bills" row of money lost and saved: bill cases only. Count cases (`period`) are the stock missing
+ * at counts, so bills and counts never count the same money twice; bought against used gaps are estimates a count
+ * confirms; and entries charged to the guest in error are the guest's money (see GUEST_CHARGE_TYPES).
+ */
+export const inBillsLedger = (e: { type: ExceptionType; period?: unknown }) => !e.period && e.type !== "bought_not_used" && !chargedToGuest(e);
 
 const names = (o: Order, pred: (i: number) => boolean) =>
   o.lines
@@ -217,9 +256,11 @@ export function detectOrderException(o: Order): Exception | null {
     const guests = `${o.covers} ${o.covers === 1 ? "guest" : "guests"}`;
     if (ring.kind === "twice") {
       const name = itemById[ring.second.itemId].name;
+      // Usually the burst is all there is of the item; when a later round is on the bill too, say what the entries add up to.
+      const whole = ringOnBill(o, ring) === ring.total;
       return {
         ...base, type: "duplicate_ring", min: ring.second.enteredMin, exposure: lineValue(ring.second),
-        headline: `${name} rung twice ${ring.seconds} seconds apart, ${ring.total} on the bill for ${guests}`,
+        headline: `${name} rung twice ${ring.seconds} seconds apart, ${ring.total} ${whole ? "on the bill" : "in those entries"} for ${guests}`,
         comparedWith: `Compared with the duplicate rule: the same item entered twice within ${POLICY.duplicateSeconds} seconds, with more of it on the bill than guests at the table. This bill: ${name} at ${fmtClock(ring.first.enteredMin, ring.first.enteredSec)} and ${fmtClock(ring.second.enteredMin, ring.second.enteredSec)}, ${ring.total} for ${guests}, ${price(lineValue(ring.second))} on the second entry.`,
       };
     }

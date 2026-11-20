@@ -9,7 +9,7 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tyll-till-"));
 process.env.TYLL_AUTH_STORE = path.join(dir, "auth.json");
 process.env.TYLL_PURCHASING_STORE = path.join(dir, "purchasing.json");
 
-const { POLICY, TILL_TYPES, TYPE_LABEL, detectOrderException, ringFinding } = await import("../domain/detect");
+const { POLICY, TILL_TYPES, TYPE_LABEL, chargedToGuest, detectOrderException, inBillsLedger, ringFinding } = await import("../domain/detect");
 const { MIX_RULES, mixFlagged, mixValue, mixWeek, detectMix } = await import("../domain/till-rules");
 const { explain } = await import("../domain/explain");
 const { orderTimeline, orderTotals } = await import("../domain/orders");
@@ -125,6 +125,19 @@ describe("rung twice or an unusual quantity", () => {
     expect(detectOrderException(bill([line("beer", 1, 6.5), line("beer", 1, 6.5)], { covers: 1 }))).toBeNull();
   });
 
+  it("counts only the entries rung together: two coffees for two guests and a second round later is not one too many", () => {
+    // Two cappuccinos for two guests rung 3 seconds apart, then another round later, timed or not.
+    const pair = [line("cappuccino", 1, 4.5, at(20 * 60, 10)), line("cappuccino", 1, 4.5, at(20 * 60, 13))];
+    expect(ringFinding(bill([...pair, line("cappuccino", 2, 4.5, at(20 * 60 + 40, 5))], { covers: 2 }))).toBeNull();
+    expect(detectOrderException(bill([...pair, line("cappuccino", 1, 4.5, at(20 * 60 + 40, 5)), line("cappuccino", 1, 4.5, at(20 * 60 + 40, 9))], { covers: 2 }))).toBeNull();
+    expect(detectOrderException(bill([...pair, line("cappuccino", 2, 4.5, { enteredMin: 20 * 60 + 40 })], { covers: 2 }))).toBeNull();
+    // Three rung in one burst for two guests is still flagged, and the headline says what the burst adds up to.
+    const e = detectOrderException(bill([...pair, line("cappuccino", 1, 4.5, at(20 * 60, 18)), line("cappuccino", 2, 4.5, { enteredMin: 20 * 60 + 40 })], { covers: 2 }))!;
+    expect(e.type).toBe("duplicate_ring");
+    expect(e.headline).toBe("Cappuccino rung twice 3 seconds apart, 3 in those entries for 2 guests");
+    expect(explain(e, { ...d0, ordersById: new Map([[e.orderId!, bill([...pair, line("cappuccino", 1, 4.5, at(20 * 60, 18)), line("cappuccino", 2, 4.5, { enteredMin: 20 * 60 + 40 })], { covers: 2 })]]) }, d0.counts, []).whatHappened).toContain("Those entries charge for 3 and the table had 2 guests.");
+  });
+
   it("flags a quantity far above normal, valued beyond one a guest, and not a large but plausible round", () => {
     const e = detectOrderException(bill([line("cappuccino", 12, 4.5)], { covers: 2 }))!;
     expect(e.type).toBe("duplicate_ring");
@@ -202,6 +215,10 @@ describe("the planted stories", () => {
     expect(price.date).toBe(rel(-2));
     expect(d0.seedInvestigations[price.id]).toMatchObject({ status: "closed", outcome: "confirmed_loss", confirmedLoss: 30 });
     expect(d0.seedInvestigations[ring.id]).toMatchObject({ status: "closed", outcome: "legitimate", recovered: 0 });
+    // The note agrees with the bill: no refund on it, and everything was served.
+    expect(d0.ordersById.get(TILL_RING_ORDER_ID)!.refund).toBeUndefined();
+    expect(d0.seedInvestigations[ring.id].notes[0].text).toContain("Everything on the bill was served.");
+    expect(d0.seedInvestigations[ring.id].notes[0].text).not.toContain("refund");
     // The public demo keeps both, so each rule has a case to show in the default seven days.
     const kept = new Set(demoCases(d0.exceptions, d0.seedInvestigations).map((e) => e.id));
     expect(kept.has(price.id) && kept.has(ring.id)).toBe(true);
@@ -259,12 +276,49 @@ describe("simulated till events", () => {
     expect(TILL_RATES.reopen).toBeLessThan(0.005);
   });
 
+  it("word a tip added after payment by how the bill was paid", () => {
+    const tips = d0.orders.filter((o) => o.reopened?.change);
+    expect(tips.length).toBeGreaterThan(3);
+    const words = { card: "card payment", cash: "cash", room: "room charge" } as const;
+    for (const o of tips) expect(o.reopened!.change!.toLowerCase(), o.id).toContain(words[o.payment]);
+    expect(tips.some((o) => o.payment !== "card")).toBe(true);
+  });
+
   it("give every till case a seeded state, older ones closed with a note that fits the rule", () => {
     for (const e of till) {
       const s = d0.seedInvestigations[e.id];
       expect(s, e.id).toBeDefined();
       if (s.status === "closed") expect(s.notes[0].text.length, e.id).toBeGreaterThan(10);
     }
+  });
+});
+
+describe("an item rung twice is the guest's money", () => {
+  const rings = d0.exceptions.filter((e) => e.type === "duplicate_ring");
+
+  it("never closes as a loss or a recovery: a refund to the guest is not revenue recovered", () => {
+    expect(rings.length).toBeGreaterThan(3);
+    for (const e of rings) {
+      const s = d0.seedInvestigations[e.id];
+      expect(s.recovered, e.id).toBe(0);
+      expect(s.confirmedLoss, e.id).toBe(0);
+      expect(["legitimate", "inconclusive", undefined], e.id).toContain(s.outcome);
+    }
+    expect(rings.every(chargedToGuest)).toBe(true);
+    expect(d0.exceptions.filter((e) => e.type !== "duplicate_ring").some(chargedToGuest)).toBe(false);
+  });
+
+  it("is left out of the Overview's money lost and saved, which still counts the other till flags", () => {
+    const from = addDays(DEMO_TODAY, -29);
+    const month = demoCases(d0.exceptions, d0.seedInvestigations).filter((e) => e.date >= from);
+    const ledger = month.filter(inBillsLedger);
+    expect(ledger.some((e) => e.type === "duplicate_ring")).toBe(false);
+    expect(month.some((e) => e.type === "duplicate_ring")).toBe(true);
+    for (const type of ["bill_reopened", "price_override", "cheaper_item_rung"] as const) expect(ledger.some((e) => e.type === type), type).toBe(true);
+    expect(ledger.some((e) => e.period || e.type === "bought_not_used")).toBe(false);
+    // The Overview builds its Flagged bills row with this rule.
+    const home = fs.readFileSync(path.join(import.meta.dirname, "../../components/home/home.tsx"), "utf8");
+    expect(home).toContain("monthCases.filter(inBillsLedger)");
   });
 });
 
@@ -303,6 +357,21 @@ describe("the till rule check", () => {
       expect(r.rows.length).toBe(snapshotFor(fnb).exceptions.filter((e) => TILL_TYPES.includes(e.type) && e.date >= r.from).length);
       const open = demoCases(d0.exceptions, d0.seedInvestigations).filter((e) => d0.seedInvestigations[e.id]?.status !== "closed");
       expect(open.length).toBeLessThanOrEqual(12);
+      // "N of M looked at" leaves out bills whose till flag is not in the shorter list, so no bill counted as looked at
+      // and clean breaks a rule. Prices set at the till are counted in bills, like the other rules.
+      const all = tillCheckFor(fnb, { from: addDays(DEMO_TODAY, -29), to: DEMO_TODAY });
+      if (!all.ok) throw new Error(all.error);
+      const listed = new Set(all.rows.map((x) => x.caseId));
+      const hidden = d0.exceptions.filter((e) => TILL_TYPES.includes(e.type) && e.orderId && e.date >= all.from && !listed.has(e.id));
+      expect(hidden.length).toBeGreaterThan(0);
+      const inPeriod = d0.orders.filter((o) => o.date >= all.from && !hidden.some((e) => e.orderId === o.id));
+      const rule = (type: string) => all.rules.find((x) => x.type === type)!;
+      expect(rule("bill_reopened").seen).toBe(inPeriod.filter((o) => o.reopened).length);
+      expect(rule("price_override").seen).toBe(inPeriod.filter((o) => o.lines.some((l) => l.till)).length);
+      for (const type of ["bill_reopened", "price_override", "duplicate_ring"]) {
+        const met = inPeriod.filter((o) => detectOrderException(o)?.type === type).length;
+        expect(rule(type).flagged, type).toBe(met);
+      }
     } finally {
       if (was === undefined) delete process.env.TYLL_PUBLIC_DEMO;
       else process.env.TYLL_PUBLIC_DEMO = was;

@@ -35,7 +35,7 @@ export interface TillRow {
 /** Per rule: what it looked at in the period, and how many of those met the rule. */
 export interface TillRuleRow {
   type: ExceptionType;
-  /** Bills reopened, lines priced at the till, bills with an item entered twice in seconds or six or more of one, weeks of bottles checked. */
+  /** Bills reopened, bills with a price set at the till, bills with an item entered twice in seconds or six or more of one, weeks of bottles checked. */
   seen: number;
   flagged: number;
   value: number;
@@ -98,14 +98,19 @@ export function tillCheckFor(user: User, q: { from?: string | null; to?: string 
     .sort((a, b) => b.atStake - a.atStake || b.date.localeCompare(a.date));
 
   const bills = d.orders.filter((o) => outlets.has(o.outletId) && o.date >= from && o.date <= to);
+  // What each rule looked at counts the bills this user can follow up: a bill whose till flag is not in the list (the
+  // public demo keeps a shorter one) is left out of "N of M", so no bill counted as looked at and clean breaks a rule.
+  const listed = new Set(cases.map((e) => e.id));
+  const unlisted = new Set(d.exceptions.filter((e) => TILL_TYPES.includes(e.type) && e.orderId && !listed.has(e.id)).map((e) => e.orderId!));
+  const looked = bills.filter((o) => !unlisted.has(o.id));
   const flaggedOf = (type: ExceptionType) => inPeriod.filter((e) => e.type === type);
   // The weekly bottle check runs on the morning after each week of seven closed days (the latest this morning).
   const runs = Array.from({ length: MIX_RULES.weeks }, (_, k) => addDays(DEMO_TODAY, -7 * k)).filter((x) => x >= from && x <= to).length;
   const bars = MIX_OUTLETS.filter((id) => outlets.has(id)).length;
   const seen: Record<string, number> = {
-    bill_reopened: bills.filter((o) => o.reopened).length,
-    price_override: bills.reduce((s, o) => s + o.lines.filter((l) => l.till).length, 0),
-    duplicate_ring: bills.filter(ringSeen).length,
+    bill_reopened: looked.filter((o) => o.reopened).length,
+    price_override: looked.filter((o) => o.lines.some((l) => l.till)).length,
+    duplicate_ring: looked.filter(ringSeen).length,
     // Each run looks at every premium bottle at every bar in view.
     cheaper_item_rung: runs * bars * MIX_LABELS.length,
   };

@@ -46,7 +46,8 @@ export const MIX_STORY_EXCEPTION_ID = `EX-MIX-AZU-RESERVE-${mmdd(rel(-1))}`;
 export const MIX_HISTORY = { outletId: "lis-lobby", labelId: "gin", extraPerDay: 5, week: 5 } as const;
 /**
  * Two bills from two days ago for the other till rules, already checked by a manager: two salmon dinners at a price changed
- * by hand at In-Room Dining (a loss), and twelve cappuccinos keyed for two guests at Bar Azulejo (the extra refunded).
+ * by hand at In-Room Dining (a loss), and twelve cappuccinos on a bill for two guests at Bar Azulejo (colleagues had
+ * joined the table: everything was served, a legitimate correction).
  */
 export const TILL_PRICE_ORDER_ID = `IRD-${mmdd(rel(-2))}-301`;
 export const TILL_RING_ORDER_ID = `AZU-${mmdd(rel(-2))}-301`;

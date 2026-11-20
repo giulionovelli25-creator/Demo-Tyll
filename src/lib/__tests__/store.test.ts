@@ -58,6 +58,17 @@ describe("investigation workflow", () => {
     expect(closeWith(0, 0, "legitimate").ok).toBe(false);
   });
 
+  it("closes an item rung twice without a loss or a recovery: its value was charged to the guest", () => {
+    const ring = data.exceptions.find((e) => e.type === "duplicate_ring" && data.seedInvestigations[e.id].status !== "closed")!;
+    expect(ring).toBeDefined();
+    const close = (outcome: "confirmed_loss" | "recovered" | "legitimate", amount: number) =>
+      s().closeInvestigation(ring.id, { outcome, confirmedLoss: outcome === "confirmed_loss" ? amount : 0, recovered: outcome === "recovered" ? amount : 0, note: "Refunded the guest." });
+    expect(close("recovered", ring.exposure).ok).toBe(false);
+    expect(close("confirmed_loss", ring.exposure).ok).toBe(false);
+    expect(close("legitimate", 0).ok).toBe(true);
+    expect(s().investigations[ring.id]).toMatchObject({ status: "closed", outcome: "legitimate", recovered: 0, confirmedLoss: 0 });
+  });
+
   it("refuses cases outside the user's outlets or role", () => {
     signIn("u-rm");
     // Bar Azulejo is outside Mercado's manager's access.

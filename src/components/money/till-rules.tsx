@@ -26,7 +26,7 @@ const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ b
 /** What each rule looked at, in words, for "1 of 4 bills reopened". */
 const SEEN_WORDS: Partial<Record<ExceptionType, [one: string, many: string]>> = {
   bill_reopened: ["bill reopened", "bills reopened"],
-  price_override: ["price set at the till", "prices set at the till"],
+  price_override: ["bill with a price set at the till", "bills with a price set at the till"],
   duplicate_ring: ["bill with a repeat entry", "bills with a repeat entry"],
   cheaper_item_rung: ["bottle week checked", "bottle weeks checked"],
 };

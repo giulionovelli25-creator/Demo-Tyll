@@ -84,8 +84,13 @@ export function mixWeek(dayItems: readonly DayItem[], issues: readonly BottleIss
 
 /**
  * Whether a week breaks the rule: the bottles give at least two bottles' worth more than was billed and a quarter of what
- * they give, and the cheaper serve was billed at least as often as the serves missing. If the cheaper serve was not billed
- * that often, the drinks were not rung up at all, which is Over pouring's question, not this one.
+ * they give, and the cheaper serve was billed at least as often as the serves missing (a bar that barely sells the cheaper
+ * serve cannot have rung the premium one on its key).
+ *
+ * The last condition does not tell a premium serve rung on the cheaper key from one not rung up at all: house wine sells
+ * about 300 glasses a week and its weeks vary by 20 to 40 either way, more than a swap of 20 to 25 glasses adds. So the
+ * flag is a prompt to check, the case shows the cheaper serve's week against the weeks before, and "not rung up at all"
+ * is one of its possible causes. Review of feature 5, logged in OVERNIGHT_LOG.md.
  */
 export function mixFlagged(m: MixEvidence): boolean {
   return m.gap >= MIX_RULES.minGapBottles * m.perBottle && m.gap >= MIX_RULES.minShare * m.bottles * m.perBottle && m.cheapBilled >= m.gap && m.priceGap > 0;

@@ -17,6 +17,16 @@ export const STOCK_OUTCOME_HELP: Record<Outcome, string> = {
   inconclusive: "The records cannot settle it either way.",
 };
 
+/** For an item rung twice: the value is what the guest was charged, so it closes without a loss or a recovery. */
+export const GUEST_OUTCOME_HELP: Record<Outcome, string> = {
+  legitimate: "Everything on the bill was served, or the extra was refunded to the guest. Note which.",
+  confirmed_loss: "",
+  recovered: "",
+  inconclusive: "The records cannot settle it either way.",
+};
+/** Outcomes that carry an amount lost or recovered. */
+export const AMOUNT_OUTCOMES: Outcome[] = ["confirmed_loss", "recovered"];
+
 export const OUTCOME_HELP: Record<Outcome, string> = {
   legitimate: "The change was valid. Nothing was lost.",
   confirmed_loss: "The item was served or made and cannot be charged.",

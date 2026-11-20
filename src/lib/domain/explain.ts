@@ -4,7 +4,7 @@ import { ingredientById, itemById, outletById, propertyById, staffById } from ".
 import type { Dataset } from "../data/generate";
 import type { CountRecord, Exception, Order, RoomCharge } from "../types";
 import { addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "../util";
-import { POLICY, REMOVAL_TYPES, belowMenu, fmtClock, folioTime, ringFinding, type Pattern } from "./detect";
+import { POLICY, REMOVAL_TYPES, belowMenu, fmtClock, folioTime, ringFinding, ringOnBill, type Pattern } from "./detect";
 import { cheapName, mixLabelById, mixValue } from "./till-rules";
 import { countVariance, countVarianceValue } from "./inventory";
 import { BOUGHT_USED_CAUSES, boughtQty, itemWords } from "./bought-used";
@@ -164,7 +164,7 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
       `That leaves about ${m.gap} ${l.unit} the bills do not account for, worth about ${value} at the ${fmtMoney(m.priceGap, currency)} difference per serve. An estimate.`,
     ];
     base.possibleCauses = wine
-      ? [`${premium} rung on the ${cheap} key.`, `${l.name} poured for ${cheap} when the house bottle ran out at the bar.`, "Bottles opened for a tasting or an event billed somewhere else."]
+      ? [`${premium} rung on the ${cheap} key.`, `${l.name} poured for ${cheap} when the house bottle ran out at the bar.`, "Glasses poured and not rung up at all.", "Bottles opened for a tasting or an event billed somewhere else."]
       : ["Doubles rung on the single key.", "Measures poured by hand, larger than the standard.", "Gin used for cocktails rung on another key."];
     base.recommended = [
       "Count the open and full bottles at the bar, to confirm the week.",
@@ -285,7 +285,7 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
     if (ring.kind === "twice") {
       const item = itemById[ring.second.itemId];
       const ready = order.lines.filter((l) => l.itemId === item.id && l.state === "kept" && l.completedMin !== undefined).length;
-      base.whatHappened = `${item.name} was entered twice, ${ring.seconds} seconds apart. The bill charges for ${ring.total} and the table had ${guests}.`;
+      base.whatHappened = `${item.name} was entered twice, ${ring.seconds} seconds apart. ${ringOnBill(order, ring) === ring.total ? "The bill charges" : "Those entries charge"} for ${ring.total} and the table had ${guests}.`;
       base.facts = [
         opened,
         `First entry at ${fmtClock(ring.first.enteredMin, ring.first.enteredSec)}, second at ${fmtClock(ring.second.enteredMin, ring.second.enteredSec)}.`,
@@ -309,8 +309,8 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
     }
     base.recommended = [
       "Ask the team on shift how many were served.",
-      "If the guest was charged for too many, refund the difference and note it here.",
-      "If everything on the bill was served, close as a legitimate correction.",
+      "If the guest was charged for too many, refund the difference to the guest and note the refund here.",
+      "Close as a legitimate correction either way. The value is what the guest was charged, so a refund is not money recovered.",
     ];
     return base;
   }

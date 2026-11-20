@@ -7,6 +7,7 @@ import { ingredientById, itemById, outletById, propertyById, staffById, storeOwn
 import { getDataset } from "./data/dataset";
 import { AccessError, assertCan, clampScope, hasWholeProperty, type Permission } from "./domain/access";
 import type { ForecastInputs } from "./domain/forecast";
+import { chargedToGuest } from "./domain/detect";
 import { countVariance, countVarianceValue } from "./domain/inventory";
 import { headlineFor, periodVariance, type Adjustments } from "./domain/variance";
 import type { FlowSim } from "./domain/operations";
@@ -270,8 +271,9 @@ export const useDemo = create<DemoState>()(
             if (outcome === "confirmed_loss" && confirmedLoss <= 0) return fail("Enter the amount lost.");
             if (outcome === "recovered" && recovered <= 0) return fail("Enter the amount recovered.");
             if ((outcome === "legitimate" || outcome === "inconclusive") && confirmedLoss + recovered > 0) return fail("This outcome carries no amounts. Choose a loss or a recovery instead.");
-            if (note.trim().length < 3) return fail("Add a short note on what you found.");
             const e = exceptionOf(id)!;
+            if (chargedToGuest(e) && (outcome === "confirmed_loss" || outcome === "recovered")) return fail("The value was charged to the guest. Refund the guest if needed and close as a legitimate correction.");
+            if (note.trim().length < 3) return fail("Add a short note on what you found.");
             const stockCase = e.type === "usage_variance" || e.type === "stock_shortfall";
             const verifiedCause = input.verifiedCause?.trim() || undefined;
             const correctiveAction = input.correctiveAction?.trim().slice(0, 400) || undefined;

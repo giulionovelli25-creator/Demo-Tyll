@@ -304,6 +304,13 @@ function tillRingOrder(): Order {
  */
 export const TILL_RATES = { reopen: 0.0012, price: 0.004, splitPair: 0.01, twice: 0.0007, quantity: 0.0003 } as const;
 
+/** A tip added after payment, in the words of how the bill was paid. The total of the bill does not change. */
+const TIP_CHANGE: Record<Order["payment"], string> = {
+  card: "Tip added to the card payment",
+  cash: "Cash tip recorded on the bill",
+  room: "Tip added to the room charge",
+};
+
 /** Items whose units feed a pinned story (Coca-Cola, Over pouring's wine and cocktails, the premium serves) are never changed in number. */
 const PINNED_UNITS = new Set(["coke", "wine", "mojito", "martini", "winepkg", "reserve", "gintonic", "gintonic2"]);
 
@@ -330,7 +337,7 @@ export function tillEvents(orders: Order[]): void {
       const variant = r.weighted(["down", "approved", "tip"] as const, (x) => ({ down: 0.5, approved: 0.25, tip: 0.25 })[x]);
       const min = o.closeMin + r.int(8, 45);
       if (variant === "tip" || o.payment === "room" || o.lines.length < 2 || !safe[0]) {
-        o.reopened = { min, closedMin: min + 1, by: o.staffId, paid, change: "Tip added to the card payment" };
+        o.reopened = { min, closedMin: min + 1, by: o.staffId, paid, change: TIP_CHANGE[o.payment] };
         continue;
       }
       const l = safe[0];
@@ -603,7 +610,7 @@ function buildRoomCharges(orders: Order[]): RoomCharge[] {
 
 const OUTCOMES: readonly Outcome[] = ["legitimate", "confirmed_loss", "recovered", "inconclusive"];
 /** How the till rule cases of the past were closed: the likely outcomes and what the manager wrote. */
-const TILL_CLOSING: Partial<Record<Exception["type"], { weights: Record<Outcome, number>; text: Record<Outcome, string> }>> = {
+const TILL_CLOSING: Partial<Record<Exception["type"], { weights: Record<Outcome, number>; text: Record<Outcome, string | string[]> }>> = {
   bill_reopened: {
     weights: { legitimate: 0.45, confirmed_loss: 0.35, recovered: 0.15, inconclusive: 0.05 },
     text: {
@@ -622,12 +629,17 @@ const TILL_CLOSING: Partial<Record<Exception["type"], { weights: Record<Outcome,
       inconclusive: "No record of who agreed the price. Closed without a finding.",
     },
   },
+  // The value of an item rung twice is what the guest was charged in error: a refund gives the guest's money back, it is
+  // not money the hotel lost or recovered (GUEST_CHARGE_TYPES), so these close as legitimate, with what was done.
   duplicate_ring: {
-    weights: { legitimate: 0.65, confirmed_loss: 0.05, recovered: 0.2, inconclusive: 0.1 },
+    weights: { legitimate: 0.85, confirmed_loss: 0, recovered: 0, inconclusive: 0.15 },
     text: {
-      legitimate: "Checked with the table: everything on the bill was served.",
-      confirmed_loss: "The guest disputed the card payment and the bank returned the extra amount.",
-      recovered: "The guest had been charged for one too many. The extra was refunded before the guest left.",
+      legitimate: [
+        "Checked with the table: everything on the bill was served.",
+        "The guest had been charged for one too many. The extra was refunded to the guest before they left, so nothing was lost or recovered.",
+      ],
+      confirmed_loss: "",
+      recovered: "",
       inconclusive: "The guest had left and nobody on shift could say. Closed without a finding.",
     },
   },
@@ -644,7 +656,7 @@ const TILL_CLOSING: Partial<Record<Exception["type"], { weights: Record<Outcome,
 
 const TILL_EXAMPLES: Record<string, { outcome: Outcome; note: string }> = {
   [`EX-${TILL_PRICE_ORDER_ID}`]: { outcome: "confirmed_loss", note: "Charged below the menu without agreement. Recorded as a loss; open prices now need a manager's code at this till." },
-  [`EX-${TILL_RING_ORDER_ID}`]: { outcome: "legitimate", note: "Keyed 12 for 2. The guests were charged for two after the bar checked the tickets, and the extra was refunded before they left." },
+  [`EX-${TILL_RING_ORDER_ID}`]: { outcome: "legitimate", note: "The guests confirmed 12 cappuccinos: colleagues joined them at the table after the order was taken. Everything on the bill was served." },
 };
 
 function seedInvestigation(e: Exception): InvestigationState {
@@ -669,7 +681,8 @@ function seedInvestigation(e: Exception): InvestigationState {
         : roomCharge ? "Posting corrected on the guest bill before check-out." : "Guest was still in house. The item was added back and paid.",
       inconclusive: "No further records available. Closed without a finding.",
     }[outcome];
-    const said = till?.text[outcome] ?? text;
+    const own = till?.text[outcome];
+    const said = Array.isArray(own) ? r.pick(own) : own || text;
     return {
       status: "closed", assigneeId: by, deadline: addDays(e.date, 3), outcome,
       confirmedLoss: outcome === "confirmed_loss" ? e.exposure : 0,

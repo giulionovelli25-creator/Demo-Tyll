@@ -9,14 +9,14 @@ import { UsageCaseBody } from "@/components/stock/usage";
 import { Badge, Button, EmptyState, Field, Note, PageHeader, Panel, Select, TextArea, cn, report } from "@/components/ui";
 import { ingredientById, outletById, propertyById, staffById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
-import { TYPE_LABEL } from "@/lib/domain/detect";
+import { TYPE_LABEL, chargedToGuest } from "@/lib/domain/detect";
 import { explain } from "@/lib/domain/explain";
 import { causesFor, periodVariance } from "@/lib/domain/variance";
 import { BoughtUsedSum, CountLine } from "@/components/stock/bought-used";
 import { BOUGHT_USED_CAUSES } from "@/lib/domain/bought-used";
 import { assignablePeople, personName, useCtx, useInvestigations, useOrder, usePatterns, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
-import { OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL, STOCK_OUTCOME_HELP } from "@/lib/labels";
+import { AMOUNT_OUTCOMES, GUEST_OUTCOME_HELP, OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL, STOCK_OUTCOME_HELP } from "@/lib/labels";
 import type { BoughtUsedEvidence, MixEvidence, Outcome } from "@/lib/types";
 import { cheapName, mixLabelById, mixValue } from "@/lib/domain/till-rules";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "@/lib/util";
@@ -283,10 +283,10 @@ export default function InvestigationPage() {
                     <fieldset>
                       <legend className="mb-2 text-[13px] font-medium text-graphite">Record the outcome</legend>
                       <div className="space-y-2">
-                        {(Object.keys(OUTCOME_LABEL) as Outcome[]).map((o) => (
+                        {(Object.keys(OUTCOME_LABEL) as Outcome[]).filter((o) => !chargedToGuest(inv) || !AMOUNT_OUTCOMES.includes(o)).map((o) => (
                           <label key={o} className={cn("flex cursor-pointer gap-3 rounded-xl border px-3.5 py-3 transition-colors duration-200", outcome === o ? "border-ink bg-cloud" : "border-line hover:border-fog")}>
                             <input type="radio" name="outcome" value={o} checked={outcome === o} onChange={() => { setOutcome(o); setFormError(""); }} className="mt-1 accent-[var(--color-accent)]" />
-                            <span><span className="block text-sm text-ink">{OUTCOME_LABEL[o]}</span><span className="block text-xs text-steel">{(stockCase || bought ? STOCK_OUTCOME_HELP : OUTCOME_HELP)[o]}</span></span>
+                            <span><span className="block text-sm text-ink">{OUTCOME_LABEL[o]}</span><span className="block text-xs text-steel">{(stockCase || bought ? STOCK_OUTCOME_HELP : chargedToGuest(inv) ? GUEST_OUTCOME_HELP : OUTCOME_HELP)[o]}</span></span>
                           </label>
                         ))}
                       </div>

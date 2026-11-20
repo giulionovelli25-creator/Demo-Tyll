@@ -12,6 +12,7 @@ import { useAlertFeed } from "@/lib/alert-feed";
 import { outletById, propertyById } from "@/lib/data/catalog";
 import { compare, computeTotals, exceptionInSel } from "@/lib/domain/metrics";
 import { topAlerts } from "@/lib/domain/top-alerts";
+import { inBillsLedger } from "@/lib/domain/detect";
 import { can, type ModuleId } from "@/lib/domain/access";
 import { useAutoOrder } from "@/lib/plan-hooks";
 import { useCtx, useInvestigations, useView } from "@/lib/hooks";
@@ -167,8 +168,9 @@ export function Home() {
     const recoveredOf = (cases: typeof monthCases) => sum(cases.filter((i) => i.status === "closed"), (i) => i.recovered * fxRate(propertyById[i.propertyId].currency, sel.currency));
     // Count cases are the stock missing at counts, so bills and counts never count the same money twice. Bought against
     // used gaps are estimates a count confirms, and the stock a count finds missing is already in its own row, so they
-    // are not added as money lost.
-    const bills = monthCases.filter((i) => !i.period && i.type !== "bought_not_used");
+    // are not added as money lost. Items rung twice were charged to the guest in error: a refund, never a loss or a
+    // recovery (inBillsLedger).
+    const bills = monthCases.filter(inBillsLedger);
     const counts = monthCases.filter((i) => i.period);
     const drinksBefore = pour ? (pour.wine.lastMonth.gapValue + pour.spirits.lastMonth.gapValue) * pourRate : 0;
     const rows: LeakRow[] = [
