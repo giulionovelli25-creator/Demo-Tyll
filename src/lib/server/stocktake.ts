@@ -6,7 +6,9 @@ import { COUNT_LOCATIONS, STOCK_GROUPS, locationOf, stockGroupOf } from "../data
 import { allowedProperties, can } from "../domain/access";
 import { varianceReport } from "../domain/procurement";
 import type { SharedCount, StockTake, StockTakeLine, User } from "../types";
-import { DEMO_TODAY, fmtMoney, round2 } from "../util";
+import { DEMO_TODAY, addDays, fmtMoney, round2 } from "../util";
+import { isLarge, likelyReason } from "../domain/count-review";
+import { USERS } from "../data/catalog";
 import { notify, peopleWith, resolve } from "./notify";
 import { procurementOf } from "./procurement";
 import { loadStore, mutateStore, nextNumber } from "./purchasing-store";
@@ -29,8 +31,23 @@ export function reportOf(t: StockTake) {
   return varianceReport(t.lines.map((l) => ({ ingredientId: l.ingredientId, group: groupName(l.ingredientId), system: l.system, counted: l.counted, unitCost: l.unitCost })));
 }
 
-export interface StockTakeView extends StockTake { locationName: string; areaNames: string[]; report: ReturnType<typeof reportOf>; currency: string }
-const view = (t: StockTake): StockTakeView => ({ ...t, locationName: locationName(t.location), areaNames: t.areas.map(areaName), report: reportOf(t), currency: propertyById[t.propertyId].currency });
+export interface StockTakeView extends StockTake { locationName: string; areaNames: string[]; report: ReturnType<typeof reportOf>; currency: string;
+  /** Per item with a difference: the likely reason, to check, and whether it is large. */
+  review: Record<string, { reason: string; large: boolean }>; large: number }
+function reviewOf(t: StockTake, report: ReturnType<typeof reportOf>) {
+  const shortItems = new Set((loadStore().records?.receiptCorrections ?? []).filter((c) => c.propertyId === t.propertyId && (c.at ?? "").slice(0, 10) >= addDays(t.date, -7)).map((c) => c.ingredientId));
+  const out: Record<string, { reason: string; large: boolean }> = {};
+  for (const l of report.lines) {
+    if (l.counted === null || Math.abs(l.diff) < 1e-9) continue;
+    out[l.ingredientId] = { reason: likelyReason({ diff: l.diff, value: l.value, system: l.system, area: locationOf(l.ingredientId), shelfLifeDays: ingredientById[l.ingredientId].shelfLifeDays, deliveryShort: shortItems.has(l.ingredientId) }), large: isLarge(l) };
+  }
+  return out;
+}
+const view = (t: StockTake): StockTakeView => {
+  const report = reportOf(t);
+  const review = reviewOf(t, report);
+  return { ...t, locationName: locationName(t.location), areaNames: t.areas.map(areaName), report, currency: propertyById[t.propertyId].currency, review, large: Object.values(review).filter((r) => r.large).length };
+};
 
 /** Starts a stock take. The system quantity of each item is taken now, so counting against it is fair. */
 export function startStockTake(user: User, body: Record<string, unknown>, entries: SessionEntries): Result<{ take: StockTakeView }> {
@@ -185,4 +202,44 @@ export function monthEnd(user: User, propertyId: string, month: string) {
 export function confirmedByStockTake(propertyId: string, ingredientId: string, date: string, location = "main"): string | null {
   const t = (loadStore().stockTakes ?? []).find((x) => x.propertyId === propertyId && x.location === location && x.status === "approved" && x.date >= date && x.lines.some((l) => l.ingredientId === ingredientId && l.counted !== null));
   return t?.id ?? null;
+}
+
+// ---- The demo's stock take waiting for approval -------------------------------------------------------------------------
+
+/** Planted differences, as counted this morning: what a real count turns up. Everything else counted as the system says. */
+const STORY_DIFFS: Record<string, number> = { lamb: -1.8, salmon: -1.2, vodka: -1.5, wine: -2.25, cheddar: 0.6, flour: -0.2 };
+
+/** When the demo is opened: a partial stock take of the main store (walk in fridge, dry store, cellar, bar store), counted
+ * this morning by purchasing and the storekeeper and submitted, waiting for a manager who did not count to approve it. */
+export function ensureStockTakeStory(propertyId = "lis") {
+  if (propertyId !== "lis") return;
+  const s = loadStore();
+  if (s.stockTakeStoryDay === DEMO_TODAY || (s.stockTakes ?? []).some((t) => t.propertyId === propertyId && t.status === "submitted")) return;
+  const gm = USERS.find((u) => u.role === "gm" && allowedProperties(u).includes(propertyId));
+  if (!gm) return;
+  const areas = ["walkin", "dry", "cellar", "bar"];
+  const none: SessionEntries = { waste: [], counts: [], overrides: [], recipes: [], receipts: [] };
+  const rows = stockFor(gm, propertyId, none).filter((r) => r.store === null && areas.includes(locationOf(r.ingredientId)) && r.estimated > 0);
+  const step = (g: string) => (ingredientById[g].unit === "each" ? 1 : 0.05);
+  const at = (min: number) => `${DEMO_TODAY}T${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}:00.000Z`;
+  const lines: StockTakeLine[] = rows.map((r, i) => {
+    const system = Math.round(r.estimated * 1000) / 1000;
+    const planted = STORY_DIFFS[r.ingredientId] ?? 0;
+    const counted = planted ? Math.max(0, Math.round((system + planted) / step(r.ingredientId)) * step(r.ingredientId)) : system;
+    const by = locationOf(r.ingredientId) === "cellar" || locationOf(r.ingredientId) === "bar" ? "u-buy" : "u-store";
+    return { ingredientId: r.ingredientId, system, counted: Math.round(counted * 1000) / 1000, unitCost: Math.round(r.valuationCost * 10000) / 10000, by, at: at(6 * 60 + 30 + i), method: i % 3 ? "scan" : "manual" };
+  });
+  mutateStore((x) => {
+    if (x.stockTakeStoryDay === DEMO_TODAY) return;
+    x.stockTakeStoryDay = DEMO_TODAY;
+    x.stockTakes ??= [];
+    const n = nextNumber(x, `ST-${propertyId.toUpperCase()}`);
+    const t: StockTake = {
+      id: `ST-${propertyId.toUpperCase()}-${String(n).padStart(4, "0")}`, propertyId, location: "main", areas, kind: "partial", status: "submitted", startedBy: "u-store", startedAt: at(6 * 60 + 25), date: DEMO_TODAY, submittedAt: at(7 * 60 + 40), lines,
+      history: [{ at: at(6 * 60 + 25), by: "u-store", action: "Partial stock take started" }, { at: at(7 * 60 + 40), by: "u-buy", action: "Submitted for approval", note: "Walk in fridge, dry store, cellar and bar store counted before the deliveries." }],
+    };
+    x.stockTakes.push(t);
+    const r = reportOf(t);
+    notify(x, { to: peopleWith("stock.review", propertyId, (u) => !["u-buy", "u-store"].includes(u.id) && ["fnb_director", "gm", "chef"].includes(u.role)), type: "stocktake-review", ref: t.id, propertyId, from: "u-buy", title: `Stock take ${t.id} to approve`, body: `Main store: ${r.totals.counted} items counted, ${r.totals.withDifference} with a difference. Check the variance review, then approve or send it back.`, href: `/stock?tab=takes&take=${t.id}` });
+  });
 }

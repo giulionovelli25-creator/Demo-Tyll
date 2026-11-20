@@ -542,3 +542,53 @@ describe("Expiry with action", () => {
     expect(loadStore().stockLog.waste.find((w) => w.id === `W-EXP-${bass.batch}-hammour`)).toMatchObject({ reason: "expired", qty: bass.left });
   });
 });
+
+const ST = await import("../server/stocktake");
+const CR = await import("../domain/count-review");
+
+describe("Stock count variance review before approval", () => {
+  it("a completed stock take waits for approval in the demo, counted by purchasing and the storekeeper", () => {
+    ST.ensureStockTakeStory("lis");
+    const list = ST.stockTakesFor(userById["u-fnb"], "lis");
+    if (!list.ok) throw new Error(list.error);
+    const t = list.takes.find((x) => x.status === "submitted")!;
+    expect(t).toBeTruthy();
+    expect(t.report.totals.withDifference).toBe(6);
+    expect(t.large).toBeGreaterThanOrEqual(2);
+    expect(loadStore().notify.notices.some((n) => n.type === "stocktake-review" && n.ref === t.id && n.to === "u-fnb")).toBe(true);
+    ST.ensureStockTakeStory("lis");
+    expect((loadStore().stockTakes ?? []).filter((x) => x.status === "submitted")).toHaveLength(1);
+  });
+  it("each difference has a likely reason by fixed rules, and large ones are marked", () => {
+    ST.ensureStockTakeStory("lis");
+    const list = ST.stockTakesFor(userById["u-fnb"], "lis");
+    if (!list.ok) throw new Error(list.error);
+    const t = list.takes.find((x) => x.status === "submitted")!;
+    expect(t.review.lamb).toMatchObject({ large: true });
+    expect(t.review.lamb.reason).toMatch(/Fresh item|Used without a record/);
+    expect(t.review.vodka.reason).toMatch(/Over pouring/);
+    expect(t.review.cheddar.reason).toMatch(/More than the system/);
+    for (const r of Object.values(t.review)) expect(r.reason).not.toMatch(/theft|fraud|stole|steal|blame|waiter|bartender/i);
+  });
+  it("the rules: counting error, surplus, short delivery, drinks, fresh, other; large at €50 or 15%", () => {
+    const base = { system: 10, area: "dry" as const, shelfLifeDays: 30, deliveryShort: false };
+    expect(CR.likelyReason({ ...base, diff: -0.1, value: -2 })).toMatch(/counting error/);
+    expect(CR.likelyReason({ ...base, diff: 2, value: 30 })).toMatch(/More than the system/);
+    expect(CR.likelyReason({ ...base, diff: -2, value: -30, deliveryShort: true })).toMatch(/came short/);
+    expect(CR.likelyReason({ ...base, diff: -2, value: -30, area: "cellar" })).toMatch(/Over pouring/);
+    expect(CR.likelyReason({ ...base, diff: -2, value: -30, shelfLifeDays: 3 })).toMatch(/Fresh item/);
+    expect(CR.likelyReason({ ...base, diff: -2, value: -30 })).toMatch(/Used without a record/);
+    expect(CR.isLarge({ value: -50, diff: -1, system: 100 })).toBe(true);
+    expect(CR.isLarge({ value: -20, diff: -2, system: 10 })).toBe(true);
+    expect(CR.isLarge({ value: -10, diff: -2, system: 10 })).toBe(false);
+  });
+  it("the people who counted cannot approve; another manager approves and stock follows the counts", () => {
+    ST.ensureStockTakeStory("lis");
+    const t = (loadStore().stockTakes ?? []).find((x) => x.status === "submitted")!;
+    expect(ST.decideStockTake(userById["u-buy"], t.id, { decision: "approve" }).ok).toBe(false);
+    const ok = ST.decideStockTake(userById["u-fnb"], t.id, { decision: "approve", note: "Lamb checked with the chef" });
+    if (!ok.ok) throw new Error(ok.error);
+    expect(ok.take.status).toBe("approved");
+    expect(ok.take.countIds!.length).toBe(t.lines.filter((l) => l.counted !== null).length);
+  });
+});

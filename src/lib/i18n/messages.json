@@ -109,6 +109,11 @@
 "Un giorno prima",
 "قبل يوم"
 ],
+"A delivery of it came short this week: check that goods in recorded it.": [
+"Eine Lieferung kam diese Woche unvollständig: prüfen, ob die Warenannahme sie erfasst hat.",
+"Una consegna è arrivata incompleta questa settimana: verifica che il ricevimento l'abbia registrata.",
+"وصل تسليم ناقص هذا الأسبوع: تحقّق من أن الاستلام سجّله."
+],
 "A delivery recorded for more than arrived": [
 "Eine Lieferung, die mit mehr erfasst wurde, als ankam",
 "Una consegna registrata per più di quanto arrivato",
@@ -4014,6 +4019,11 @@
 "Le bevande versate e non fatturate sono in Mescita eccessiva",
 "المشروبات المسكوبة غير المحتسبة في صفحة السكب الزائد"
 ],
+"Drinks poured but not billed, or bottles taken to a bar without a transfer. Compare with Over pouring.": [
+"Ausgeschenkt, aber nicht berechnet, oder Flaschen ohne Umbuchung an eine Bar gebracht. Mit Überschank vergleichen.",
+"Bevande versate ma non fatturate, o bottiglie portate a un bar senza trasferimento. Confronta con Sovradosaggio.",
+"مشروبات صُبّت دون فوترة، أو زجاجات نُقلت إلى بار دون تحويل. قارن مع الإفراط في الصب."
+],
 "Drinks poured, not billed": [
 "Ausgeschenkt, nicht berechnet",
 "Bevande versate, non addebitate",
@@ -4655,7 +4665,7 @@
 "الخروج من الجرد"
 ],
 "Expected": [
-"Soll",
+"Erwartet",
 "Previsto",
 "المتوقع"
 ],
@@ -5158,6 +5168,11 @@
 "Frische Kräuter",
 "Erbe fresche",
 "أعشاب طازجة"
+],
+"Fresh item: waste not logged, or portions above the recipe.": [
+"Frischware: Abfall nicht erfasst oder Portionen über dem Rezept.",
+"Prodotto fresco: scarto non registrato, o porzioni sopra la ricetta.",
+"صنف طازج: هدر لم يُسجَّل، أو حصص أكبر من الوصفة."
 ],
 "Fresh items keep only a few days, so this draft covers their next delivery. Build it again whenever you need the next one. Building again updates this draft.": [
 "Frischware hält nur wenige Tage, daher deckt dieser Entwurf die nächste Lieferung ab. Erstellen Sie ihn neu, wenn Sie die folgende brauchen. Das aktualisiert diesen Entwurf.",
@@ -7254,6 +7269,11 @@
 "Probabile ritardo, le scorte bastano",
 "تأخير مرجح، والمخزون يكفي"
 ],
+"Likely reason, to check": [
+"Wahrscheinlicher Grund, zu prüfen",
+"Motivo probabile, da verificare",
+"السبب المرجح، للمراجعة"
+],
 "Limes": [
 "Limetten",
 "Lime",
@@ -8133,6 +8153,11 @@
 "Mehr Getränke pro Gast als die Kollegen in denselben Schichten. Fragen Sie, was funktioniert.",
 "Più bevande per ospite dei colleghi negli stessi turni. Vale la pena chiedere cosa funziona.",
 "مشروبات لكل ضيف أكثر من الزملاء في الورديات نفسها. يستحق أن تسأل عمّا ينجح."
+],
+"More than the system shows: a delivery not recorded, or stock sent back from an outlet.": [
+"Mehr als das System zeigt: eine nicht erfasste Lieferung oder Ware, die aus einem Outlet zurückkam.",
+"Più di quanto mostra il sistema: una consegna non registrata, o merce rimandata da un punto vendita.",
+"أكثر مما يظهره النظام: تسليم لم يُسجَّل، أو مخزون أُعيد من منفذ."
 ],
 "More tools": [
 "Weitere Tools",
@@ -11679,6 +11704,11 @@
 "Verifica {0} aperte",
 "مراجعة {0} مفتوحة"
 ],
+"Review, then approve": [
+"Prüfen, dann freigeben",
+"Verifica, poi approva",
+"راجع ثم وافق"
+],
 "Roasted tomato soup": [
 "Geröstete Tomatensuppe",
 "Zuppa di pomodori arrosto",
@@ -13783,6 +13813,11 @@
 "Bestand, der noch im Regal liegt, gehört zur Lücke, bis eine Zählung es bestätigt. Eine Lücke zeigt nicht, was mit dem Bestand geschah.",
 "La merce ancora sullo scaffale fa parte del divario finché un conteggio non lo conferma. Un divario non mostra cosa è successo alla merce.",
 "المخزون الذي ما زال على الرف جزء من الفرق حتى يؤكده الجرد. الفرق لا يُظهر ما حدث للمخزون."
+],
+"Stock take {0} to approve": [
+"Inventur {0} zur Freigabe",
+"Inventario {0} da approvare",
+"جرد {0} بانتظار الموافقة"
 ],
 "Stock taken without authorisation": [
 "Ohne Genehmigung entnommener Bestand",
@@ -16014,6 +16049,11 @@
 "Usato più di quanto acquistato",
 "استخدام أكثر من المشتريات"
 ],
+"Used without a record: a transfer, a staff meal or portions above the recipe.": [
+"Ohne Eintrag verbraucht: eine Umbuchung, ein Personalessen oder Portionen über dem Rezept.",
+"Usato senza registrazione: un trasferimento, un pasto del personale o porzioni sopra la ricetta.",
+"استُخدم دون تسجيل: تحويل، أو وجبة موظفين، أو حصص أكبر من الوصفة."
+],
 "Uses a day": [
 "Verbrauch pro Tag",
 "Uso al giorno",
@@ -17028,6 +17068,11 @@
 "Mit der offenen Flasche {0} Flaschen verbraucht, die {1} Portionen ergeben sollten.",
 "Con la bottiglia aperta, {0} bottiglie usate, che dovrebbero dare {1} misure.",
 "مع الزجاجة المفتوحة، استُخدمت {0} زجاجات، يُفترض أن تعطي {1} جرعة."
+],
+"Within normal counting error.": [
+"Im normalen Zählfehler.",
+"Entro il normale errore di conteggio.",
+"ضمن خطأ العدّ المعتاد."
 ],
 "Within normal range": [
 "Im Normalbereich",
@@ -19358,6 +19403,16 @@
 "{0} Artikel: {1} Speisen, {2} Getränke, {3} Inventar",
 "{0} articoli: {1} cibo, {2} bevande, {3} inventario",
 "{0} صنفًا: {1} أطعمة، {2} مشروبات، {3} عهدة"
+],
+"{0} large differences to check first, highlighted below.": [
+"{0} große Differenzen zuerst prüfen, unten markiert.",
+"{0} grandi differenze da verificare prima, evidenziate sotto.",
+"{0} فروق كبيرة يجب مراجعتها أولًا، مظللة أدناه."
+],
+"{0} large differences to check first, highlighted below. Approving sets stock to what was counted for every counted item. Rejecting changes nothing; the counts stay on record.": [
+"{0} große Differenzen zuerst prüfen, unten markiert. Mit der Freigabe wird der Bestand für jeden gezählten Artikel auf die Zählung gesetzt. Ablehnen ändert nichts; die Zählungen bleiben gespeichert.",
+"{0} grandi differenze da verificare prima, evidenziate sotto. Approvando, le scorte diventano quanto contato per ogni articolo. Rifiutare non cambia nulla; i conteggi restano registrati.",
+"{0} فروق كبيرة يجب مراجعتها أولًا، مظللة أدناه. الموافقة تجعل المخزون مساويًا لما عُدّ لكل صنف. الرفض لا يغيّر شيئًا؛ تبقى العدّات مسجلة."
 ],
 "{0} left before ordering": [
 "{0} vor dem Bestellen gegangen",

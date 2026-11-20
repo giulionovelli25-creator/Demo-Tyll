@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
-import { countItem, decideStockTake, monthEnd, startStockTake, stockTakeFor, stockTakesFor, submitStockTake } from "@/lib/server/stocktake";
+import { countItem, decideStockTake, ensureStockTakeStory, monthEnd, startStockTake, stockTakeFor, stockTakesFor, submitStockTake } from "@/lib/server/stocktake";
 import { cleanEntries } from "@/lib/server/stock";
 
 type R = { ok: true } | { ok: false; status: number; error: string };
@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
   const g = guard(req, { module: "stock" });
   if (!g.ok) return g.response;
   const q = req.nextUrl.searchParams;
+  ensureStockTakeStory(q.get("propertyId") ?? "lis");
   if (q.get("id")) return reply(stockTakeFor(g.user, q.get("id")!));
   if (q.get("month")) return reply(monthEnd(g.user, q.get("propertyId") ?? "", q.get("month")!));
   return reply(stockTakesFor(g.user, q.get("propertyId") ?? ""));

@@ -75,6 +75,8 @@ export interface Shape {
   emptyScans?: EmptyScan[];
   /** Late delivery prediction: arrivals recorded at goods in, what people did about deliveries at risk, warnings sent. */
   lateDelivery?: import("./late-delivery").LateShape;
+  /** The business day the demo's stock take waiting for approval was planted. */
+  stockTakeStoryDay?: string;
   /** What people decided for batches about to expire: a special, a move or waste. */
   expiryDecisions?: import("./expiry").ExpiryDecision[];
   /** The morning menu sync from Simphony (demo connection) and the recipes confirmed for new dishes. */

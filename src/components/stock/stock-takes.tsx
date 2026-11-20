@@ -94,16 +94,6 @@ function Detail({ id }: { id: string }) {
         ]}
       />
       {t.status === "counting" && <Panel><p className="text-sm text-ink">Still being counted.</p><Link prefetch={false} href={`/count?take=${t.id}`} className={cn(linkButton("primary"), "mt-3")}>Continue counting</Link></Panel>}
-      {t.status === "submitted" && (
-        <Panel title="Approve the stock take" description="Approving sets stock to what was counted for every counted item. Rejecting changes nothing; the counts stay on record.">
-          {data.mayDecide ? (
-            <div className="space-y-3">
-              <TextArea label="Note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: checked the cellar difference with the bar manager" />
-              <div className="flex flex-wrap gap-2"><Button variant="primary" disabled={busy} onClick={() => decide("approve")}>Approve and adjust stock</Button><Button disabled={busy} onClick={() => decide("reject")}>Reject</Button></div>
-            </div>
-          ) : <Note>{t.startedBy === user.id || t.lines.some((l) => l.by === user.id) ? "You counted this stock take, so another manager approves it." : "A manager approves it."}</Note>}
-        </Panel>
-      )}
       <Panel title="Variance by group" flush>
         <TableWrap>
           <table className="w-full min-w-[640px] text-table">
@@ -115,14 +105,24 @@ function Detail({ id }: { id: string }) {
       <Panel title="Variance by item" action={<Segmented label="Show" size="sm" value={only} onChange={setOnly} options={[{ value: "diff", label: "Differences" }, { value: "all", label: "Every counted item" }]} />} flush>
         {lines.length === 0 ? <div className="p-6"><EmptyState title="No differences">Every counted item matches the system figure.</EmptyState></div> : (
           <TableWrap>
-            <table className="w-full min-w-[760px] text-table">
-              <thead><tr><Th>Item</Th><Th align="right">System</Th><Th align="right">Counted</Th><Th align="right">Difference</Th><Th align="right">Value</Th><Th>Counted by</Th></tr></thead>
-              <tbody>{lines.map((l) => { const g = ingredientById[l.ingredientId]; const ln = t.lines.find((x) => x.ingredientId === l.ingredientId)!; return <tr key={l.ingredientId} className={rowClass}><Td><span className="text-ink">{g.name}</span><span className="block text-xs text-steel">{l.group}</span></Td><Td align="right">{fmtQty(l.system, g.unit)}</Td><Td align="right">{fmtQty(l.counted ?? 0, g.unit)}</Td><Td align="right" className={l.diff < 0 ? "text-neg" : undefined}>{l.diff > 0 ? "+" : l.diff < 0 ? "−" : ""}{fmtQty(Math.abs(l.diff), g.unit)}</Td><Td align="right" className={cn("font-medium", l.value < 0 ? "text-neg" : "text-ink")}>{signed(l.value, money)}</Td><Td className="text-xs text-steel">{ln.by ? personName(ln.by) : ""}{ln.method === "scan" ? ", scanned" : ""}</Td></tr>; })}</tbody>
+            <table className="w-full min-w-[1000px] text-table">
+              <thead><tr><Th>Item</Th><Th align="right">Expected</Th><Th align="right">Counted</Th><Th align="right">Difference</Th><Th align="right">Value</Th><Th>Likely reason, to check</Th><Th>Counted by</Th></tr></thead>
+              <tbody>{lines.map((l) => { const g = ingredientById[l.ingredientId]; const ln = t.lines.find((x) => x.ingredientId === l.ingredientId)!; const rv = t.review[l.ingredientId]; return <tr key={l.ingredientId} className={cn(rowClass, rv?.large && "bg-warn-soft/50")}><Td><span className="text-ink">{g.name}</span>{rv?.large && <Badge tone="warn" className="ms-2 !py-0">Large</Badge>}<span className="block text-xs text-steel">{l.group}</span></Td><Td align="right">{fmtQty(l.system, g.unit)}</Td><Td align="right">{fmtQty(l.counted ?? 0, g.unit)}</Td><Td align="right" className={l.diff < 0 ? "text-neg" : undefined}>{l.diff > 0 ? "+" : l.diff < 0 ? "−" : ""}{fmtQty(Math.abs(l.diff), g.unit)}</Td><Td align="right" className={cn("font-medium", l.value < 0 ? "text-neg" : "text-ink")}>{signed(l.value, money)}</Td><Td className="max-w-[300px] text-[13px] text-graphite">{rv?.reason}</Td><Td className="text-xs text-steel">{ln.by ? personName(ln.by) : ""}{ln.method === "scan" ? ", scanned" : ""}</Td></tr>; })}</tbody>
             </table>
           </TableWrap>
         )}
         <Note className="px-6 py-4">A difference is something to check: a delivery not recorded, waste not logged, a recipe that does not match, or stock that left the store. It is not proof of how it happened.</Note>
       </Panel>
+      {t.status === "submitted" && (
+        <Panel title="Review, then approve" description={`${t.large ? `${t.large} large ${t.large === 1 ? "difference" : "differences"} to check first, highlighted below. ` : ""}Approving sets stock to what was counted for every counted item. Rejecting changes nothing; the counts stay on record.`}>
+          {data.mayDecide ? (
+            <div className="space-y-3">
+              <TextArea label="Note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: checked the cellar difference with the bar manager" />
+              <div className="flex flex-wrap gap-2"><Button variant="primary" disabled={busy} onClick={() => decide("approve")}>Approve and adjust stock</Button><Button disabled={busy} onClick={() => decide("reject")}>Reject</Button></div>
+            </div>
+          ) : <Note>{t.startedBy === user.id || t.lines.some((l) => l.by === user.id) ? "You counted this stock take, so another manager approves it." : "A manager approves it."}</Note>}
+        </Panel>
+      )}
       <Panel title="History"><ul className="space-y-2 text-sm">{t.history.map((h, i) => <li key={i}><span className="text-ink">{h.action}</span> <span className="text-xs text-steel">{personName(h.by)}, {fmtDate(h.at.slice(0, 10), true)} {h.at.slice(11, 16)}</span>{h.note && <p className="text-graphite">{h.note}</p>}</li>)}</ul></Panel>
     </div>
   );

@@ -5,6 +5,7 @@ import { cleanEntries } from "@/lib/server/stock";
 import { ensureAutoRun } from "@/lib/server/auto-order";
 import { sendApproved } from "@/lib/server/procurement";
 import { ensureExpiryStory } from "@/lib/server/expiry";
+import { ensureStockTakeStory } from "@/lib/server/stocktake";
 import { allowedProperties } from "@/lib/domain/access";
 import { ensureDeliveryStory, warnFromPlan } from "@/lib/server/late-delivery";
 
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
   const entries = cleanEntries(g.user, body);
   const propertyId = String(body.propertyId ?? "");
   // This morning's automatic orders come first, so every page shows the plan after them.
-  if (allowedProperties(g.user).includes(propertyId)) { ensureExpiryStory(propertyId); ensureAutoRun(propertyId, entries); sendApproved(propertyId); }
+  if (allowedProperties(g.user).includes(propertyId)) { ensureExpiryStory(propertyId); ensureStockTakeStory(propertyId); ensureAutoRun(propertyId, entries); sendApproved(propertyId); }
   if (body.action === "build") {
     // Quantities the manager changed on the Predictions page. Anything that is not a sensible number is ignored.
     const raw = body.quantities && typeof body.quantities === "object" ? (body.quantities as Record<string, unknown>) : {};
