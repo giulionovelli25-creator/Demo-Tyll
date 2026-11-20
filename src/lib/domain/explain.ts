@@ -8,6 +8,7 @@ import { POLICY, REMOVAL_TYPES, belowMenu, fmtClock, folioTime, ringFinding, rin
 import { cheapName, mixLabelById, mixValue } from "./till-rules";
 import { countVariance, countVarianceValue } from "./inventory";
 import { BOUGHT_USED_CAUSES, boughtQty, itemWords } from "./bought-used";
+import { breakfastCount, guestCount, nearbyBreakfastFact, rateName } from "./guests";
 import { COVER_RULES, SERVICE_LABEL, VIA_LABEL, fmtStay, guestWords, nearbyFact, sameParty } from "./covers";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -176,6 +177,37 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
     base.message = wine
       ? `${m.bottles} bottles of ${l.name} went to the bar in the 7 days to ${fmtDate(m.to)}, enough for about ${n} glasses, and ${m.billed} were billed as reserve. The ${m.gap} glasses not billed as reserve are about ${value} at the difference to ${cheap}, an estimate. Please count the bar's bottles and check which key the team uses for the reserve.`
       : `${m.bottles} bottles of ${l.name} went to the bar in the 7 days to ${fmtDate(m.to)}, about ${n} single measures, and the bills account for ${m.billed}. The ${m.gap} measures not billed are about ${value} if they were doubles rung as singles, an estimate. Please count the bar's bottles and check how the team rings a double.`;
+    return base;
+  }
+
+  if (e.type === "breakfast_not_charged" && e.breakfast) {
+    const b = e.breakfast;
+    const where = outlet?.name ?? propertyById[e.propertyId].name;
+    const value = fmtMoney(e.exposure, currency);
+    const n = breakfastCount(b.notCharged);
+    base.whatHappened = `Room ${b.room} was ticked in at breakfast at ${fmtTime(b.min)} with ${guestCount(b.guests)}. Not charged: ${breakfastCount(b.notCharged)}.`;
+    base.facts = [
+      `The breakfast list at ${where} shows room ${b.room}, ${guestCount(b.guests)}, ticked in at ${fmtTime(b.min)}.`,
+      b.rate
+        ? `Last night's in-house list in the PMS has room ${b.room} with ${guestCount(b.registered)} registered. Rate: ${rateName(b.rate)}. ${b.included > 0 ? `Breakfast is in the rate for ${guestCount(b.included)}, so ${breakfastCount(b.toCharge)} to charge.` : "Breakfast is not in the rate."}`
+        : `Room ${b.room} is not on last night's in-house list in the PMS, so no rate covers the breakfast.`,
+      b.charged.length ? `Charged or paid that morning: ${breakfastCount(b.toCharge - b.notCharged)}, on bill ${b.charged.map((x) => x.orderId).join(" and ")}.` : `No breakfast bill was charged to room ${b.room} that morning.`,
+      nearbyBreakfastFact(b),
+      `The breakfast price that morning was ${fmtMoney(b.price, currency)}, so ${n} ${b.notCharged === 1 ? "is" : "are"} ${value}.`,
+      b.staysOn ? `Room ${b.room} is on the in-house list again that night: the guest had not checked out.` : `Room ${b.room} is not on that night's in-house list: the guest checked out that day.`,
+    ];
+    base.possibleCauses = [
+      "The guest paid at the table and the bill was opened under another room or a table number.",
+      "The host ticked the wrong room on the list.",
+      "A manager offered the breakfast and it was not recorded.",
+      "The breakfast was served and never rung up.",
+    ];
+    base.recommended = [
+      `Ask the breakfast host whether room ${b.room} came down, and how the guests paid.`,
+      b.staysOn ? `If the guest had breakfast, post ${n} to room ${b.room} before check-out, with the guest's agreement.` : `The guest has checked out: ask the front office whether ${n} can go on the card on file, with the guest's agreement.`,
+      "If a bill is found, or a rate with breakfast covers the room, close as a legitimate correction. If the breakfast is posted, record it as recovered; if it cannot be charged, as a loss.",
+    ];
+    base.message = `Room ${b.room} was ticked in at breakfast at ${where} at ${fmtTime(b.min)} with ${guestCount(b.guests)}, ${b.included > 0 ? `on a rate with breakfast for ${guestCount(b.included)}` : "on a rate without breakfast"}. Tyll found ${n} not charged to the room or paid at the table: ${value} at the breakfast price. Please check with the breakfast host${b.staysOn ? " and post it to the room before check-out" : ""}.`;
     return base;
   }
 

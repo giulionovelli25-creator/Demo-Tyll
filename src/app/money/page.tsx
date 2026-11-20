@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { BarList, StripTrend } from "@/components/charts";
@@ -14,6 +14,7 @@ import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
 import { CashUps } from "@/components/money/cash";
 import { BookedCovers } from "@/components/money/covers";
+import { HotelGuests } from "@/components/money/guests";
 import { RoomChargeCheck } from "@/components/money/room-charges";
 import { TillRuleCheck } from "@/components/money/till-rules";
 import { DrinksByWaiter } from "@/components/money/waiters";
@@ -29,16 +30,17 @@ import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/h
 import { SOURCE_LABEL, STATUS_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
 import type { ExceptionType, Order } from "@/lib/types";
-import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
+import { DATA_START, DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
 
-type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips" | "cash" | "waiters" | "till" | "covers";
+type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips" | "cash" | "waiters" | "till" | "covers" | "guests";
 
-const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charge check", tips: "Tips (preview)", cash: "Cash on hand against cash sales", waiters: "Drinks per guest by waiter", till: "Till rule check", covers: "Booked against billed covers" };
+const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charge check", tips: "Tips (preview)", cash: "Cash on hand against cash sales", waiters: "Drinks per guest by waiter", till: "Till rule check", covers: "Booked against billed covers", guests: "Hotel guests against outlet charges" };
 const SUB_QUESTION: Partial<Record<Tab, [question: string, lead: string]>> = {
   cash: ["Does the cash in the drawer match the cash the till took?", "Per outlet and shift. Simulated data."],
   waiters: ["Who needs coaching, and where are drinks going missing?", "Each waiter against colleagues at the same outlet on the same shift, so a busy night counts for no one. A low figure is a prompt to coach, not proof. Simulated data."],
   till: ["Did the till charge what was served?", "Bills reopened after payment, cheaper items rung up, open items and prices set by hand, and items rung twice. A flag is a prompt to check, not proof. Simulated data."],
   covers: ["Did every seated table get a bill?", "Each booking the host marked seated in the reservation book, matched with the bills at its table, per outlet and service. A table with no bill is a prompt to check, not proof. Simulated data."],
+  guests: ["Are in-house guests' meals being charged?", "Each room the breakfast host ticked in against its rate in the PMS and the breakfast bills, and each outlet's sales against the guests in house. Guests whose rate includes breakfast are never flagged. A flag is a prompt to check, not proof. Simulated data."],
   rooms: ["Did every room charge reach the guest's bill?", "Each bill signed to a room, and each minibar, spa and laundry charge, matched with the guest folio in the PMS. A difference is a prompt to check, not proof. Simulated data."],
 };
 const RevenueProfitChart = dynamic(() => import("@/components/home/chart").then((m) => m.RevenueProfitChart), { ssr: false, loading: () => <div className="h-[264px] animate-pulse rounded-[var(--radius-control)] bg-mist" /> });
@@ -52,7 +54,7 @@ function Period() {
 
 /** Revenue: today, this week and this month first. Flags, outlets and transactions are one click away. */
 export default function MoneyPage() {
-  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips", "cash", "waiters", "till", "covers"], null);
+  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips", "cash", "waiters", "till", "covers", "guests"], null);
   const { sel, money, currency, propertyId, user } = useView();
   const ctx = useCtx();
   const router = useRouter();
@@ -106,6 +108,7 @@ export default function MoneyPage() {
         {tab === "tips" && <Tips />}
         {tab === "waiters" && <DrinksByWaiter />}
         {tab === "covers" && <BookedCovers />}
+        {tab === "guests" && <HotelGuests />}
       </div>
     );
   }
@@ -154,6 +157,7 @@ export default function MoneyPage() {
           {can(user, "till.view") && <SectionLink href="/money?tab=till" title="Till rule check" summary="Bills reopened after payment, cheaper items rung up, open items and prices set by hand, and items rung twice." />}
           <SectionLink href="/money?tab=cash" title="Cash on hand against cash sales" summary="Each outlet's drawer at the end of the shift against the bills paid in cash. Card payments are reconciled by the payment provider." />
           <SectionLink href="/money?tab=rooms" title="Room charge check" summary="Each bill signed to a room against the guest folio: missing, a different amount, the wrong room or after check-out." />
+          {can(user, "guests.view") && <SectionLink href="/money?tab=guests" title="Hotel guests against outlet charges" summary="Each room ticked in at breakfast against its rate and the breakfast bills, and each outlet's sales against the guests in house." />}
         </>
       ) : (
         <>
@@ -249,6 +253,7 @@ function Mistakes() {
             <li>Open items, the misc button and prices changed by hand, more than {Math.round(POLICY.priceBelowShare * 100)}% below the menu price, with no approval.</li>
             <li>The same item rung twice within {POLICY.duplicateSeconds} seconds, or {POLICY.quantityMin} or more of one item at more than {POLICY.quantityPerGuest} a guest.</li>
             <li>Tables the host marked seated from a booking with no bill at that table, nor for the same party nearby. Valued at the outlet&rsquo;s spend per guest, an estimate.</li>
+            <li>Rooms ticked in at breakfast whose guests the room rate does not cover, with no breakfast charged to the room or paid at the table. Guests whose rate includes breakfast are never flagged.</li>
             <li>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use, and {money(BOUGHT_USED_RULES.minValue)} beyond the last delivery, which is the amount at risk. An estimate until a count.</li>
           </ul>
         </Panel>
@@ -315,9 +320,16 @@ function Orders() {
   const investigations = useInvestigations();
   const cases = useMemo(() => new Set(investigations.map((i) => i.id)), [investigations]);
   const { sel } = useView();
-  const days = useMemo(() => eachDay(sel.range).reverse(), [sel.range]);
-  const [date, setDate] = useState(days[0]);
-  const [onlyChanged, setOnlyChanged] = useState(true);
+  // A link can name a day (`&date=`, from hotel guests against outlet charges): it opens on that day, even outside the period.
+  const asked = useSearchParams().get("date");
+  const wanted = asked && /^\d{4}-\d{2}-\d{2}$/.test(asked) && asked >= DATA_START && asked <= DEMO_TODAY ? asked : null;
+  const days = useMemo(() => {
+    const list = eachDay(sel.range).reverse();
+    return wanted && !list.includes(wanted) ? [...list, wanted].sort().reverse() : list;
+  }, [sel.range, wanted]);
+  const [date, setDate] = useState(wanted ?? days[0]);
+  // A named day opens with every bill of that day, not only the changed ones.
+  const [onlyChanged, setOnlyChanged] = useState(!wanted);
   const [q, setQ] = useState("");
   const [shown, setShown] = useState(40);
   const day = days.includes(date) ? date : days[0];

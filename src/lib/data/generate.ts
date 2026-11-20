@@ -1,7 +1,7 @@
 // Builds the simulated demo dataset. Deterministic: the same records are produced on every load.
 // Everything here is fictional and stands in for what POS, PMS and stock adapters would supply.
 import type {
-  Arrival, Attendant, Booking, BottleIssue, CountRecord, DayItem, DayOutlet, Delivery, Exception, GuestRequest, HotelEvent, InvestigationState,
+  Arrival, Attendant, Booking, BottleIssue, BreakfastVisit, InHouseRoom, CountRecord, DayItem, DayOutlet, Delivery, Exception, GuestRequest, HotelEvent, InvestigationState,
   LiveOrder, OccupancyDay, Order, OrderLine, Outcome, Outlet, ReservationDay, Room, RoomCharge, RoomStatus, Transfer, WasteLog, WasteReason,
 } from "../types";
 import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, eachDay, isWeekend, rng, round2, weekday, rel } from "../util";
@@ -36,17 +36,22 @@ export interface Dataset {
   bottleIssues: BottleIssue[];
   /** The reservation book, booking by booking, for closed days. Server only: the booked against billed check reads it. */
   bookings: Booking[];
+  /** The PMS in-house list, room by room, each night with its rate. Server only: hotel guests against outlet charges reads it. */
+  stays: InHouseRoom[];
+  /** The rooms the breakfast host ticked in at Mercado each morning. Server only. */
+  breakfasts: BreakfastVisit[];
   /** Sent to the browser instead of raw order history, for Flow's delay estimates. */
   prepRatios?: Record<string, number>;
 }
 
 import {
-  BOUGHT_STORY, COVERS_EXAMPLE, COVERS_EXAMPLE_BOOKING_ID, COVERS_EXAMPLE_EXCEPTION_ID, COVERS_STORY, COVERS_STORY_BOOKING_ID, COVERS_STORY_EXCEPTION_ID, HERO_EXCEPTION_ID, HERO_ORDER_ID, MIX_HISTORY, MIX_STORY, MIX_STORY_EXCEPTION_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID,
+  BREAKFAST_EXAMPLE, BREAKFAST_EXAMPLE_EXCEPTION_ID, BREAKFAST_EXAMPLE_VISIT_ID, BREAKFAST_STORY, BREAKFAST_STORY_EXCEPTION_ID, BREAKFAST_STORY_VISIT_ID, BOUGHT_STORY, COVERS_EXAMPLE, COVERS_EXAMPLE_BOOKING_ID, COVERS_EXAMPLE_EXCEPTION_ID, COVERS_STORY, COVERS_STORY_BOOKING_ID, COVERS_STORY_EXCEPTION_ID, HERO_EXCEPTION_ID, HERO_ORDER_ID, MIX_HISTORY, MIX_STORY, MIX_STORY_EXCEPTION_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID,
   TILL_PRICE_ORDER_ID, TILL_RING_ORDER_ID, TILL_STORY_EXCEPTION_ID, TILL_STORY_ORDER_ID, WAITER_STORY,
 } from "./constants";
 import { MIX_LABELS, MIX_OUTLETS, detectMix, perBottle } from "../domain/till-rules";
 import { COVER_RULES, detectSeatedNoBill, matchBookings, serviceOf } from "../domain/covers";
 import { billFacts } from "../domain/waiters";
+import { GUEST_RULES, RATE_PLANS, breakfastBills, breakfastUnits, detectBreakfastNotCharged, hasBreakfast, matchBreakfast } from "../domain/guests";
 import { shiftOf } from "../domain/pour";
 import { SCENARIOS, buildOutletStock, latestPeriods, type OutletStock } from "./outlet-stock";
 import { headlineFor, needsCase, periodVariance } from "../domain/variance";
@@ -660,6 +665,19 @@ const TILL_CLOSING: Partial<Record<Exception["type"], { weights: Record<Outcome,
       inconclusive: "Nobody on shift remembered the table. Closed without a finding.",
     },
   },
+  // A breakfast not charged: most are posted to the room before the guest checks out.
+  breakfast_not_charged: {
+    weights: { legitimate: 0.15, confirmed_loss: 0.2, recovered: 0.6, inconclusive: 0.05 },
+    text: {
+      legitimate: [
+        "The host ticked the wrong room. The guests were from a room with breakfast in the rate.",
+        "The manager on duty offered the breakfast after a late check-in. Noted on the guest folio.",
+      ],
+      confirmed_loss: "The guest had checked out before the breakfast was posted. Recorded as a loss; the host now rings each breakfast to charge before ticking the room in.",
+      recovered: "Posted the breakfast to the room before check-out, with the guest's agreement.",
+      inconclusive: "Nobody at the breakfast desk remembered the room. Closed without a finding.",
+    },
+  },
   cheaper_item_rung: {
     weights: { legitimate: 0.3, confirmed_loss: 0.55, recovered: 0, inconclusive: 0.15 },
     text: {
@@ -679,6 +697,7 @@ function closingOf(e: Exception) {
 }
 
 const TILL_EXAMPLES: Record<string, { outcome: Outcome; note: string }> = {
+  [BREAKFAST_EXAMPLE_EXCEPTION_ID]: { outcome: "recovered", note: "A friend of the guests joined them for breakfast. The third breakfast was posted to room 1204 with the guest's agreement before check-out." },
   [COVERS_EXAMPLE_EXCEPTION_ID]: { outcome: "legitimate", note: "The four guests joined colleagues who were already seated at another table and paid on their bill. Checked with the server on that section." },
   [`EX-${TILL_PRICE_ORDER_ID}`]: { outcome: "confirmed_loss", note: "Charged below the menu without agreement. Recorded as a loss; open prices now need a manager's code at this till." },
   [`EX-${TILL_RING_ORDER_ID}`]: { outcome: "legitimate", note: "The guests confirmed 12 cappuccinos: colleagues joined them at the table after the order was taken. Everything on the bill was served." },
@@ -720,13 +739,15 @@ function seedInvestigation(e: Exception): InvestigationState {
   if (example) {
     const by = `${code}-S7`;
     const closedAt = addDays(e.date, 1);
-    return { status: "closed", assigneeId: by, deadline: addDays(e.date, 3), outcome: example.outcome, confirmedLoss: example.outcome === "confirmed_loss" ? e.exposure : 0, recovered: 0, closedAt, closedBy: by, notes: [{ at: closedAt, by, text: example.note }] };
+    return { status: "closed", assigneeId: by, deadline: addDays(e.date, 3), outcome: example.outcome, confirmedLoss: example.outcome === "confirmed_loss" ? e.exposure : 0, recovered: example.outcome === "recovered" ? e.exposure : 0, closedAt, closedBy: by, notes: [{ at: closedAt, by, text: example.note.replace("room 1204", `room ${e.breakfast?.room ?? "1204"}`) }] };
   }
-  if (e.id === HERO_EXCEPTION_ID || e.id === ROOM_STORY_EXCEPTION_ID || e.id === TILL_STORY_EXCEPTION_ID || e.id === MIX_STORY_EXCEPTION_ID || e.id === COVERS_STORY_EXCEPTION_ID) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
+  if (e.id === HERO_EXCEPTION_ID || e.id === ROOM_STORY_EXCEPTION_ID || e.id === TILL_STORY_EXCEPTION_ID || e.id === MIX_STORY_EXCEPTION_ID || e.id === COVERS_STORY_EXCEPTION_ID || e.id === BREAKFAST_STORY_EXCEPTION_ID) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
   if (age > 6) return closed();
   // The front office settles posting differences at the night audit, so only today's are still open. The worked example
   // survived it: nothing failed, the posting simply sat on another guest's folio.
   if (roomCharge && age >= 1) return closed();
+  // A breakfast not charged is settled with the front office the same day, before the guest checks out.
+  if (e.type === "breakfast_not_charged" && age >= 1) return closed();
   const roll = r.next();
   if (age >= 2 && roll < 0.24) return closed();
   if (age >= 1 && roll < 0.38) {
@@ -1072,6 +1093,156 @@ function buildBookings(orders: readonly Order[], reservations: readonly Reservat
   return out;
 }
 
+/**
+ * How the simulated breakfast list and in-house list are drawn (overnight feature 7). Per breakfast bill charged to a room:
+ * the share that paid for a guest beyond a rate with breakfast (the rest are room only guests). Per breakfast bill paid at
+ * the table: the share from a room only guest in house, and from a guest beyond a rate with breakfast; the rest are outside
+ * guests. Per room with breakfast in the rate: the chance its guests come down, and one of them stays in bed. Per morning:
+ * a room only room ticked in with nothing charged, and a guest beyond the rate not charged (rare: a few a month).
+ */
+export const BREAKFAST_RATES = { roomExtra: 0.15, directResident: 0.45, directExtra: 0.08, attend: 0.78, fewer: 0.1, notCharged: 0.1, extraNotCharged: 0.04 } as const;
+const ROOM_POOL: string[] = [];
+for (let f = 3; f <= 24; f++) for (let n = 1; n <= 28; n++) ROOM_POOL.push(String(f * 100 + n));
+const RO_PLANS = RATE_PLANS.filter((p) => !p.breakfast);
+const BB_PLANS = RATE_PLANS.filter((p) => p.breakfast);
+/** A breakfast bill charged to a room that paid for a guest beyond a rate with breakfast. Both builders read it. */
+const extraOnRoom = (o: Order) => rng(`bfx|${o.id}`).chance(BREAKFAST_RATES.roomExtra);
+/** The story rooms: the first of the list with no breakfast bill charged to it that morning. */
+function storyRoom(orders: readonly Order[], date: string, rooms: readonly string[]): string {
+  const charged = new Set(breakfastBills(orders, date).filter((o) => o.payment === "room").map((o) => o.room));
+  return rooms.find((r) => !charged.has(r)) ?? rooms[0];
+}
+/** A tick time with no breakfast bill paid at the table in the window the rule searches: the first of `prefer`, else every 5 minutes. */
+function quietTime(direct: readonly Order[], prefer: readonly number[], r?: Rng): number {
+  const quiet = (t: number) => !direct.some((o) => o.openMin >= t - GUEST_RULES.paidBefore && o.openMin <= t + GUEST_RULES.paidAfter);
+  const hit = prefer.find(quiet);
+  if (hit !== undefined) return hit;
+  const all: number[] = [];
+  for (let t = 6 * 60 + 40; t <= 10 * 60 + 20; t += 5) if (quiet(t)) all.push(t);
+  return all.length ? (r ? r.pick(all) : all[0]) : (prefer[0] ?? 6 * 60 + 40);
+}
+
+/**
+ * The PMS in-house list for every night from the night before the data starts to tonight. Rooms occupied follow the
+ * occupancy (250 rooms) and guests add up to 1.6 a room, the figure Predictions uses. Every room charged that night, every
+ * room a guest booked a table from and every room with a breakfast bill the next morning is in house, so the records agree:
+ * a room with breakfast charged is on a room only rate, or on a rate with breakfast when the bill paid for an extra guest.
+ * Its own random streams, so no other record changes.
+ */
+function buildStays(orders: readonly Order[], charges: readonly RoomCharge[], bookings: readonly Booking[]): { stays: InHouseRoom[]; story: string; example: string } {
+  const out: InHouseRoom[] = [];
+  const nights = eachDay({ from: addDays(DATA_START, -1), to: DEMO_TODAY });
+  const charged = new Map<string, Set<string>>();
+  const at = (night: string, room: string) => { if (!charged.has(night)) charged.set(night, new Set()); charged.get(night)!.add(room); };
+  // A charge before breakfast ends belongs to a guest who slept there the night before.
+  for (const c of charges) at(c.min < GUEST_RULES.breakfastEnds ? addDays(c.date, -1) : c.date, c.room);
+  for (const b of bookings) if (b.room) at(b.date, b.room);
+  const story = storyRoom(orders, rel(BREAKFAST_STORY.date), BREAKFAST_STORY.rooms);
+  const example = storyRoom(orders, rel(BREAKFAST_EXAMPLE.date), BREAKFAST_EXAMPLE.rooms);
+  for (const night of nights) {
+    const p = PROPERTIES[0];
+    const r = rng(`stays|${night}`);
+    const occRooms = Math.round(p.rooms * occupancyFor(p.id, night));
+    type Pick = { rate?: string; min: number; fixed?: number };
+    const forced = new Map<string, Pick>();
+    for (const room of charged.get(night) ?? []) forced.set(room, { min: 1 });
+    for (const o of breakfastBills(orders, addDays(night, 1))) {
+      if (o.payment !== "room" || !o.room) continue;
+      const cur = forced.get(o.room) ?? { min: 1 };
+      if (cur.rate) { cur.min = Math.max(cur.min, hasBreakfast(cur.rate) ? 1 : breakfastUnits(o)); continue; }
+      const extra = extraOnRoom(o);
+      forced.set(o.room, { rate: (extra ? r.weighted(BB_PLANS, (x) => x.share) : r.weighted(RO_PLANS, (x) => x.share)).code, min: extra ? 1 : Math.min(3, breakfastUnits(o)) });
+    }
+    if (night === rel(BREAKFAST_STORY.date - 1) || night === rel(BREAKFAST_STORY.date)) forced.set(story, { rate: BREAKFAST_STORY.rate, min: 1, fixed: BREAKFAST_STORY.registered });
+    if (night === rel(BREAKFAST_EXAMPLE.date - 1)) forced.set(example, { rate: BREAKFAST_EXAMPLE.rate, min: 1, fixed: BREAKFAST_EXAMPLE.registered });
+    const rooms = new Map(forced);
+    const free = ROOM_POOL.filter((x) => !rooms.has(x));
+    while (rooms.size < occRooms && free.length) rooms.set(free.splice(r.int(0, free.length - 1), 1)[0], { min: 1 });
+    const list = [...rooms].map(([room, f]) => ({
+      room, f, rate: f.rate ?? r.weighted(RATE_PLANS, (x) => x.share).code,
+      guests: f.fixed ?? Math.max(f.min, r.weighted([1, 2, 3], (g) => (g === 1 ? 0.42 : g === 2 ? 0.53 : 0.05))),
+    }));
+    // Guests add up to 1.6 a room, as Predictions counts them.
+    const target = Math.round(occRooms * GUEST_RULES.guestsPerRoom);
+    let total = list.reduce((t, x) => t + x.guests, 0);
+    for (let pass = 0; pass < 6 && total !== target; pass++) {
+      for (const x of list) {
+        if (total === target) break;
+        if (x.f.fixed !== undefined) continue;
+        if (total > target && x.guests > Math.max(1, x.f.min)) { x.guests -= 1; total -= 1; }
+        else if (total < target && x.guests < 3 && r.chance(0.5)) { x.guests += 1; total += 1; }
+      }
+    }
+    for (const x of list.sort((a, b) => Number(a.room) - Number(b.room))) out.push({ propertyId: p.id, date: night, room: x.room, guests: x.guests, rate: x.rate });
+  }
+  return { stays: out, story, example };
+}
+
+/**
+ * The breakfast list at Mercado for every morning: the rooms the host ticked in, from last night's in-house list. Built
+ * from the breakfast bills, so every bill charged to a room or paid at the table by a hotel guest has its room on the list,
+ * and from the rooms with breakfast in the rate, most of whose guests come down. A few rooms are ticked in with nothing
+ * charged (`notCharged`, `extraNotCharged`), at a time with no breakfast bill paid at the table near it. This morning holds
+ * the worked example only, so the public demo's open list stays short.
+ */
+function buildBreakfasts(orders: readonly Order[], stays: readonly InHouseRoom[], story: string, example: string): BreakfastVisit[] {
+  const out: BreakfastVisit[] = [];
+  const outletId = GUEST_RULES.breakfastOutletId;
+  const code = OUTLETS.find((o) => o.id === outletId)!.code;
+  const byNight = new Map<string, InHouseRoom[]>();
+  for (const st of stays) byNight.set(st.date, [...(byNight.get(st.date) ?? []), st]);
+  for (const date of eachDay({ from: DATA_START, to: DEMO_TODAY })) {
+    const r = rng(`bfast|${date}`);
+    const list = new Map((byNight.get(addDays(date, -1)) ?? []).map((x) => [x.room, x]));
+    const bills = breakfastBills(orders, date).sort((a, b) => a.openMin - b.openMin || a.id.localeCompare(b.id));
+    const day: { room: string; guests: number; min: number; id?: string }[] = [];
+    const visiting = new Set<string>();
+    const add = (room: string, guests: number, min: number, id?: string) => { visiting.add(room); day.push({ room, guests, min: Math.max(6 * 60 + 30, min), id }); };
+    const direct = bills.filter((o) => o.payment !== "room");
+    // The worked examples, at a quiet time.
+    if (date === rel(BREAKFAST_STORY.date) && list.has(story)) add(story, BREAKFAST_STORY.guests, quietTime(direct, BREAKFAST_STORY.times), BREAKFAST_STORY_VISIT_ID);
+    if (date === rel(BREAKFAST_EXAMPLE.date) && list.has(example)) add(example, BREAKFAST_EXAMPLE.guests, quietTime(direct, BREAKFAST_EXAMPLE.times), BREAKFAST_EXAMPLE_VISIT_ID);
+    // Breakfasts charged to a room: the room was ticked in a few minutes before its bill opened.
+    const toRoom = new Map<string, Order[]>();
+    for (const o of bills) if (o.payment === "room" && o.room && list.has(o.room)) toRoom.set(o.room, [...(toRoom.get(o.room) ?? []), o]);
+    for (const [room, os] of toRoom) {
+      const st = list.get(room)!;
+      const units = os.reduce((t, o) => t + breakfastUnits(o), 0);
+      add(room, (hasBreakfast(st.rate) ? st.guests : 0) + units, os[0].openMin - r.int(1, 5));
+    }
+    // Breakfasts paid at the table: some by hotel guests, ticked in just before the bill opened; the rest outside guests.
+    for (const o of direct) {
+      const x = rng(`bfd|${o.id}`).next();
+      const units = breakfastUnits(o);
+      const pool = [...list.values()].filter((st) => !visiting.has(st.room) && (x < BREAKFAST_RATES.directResident ? !hasBreakfast(st.rate) && st.guests >= units : hasBreakfast(st.rate)));
+      if (x >= BREAKFAST_RATES.directResident + BREAKFAST_RATES.directExtra || pool.length === 0) continue;
+      const st = r.pick(pool);
+      add(st.room, x < BREAKFAST_RATES.directResident ? units : st.guests + units, o.openMin - r.int(1, 5));
+    }
+    // Rarely, a room ticked in with nothing charged. Never this morning: it holds the worked example.
+    if (date < DEMO_TODAY && r.chance(BREAKFAST_RATES.notCharged)) {
+      const pool = [...list.values()].filter((st) => !visiting.has(st.room) && !hasBreakfast(st.rate) && st.guests <= 2);
+      if (pool.length) { const st = r.pick(pool); add(st.room, st.guests, quietTime(direct, [], r)); }
+    }
+    if (date < DEMO_TODAY && r.chance(BREAKFAST_RATES.extraNotCharged)) {
+      const pool = [...list.values()].filter((st) => !visiting.has(st.room) && hasBreakfast(st.rate) && st.guests <= 2);
+      if (pool.length) { const st = r.pick(pool); add(st.room, st.guests + 1, quietTime(direct, [], r)); }
+    }
+    // Rooms with breakfast in the rate: most come down, between half past six and half past ten.
+    for (const st of list.values()) {
+      if (visiting.has(st.room) || !hasBreakfast(st.rate) || !r.chance(BREAKFAST_RATES.attend)) continue;
+      const guests = st.guests >= 2 && r.chance(BREAKFAST_RATES.fewer) ? st.guests - 1 : st.guests;
+      add(st.room, guests, Math.min(10 * 60 + 30, Math.round(8 * 60 + 20 + gaussian(r) * 55)));
+    }
+    const mmdd = `${date.slice(5, 7)}${date.slice(8, 10)}`;
+    let seq = 0;
+    for (const v of day.sort((a, b) => a.min - b.min || a.room.localeCompare(b.room))) {
+      out.push({ id: v.id ?? `BF-${code}-${mmdd}-${String(++seq).padStart(3, "0")}`, propertyId: "lis", outletId, date, room: v.room, guests: v.guests, min: v.min });
+    }
+  }
+  return out;
+}
+
 function buildLiveOrders(): LiveOrder[] {
   const out: LiveOrder[] = [];
   for (const o of OUTLETS) {
@@ -1204,7 +1375,12 @@ export function getDataset(): Dataset {
   const bookings = buildBookings(orders, context.reservations);
   const seated = detectSeatedNoBill(bookings, orders, matchBookings(bookings, orders));
   for (const e of seated) seedInvestigations[e.id] = seedInvestigation(e);
-  const exceptions = [...flagged, ...variances, ...mixed, ...seated];
+  // Hotel guests against outlet charges: each room on the breakfast list against its rate and the breakfast bills.
+  const { stays, story, example } = buildStays(orders, roomCharges, bookings);
+  const breakfasts = buildBreakfasts(orders, stays, story, example);
+  const unpaid = detectBreakfastNotCharged(breakfasts, stays, orders, matchBreakfast(breakfasts, stays, orders));
+  for (const e of unpaid) seedInvestigations[e.id] = seedInvestigation(e);
+  const exceptions = [...flagged, ...variances, ...mixed, ...seated, ...unpaid];
   const deliveries = buildDeliveries(dayItems);
   cached = {
     orders,
@@ -1224,6 +1400,8 @@ export function getDataset(): Dataset {
     ...buildRooms(),
     bottleIssues,
     bookings,
+    stays,
+    breakfasts,
   };
   return cached;
 }

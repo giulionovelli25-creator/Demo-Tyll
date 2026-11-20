@@ -258,7 +258,8 @@ export type ExceptionType =
   | "cheaper_item_rung"
   | "price_override"
   | "duplicate_ring"
-  | "seated_no_bill";
+  | "seated_no_bill"
+  | "breakfast_not_charged";
 
 export interface Exception {
   id: string;
@@ -288,6 +289,73 @@ export interface Exception {
   mix?: MixEvidence;
   /** For a seated table with no bill: the booking from the reservation book and the bills around it. */
   booking?: BookingEvidence;
+  /** For a breakfast not charged: the room on the breakfast list, its rate in the PMS and the breakfast bills of that morning. */
+  breakfast?: BreakfastEvidence;
+}
+
+/**
+ * One occupied room on the PMS in-house list for a night (simulated, server only). The night runs from `date` to the next
+ * morning, so the guests of night D are the ones at breakfast on D + 1.
+ */
+export interface InHouseRoom {
+  propertyId: string;
+  date: string;
+  room: string;
+  /** Guests registered in the room. A rate with breakfast covers each of them. */
+  guests: number;
+  /** The rate code, from `RATE_PLANS` in lib/domain/guests.ts. */
+  rate: string;
+}
+
+/** One room the breakfast host ticked in on the in-house list (simulated, server only). */
+export interface BreakfastVisit {
+  id: string;
+  propertyId: string;
+  outletId: string;
+  date: string;
+  room: string;
+  /** Guests of the room who came to breakfast. */
+  guests: number;
+  /** When the host ticked the room in, in minutes from midnight. */
+  min: number;
+}
+
+/** A breakfast bill as the case page lists it: the breakfasts on it and how it was paid. */
+export interface BreakfastBill {
+  orderId: string;
+  openMin: number;
+  /** Breakfasts on the bill (buffet units). */
+  units: number;
+  payment: Order["payment"];
+  room?: string;
+  /** The room on the breakfast list this bill was matched to, when it paid at the table for another room. */
+  matchedTo?: string;
+}
+
+/** The facts behind a breakfast not charged. */
+export interface BreakfastEvidence {
+  visitId: string;
+  room: string;
+  /** Guests of the room at breakfast, and how many of them the rate covers. */
+  guests: number;
+  rate: string | null;
+  included: number;
+  /** Breakfasts to charge (guests less those in the rate), charged to the room or paid at the table, and not charged. */
+  toCharge: number;
+  charged: BreakfastBill[];
+  notCharged: number;
+  /** The breakfast price that morning, what each breakfast not charged is valued at. */
+  price: number;
+  min: number;
+  /** The window searched for a breakfast bill paid at the table. */
+  from: number;
+  to: number;
+  /** Breakfast bills paid at the table in that window. Each either paid for another room on the list or has too few breakfasts. */
+  nearby: BreakfastBill[];
+  /** Registered guests in the room last night, from the PMS. */
+  registered: number;
+  /** The room is on the in-house list again the night of the breakfast, so the guest has not checked out. */
+  staysOn: boolean;
 }
 
 /** The meal a booking or a bill belongs to, by the time it starts. */

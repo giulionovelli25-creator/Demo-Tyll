@@ -17,8 +17,9 @@ import { BOUGHT_USED_CAUSES } from "@/lib/domain/bought-used";
 import { assignablePeople, personName, useCtx, useInvestigations, useOrder, usePatterns, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { AMOUNT_OUTCOMES, GUEST_OUTCOME_HELP, OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL, STOCK_OUTCOME_HELP } from "@/lib/labels";
-import type { BookingEvidence, BoughtUsedEvidence, MixEvidence, Outcome } from "@/lib/types";
+import type { BookingEvidence, BreakfastEvidence, BoughtUsedEvidence, MixEvidence, Outcome } from "@/lib/types";
 import { COVER_RULES, VIA_LABEL, fmtStay, nearbyFact, sameParty } from "@/lib/domain/covers";
+import { nearbyBreakfastFact, rateName } from "@/lib/domain/guests";
 import { cheapName, mixLabelById, mixValue } from "@/lib/domain/till-rules";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "@/lib/util";
 import { isPastDeadline } from "@/lib/domain/deadline";
@@ -74,6 +75,7 @@ export default function InvestigationPage() {
   const bought = inv.type === "bought_not_used" && inv.boughtUsed && inv.ingredientId ? { ...inv.boughtUsed, ingredientId: inv.ingredientId } : null;
   const mix = inv.type === "cheaper_item_rung" && inv.mix ? inv.mix : null;
   const booking = inv.type === "seated_no_bill" && inv.booking ? inv.booking : null;
+  const breakfast = inv.type === "breakfast_not_charged" && inv.breakfast ? inv.breakfast : null;
   const stockAny = stockCase || !!usage || !!bought;
   // A stock case asks for the cause the manager verified. The choices are the possibilities Tyll listed.
   const causeOptions = usage ? causesFor(usage, periodVariance(usage, ctx.adjust)).map((c) => c.title) : stockCase ? SHORTFALL_CAUSES : bought ? BOUGHT_USED_CAUSES.map((c) => c.title.replace(/\.$/, "")) : [];
@@ -136,10 +138,11 @@ export default function InvestigationPage() {
               <div><dt className="text-[13px] text-steel">{stockCase ? "Count date" : usage ? "Counted" : bought || mix ? "Checked" : "Date and time"}</dt><dd className="num">{fmtDate(inv.date, true)}{stockCase ? "" : `, ${fmtTime(inv.min)}`}</dd></div>
               <div>
                 <dt className="text-[13px] text-steel">Transaction</dt>
-                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : usage ? <Link href={`/stock?tab=where&period=${usage.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{ingredientById[usage.ingredientId].name} stock period</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : bought ? <Link prefetch={false} href={`/stock?tab=bought&item=${bought.ingredientId}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">Bought against used, 30 days</Link> : mix ? <Link prefetch={false} href="/money?tab=till" className="underline decoration-line underline-offset-4 hover:decoration-ink">Till rule check, 7 days of bottles</Link> : booking ? <Link prefetch={false} href="/money?tab=covers" className="underline decoration-line underline-offset-4 hover:decoration-ink">Booking {booking.bookingId}</Link> : <span className="num">{charge?.id ?? "None"}</span>}</dd>
+                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : usage ? <Link href={`/stock?tab=where&period=${usage.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{ingredientById[usage.ingredientId].name} stock period</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : bought ? <Link prefetch={false} href={`/stock?tab=bought&item=${bought.ingredientId}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">Bought against used, 30 days</Link> : mix ? <Link prefetch={false} href="/money?tab=till" className="underline decoration-line underline-offset-4 hover:decoration-ink">Till rule check, 7 days of bottles</Link> : booking ? <Link prefetch={false} href="/money?tab=covers" className="underline decoration-line underline-offset-4 hover:decoration-ink">Booking {booking.bookingId}</Link> : breakfast ? <Link prefetch={false} href="/money?tab=guests" className="underline decoration-line underline-offset-4 hover:decoration-ink">Breakfast list, {fmtDate(inv.date)}</Link> : <span className="num">{charge?.id ?? "None"}</span>}</dd>
               </div>
               {order && <div><dt className="text-[13px] text-steel">Table or room</dt><dd>{order.table}</dd></div>}
               {booking && <div><dt className="text-[13px] text-steel">Table</dt><dd>{booking.table}</dd></div>}
+              {breakfast && <div><dt className="text-[13px] text-steel">Room</dt><dd className="num">{breakfast.room}</dd></div>}
               {inv.staffId && (
                 <div>
                   <dt className="text-[13px] text-steel">POS login used</dt>
@@ -161,7 +164,7 @@ export default function InvestigationPage() {
 
           {usage ? <UsageCaseBody p={usage} /> : (<>
 
-          <Panel title={<span id="evidence" className="scroll-mt-24">Evidence</span>} description={stockCase ? "Taken directly from the stock count. Nothing here is inferred." : bought ? "Taken from supplier deliveries, till sales with their recipes, and the waste log. No stock count is used, so the gap is an estimate." : mix ? "Taken from the bottles issued to the bar and the till sales of the same week. No count of the open bottles is used, so the gap is an estimate." : booking ? "Taken from the reservation book and the bills of the same day. The value is an estimate at the outlet's spend per guest." : "Taken directly from the recorded transaction. Nothing here is inferred."}>
+          <Panel title={<span id="evidence" className="scroll-mt-24">Evidence</span>} description={stockCase ? "Taken directly from the stock count. Nothing here is inferred." : bought ? "Taken from supplier deliveries, till sales with their recipes, and the waste log. No stock count is used, so the gap is an estimate." : mix ? "Taken from the bottles issued to the bar and the till sales of the same week. No count of the open bottles is used, so the gap is an estimate." : booking ? "Taken from the reservation book and the bills of the same day. The value is an estimate at the outlet's spend per guest." : breakfast ? "Taken from the breakfast list, last night's in-house list in the PMS and the breakfast bills of that morning." : "Taken directly from the recorded transaction. Nothing here is inferred."}>
             {orderStatus === "loading" && <p className="text-sm text-steel">Loading the order records.</p>}
             {order && (
               <div className="space-y-6">
@@ -179,6 +182,7 @@ export default function InvestigationPage() {
             )}
             {stockCase && stockRecords}
             {mix && <MixWeek m={mix} money={(n) => fmtMoney(n, property.currency)} />}
+            {breakfast && <BreakfastFacts b={breakfast} money={(n) => fmtMoney(n, property.currency)} />}
             {booking && <BookingFacts b={booking} value={inv.exposure} money={(n) => fmtMoney(n, property.currency)} />}
             {bought && <BoughtEvidence b={bought} money={(n) => fmtMoney(n, property.currency)} mayCount={can(user, "stock.count")} />}
             {charge && !order && <ChargeEvidence charge={charge} />}
@@ -225,7 +229,7 @@ export default function InvestigationPage() {
         <div className="space-y-5 xl:sticky xl:top-24">
           <Panel title="Financial impact">
             <p className="text-[13px] text-steel">{closed ? "Value that was involved" : "Potential value involved"}</p>
-            <p className={cn("num mt-1 text-[30px] tracking-[-0.03em]", !closed && "text-warn")}>{booking ? fmtMoney(inv.exposure, property.currency) : money(inv.exposure)}</p>
+            <p className={cn("num mt-1 text-[30px] tracking-[-0.03em]", !closed && "text-warn")}>{booking || breakfast ? fmtMoney(inv.exposure, property.currency) : money(inv.exposure)}</p>
             {booking && <p className="mt-1 text-[13px] text-steel">An estimate at the spend per guest</p>}
             {closed ? (
               <dl className="mt-4 space-y-2 border-t border-hair pt-4 text-sm">
@@ -395,6 +399,48 @@ function MixWeek({ m, money }: { m: MixEvidence; money: (n: number) => string })
       <p className="num flex flex-wrap justify-between gap-2 rounded-2xl bg-mist px-4 py-3 text-sm"><span>{m.bottles} bottles give about {m.bottles * m.perBottle} {l.unit}, {m.gap} more than the bills account for</span><span className="font-medium text-ink">{money(Math.round(mixValue(m)))}, an estimate</span></p>
       <Note className="max-w-[80ch]">One open bottle can always be part used, so a gap under two bottles is never flagged. Bottles issued and the bills are simulated.</Note>
       <Link prefetch={false} href="/money?tab=till" className="inline-block text-[13px] underline underline-offset-4">See the till rule check</Link>
+    </div>
+  );
+}
+
+/** The room on the breakfast list behind a breakfast not charged: its rate, what was charged and the bills paid at the table nearby. */
+function BreakfastFacts({ b, money }: { b: BreakfastEvidence; money: (n: number) => string }) {
+  const facts: [string, string][] = [
+    ["Room", `${b.room}, ${b.guests} ${b.guests === 1 ? "guest" : "guests"} at breakfast at ${fmtTime(b.min)}`],
+    ["Rate last night", rateName(b.rate)],
+    ["Registered last night", `${b.registered} ${b.registered === 1 ? "guest" : "guests"}`],
+    ["Breakfast in the rate", b.included > 0 ? `For ${b.included} ${b.included === 1 ? "guest" : "guests"}` : "No"],
+    ["To charge", `${b.toCharge} ${b.toCharge === 1 ? "breakfast" : "breakfasts"}, ${b.toCharge - b.notCharged} charged`],
+  ];
+  return (
+    <div className="space-y-4">
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+        {facts.map(([k, v]) => <div key={k}><dt className="text-[13px] text-steel">{k}</dt><dd className="text-ink">{v}</dd></div>)}
+      </dl>
+      <p className="num flex flex-wrap justify-between gap-2 rounded-2xl bg-mist px-4 py-3 text-sm"><span>{b.notCharged} {b.notCharged === 1 ? "breakfast" : "breakfasts"} not charged to room {b.room} or paid at the table</span><span className="font-medium text-ink">{money(b.notCharged * b.price)}</span></p>
+      {b.charged.length > 0 && (
+        <ul className="divide-y divide-hair rounded-2xl border border-line text-sm">
+          {b.charged.map((o) => (
+            <li key={o.orderId} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 px-4 py-2.5">
+              <Link prefetch={false} href={`/money/orders/${o.orderId}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{o.orderId}</Link>
+              <span className="num text-graphite">{fmtTime(o.openMin)}, {o.units} {o.units === 1 ? "breakfast" : "breakfasts"}, {o.payment === "room" ? `charged to room ${o.room}` : "paid at the table"}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="text-sm text-graphite">{nearbyBreakfastFact(b)}</p>
+      {b.nearby.length > 0 && (
+        <ul className="divide-y divide-hair rounded-2xl border border-line text-sm">
+          {b.nearby.map((o) => (
+            <li key={o.orderId} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 px-4 py-2.5">
+              <span><Link prefetch={false} href={`/money/orders/${o.orderId}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{o.orderId}</Link><span className="num ms-2 text-graphite">{fmtTime(o.openMin)}, {o.units} {o.units === 1 ? "breakfast" : "breakfasts"}</span></span>
+              <span className="text-[13px] text-steel">{o.matchedTo ? `Paid for room ${o.matchedTo}` : "Fewer breakfasts than this room had"}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <Note className="max-w-[80ch]">{`${b.staysOn ? `Room ${b.room} is in house again that night, so the breakfast can still go on the room.` : `Room ${b.room} checked out that day.`} Valued at the breakfast price that morning, ${money(b.price)}. The in-house list, the breakfast list and the bills are simulated.`}</Note>
+      <Link prefetch={false} href="/money?tab=guests" className="inline-block text-[13px] underline underline-offset-4">See hotel guests against outlet charges</Link>
     </div>
   );
 }

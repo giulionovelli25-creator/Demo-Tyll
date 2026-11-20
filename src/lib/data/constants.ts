@@ -66,3 +66,18 @@ export const COVERS_STORY_BOOKING_ID = `BK-MER-${mmdd(rel(-1))}-90`;
 export const COVERS_STORY_EXCEPTION_ID = `EX-${COVERS_STORY_BOOKING_ID}`;
 export const COVERS_EXAMPLE_BOOKING_ID = `BK-MER-${mmdd(rel(-2))}-90`;
 export const COVERS_EXAMPLE_EXCEPTION_ID = `EX-${COVERS_EXAMPLE_BOOKING_ID}`;
+/**
+ * Hotel guests against outlet charges (overnight feature 7). The worked example: this morning at Mercado the breakfast
+ * host ticked room 1517 in, one guest on an advance purchase, room only rate. No breakfast was charged to the
+ * room and no breakfast bill was paid at the table near the time (the first of `times` with none in the window); the guest stays tonight, so it can still go on the room.
+ * One guest, because the public demo's flagged bills sit just under the Overview's money lost story (a test pins them).
+ * The room is the first of `rooms` with no breakfast bill charged to it that morning, the time the first of `times` with no
+ * breakfast bill paid at the table near it. The checked example, two days ago: room 1204, registered for two on a rate
+ * with breakfast, came to breakfast with three; the third breakfast was posted to the room before check-out (recovered).
+ */
+export const BREAKFAST_STORY = { date: 0, guests: 1, registered: 1, rate: "ADV-RO", rooms: ["1517", "1519", "1611", "1406", "1722", "1315"], times: [7 * 60 + 42, 7 * 60 + 18, 8 * 60 + 5, 6 * 60 + 55, 9 * 60 + 12, 9 * 60 + 40] } as const;
+export const BREAKFAST_EXAMPLE = { date: -2, guests: 3, registered: 2, rate: "BAR-BB", rooms: ["1204", "1208", "1311", "1702"], times: [8 * 60 + 20, 8 * 60 + 45, 7 * 60 + 50, 9 * 60 + 5] } as const;
+export const BREAKFAST_STORY_VISIT_ID = `BF-MER-${mmdd(DEMO_TODAY)}-900`;
+export const BREAKFAST_STORY_EXCEPTION_ID = `EX-${BREAKFAST_STORY_VISIT_ID}`;
+export const BREAKFAST_EXAMPLE_VISIT_ID = `BF-MER-${mmdd(rel(-2))}-900`;
+export const BREAKFAST_EXAMPLE_EXCEPTION_ID = `EX-${BREAKFAST_EXAMPLE_VISIT_ID}`;
