@@ -5,7 +5,12 @@ import Link from "next/link";
 import { AlertTriangle, CheckCircle2, Clock } from "lucide-react";
 import { useState } from "react";
 import { Badge, EmptyState, Note, Panel, Segmented, Skeleton, SummaryBar, TableWrap, Td, Th, WidgetError, cn, linkButton, rowClass } from "@/components/ui";
-import { propertyById } from "@/lib/data/catalog";
+import { outletById, outletsOfProperty, propertyById } from "@/lib/data/catalog";
+import { Button, Select, toast } from "@/components/ui";
+import { can } from "@/lib/domain/access";
+import { api } from "@/lib/api";
+import { personName, useSessionEntries, useView } from "@/lib/hooks";
+import { usePlanDrafts } from "@/lib/plan-hooks";
 import { useExpiring } from "@/lib/procurement-hooks";
 import type { ExpiryRow } from "@/lib/server/expiry";
 import { fmtDate, fmtMoney, fmtNum } from "@/lib/util";
@@ -23,7 +28,7 @@ export function Expiring({ propertyId }: { propertyId: string }) {
     <div className="space-y-6">
       {error ? <WidgetError>Expiry could not load.</WidgetError> : !data ? <Skeleton className="h-64 w-full" /> : (
         <>
-          <UseToday rows={data.rows.filter((r) => r.daysLeft <= 1)} money={money} />
+          <UseToday rows={data.rows.filter((r) => r.daysLeft <= 1)} money={money} propertyId={propertyId} />
           <SummaryBar
             items={[
               { label: "Batches expiring", value: data.totals.batches, compare: { text: `Within ${days} ${days === "1" ? "day" : "days"}, ${money(data.totals.value)}`, good: null } },
@@ -42,10 +47,10 @@ export function Expiring({ propertyId }: { propertyId: string }) {
                       <tr key={`${r.ingredientId}|${r.batch}|${r.expiry}`} className={cn(rowClass, r.daysLeft < 0 && "bg-neg-soft/40")}>
                         <Td><span className="text-ink">{r.name}</span>{r.first && r.daysLeft >= 0 && r.action.kind !== "use_first" && <Badge tone="ink" className="ms-2">Use first</Badge>}</Td>
                         <Td><span className="num text-graphite">{r.batch}</span><span className="block text-xs text-steel">Received {fmtDate(r.received, true)}, {r.source}</span></Td>
-                        <Td><span className={cn(r.daysLeft < 0 ? "font-medium text-neg" : r.daysLeft <= 1 ? "font-medium text-warn" : "text-ink")}>{when(r.daysLeft)}</span><span className="block text-xs text-steel">{fmtDate(r.expiry, true)}</span></Td>
+                        <Td><span className={cn(r.daysLeft < 0 ? "font-medium text-neg" : r.daysLeft <= 1 ? "font-medium text-warn" : "text-ink")}>{when(r.daysLeft)}</span><span className="block text-xs text-steel">{fmtDate(r.expiry, true)}</span><span className="block text-xs text-steel">{r.useBy === "label" ? "From the label" : `Received plus ${r.shelfLifeDays} days shelf life`}</span></Td>
                         <Td align="right">{fmtNum(r.left, r.left % 1 ? 1 : 0)} {r.unit}</Td>
                         <Td align="right" className="num text-ink">{money(r.value)}</Td>
-                        <Td><Badge tone={KIND[r.action.kind].tone}>{KIND[r.action.kind].label}</Badge><span className="mt-1 block max-w-[340px] text-[13px] text-graphite">{r.action.text}</span></Td>
+                        <Td><Badge tone={KIND[r.action.kind].tone}>{KIND[r.action.kind].label}</Badge><span className="mt-1 block max-w-[340px] text-[13px] text-graphite">{r.action.text}</span><ExpiryActions r={r} propertyId={propertyId} /></Td>
                       </tr>
                     ))}
                   </tbody>
@@ -61,7 +66,7 @@ export function Expiring({ propertyId }: { propertyId: string }) {
 }
 
 /** The first thing on the page: what the kitchen should use or remove today, in large type, with words and icons, not colour alone. */
-function UseToday({ rows, money }: { rows: ExpiryRow[]; money: (n: number) => string }) {
+function UseToday({ rows, money, propertyId }: { rows: ExpiryRow[]; money: (n: number) => string; propertyId: string }) {
   const expired = rows.filter((r) => r.daysLeft < 0);
   const soon = rows.filter((r) => r.daysLeft >= 0);
   return (
@@ -87,6 +92,7 @@ function UseToday({ rows, money }: { rows: ExpiryRow[]; money: (n: number) => st
                   </p>
                   <p className="mt-0.5 text-[15px] text-graphite">{fmtNum(r.left, r.left % 1 ? 1 : 0)} {r.unit} left, worth {money(r.value)}. Batch <span className="num whitespace-nowrap">{r.batch}</span>.</p>
                   <p className="mt-1 text-[15px] text-ink">{gone ? "Remove it from the shelf and log it as waste, reason Expired." : r.action.text}</p>
+                  <ExpiryActions r={r} propertyId={propertyId} />
                 </div>
               </li>
             );
@@ -94,5 +100,49 @@ function UseToday({ rows, money }: { rows: ExpiryRow[]; money: (n: number) => st
         </ul>
       )}
     </section>
+  );
+}
+
+const DECIDED: Record<string, string> = { special: "Tonight's special", move: "Moved", waste: "Logged as waste" };
+
+/** What to do with a batch at risk, in one tap: tonight's special, a move to another outlet, or waste. Once decided, who
+ * decided and what. The chef and the outlet's restaurant manager are told on the bell. */
+function ExpiryActions({ r, propertyId }: { r: ExpiryRow; propertyId: string }) {
+  const { user } = useView();
+  const entries = useSessionEntries();
+  const bump = usePlanDrafts((s) => s.bump);
+  const [moving, setMoving] = useState(false);
+  const [outlet, setOutlet] = useState("");
+  const [busy, setBusy] = useState(false);
+  const d = r.decision;
+  if (d) {
+    return <p className="mt-2 text-[13px] text-ink"><Badge tone="pos" className="me-2">{DECIDED[d.kind]}</Badge>{d.kind === "special" ? `${d.qty} ${r.unit} at ${outletById[d.outletId].name}${d.dish ? `, in ${d.dish}` : ""}` : d.kind === "move" ? `${d.qty} ${r.unit} to ${outletById[d.outletId].name}` : `${d.qty} ${r.unit}, reason Expired`}. {personName(d.by)}.</p>;
+  }
+  const gone = r.daysLeft < 0;
+  if (!r.atRisk && !gone) return null;
+  const plans = can(user, "prep.plan");
+  const wastes = can(user, "stock.logWaste");
+  if (!plans && !wastes) return null;
+  const decide = async (kind: "special" | "move" | "waste", outletId?: string) => {
+    setBusy(true);
+    try {
+      await api("/api/stock/expiry", { method: "POST", body: { action: "decide", propertyId, kind, ingredientId: r.ingredientId, batch: r.batch, outletId, ...entries } });
+      toast.done(kind === "special" ? `${r.name} is tonight's special. The kitchen and the restaurant manager are told.` : kind === "move" ? `${r.name} moved to ${outletById[outletId!].name}. Its manager is told.` : `${r.name} logged as waste, reason Expired.`);
+      bump();
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Could not save."); }
+    finally { setBusy(false); }
+  };
+  const others = outletsOfProperty(propertyId).filter((o) => o.id !== "lis-terrace");
+  return (
+    <div className="mt-2 flex flex-wrap items-end gap-2">
+      {!gone && plans && <Button size="sm" variant="primary" disabled={busy} onClick={() => void decide("special", "lis-terrace")}>Make it tonight&rsquo;s special</Button>}
+      {!gone && plans && (moving ? (
+        <>
+          <Select label="Move to" hideLabel value={outlet} onChange={(e) => setOutlet(e.target.value)} className="min-w-[180px]"><option value="">Choose an outlet</option>{others.map((o) => <option key={o.id} value={o.id}>{outletById[o.id].name}</option>)}</Select>
+          <Button size="sm" disabled={busy || !outlet} onClick={() => void decide("move", outlet)}>Move</Button>
+        </>
+      ) : <Button size="sm" disabled={busy} onClick={() => setMoving(true)}>Move to another outlet</Button>)}
+      {wastes && <Button size="sm" variant="ghost" disabled={busy} onClick={() => void decide("waste", "lis-terrace")}>Log as waste</Button>}
+    </div>
   );
 }

@@ -14,7 +14,7 @@ export const FEATURES = {
   previews: false,
   /** Expiring soon, batch use-by tracking (/stock?tab=expiry), with its alert and daily bell notice. A real hotel would
    * need batch entry at every delivery first. */
-  expiry: false,
+  expiry: true,
   /** Other tools (/more): a list of tools that are now in the menu or switched off above. */
   otherTools: false,
   /** The Revenue card on the Overview, with revenue and an estimated profit. Revenue detail stays on Revenue and Reports;

@@ -2689,6 +2689,11 @@
 "Scegli un articolo",
 "اختر صنفًا"
 ],
+"Choose an outlet": [
+"Outlet wählen",
+"Scegli un punto vendita",
+"اختر منفذًا"
+],
 "Choose an outlet to begin": [
 "Outlet wählen, um zu beginnen",
 "Scegli un punto vendita per iniziare",
@@ -5224,6 +5229,11 @@
 "Dall'orario di arrivo che il ricevimento registra per ogni consegna, rispetto alla fascia promessa dal fornitore.",
 "من وقت الوصول الذي يسجله الاستلام لكل توصيلة، مقارنة بالموعد الذي حدده المورد."
 ],
+"From the label": [
+"Vom Etikett",
+"Dall'etichetta",
+"من الملصق"
+],
 "From the same sales and cost records as the Overview.": [
 "Aus denselben Verkaufs- und Kostendaten wie die Übersicht.",
 "Dagli stessi dati di vendite e costi della Panoramica.",
@@ -7419,6 +7429,11 @@
 "Registra scarti, versamenti o rotture non registrati.",
 "سجل أي هدر أو انسكاب أو كسر لم يُسجل."
 ],
+"Log as waste": [
+"Als Abfall erfassen",
+"Registra come scarto",
+"سجّله كهدر"
+],
 "Log empty bottles": [
 "Leere Flaschen erfassen",
 "Registrare bottiglie vuote",
@@ -7458,6 +7473,11 @@
 "Mit mehr Details erfassen",
 "Registra con più dettagli",
 "سجل بتفاصيل أكثر"
+],
+"Logged as waste": [
+"Als Abfall erfasst",
+"Registrato come scarto",
+"سُجّل كهدر"
 ],
 "Logged as waste or breakage": [
 "Als Abfall oder Bruch erfasst",
@@ -7643,6 +7663,11 @@
 "Hauptgerichte, Küche. In {0} Outlets dieser Auswahl verkauft.",
 "Secondi, cucina. Venduto in {0} punti vendita della selezione.",
 "الأطباق الرئيسية، المطبخ. يُباع في {0} منافذ ضمن هذا الاختيار."
+],
+"Make it tonight’s special": [
+"Als heutiges Tagesgericht",
+"Fallo diventare il piatto del giorno di stasera",
+"اجعله طبق الليلة الخاص"
 ],
 "Manage rooms and housekeeping": [
 "Zimmer und Housekeeping verwalten",
@@ -8164,10 +8189,30 @@
 "Più scartati",
 "الأكثر هدرًا"
 ],
+"Move": [
+"Verlegen",
+"Sposta",
+"انقل"
+],
 "Move the posting from room {0} to room {1} before room {2} checks out, so that guest is not billed for it.": [
 "Die Buchung von Zimmer {0} auf Zimmer {1} verschieben, bevor Zimmer {2} abreist, damit dieser Gast sie nicht bezahlt.",
 "Spostare l'addebito dalla camera {0} alla camera {1} prima del check-out della camera {2}, così quell'ospite non lo paga.",
 "انقل الترحيل من الغرفة {0} إلى الغرفة {1} قبل مغادرة الغرفة {2}، حتى لا يُحاسب ذلك النزيل عليه."
+],
+"Move to": [
+"Verlegen nach",
+"Sposta a",
+"انقل إلى"
+],
+"Move to another outlet": [
+"In ein anderes Outlet verlegen",
+"Sposta in un altro punto vendita",
+"انقله إلى منفذ آخر"
+],
+"Moved": [
+"Verlegt",
+"Spostato",
+"نُقل"
 ],
 "Moved in from another store": [
 "Aus einem anderen Lager zugebucht",
@@ -10968,6 +11013,11 @@
 "Aus dem Hauptlager erhalten",
 "Ricevuto dal magazzino centrale",
 "المستلم من المخزن الرئيسي"
+],
+"Received plus {0} days shelf life": [
+"Eingang plus {0} Tage Haltbarkeit",
+"Ricevuto più {0} giorni di conservazione",
+"تاريخ الاستلام زائد {0} أيام صلاحية"
 ],
 "Received, something missing": [
 "Erhalten, es fehlt etwas",
@@ -15294,6 +15344,11 @@
 "Oggi a {0}:",
 "اليوم في {0}:"
 ],
+"Today plus {0} days shelf life. Change it only if the label differs.": [
+"Heute plus {0} Tage Haltbarkeit. Nur ändern, wenn das Etikett abweicht.",
+"Oggi più {0} giorni di conservazione. Cambialo solo se l'etichetta è diversa.",
+"اليوم زائد {0} أيام صلاحية. غيّره فقط إذا اختلف الملصق."
+],
 "Today so far": [
 "Heute bisher",
 "Oggi finora",
@@ -15368,6 +15423,16 @@
 "Heute Abend in {0}: Artikel entfernt, nachdem er an die Bar ging",
 "Stasera a {0}: articolo rimosso dopo l'invio al bar",
 "الليلة في {0}: حذف صنف بعد إرساله إلى البار"
+],
+"Tonight's special": [
+"Heutiges Tagesgericht",
+"Piatto del giorno di stasera",
+"طبق الليلة الخاص"
+],
+"Tonight's special at {0}: use {1} of {2}": [
+"Heutiges Tagesgericht im {0}: {1} {2} verwenden",
+"Piatto del giorno al {0}: usa {1} di {2}",
+"طبق الليلة الخاص في {0}: استخدم {1} من {2}"
 ],
 "Too few guests in the last {0} days to compare with colleagues.": [
 "Zu wenige Gäste in den letzten {0} Tagen für einen Vergleich mit den Kollegen.",
@@ -19199,6 +19264,11 @@
 "{0} è spesso in ritardo.",
 "{0} يتأخر غالبا."
 ],
+"{0} is tonight's special. The kitchen and the restaurant manager are told.": [
+"{0} ist das heutige Tagesgericht. Küche und Restaurantleitung sind informiert.",
+"{0} è il piatto del giorno di stasera. La cucina e il responsabile del ristorante sono informati.",
+"{0} هو طبق الليلة الخاص. تم إبلاغ المطبخ ومدير المطعم."
+],
 "{0} item": [
 "{0} Artikel",
 "{0} articolo",
@@ -19409,6 +19479,11 @@
 "{0} registrati come spreco o rottura.",
 "{0} مسجلة كهدر أو كسر."
 ],
+"{0} logged as waste, reason Expired.": [
+"{0} als Abfall erfasst, Grund Abgelaufen.",
+"{0} registrato come scarto, motivo Scaduto.",
+"سُجّل {0} كهدر، السبب منتهي الصلاحية."
+],
 "{0} lost and {1} saved, {2} of the loss.": [
 "{0} verloren und {1} gespart, {2} des Verlusts.",
 "{0} persi e {1} risparmiati, {2} della perdita.",
@@ -19578,6 +19653,11 @@
 "{0} {1} mehr kam herein, als Kasse und Abfallprotokoll erklären, in den {2} Tagen bis {3}.",
 "Sono arrivati {0} di {1} in più di quanto spieghino cassa e registro sprechi, nei {2} giorni fino al {3}.",
 "ورد {0} من {1} أكثر مما تفسره نقطة البيع وسجل الهدر، خلال {2} يومًا حتى {3}."
+],
+"{0} moved to {1}. Its manager is told.": [
+"{0} nach {1} verlegt. Die Leitung ist informiert.",
+"{0} spostato a {1}. Il responsabile è informato.",
+"نُقل {0} إلى {1}. تم إبلاغ مديره."
 ],
 "{0} need a recipe": [
 "{0} brauchen ein Rezept",
@@ -20694,6 +20774,16 @@
 "{0} con {1}",
 "{0} مع {1}"
 ],
+"{0} {1} at {2}, in {3}. {4}.": [
+"{0} {1} im {2}, in {3}. {4}.",
+"{0} {1} al {2}, in {3}. {4}.",
+"{0} {1} في {2}، ضمن {3}. {4}."
+],
+"{0} {1} at {2}. {3}.": [
+"{0} {1} im {2}. {3}.",
+"{0} {1} al {2}. {3}.",
+"{0} {1} في {2}. {3}."
+],
 "{0} {1} from {2}": [
 "{0} {1} von {2}",
 "{0} {1} da {2}",
@@ -20703,6 +20793,16 @@
 "{0} {1} von {2}.",
 "{0} {1} da {2}.",
 "{0} {1} من {2}."
+],
+"{0} {1} to {2}. {3}.": [
+"{0} {1} nach {2}. {3}.",
+"{0} {1} a {2}. {3}.",
+"{0} {1} إلى {2}. {3}."
+],
+"{0} {1}, reason Expired. {2}.": [
+"{0} {1}, Grund Abgelaufen. {2}.",
+"{0} {1}, motivo Scaduto. {2}.",
+"{0} {1}، السبب منتهي الصلاحية. {2}."
 ],
 "{0} · invoice {1}": [
 "{0} · Rechnung {1}",

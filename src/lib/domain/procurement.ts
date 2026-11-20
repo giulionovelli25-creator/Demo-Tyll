@@ -249,7 +249,9 @@ export function valueOnHand(onHand: number, lots: readonly Lot[], method: Valuat
 
 // ---- Expiry: first expiring, first out -----------------------------------------------------------------------------
 
-export interface Batch { ingredientId: string; batch: string; expiry: string; qty: number; received: string; source: string }
+export interface Batch { ingredientId: string; batch: string; expiry: string; qty: number; received: string; source: string;
+  /** Where the use-by date comes from: the received date plus the item's shelf life, or the label when it differed. */
+  useBy?: "shelf_life" | "label" }
 export interface BatchLeft extends Batch { left: number }
 
 /**

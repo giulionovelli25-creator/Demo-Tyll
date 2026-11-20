@@ -75,6 +75,8 @@ export interface Shape {
   emptyScans?: EmptyScan[];
   /** Late delivery prediction: arrivals recorded at goods in, what people did about deliveries at risk, warnings sent. */
   lateDelivery?: import("./late-delivery").LateShape;
+  /** What people decided for batches about to expire: a special, a move or waste. */
+  expiryDecisions?: import("./expiry").ExpiryDecision[];
   /** The morning menu sync from Simphony (demo connection) and the recipes confirmed for new dishes. */
   menuSync?: import("./menu-sync").MenuSyncShape;
   /** Investigation decisions, stock cases, recounts, standards, delivery differences, prices, approvals, order status. */

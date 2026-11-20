@@ -585,7 +585,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
                         <Field label="Arrived" suffix={unitOf(g)} type="number" min="0" step="any" value={v.delivered ?? outstanding(l)} onChange={(e) => set({ delivered: Number(e.target.value) })} />
                         <Field label="Damaged" suffix={unitOf(g)} type="number" min="0" step="any" value={v.damaged ?? 0} onChange={(e) => set({ damaged: Number(e.target.value) })} />
                         <Field label="Batch" value={v.batch ?? ""} onChange={(e) => set({ batch: e.target.value })} placeholder="On the label" />
-                        <Field label="Use by" type="date" value={v.expiry ?? ""} onChange={(e) => set({ expiry: e.target.value })} />
+                        <Field label="Use by" type="date" value={v.expiry ?? addDays(DEMO_TODAY, ingredientById[l.ingredientId].shelfLifeDays)} onChange={(e) => set({ expiry: e.target.value === addDays(DEMO_TODAY, ingredientById[l.ingredientId].shelfLifeDays) ? undefined : e.target.value })} hint={`Today plus ${ingredientById[l.ingredientId].shelfLifeDays} days shelf life. Change it only if the label differs.`} />
                       </div>
                     </fieldset>
                   );

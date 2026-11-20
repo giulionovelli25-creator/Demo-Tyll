@@ -466,3 +466,79 @@ describe("Ingredient prices from approved supplier invoices", () => {
     expect(r.mayEdit).toBe(false);
   });
 });
+
+const EX = await import("../server/expiry");
+const noEntries: import("../server/stock").SessionEntries = { waste: [], counts: [], overrides: [], recipes: [], receipts: [] };
+
+describe("Expiry with action", () => {
+  it("Expiring soon is switched on", async () => {
+    const { featureOn, linkShown } = await import("../features");
+    expect(featureOn("expiry")).toBe(true);
+    expect(linkShown("/stock?tab=expiry")).toBe(true);
+  });
+  it("the use-by date is the received date plus the shelf life, unless the label differed", () => {
+    EX.ensureExpiryStory("lis");
+    // A dataset delivery: received plus shelf life.
+    const plain = EX.batchesFor("lis").find((b) => b.ingredientId === "hammour" && b.source.startsWith("PO-LIS-") && !b.source.includes("EXP"))!;
+    expect(plain.useBy).toBe("shelf_life");
+    expect(plain.expiry).toBe(plusDays(plain.received, 3));
+    // The story's fish: the label said use by tomorrow, sooner than the shelf life, so it was changed on receiving.
+    const story = EX.batchesFor("lis").find((b) => b.source.startsWith("PO-LIS-EXP-"))!;
+    expect(story).toMatchObject({ useBy: "label", received: TODAY, expiry: plusDays(TODAY, 1) });
+    // A use-by typed on receiving that differs from the shelf life is the label's.
+    const id = orderFor("u-chef", "salmon", 20);
+    approve(id);
+    PR.sendApproved("lis");
+    const label = plusDays(TODAY, 5);
+    const rec = P.actOnRequest(userById["u-store"], id, { action: "receive", lines: [{ ingredientId: "salmon", delivered: 20, batch: "LBL-1", expiry: label }] });
+    if (!rec.ok) throw new Error(rec.error);
+    expect(EX.batchesFor("lis").find((b) => b.batch === "LBL-1")).toMatchObject({ useBy: "label", expiry: label });
+  });
+  it("the sea bass from the cancelled lunch is at risk, with a special suggested", () => {
+    EX.ensureExpiryStory("lis");
+    const r = EX.expiringFor(userById["u-fnb"], "lis", noEntries, 3);
+    if (!r.ok) throw new Error("no");
+    const bass = r.rows.find((x) => x.source.startsWith("PO-LIS-EXP-"))!;
+    expect(bass.daysLeft).toBe(1);
+    expect(bass.atRisk).toBe(true);
+    expect(bass.action.kind).toBe("special");
+    expect(bass.extra).toBeGreaterThan(1);
+  });
+  it("tonight's special is saved once, with who; the restaurant manager is told (and the chef, when someone else sets it)", () => {
+    EX.ensureExpiryStory("lis");
+    const r = EX.expiringFor(userById["u-fnb"], "lis", noEntries, 3);
+    if (!r.ok) throw new Error("no");
+    const bass = r.rows.find((x) => x.source.startsWith("PO-LIS-EXP-"))!;
+    expect(EX.decideExpiry(userById["u-buy"], "lis", { kind: "special", ingredientId: "hammour", batch: bass.batch }).ok).toBe(false);
+    const d = EX.decideExpiry(userById["u-chef"], "lis", { kind: "special", ingredientId: "hammour", batch: bass.batch, outletId: "lis-terrace" });
+    if (!d.ok) throw new Error(d.error);
+    expect(d.decision).toMatchObject({ kind: "special", by: "u-chef", qty: bass.extra });
+    const notices = loadStore().notify.notices.filter((n) => n.type === "expiry-decision" && n.ref === d.decision.key);
+    // The person who set it is not told about their own decision; Mercado's restaurant manager is.
+    expect(notices.map((n) => n.to)).not.toContain("u-chef");
+    expect(notices.some((n) => userById[n.to]?.role === "restaurant_manager")).toBe(true);
+    expect(notices[0].title).toMatch(/^Tonight's special at Mercado/);
+    expect(EX.decideExpiry(userById["u-fnb"], "lis", { kind: "move", ingredientId: "hammour", batch: bass.batch, outletId: "lis-ird" }).ok).toBe(false);
+    const after = EX.expiringFor(userById["u-fnb"], "lis", noEntries, 3);
+    if (!after.ok) throw new Error("no");
+    expect(after.rows.find((x) => x.batch === bass.batch)).toMatchObject({ atRisk: false, decision: { kind: "special" } });
+  });
+  it("a special set by the restaurant manager tells the chef", () => {
+    EX.ensureExpiryStory("lis");
+    const r = EX.expiringFor(userById["u-fnb"], "lis", noEntries, 3);
+    if (!r.ok) throw new Error("no");
+    const bass = r.rows.find((x) => x.source.startsWith("PO-LIS-EXP-"))!;
+    const d = EX.decideExpiry(userById["u-rm"], "lis", { kind: "special", ingredientId: "hammour", batch: bass.batch, outletId: "lis-terrace" });
+    if (!d.ok) throw new Error(d.error);
+    expect(loadStore().notify.notices.filter((n) => n.type === "expiry-decision").map((n) => n.to)).toContain("u-chef");
+  });
+  it("logging a batch as waste writes a shared waste entry with the reason Expired", () => {
+    EX.ensureExpiryStory("lis");
+    const r = EX.expiringFor(userById["u-fnb"], "lis", noEntries, 3);
+    if (!r.ok) throw new Error("no");
+    const bass = r.rows.find((x) => x.source.startsWith("PO-LIS-EXP-"))!;
+    const d = EX.decideExpiry(userById["u-chef"], "lis", { kind: "waste", ingredientId: "hammour", batch: bass.batch });
+    if (!d.ok) throw new Error(d.error);
+    expect(loadStore().stockLog.waste.find((w) => w.id === `W-EXP-${bass.batch}-hammour`)).toMatchObject({ reason: "expired", qty: bass.left });
+  });
+});
