@@ -78,6 +78,27 @@ The other stories stay one tap from the Overview and Alerts:
 - flagged bills;
 - Meal with no drink.
 
+## What Radisson asked for in the call, and where it is
+
+| Asked in the call | In the demo now | Where |
+|---|---|---|
+| Menu changes pulled from the POS, not typed twice | Yes: the morning sync reads Simphony's menu (new dishes, prices, dishes taken off) | Recipes and costs |
+| Press "order" on a critical item and a purchase order goes to the supplier | Yes: Order now, approval chain, automatic sending, supplier confirmation | Stock levels, Orders |
+| Purchase orders issued from the tool, not only exported | Yes, sent by the supplier's channel (simulated); CSV and JSON export kept for accounting | Orders, Settings > Purchasing |
+| Direct connection to accounting software | No: export file only (CSV, JSON, field list) | Orders > Procurement export |
+| Stock value from what was paid (first, last, average), not a fixed price | Yes: from approved supplier invoices; method chosen per hotel; hand-set prices are explained overrides | Recipes and costs, Stock levels, Settings > Purchasing |
+| Expiry: know what goes off and sell it first (a special) | Yes: batches with use-by dates, tonight's special, move or waste | Expiring soon |
+| Stock take with a variance against the system before stock changes | Yes: expected, counted, difference, value, likely reason, approval by someone who did not count | Stock takes |
+| Counting with codes or a scanner | Yes: barcode scanner or typing; camera scanning in progress | Count |
+| Many people and several outlets updating stock | Yes: roles per outlet, server checks every action; web based, nothing to install | Settings > Roles |
+| Flags without waiting for a stock count, such as a meal with no drink | Yes: Meal with no drink and the till rules work from sales alone | Flagged transactions |
+| Cash against cash sales | Yes; cards are reconciled by the payment provider | Revenue > Cash |
+| Works with Simphony (Materials Control is no longer available) | Demo connection on recorded responses; needs an Oracle sandbox to go live | Settings > Data sources |
+| How predictions work, AI or not | Predictions come from Tyll's own model; no AI chooses a quantity, and the screens say so | Ordering |
+| A list for the RFP | `docs/feature-checklist.md`, updated with every point above and an honest status | |
+
+One thing to correct in the follow-up: in the call the product was described as a desktop application. The demo is web based (any browser, laptop, tablet or phone, nothing to install), which is what Radisson's IT lead said suits a hotel with several outlets.
+
 ## Bugs, with timings
 
 - **Slow load and duplicate requests.**
