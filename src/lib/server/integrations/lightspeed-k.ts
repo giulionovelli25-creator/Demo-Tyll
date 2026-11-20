@@ -20,6 +20,7 @@ export interface LskLine {
   totalDiscountAmount?: string;
   discountName?: string;
   discountCode?: string;
+  accountDiscountName?: string;
   taxRatePercentage?: string;
   taxAmount?: string;
   itemId?: number;
@@ -111,7 +112,10 @@ export interface LightspeedDayReport {
   dataComplete: boolean;
   sales: number;
   orders: number;
+  /** Lines on the bills as Tyll keeps them (cancelled bills included, refunds not: a refund is kept on its bill as one amount). */
   lines: number;
+  /** Lines on refund sales, counted apart: they are not bill lines in Tyll. */
+  refundLines: number;
   cancelled: number;
   refunds: number;
   /** Lines taken off after they were rung (a negative quantity in Lightspeed). */
@@ -122,19 +126,23 @@ export interface LightspeedDayReport {
   compedLines: number;
   /** Refunds of a bill from another day: shown, not attached to any bill of this day. */
   refundsOtherDay: number;
-  /** Net of tax, as Lightspeed totals it, for the sales that became bills in Tyll (cancelled ones excluded). */
+  /** Net of tax, as Lightspeed totals it, each bill to the cent, for the sales that became bills in Tyll (cancelled ones excluded). */
   sourceNet: number;
   /** Net of tax, as Tyll totals the same bills (orderTotals). Must equal sourceNet to the cent. */
   tyllNet: number;
   unmappedItems: { sku: string; name: string; lines: number }[];
   unmappedStaff: string[];
   roomCharges: PosRoomCharge[];
+  /** Bills paid with a room payment code that carry no room number: kept as paid to a room, but no room charge can be checked. */
+  roomChargesWithoutRoom: number;
 }
 
 const num = (s: string | number | undefined) => {
   const n = typeof s === "number" ? s : Number(s ?? 0);
   return Number.isFinite(n) ? n : 0;
 };
+/** Lightspeed's own precision for line amounts: six decimals. Unit prices keep it, so no rounding residue reaches a discount. */
+const six = (n: number) => Math.round(n * 1e6) / 1e6;
 
 /** What the adapter reads, for the Settings page. */
 export const LIGHTSPEED_READS = [
@@ -155,6 +163,8 @@ interface Draft {
   key: string;
   /** Net of tax after discounts, for the units still kept. */
   netAfter: number;
+  /** The discount on the units still kept, net of tax. 0 when the line has no discount. */
+  discNet: number;
 }
 
 /** One business day of one location, mapped to Tyll bills. Pure: the same response always gives the same bills. */
@@ -187,6 +197,8 @@ export function mapSalesDay(cfg: LightspeedConfig, outletId: string, businessDat
   const sourceNetOf = new Map<string, number>();
   const roomCharges: PosRoomCharge[] = [];
   let lines = 0;
+  let refundLines = 0;
+  let roomChargesWithoutRoom = 0;
   let cancelled = 0;
   let refunds = 0;
   let refundsOtherDay = 0;
@@ -213,7 +225,6 @@ export function mapSalesDay(cfg: LightspeedConfig, outletId: string, businessDat
       const disc = num(l.totalDiscountAmount ?? l.discountAmount) + kids.reduce((s, k) => s + num(k.totalDiscountAmount ?? k.discountAmount), 0);
       saleNet += without;
       if (qty === 0) continue;
-      lines += 1;
       if (qty < 0) {
         voids.push(l);
         continue;
@@ -221,12 +232,13 @@ export function mapSalesDay(cfg: LightspeedConfig, outletId: string, businessDat
       // Discounts are taken as including tax, like the line total they come off (to confirm in a sandbox).
       const factor = Math.abs(withTax) > 0.004 ? without / withTax : 1 / (1 + num(l.taxRatePercentage) / 100);
       const before = (withTax + disc) * factor;
+      const discNet = disc * factor;
       const min = at(l.timeOfSale, openMin);
       const sec = l.timeOfSale ? secondsInto(businessDate, l.timeOfSale, tz) - min * 60 : 0;
       const comped = disc > 0 && Math.abs(withTax) < 0.005;
-      const line: OrderLine = { itemId: itemOf(l), qty, unitPrice: round2(before / qty), state: comped ? "comped" : "kept", enteredMin: min, enteredSec: sec, sentMin: min };
+      const line: OrderLine = { itemId: itemOf(l), qty, unitPrice: six(before / qty), state: comped ? "comped" : "kept", enteredMin: min, enteredSec: sec, sentMin: min };
       if (comped && (l.discountName || l.discountCode)) line.reason = l.discountName || l.discountCode;
-      drafts.push({ line, key: l.sku ?? String(l.itemId ?? ""), netAfter: comped ? 0 : without });
+      drafts.push({ line, key: l.sku ?? String(l.itemId ?? ""), netAfter: comped ? 0 : without, discNet: comped ? 0 : discNet });
     }
     // A line with a negative quantity takes back units already rung: the earliest kept line of the same item.
     for (const v of voids) {
@@ -242,19 +254,23 @@ export function mapSalesDay(cfg: LightspeedConfig, outletId: string, businessDat
         if (take === d.line.qty) {
           d.line = removed;
           d.netAfter = 0;
+          d.discNet = 0;
         } else {
           d.line = { ...d.line, qty: d.line.qty - take };
           d.netAfter = d.netAfter * (1 - share);
-          drafts.push({ line: removed, key, netAfter: 0 });
+          d.discNet = d.discNet * (1 - share);
+          drafts.push({ line: removed, key, netAfter: 0, discNet: 0 });
         }
         left -= take;
       }
     }
+    // A bill discount only when a kept line carries a real discount amount, read from the discount fields and rounded to
+    // two decimals like every discount in Tyll. Rounding of tax inclusive prices never becomes a discount.
     const kept = drafts.filter((d) => d.line.state === "kept");
     const keptBefore = kept.reduce((s, d) => s + d.line.qty * d.line.unitPrice, 0);
-    const keptAfter = kept.reduce((s, d) => s + d.netAfter, 0);
-    const off = keptBefore - keptAfter;
-    const discountName = all.find((l) => num(l.totalDiscountAmount ?? l.discountAmount) > 0 && num(l.totalNetAmountWithTax) > 0.004)?.discountName;
+    const keptDisc = kept.reduce((s, d) => s + d.discNet, 0);
+    const discLine = all.find((l) => num(l.totalDiscountAmount ?? l.discountAmount) > 0 && num(l.totalNetAmountWithTax) > 0.004);
+    const discountName = discLine?.discountName || discLine?.accountDiscountName;
 
     const payments = sale.payments ?? [];
     const toRoom = payments.filter((p) => cfg.roomPaymentCodes.includes(p.code ?? ""));
@@ -271,18 +287,22 @@ export function mapSalesDay(cfg: LightspeedConfig, outletId: string, businessDat
       staffId: staffOf(sale.ownerId),
       table: sale.tableName || (sale.tableNumber ? `Table ${sale.tableNumber}` : "No table"),
       lines: drafts.sort((a, b) => a.line.enteredMin * 60 + (a.line.enteredSec ?? 0) - (b.line.enteredMin * 60 + (b.line.enteredSec ?? 0))).map((d) => d.line),
-      // Exact, so Tyll's net equals Lightspeed's to the cent: discounts = round2(kept x pct / 100).
-      discountPct: Math.abs(off) > 0.004 && keptBefore > 0 ? (off / keptBefore) * 100 : 0,
+      discountPct: keptDisc > 0.004 && keptBefore > 0 ? round2((keptDisc / keptBefore) * 100) : 0,
       payment: toRoom.length ? "room" : cash ? "cash" : "card",
+      // The sales export has no field for who approved a discount, a complimentary item or a removal (checked against the
+      // published OpenAPI file). Until a sandbox account shows where it sits, no rule counts a missing approval here.
+      approvalsNotInSource: true,
     };
     if (order.discountPct && discountName) order.discountReason = discountName;
     if (room) order.room = room;
+    lines += order.lines.length;
     if (isCancelled) {
       order.voided = { min: closeMin, ...(sale.voidReason ? { reason: sale.voidReason } : {}) };
       cancelled += 1;
     } else {
-      sourceNet += saleNet;
-      sourceNetOf.set(sale.accountFiscId, saleNet);
+      sourceNet += round2(saleNet);
+      sourceNetOf.set(sale.accountFiscId, round2(saleNet));
+      if (toRoom.length && !room) roomChargesWithoutRoom += 1;
       if (toRoom.length && room) {
         roomCharges.push({
           orderId: id, outletId, ref: sale.receiptId ?? sale.accountFiscId, room, min: closeMin, table: order.table, covers: order.covers, roomService: !!loc.roomService,
@@ -298,7 +318,7 @@ export function mapSalesDay(cfg: LightspeedConfig, outletId: string, businessDat
   for (const sale of sales) {
     if (sale.type !== "REFUND") continue;
     const amount = round2(-(sale.salesLines ?? []).reduce((s, l) => s + num(l.totalNetAmountWithoutTax), 0));
-    lines += (sale.salesLines ?? []).length;
+    refundLines += (sale.salesLines ?? []).length;
     const target = byFiscId.get(sale.source?.initialAccountId ?? "");
     if (!target || target.voided) {
       refundsOtherDay = round2(refundsOtherDay + amount);
@@ -318,8 +338,8 @@ export function mapSalesDay(cfg: LightspeedConfig, outletId: string, businessDat
   return {
     orders,
     report: {
-      outletId, businessDate, dataComplete: res.dataComplete !== false, sales: sales.length, orders: orders.length, lines, cancelled, refunds, removedLines, discountedBills, compedLines, refundsOtherDay,
-      sourceNet: round2(sourceNet), tyllNet, unmappedItems: [...unmapped.values()], unmappedStaff: [...unmappedStaff], roomCharges,
+      outletId, businessDate, dataComplete: res.dataComplete !== false, sales: sales.length, orders: orders.length, lines, refundLines, cancelled, refunds, removedLines, discountedBills, compedLines, refundsOtherDay,
+      sourceNet: round2(sourceNet), tyllNet, unmappedItems: [...unmapped.values()], unmappedStaff: [...unmappedStaff], roomCharges, roomChargesWithoutRoom,
     },
   };
 }

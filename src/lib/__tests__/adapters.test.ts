@@ -3,14 +3,16 @@ import { describe, expect, it } from "vitest";
 import { DATA_SOURCES } from "../adapters";
 import { USERS } from "../data/catalog";
 import { can, canOpenPath } from "../domain/access";
-import { classifyRoomCharge } from "../domain/detect";
+import { classifyRoomCharge, detectOrderException } from "../domain/detect";
 import { orderTotals } from "../domain/orders";
 import { LightspeedKSeriesPos, mapSalesDay, salesDailyRequest, type LskSalesDaily } from "../server/integrations/lightspeed-k";
-import { MewsPms } from "../server/integrations/mews";
+import { MewsPms, type MewsReservation, type MewsResource } from "../server/integrations/mews";
 import { SAMPLE_DATE, SAMPLE_LIGHTSPEED_CONFIG, adapterSampleFor, lightspeedSampleTransport, mewsSampleTransport, runSample, sampleAdapters, sampleMewsConfig } from "../server/integrations/sample";
 import { minutesInto, moveDates, moveInstant, zonedInstant } from "../server/integrations/time";
 import { CREDENTIAL_FIELDS, NotConnectedError, notConnected, recording, type SourceRequest, type Transport } from "../server/integrations/transport";
 import mercado from "../server/integrations/fixtures/lightspeed-sales-daily-mercado.json";
+import mewsReservations from "../server/integrations/fixtures/mews-reservations.json";
+import mewsResources from "../server/integrations/fixtures/mews-resources.json";
 import type { RoomCharge } from "../types";
 import { DEMO_TODAY } from "../util";
 
@@ -145,6 +147,71 @@ describe("Lightspeed Restaurant K Series adapter", () => {
     expect(report.sourceNet).toBe(0);
     expect(report.tyllNet).toBe(0);
   });
+
+  // Real menus have round prices with tax: still water at €5.00 with 23% VAT is 4.065041 net. Rounding must never read as a discount.
+  const waterSale = (fiscId: string, qty: number, discount = 0): LskSalesDaily["sales"][number] => {
+    const gross = 5 * qty - discount;
+    return {
+      accountFiscId: fiscId, receiptId: `R${fiscId}`, type: "SALE", ownerId: 14671, nbCovers: qty, tableName: "Table 2",
+      timeOfOpening: `${SAMPLE_DATE}T12:00:00Z`, timeClosed: `${SAMPLE_DATE}T12:30:00Z`,
+      salesLines: [{
+        id: `L${fiscId}`, sku: "2007", name: "Still water", quantity: qty.toFixed(3), taxRatePercentage: "23.00", timeOfSale: `${SAMPLE_DATE}T12:05:00Z`,
+        totalNetAmountWithTax: gross.toFixed(2), totalNetAmountWithoutTax: (gross / 1.23).toFixed(6), totalDiscountAmount: discount.toFixed(2),
+        ...(discount ? { discountName: "Staff meal 10%" } : {}),
+      }],
+      payments: [{ code: "CARD", netAmountWithTax: gross.toFixed(2) }],
+    };
+  };
+
+  it("never turns the rounding of a tax inclusive price into a discount", () => {
+    const res: LskSalesDaily = { sales: [waterSale("W1", 1), waterSale("W3", 3), waterSale("W7", 7)] };
+    const { orders, report } = mapSalesDay(SAMPLE_LIGHTSPEED_CONFIG, MER, SAMPLE_DATE, res);
+    expect(orders.map((o) => o.discountPct)).toEqual([0, 0, 0]);
+    expect(report.discountedBills).toBe(0);
+    expect(report.tyllNet).toBe(report.sourceNet);
+    // Each bill to the cent, as both systems total a bill: 4.07 + 12.20 + 28.46.
+    expect(report.tyllNet).toBe(44.73);
+    for (const o of orders) expect(detectOrderException(o)).toBeNull();
+  });
+
+  it("reads a real discount from the discount amounts, to two decimals", async () => {
+    const { orders, report } = mapSalesDay(SAMPLE_LIGHTSPEED_CONFIG, MER, SAMPLE_DATE, { sales: [waterSale("D3", 3, 1.5)] });
+    expect(orders[0].discountPct).toBe(10);
+    expect(orders[0].discountReason).toBe("Staff meal 10%");
+    expect(report.tyllNet).toBe(report.sourceNet);
+    const loyalty = (await readMercado()).orders.find((o) => o.id === "MER-A70412.55")!;
+    expect(loyalty.discountPct).toBe(Math.round(loyalty.discountPct * 100) / 100);
+    expect(loyalty.discountPct).toBe(10);
+  });
+
+  it("does not count a missing approval against staff: the sales export has no approval field", async () => {
+    const { orders } = await readMercado();
+    expect(orders.every((o) => o.approvalsNotInSource === true)).toBe(true);
+    // The loyalty discount has a reason and no approval in the export: the discount rule waits for a sandbox account.
+    const loyalty = orders.find((o) => o.id === "MER-A70412.55")!;
+    expect(detectOrderException(loyalty)).toBeNull();
+    // The same bill from a source that records approvals is still checked by the discount rule.
+    expect(detectOrderException({ ...loyalty, approvalsNotInSource: undefined })?.type).toBe("unusual_discount");
+    // The burger taken off for "Kitchen error" is not flagged for want of an approval Lightspeed does not export.
+    const lunch = orders.find((o) => o.id === "MER-A70412.27")!;
+    expect(["removed_after_dispatch", "prepared_not_charged", "bill_mismatch"]).not.toContain(detectOrderException(lunch)?.type);
+  });
+
+  it("counts a bill paid to a room with no room number, instead of dropping it", () => {
+    const res = structuredClone(mercado) as LskSalesDaily;
+    const sale = res.sales.find((x) => x.accountFiscId === "A70412.52")!;
+    sale.payments = sale.payments!.map((p) => (p.code === "IKPMS" ? { ...p, externalReference: " " } : p));
+    const { orders, report } = mapSalesDay(SAMPLE_LIGHTSPEED_CONFIG, MER, SAMPLE_DATE, res);
+    expect(orders.find((o) => o.id === "MER-A70412.52")!.payment).toBe("room");
+    expect(report.roomCharges.map((c) => c.ref)).toEqual(["R70412.55"]);
+    expect(report.roomChargesWithoutRoom).toBe(1);
+  });
+
+  it("counts the lines on the bills, and refund lines apart", async () => {
+    const { orders, report } = await readMercado();
+    expect(report.lines).toBe(orders.reduce((n, o) => n + o.lines.length, 0));
+    expect(report.refundLines).toBe(1);
+  });
 });
 
 describe("Mews adapter", () => {
@@ -185,6 +252,29 @@ describe("Mews adapter", () => {
     expect(occ).toMatchObject({ propertyId: "lis", date: SAMPLE_DATE, forecast: SAMPLE_DATE > DEMO_TODAY });
     expect(occ.occupancy).toBeCloseTo(0.812, 3);
     expect(await pms.fetchOccupancy("other", SAMPLE_DATE, SAMPLE_DATE)).toEqual([]);
+  });
+
+  it("leaves a no-show out of a night already past, and keeps a confirmed arrival for a night still to come", async () => {
+    // A stay still Confirmed for a free room: the guest never checked in.
+    const taken = new Set((mewsReservations as unknown as { Reservations: MewsReservation[] }).Reservations.map((r) => r.AssignedResourceId));
+    const free = (mewsResources as unknown as { Resources: MewsResource[] }).Resources.find((r) => r.IsActive && !r.ParentResourceId && r.Data?.Discriminator === "Space" && !taken.has(r.Id) && /^\d+$/.test(r.Name))!;
+    const sample = (mewsReservations as unknown as { Reservations: MewsReservation[] }).Reservations.find((r) => r.State === "Started")!;
+    const noShow: MewsReservation = {
+      ...sample, Id: "no-show", Number: "99999", State: "Confirmed", AssignedResourceId: free.Id, ActualStartUtc: null, ActualEndUtc: null,
+      ScheduledStartUtc: `${SAMPLE_DATE}T15:00:00Z`, ScheduledEndUtc: "2026-11-20T11:00:00Z", PersonCounts: [{ AgeCategoryId: "adult", Count: 2 }],
+    };
+    const base = mewsSampleTransport();
+    const t: Transport = async (req) => {
+      const res = (await base(req)) as { Reservations?: MewsReservation[] };
+      const first = !(req.body?.Limitation as { Cursor?: string } | undefined)?.Cursor;
+      if (res.Reservations && first) res.Reservations = [...res.Reservations, noShow];
+      return res;
+    };
+    const pos = new LightspeedKSeriesPos(lightspeedSampleTransport(), SAMPLE_LIGHTSPEED_CONFIG);
+    const [past] = await new MewsPms(t, { ...sampleMewsConfig(pos, 1000), today: () => "2026-11-20" }).nights("lis", SAMPLE_DATE, SAMPLE_DATE);
+    expect(past).toMatchObject({ rooms: 203, guests: 324, forecast: false });
+    const [ahead] = await new MewsPms(t, { ...sampleMewsConfig(pos, 1000), today: () => "2026-11-10" }).nights("lis", SAMPLE_DATE, SAMPLE_DATE);
+    expect(ahead).toMatchObject({ rooms: 204, guests: 326, forecast: true });
   });
 
   it("matches each bill charged to a room with its posting on the guest bill", async () => {
@@ -260,7 +350,7 @@ describe("the sample on the Settings page", () => {
     expect(s.pos.sourceNet).toBe(s.pos.tyllNet);
     expect(s.pos.bills).toBe(12);
     expect(s.pms).toMatchObject({ rooms: 250, inHouse: 203, guests: 324 });
-    expect(s.pos).toMatchObject({ cancelled: 1, refunds: 1, removedLines: 1, discountedBills: 1, compedLines: 1 });
+    expect(s.pos).toMatchObject({ cancelled: 1, refunds: 1, removedLines: 1, discountedBills: 1, compedLines: 1, refundLines: 1, roomChargesWithoutRoom: 0 });
   });
 
   it("replays as last night of any business date with the same figures", async () => {

@@ -208,7 +208,7 @@ export class MewsPms implements PmsAdapter {
         min: b.min,
         room: b.room,
         source: b.roomService ? "room_service" : "restaurant",
-        description: `${b.roomService ? "Room service" : "Restaurant"} bill ${b.ref}, ${b.table}`,
+        description: `${b.roomService ? "Room service" : "Restaurant"} bill ${b.ref}, ${b.table}, ${b.covers === 1 ? "1 guest" : `${b.covers} guests`}`,
         orderId: b.orderId,
         expected: b.amount,
         posted: mine.map((p) => p.gross),
@@ -238,9 +238,11 @@ export class MewsPms implements PmsAdapter {
     const roomIds = new Set(rooms.map((r) => r.Id));
     const out: MewsNight[] = [];
     for (let d = from; d <= to; d = addDaysIso(d, 1)) {
-      // A room counts for the night when a stay spans 11:59 PM of that date.
+      // A room counts for the night when a stay spans 11:59 PM of that date. For a night already past, only a guest who
+      // checked in counts: a stay still Confirmed then is a no-show. Tonight and later nights keep Confirmed arrivals.
       const night = zonedInstant(d, 1439, tz).getTime();
-      const here = stays.filter((s) => s.AssignedResourceId && roomIds.has(s.AssignedResourceId) && Date.parse(s.ActualStartUtc ?? s.ScheduledStartUtc) <= night && night < Date.parse(s.ActualEndUtc ?? s.ScheduledEndUtc));
+      const past = d < this.config.today();
+      const here = stays.filter((s) => s.AssignedResourceId && roomIds.has(s.AssignedResourceId) && (!past || s.State !== "Confirmed" || !!s.ActualStartUtc) && Date.parse(s.ActualStartUtc ?? s.ScheduledStartUtc) <= night && night < Date.parse(s.ActualEndUtc ?? s.ScheduledEndUtc));
       const occupied = new Set(here.map((s) => s.AssignedResourceId!));
       out.push({
         date: d,

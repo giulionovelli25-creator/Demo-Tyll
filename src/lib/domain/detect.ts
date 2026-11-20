@@ -145,7 +145,7 @@ export function detectOrderException(o: Order): Exception | null {
   const t = orderTotals(o);
 
   if (o.voided) {
-    if (t.removedPost > 0 && (!o.voided.reason || !o.voided.approvedBy)) {
+    if (t.removedPost > 0 && (!o.voided.reason || (!o.voided.approvedBy && !o.approvalsNotInSource))) {
       return { ...base, type: "unexplained_void", min: o.voided.min, exposure: t.removedPost, headline: "Whole order voided after items were sent for preparation",
         comparedWith: `Compared with the void rule: an order voided after items were sent needs a reason and a manager's approval. This void: ${yes(o.voided.reason, "reason")}, ${yes(o.voided.approvedBy, "approval")}.` };
     }
@@ -168,7 +168,7 @@ export function detectOrderException(o: Order): Exception | null {
     }
   }
 
-  const flagged = o.lines.map((l) => l.state === "removed_post" && !l.approvedBy);
+  const flagged = o.lines.map((l) => l.state === "removed_post" && !l.approvedBy && !o.approvalsNotInSource);
   const flaggedLines = o.lines.filter((_, i) => flagged[i]);
   if (flaggedLines.length > 0) {
     const exposure = flaggedLines.reduce((s, l) => s + lineValue(l), 0);
@@ -213,7 +213,7 @@ export function detectOrderException(o: Order): Exception | null {
     }
   }
 
-  if (o.discountPct > 0 && (o.discountPct > POLICY.discountMaxPct || !o.discountReason || !o.discountApprovedBy)) {
+  if (o.discountPct > 0 && !o.approvalsNotInSource && (o.discountPct > POLICY.discountMaxPct || !o.discountReason || !o.discountApprovedBy)) {
     return {
       ...base,
       type: "unusual_discount",
@@ -225,7 +225,7 @@ export function detectOrderException(o: Order): Exception | null {
   }
 
   const comped = o.lines.filter((l) => l.state === "comped");
-  if (comped.length > 0 && (t.comps > POLICY.compMaxValue || comped.some((l) => !l.reason || !l.approvedBy))) {
+  if (comped.length > 0 && (t.comps > POLICY.compMaxValue || comped.some((l) => !l.reason || (!l.approvedBy && !o.approvalsNotInSource)))) {
     return {
       ...base,
       type: "excessive_comp",

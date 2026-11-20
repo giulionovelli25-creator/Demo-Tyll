@@ -22,6 +22,7 @@ const TO_CONFIRM = {
     "Which field carries the room number on a room charge payment (read from the payment's external reference here).",
     "Whether line discounts include tax, as line totals do.",
     "When the business day closes, and that voids after a bill is sent arrive as lines with a negative quantity.",
+    "Who approved a discount, a complimentary item or a line taken off. The sales export has no field for it, so until then no rule counts a missing approval on these bills.",
   ],
   mews: [
     "That the POS link writes the till's receipt id on each posting (without it, Tyll matches on amount and time).",
@@ -47,7 +48,7 @@ const MEWS_FIELDS: [string, string][] = [
   ["ActualStartUtc, ActualEndUtc, State", "Check-in and check-out; Processed means checked out"],
   ["PersonCounts", "Guests per room, for guests a night"],
   ["OrderItems: ServiceOrderId, ExternalIdentifier", "One posting per bill, and the till's receipt id on it"],
-  ["Amount.GrossValue, AccountingState", "Amount posted with tax; canceled items are left out"],
+  ["Amount.GrossValue, AccountingState", "Amount posted with tax; cancelled items are left out"],
   ["CreatedUtc", "When the posting reached the guest bill, against check-out"],
 ];
 
@@ -74,6 +75,7 @@ export default function AdaptersPage() {
   const agree = Math.abs(pos.sourceNet - pos.tyllNet) < 0.005;
   const shown = everything ? data.charges : data.charges.slice(0, TOP);
   const outlets = pos.outlets.map((o) => outletLabel(o.outletId)).join(" and ");
+  const roomCheck = can(user, "roomcharge.view");
 
   return (
     <div className="space-y-5">
@@ -91,7 +93,7 @@ export default function AdaptersPage() {
       <Panel
         title="Room charge check on the sample"
         description="The room charge check's own rule, run on what the two adapters read. Largest amount to check first. Sample data: it changes no figure in the demo."
-        action={can(user, "roomcharge.view") ? <Link prefetch={false} href="/money?tab=rooms" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Room charge check <ArrowRight size={14} className="rtl:rotate-180" /></Link> : undefined}
+        action={roomCheck ? <Link prefetch={false} href="/money?tab=rooms" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Room charge check <ArrowRight size={14} className="rtl:rotate-180" /></Link> : undefined}
         flush
       >
         <ul className="divide-y divide-hair border-t border-hair">
@@ -99,12 +101,16 @@ export default function AdaptersPage() {
             <li key={c.id} className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4 sm:px-6">
               <div className="min-w-0">
                 <p className="text-sm text-ink">{c.headline ?? `Room ${c.room}: posted as charged`}</p>
+                <p className="mt-0.5 text-xs text-graphite">{c.description}</p>
                 <p className="mt-0.5 text-xs text-steel">{`${outletLabel(c.outletId)}, ${fmtTime(c.min)}. Charged ${money(c.expected)}, ${c.posted.length ? `posted ${c.posted.map(money).join(" and ")}` : "nothing posted"}.`}</p>
+                {roomCheck && <div className="mt-2 hidden sm:block"><HowChecked /></div>}
               </div>
               <div className="flex shrink-0 items-center justify-between gap-3 sm:flex-col sm:items-end sm:gap-1">
                 <Badge tone={chargeTone(c)}>{ROOM_STATUS_LABEL[c.status]}</Badge>
                 <span className={cn("num text-sm font-medium", c.atRisk ? "text-ink" : "text-steel")}>{c.atRisk ? money(c.atRisk) : "Nothing to check"}</span>
               </div>
+              {/* On phones the link follows the status, so each row reads finding, status, action. */}
+              {roomCheck && <div className="sm:hidden"><HowChecked /></div>}
             </li>
           ))}
         </ul>
@@ -123,14 +129,18 @@ export default function AdaptersPage() {
           kind="Point of sale"
           reads={pos.reads}
           requests={pos.requests}
+          columns={3}
           figures={[
-            ["Bills", fmtNum(pos.bills)], ["Lines", fmtNum(pos.lines)], ["Cancelled bills", fmtNum(pos.cancelled)], ["Refunds", fmtNum(pos.refunds)],
-            ["Taken off after ringing", fmtNum(pos.removedLines)], ["Discounted bills", fmtNum(pos.discountedBills)], ["Complimentary items", fmtNum(pos.compedLines)], ["Not matched to the menu", fmtNum(pos.unmappedItems.length)],
+            ["Bills", fmtNum(pos.bills)], ["Lines on the bills", fmtNum(pos.lines)], ["Cancelled bills", fmtNum(pos.cancelled)],
+            ["Refunds", fmtNum(pos.refunds)], ["Taken off after ringing", fmtNum(pos.removedLines)], ["Discounted bills", fmtNum(pos.discountedBills)],
+            ["Complimentary items", fmtNum(pos.compedLines)], ["Not matched to the menu", fmtNum(pos.unmappedItems.length)], ["Room charges with no room number", fmtNum(pos.roomChargesWithoutRoom)],
           ]}
           result={[
             `Net of tax: ${money(pos.sourceNet)} in Lightspeed, ${money(pos.tyllNet)} in Tyll.`,
             ...(pos.unmappedItems.length === 1 ? ["One item is not yet matched to the menu. It stays on the bill and is listed for onboarding."]
               : pos.unmappedItems.length > 1 ? [`${pos.unmappedItems.length} items are not yet matched to the menu. They stay on the bill and are listed for onboarding.`] : []),
+            ...(pos.roomChargesWithoutRoom === 1 ? ["One bill was paid to a room with no room number on the payment. Its room charge cannot be checked until the room is known."]
+              : pos.roomChargesWithoutRoom > 1 ? [`${pos.roomChargesWithoutRoom} bills were paid to a room with no room number on the payment. Their room charges cannot be checked until the room is known.`] : []),
           ]}
         />
         <AdapterPanel
@@ -139,7 +149,7 @@ export default function AdaptersPage() {
           reads={pms.reads}
           requests={pms.requests}
           figures={[["Rooms in house", `${fmtNum(pms.inHouse)} of ${fmtNum(pms.rooms)}`], ["Occupancy", fmtPct(pms.occupancy, 1)], ["Guests", fmtNum(pms.guests)], ["Postings", fmtNum(pms.postings)]]}
-          result={[`Night of ${fmtDate(data.businessDate)}. Canceled items left out: ${fmtNum(pms.canceledItems)}.`]}
+          result={[`Night of ${fmtDate(data.businessDate)}. Cancelled items left out: ${fmtNum(pms.canceledItems)}.`]}
         />
       </div>
 
@@ -168,7 +178,12 @@ export default function AdaptersPage() {
   );
 }
 
-function AdapterPanel({ title, kind, reads, requests, figures, result }: { title: string; kind: string; reads: { method: string; path: string; gives: string }[]; requests: number; figures: [string, string][]; result: string[] }) {
+/** Where the live equivalent of a sample finding is handled. Sample rows are never assigned or closed. */
+function HowChecked() {
+  return <Link prefetch={false} href="/money?tab=rooms" className={textLink}>See how this is checked <ArrowRight size={14} className="rtl:rotate-180" /></Link>;
+}
+
+function AdapterPanel({ title, kind, reads, requests, figures, result, columns = 4 }: { title: string; kind: string; reads: { method: string; path: string; gives: string }[]; requests: number; figures: [string, string][]; result: string[]; columns?: 3 | 4 }) {
   return (
     <Panel title={title} description={kind}>
       <div className="space-y-5 text-sm">
@@ -189,7 +204,7 @@ function AdapterPanel({ title, kind, reads, requests, figures, result }: { title
         </div>
         <div>
           <h3 className="text-[13px] font-medium text-ink">From the sample</h3>
-          <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4">
+          <dl className={cn("mt-2 grid grid-cols-2 gap-x-4 gap-y-2", columns === 3 ? "sm:grid-cols-3" : "sm:grid-cols-4")}>
             {figures.map(([label, n]) => (
               <div key={label} className="flex min-w-0 flex-col">
                 {/* Labels may take two lines; every figure in a row still shares one line. */}

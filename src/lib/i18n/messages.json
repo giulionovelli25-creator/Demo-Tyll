@@ -644,7 +644,7 @@
 "Quantità",
 "الكمية"
 ],
-"Amount posted with tax; canceled items are left out": [
+"Amount posted with tax; cancelled items are left out": [
 "Gebuchter Betrag mit Steuer; stornierte Posten bleiben außen vor",
 "Importo registrato con imposte; le voci annullate sono escluse",
 "المبلغ المسجل مع الضريبة؛ وتُستبعد البنود الملغاة"
@@ -5999,6 +5999,11 @@
 "Righe",
 "البنود"
 ],
+"Lines on the bills": [
+"Positionen auf den Rechnungen",
+"Righe sui conti",
+"البنود في الفواتير"
+],
 "Linguine": [
 "Linguine",
 "Linguine",
@@ -6964,7 +6969,7 @@
 "Night audit",
 "التدقيق الليلي"
 ],
-"Night of {0}. Canceled items left out: {1}.": [
+"Night of {0}. Cancelled items left out: {1}.": [
 "Nacht vom {0}. Ausgelassene stornierte Posten: {1}.",
 "Notte del {0}. Voci annullate escluse: {1}.",
 "ليلة {0}. البنود الملغاة المستبعدة: {1}."
@@ -7628,6 +7633,11 @@
 "Auf dem Weg zu einem Verlust von",
 "In rotta per perdere",
 "في الطريق لخسارة"
+],
+"One bill was paid to a room with no room number on the payment. Its room charge cannot be checked until the room is known.": [
+"Eine Rechnung wurde auf ein Zimmer bezahlt, ohne Zimmernummer auf der Zahlung. Ihre Zimmerbelastung lässt sich erst prüfen, wenn das Zimmer bekannt ist.",
+"Un conto è stato pagato in camera senza numero di camera sul pagamento. Il suo addebito non si può verificare finché la camera non è nota.",
+"دُفعت فاتورة واحدة على غرفة دون رقم غرفة في الدفعة. لا يمكن التحقق من رسمها حتى تُعرف الغرفة."
 ],
 "One day": [
 "Ein Tag",
@@ -9439,6 +9449,16 @@
 "Conti di ristorante e servizio in camera registrati sui conti ospite",
 "فواتير المطعم وخدمة الغرف المسجلة على حسابات النزلاء"
 ],
+"Restaurant bill R{0}, Table {1}, {2} guest": [
+"Restaurantrechnung R{0}, Tisch {1}, {2} Gast",
+"Conto del ristorante R{0}, tavolo {1}, {2} ospite",
+"فاتورة المطعم ⁦R{0}⁩، الطاولة {1}، ضيف {2}"
+],
+"Restaurant bill R{0}, Table {1}, {2} guests": [
+"Restaurantrechnung R{0}, Tisch {1}, {2} Gäste",
+"Conto del ristorante R{0}, tavolo {1}, {2} ospiti",
+"فاتورة المطعم ⁦R{0}⁩، الطاولة {1}، {2} ضيوف"
+],
 "Restaurant manager": [
 "Restaurantleitung",
 "Direttore ristorante",
@@ -9694,6 +9714,11 @@
 "Addebiti in camera da verificare",
 "رسوم الغرف المطلوب التحقق منها"
 ],
+"Room charges with no room number": [
+"Zimmerbelastungen ohne Zimmernummer",
+"Addebiti in camera senza numero di camera",
+"رسوم غرف بلا رقم غرفة"
+],
 "Room numbers; meeting rooms and beds are left out": [
 "Zimmernummern; Tagungsräume und Betten bleiben außen vor",
 "Numeri di camera; sale riunioni e letti sono esclusi",
@@ -9713,6 +9738,16 @@
 "Zimmerservice",
 "Servizio in camera",
 "خدمة الغرف"
+],
+"Room service bill R{0}, Room {1}, {2} guest": [
+"Zimmerservice-Rechnung R{0}, Zimmer {1}, {2} Gast",
+"Conto del servizio in camera R{0}, camera {1}, {2} ospite",
+"فاتورة خدمة الغرف ⁦R{0}⁩، الغرفة {1}، ضيف {2}"
+],
+"Room service bill R{0}, Room {1}, {2} guests": [
+"Zimmerservice-Rechnung R{0}, Zimmer {1}, {2} Gäste",
+"Conto del servizio in camera R{0}, camera {1}, {2} ospiti",
+"فاتورة خدمة الغرف ⁦R{0}⁩، الغرفة {1}، {2} ضيوف"
 ],
 "Room {0}": [
 "Zimmer {0}",
@@ -10418,6 +10453,11 @@
 "Hotelgäste und Outlet-Belastungen ansehen",
 "Vedi ospiti dell'hotel e addebiti dei punti vendita",
 "عرض نزلاء الفندق مقابل رسوم المنافذ"
+],
+"See how this is checked": [
+"So wird das geprüft",
+"Come viene verificato",
+"كيف يُتحقق من ذلك"
 ],
 "See it run on sample responses": [
 "Mit Beispielantworten ansehen",
@@ -13994,6 +14034,11 @@
 "Rum bianco",
 "رم أبيض"
 ],
+"Who approved a discount, a complimentary item or a line taken off. The sales export has no field for it, so until then no rule counts a missing approval on these bills.": [
+"Wer einen Rabatt, einen kostenlosen Artikel oder eine entfernte Position genehmigt hat. Der Verkaufsexport hat dafür kein Feld, daher wertet bis dahin keine Regel eine fehlende Genehmigung auf diesen Rechnungen.",
+"Chi ha approvato uno sconto, un articolo offerto o una riga tolta. L'export delle vendite non ha un campo per questo, quindi fino ad allora nessuna regola conta un'approvazione mancante su questi conti.",
+"من وافق على خصم أو صنف مجاني أو بند أُزيل. لا يتضمن تصدير المبيعات حقلًا لذلك، لذا لن تحتسب أي قاعدة غياب الموافقة على هذه الفواتير حتى ذلك الحين."
+],
 "Who changed what, and is it saved?": [
 "Wer hat was geändert, und ist es gespeichert?",
 "Chi ha cambiato cosa, ed è salvato?",
@@ -15363,6 +15408,11 @@
 "{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet.",
 "{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento.",
 "فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس."
+],
+"{0} bills were paid to a room with no room number on the payment. Their room charges cannot be checked until the room is known.": [
+"{0} Rechnungen wurden auf ein Zimmer bezahlt, ohne Zimmernummer auf der Zahlung. Ihre Zimmerbelastungen lassen sich erst prüfen, wenn das Zimmer bekannt ist.",
+"{0} conti sono stati pagati in camera senza numero di camera sul pagamento. I loro addebiti non si possono verificare finché la camera non è nota.",
+"دُفعت {0} فواتير على غرفة دون رقم غرفة في الدفعة. لا يمكن التحقق من رسومها حتى تُعرف الغرفة."
 ],
 "{0} booked guests seated, {1} billed, a gap of {2} in the last {3} days.": [
 "{0} reservierte Gäste platziert, {1} abgerechnet, eine Lücke von {2} in den letzten {3} Tagen.",

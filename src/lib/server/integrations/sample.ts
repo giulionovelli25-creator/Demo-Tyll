@@ -134,14 +134,18 @@ export interface AdapterSampleView {
   pos: {
     reads: typeof LIGHTSPEED_READS;
     requests: number;
-    outlets: Pick<LightspeedDayReport, "outletId" | "orders" | "lines" | "cancelled" | "refunds" | "sourceNet" | "tyllNet">[];
+    outlets: Pick<LightspeedDayReport, "outletId" | "orders" | "lines" | "refundLines" | "cancelled" | "refunds" | "sourceNet" | "tyllNet">[];
     bills: number;
     cancelled: number;
     refunds: number;
     removedLines: number;
     discountedBills: number;
     compedLines: number;
+    /** Lines on the bills as Tyll keeps them. Refund lines are counted apart. */
     lines: number;
+    refundLines: number;
+    /** Bills paid to a room with no room number on the payment: no room charge can be checked for them. */
+    roomChargesWithoutRoom: number;
     sourceNet: number;
     tyllNet: number;
     unmappedItems: LightspeedDayReport["unmappedItems"];
@@ -181,7 +185,7 @@ export async function runSample(date: string, pageSize = 100): Promise<AdapterSa
     pos: {
       reads: LIGHTSPEED_READS,
       requests: requests.lightspeed.length,
-      outlets: reports.map(({ outletId, orders, lines, cancelled, refunds, sourceNet, tyllNet }) => ({ outletId, orders, lines, cancelled, refunds, sourceNet, tyllNet })),
+      outlets: reports.map(({ outletId, orders, lines, refundLines, cancelled, refunds, sourceNet, tyllNet }) => ({ outletId, orders, lines, refundLines, cancelled, refunds, sourceNet, tyllNet })),
       bills: sum((r) => r.orders),
       cancelled: sum((r) => r.cancelled),
       refunds: sum((r) => r.refunds),
@@ -189,6 +193,8 @@ export async function runSample(date: string, pageSize = 100): Promise<AdapterSa
       discountedBills: sum((r) => r.discountedBills),
       compedLines: sum((r) => r.compedLines),
       lines: sum((r) => r.lines),
+      refundLines: sum((r) => r.refundLines),
+      roomChargesWithoutRoom: sum((r) => r.roomChargesWithoutRoom),
       sourceNet: sum((r) => r.sourceNet),
       tyllNet: sum((r) => r.tyllNet),
       unmappedItems: reports.flatMap((r) => r.unmappedItems),

@@ -161,6 +161,10 @@ export interface Order {
   discountPct: number;
   discountReason?: string;
   discountApprovedBy?: string;
+  /** The bill came from a source whose export does not say who approved a discount, a complimentary item, a removal or a
+   * void (the Lightspeed adapter, until a sandbox account shows where it sits). The discount rule does not run on it, and
+   * no other rule counts a missing approval against the staff on it. */
+  approvalsNotInSource?: boolean;
   refund?: { amount: number; min: number; reason?: string; approvedBy?: string };
   voided?: { min: number; reason?: string; approvedBy?: string };
   payment: "card" | "cash" | "room";
