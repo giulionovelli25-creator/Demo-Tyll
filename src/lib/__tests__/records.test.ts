@@ -18,7 +18,7 @@ const { listInvestigations } = await import("../domain/metrics");
 const { allowedOutlets } = await import("../domain/access");
 const { applyRecord, recordsFor, serverEnv, seededHistory } = await import("../server/records");
 const { inWorkspace, newWorkspaceId, sweepWorkspaces, workspaceRoot, WORKSPACE_COOKIE, WORKSPACE_TTL_MS } = await import("../server/workspace");
-const { loadStore, resetPurchasingStore } = await import("../server/purchasing-store");
+const { loadStore, mutateStore, resetPurchasingStore } = await import("../server/purchasing-store");
 const { resetDemo, freshenPublicDemo } = await import("../server/demo");
 const { logWasteShared } = await import("../server/stock-log");
 const { SESSION_COOKIE, resetAuthStore, startDemoSession, readAudit, audit } = await import("../server/auth");
@@ -79,6 +79,74 @@ describe("the rules (shared by browser and server)", () => {
 });
 
 describe("saved on the server", () => {
+  // Review fixes: a recount must name a real count, at its own outlet, of the same item, within the person's outlets.
+  const checkAt = (outletId: string) => getOutletStock().periods.find((p) => p.outletId === outletId)!.to;
+  const recount = (c: { id: string; outletId?: string; ingredientId?: string }, extra: Record<string, unknown> = {}) =>
+    ({ op: { kind: "stock.recount", checkId: c.id, outletId: c.outletId, ingredientId: c.ingredientId, counted: 3, reason: "Found a second shelf.", ...extra } });
+
+  it("refuses a recount of another outlet's count, and a recount that names no outlet", () => {
+    const bar = checkAt("lis-lobby");
+    // The Mercado chef sends Bar Azulejo's closing count under Mercado, under its own outlet, and with no outlet.
+    expect(applyRecord(u("u-chef"), recount({ ...bar, outletId: "lis-terrace" }))).toMatchObject({ ok: false, status: 403 });
+    expect(applyRecord(u("u-chef"), recount(bar))).toMatchObject({ ok: false, status: 403 });
+    expect(applyRecord(u("u-chef"), recount({ ...bar, outletId: undefined }))).toMatchObject({ ok: false, status: 400 });
+    // Unknown counts, and a real count sent under another item, are refused too.
+    const mer = checkAt("lis-terrace");
+    expect(applyRecord(u("u-chef"), recount({ ...mer, id: "OC-NOPE" }))).toMatchObject({ ok: false, status: 400, error: "This count no longer exists." });
+    expect(applyRecord(u("u-chef"), recount({ ...mer, ingredientId: mer.ingredientId === "coke" ? "wine" : "coke" }))).toMatchObject({ ok: false, status: 400 });
+    expect(applyRecord(u("u-fnb"), recount({ ...bar, outletId: "lis-terrace" }))).toMatchObject({ ok: false, status: 400 });
+    expect(loadStore().records!.recounts).toEqual([]);
+    expect(loadStore().records!.audit).toEqual([]);
+  });
+
+  it("does not refuse a recount at the person's own outlet, and keeps the count's own outlet", () => {
+    const mer = checkAt("lis-terrace");
+    ok(applyRecord(u("u-chef"), recount(mer)));
+    expect(loadStore().records!.recounts).toEqual([expect.objectContaining({ checkId: mer.id, outletId: "lis-terrace", by: "u-chef", role: "chef", counted: 3 })]);
+    // Every role that sees Mercado receives it; the bar manager does not.
+    expect(recordsFor(u("u-fnb")).records.recounts).toHaveLength(1);
+    expect(recordsFor(u("u-lby")).records.recounts).toEqual([]);
+  });
+
+  it("never sends a stored recount that does not match its count, whoever asks", () => {
+    const bar = checkAt("lis-lobby");
+    // As the review found it on the running build: a recount of Bar Azulejo's count saved under Mercado, and one with no outlet.
+    resetPurchasingStore();
+    const s = loadStore();
+    s.records!.recounts = [
+      { id: "RC-1", checkId: bar.id, outletId: "lis-terrace", counted: 0, reason: "x", by: "u-chef", date: DEMO_TODAY, seq: 1 },
+      { id: "RC-2", checkId: bar.id, counted: 0, reason: "x", by: "u-chef", date: DEMO_TODAY, seq: 2 },
+    ];
+    mutateStore((x) => { x.records = s.records; });
+    for (const id of ["u-fnb", "u-fc", "u-chef", "u-lby"]) expect(recordsFor(u(id)).records.recounts).toEqual([]);
+  });
+
+  it("answers 403 only for access, and 400 for a change that fails a check", () => {
+    const past = { op: { kind: "investigation.assign", id: STORY, assigneeId: "u-rm", deadline: "2020-01-01" } };
+    expect(applyRecord(u("u-fnb"), past)).toMatchObject({ ok: false, status: 400, error: "The deadline cannot be in the past." });
+    const tooMuch = { op: { kind: "investigation.close", id: STORY, input: { outcome: "recovered", confirmedLoss: 0, recovered: story().exposure + 50, note: "Too much." } } };
+    expect(applyRecord(u("u-fnb"), tooMuch)).toMatchObject({ ok: false, status: 400 });
+    expect(applyRecord(u("u-lby"), close())).toMatchObject({ ok: false });
+  });
+
+  it("gives every price change its own number, also once the price log is full", () => {
+    let rec = emptyRecords();
+    const env = serverEnv(u("u-fnb"));
+    for (let i = 0; i < 205; i++) {
+      const r = applyRecordOp(rec, { kind: "price.set", ingredientId: "coke", cost: 0.8 + i / 1000 }, env);
+      if (!r.ok) throw new Error(r.error);
+      rec = r.rec;
+    }
+    expect(rec.priceLog).toHaveLength(200);
+    expect(new Set(rec.priceLog.map((p) => p.id)).size).toBe(200);
+  });
+
+  it("marks the note on a reopened case, so screens show it in the reader's language", () => {
+    ok(applyRecord(u("u-fnb"), close()));
+    ok(applyRecord(u("u-fnb"), { op: { kind: "investigation.reopen", id: STORY } }));
+    expect(loadStore().records!.investigations[STORY].notes.at(-1)).toMatchObject({ kind: "reopen", by: "u-fnb" });
+  });
+
   it("saves a change once, however often it is sent", () => {
     ok(applyRecord(u("u-fnb"), close("k1")));
     ok(applyRecord(u("u-fnb"), close("k1")));
@@ -254,6 +322,14 @@ describe("public demo workspaces", () => {
         }
       }
     }
+  });
+
+  it("reports the visitor's workspace on their very first records request", async () => {
+    const ws = newWorkspaceId();
+    expect(fs.existsSync(path.join(workspaceRoot(), ws))).toBe(false);
+    const first = await get(session("u-fnb"), ws);
+    expect(first.workspace).toMatchObject({ keptHours: 24 });
+    expect(first.workspace!.lastUsedAt).toEqual(expect.any(String));
   });
 
   it("lets any visitor reset their own workspace, never the shared set or another visitor's", () => {

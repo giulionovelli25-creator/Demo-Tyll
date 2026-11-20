@@ -5,7 +5,7 @@ import { BREAKFAST_EXAMPLE_EXCEPTION_ID, COVERS_EXAMPLE_EXCEPTION_ID, TILL_EXAMP
 import { getDataset, getOutletStock } from "../data/generate";
 import { allowedOutlets, allowedProperties, can, canOpen, hasWholeProperty, type Permission } from "../domain/access";
 import { OP_KINDS, applyRecordOp, closedDetail, type RecordEnv, type RecordOp, type Records } from "../domain/records";
-import type { AuditEntry, Exception, User } from "../types";
+import type { AuditEntry, Exception, UsagePeriod, User } from "../types";
 import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY } from "../util";
 import { publicDemo } from "./auth";
 import { loadStore, mutateStore, emptyRecordsShape, type RecordsShape, type Shape } from "./purchasing-store";
@@ -55,6 +55,8 @@ export function serverEnv(user: User, s: Shape = loadStore()): RecordEnv {
       const found = getOutletPeriod(p?.id);
       return found && allowedOutlets(user).includes(found.outletId) ? found : null;
     },
+    // Never trust the outlet or item sent by the browser: take the count's own from the server's stock periods.
+    countCheck: (checkId) => countCheckOf(checkId) ?? null,
     delivery: (id) => d.deliveries.find((x) => x.id === id),
     liveOrderOutlet: (id) => d.liveOrders.find((o) => o.id === id)?.outletId,
     waste: () => sharedWaste(s),
@@ -62,6 +64,19 @@ export function serverEnv(user: User, s: Shape = loadStore()): RecordEnv {
 }
 
 const getOutletPeriod = (id: unknown) => (typeof id === "string" ? getOutletStock().periods.find((p) => p.id === id) : undefined);
+
+/** Every outlet count that opens or closes a stock period, by id, built once per set of periods. */
+const checkIndex = new WeakMap<readonly UsagePeriod[], Map<string, { outletId: string; ingredientId: string }>>();
+export function countCheckOf(checkId: string): { outletId: string; ingredientId: string } | undefined {
+  const periods = getOutletStock().periods;
+  let index = checkIndex.get(periods);
+  if (!index) {
+    index = new Map();
+    for (const p of periods) for (const c of [p.from, p.to]) index.set(c.id, { outletId: c.outletId, ingredientId: c.ingredientId });
+    checkIndex.set(periods, index);
+  }
+  return index.get(checkId);
+}
 
 /** The full saved records as the rules see them, with this person's own closed notices. */
 const asRecords = (r: RecordsShape, user: User): Records => {
@@ -114,7 +129,8 @@ export function recordsView(user: User, r: RecordsShape): Records {
     recordSeq: r.recordSeq,
     investigations: Object.fromEntries(Object.entries(r.investigations).filter(([id]) => visible.has(id))),
     stockCases,
-    recounts: r.recounts.filter((x) => !x.outletId || outlets.has(x.outletId)),
+    // Only recounts of a real count, at its own outlet, for the outlets this person may see.
+    recounts: r.recounts.filter((x) => { const c = countCheckOf(x.checkId); return !!c && c.outletId === x.outletId && outlets.has(c.outletId); }),
     recipeChanges: user.role === "employee" ? [] : r.recipeChanges,
     receiptCorrections: r.receiptCorrections.filter((x) => props.has(x.propertyId ?? deliveryProp.get(x.deliveryId) ?? "")),
     priceOverrides: money ? r.priceOverrides : [],
@@ -137,9 +153,11 @@ export interface RecordsOut {
 }
 
 export function recordsFor(user: User): RecordsOut {
+  // Load first: on a visitor's first request this creates their workspace, so its dates are there to report.
+  const records = recordsView(user, recordsOf(loadStore()));
   const info = workspaceInfo();
   return {
-    records: recordsView(user, recordsOf(loadStore())),
+    records,
     workspace: info ? { startedAt: info.startedAt, lastUsedAt: info.lastUsedAt, keptHours: WORKSPACE_TTL_MS / 3600000 } : null,
     shared: !publicDemo(),
   };
@@ -158,7 +176,7 @@ export function applyRecord(user: User, body: Record<string, unknown>): ({ ok: t
   const r = recordsOf(s);
   if (key && r.applied.includes(key)) return { ok: true, ...recordsFor(user) };
   const result = applyRecordOp(asRecords(r, user), op, serverEnv(user, s));
-  if (!result.ok) return { ok: false, status: /outside your access|cannot/i.test(result.error) ? 403 : 400, error: result.error };
+  if (!result.ok) return { ok: false, status: result.forbidden ? 403 : 400, error: result.error };
   mutateStore((x) => {
     const { dismissedAlerts, ...rest } = result.rec;
     const before = recordsOf(x);

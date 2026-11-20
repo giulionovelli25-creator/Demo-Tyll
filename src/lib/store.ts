@@ -186,6 +186,8 @@ export const useDemo = create<DemoState>()(
           seedState: (id) => d.seedInvestigations[id],
           count: (id) => [...d.counts, ...s.counts].find((c) => c.id === id),
           period: (p) => p,
+          // The browser holds no stock periods: the screen's own count is passed through, and the server checks it.
+          countCheck: (_id, c) => (c.outletId && c.ingredientId ? { outletId: c.outletId, ingredientId: c.ingredientId } : null),
           delivery: (id) => d.deliveries.find((x) => x.id === id),
           liveOrderOutlet: (id) => d.liveOrders.find((o) => o.id === id)?.outletId,
           waste: () => correctedWaste(s.wasteLogs, s.wasteCorrections),

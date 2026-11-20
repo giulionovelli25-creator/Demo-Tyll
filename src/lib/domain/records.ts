@@ -101,6 +101,12 @@ export interface RecordEnv {
   count(id: string): CountRecord | undefined;
   /** The stock period as the server holds it, or null when the person may not see it. The browser passes it through. */
   period(p: UsagePeriod): UsagePeriod | null;
+  /**
+   * Where and of what an outlet count (the opening or closing count of a stock period) was made, or null when there is no
+   * such count. The server looks it up in its own stock periods; the browser, which holds no stock periods, passes the
+   * screen's own values through, and the server checks them again.
+   */
+  countCheck(checkId: string, claimed: { outletId?: string; ingredientId?: string }): { outletId: string; ingredientId: string } | null;
   delivery(id: string): Delivery | undefined;
   liveOrderOutlet(id: string): string | undefined;
   /** Late waste entries and corrections that change what a stock period explains. */
@@ -109,10 +115,14 @@ export interface RecordEnv {
   dataStart: string;
 }
 
-export type OpResult = { ok: true; rec: Records; id?: string } | { ok: false; error: string };
+/** `forbidden` marks a refusal on access (the role or the outlet), which the server answers with 403; anything else is 400. */
+export type OpResult = { ok: true; rec: Records; id?: string } | { ok: false; error: string; forbidden?: boolean };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const fail = (error: string): OpResult => ({ ok: false, error });
+const deny = (error: string): OpResult => ({ ok: false, error, forbidden: true });
+/** The note a reopened case gets. Stored with `kind: "reopen"` so screens show it in the reader's language. */
+export const REOPEN_NOTE = "Reopened for another look.";
 const STOCK_TYPES = new Set(["usage_variance", "stock_shortfall"]);
 /** How a closed case reads in the trail of saved changes. */
 export const OUTCOME_WORDS: Record<Outcome, string> = { legitimate: "legitimate correction", confirmed_loss: "confirmed loss", recovered: "revenue recovered", inconclusive: "no finding" };
@@ -134,7 +144,7 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
       assertCan(user, permission, outletId);
       return run(user!);
     } catch (e) {
-      if (e instanceof AccessError) return fail(e.message);
+      if (e instanceof AccessError) return deny(e.message);
       throw e;
     }
   };
@@ -150,7 +160,7 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
     const state = e && stateOf(id);
     if (!e || !state) return fail("This investigation no longer exists.");
     return guarded(permission, e.outletId, (u) => {
-      if (!e.outletId && !hasWholeProperty(u, e.propertyId)) return fail("This record belongs to the whole property and is outside your access.");
+      if (!e.outletId && !hasWholeProperty(u, e.propertyId)) return deny("This record belongs to the whole property and is outside your access.");
       return run(u, state, exposureOf(e), e);
     });
   };
@@ -215,7 +225,7 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
         if (state.status !== "closed") return fail("This investigation is already open.");
         save(op.id, {
           ...state, status: "in_review", outcome: undefined, confirmedLoss: 0, recovered: 0, closedAt: undefined, closedBy: undefined, verifiedCause: undefined, correctiveAction: undefined,
-          notes: [...state.notes, { at: env.today, by: u.id, text: "Reopened for another look." }],
+          notes: [...state.notes, { at: env.today, by: u.id, text: REOPEN_NOTE, kind: "reopen" }],
         }, u);
         audit("Investigation reopened", op.id, op.id);
         return { ok: true, rec };
@@ -269,18 +279,26 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
       });
     }
 
-    case "stock.recount":
-      return guarded("stock.count", op.outletId, (u) => {
-        if (!ingredientById[op.ingredientId]) return fail("Choose an item.");
+    case "stock.recount": {
+      // A recount replaces one outlet count, so it must name a real count, at the outlet it was made, of the same item.
+      // The outlet checked for access is the count's own, never only the one the browser sent.
+      if (typeof op.outletId !== "string" || !op.outletId) return fail("Choose an outlet.");
+      if (typeof op.ingredientId !== "string" || !ingredientById[op.ingredientId]) return fail("Choose an item.");
+      const check = typeof op.checkId === "string" ? env.countCheck(op.checkId, { outletId: op.outletId, ingredientId: op.ingredientId }) : null;
+      if (!check) return fail("This count no longer exists.");
+      return guarded("stock.count", check.outletId, (u) => {
+        if (check.outletId !== op.outletId) return fail("This count was made at another outlet.");
+        if (check.ingredientId !== op.ingredientId) return fail("This count is for another item.");
         const counted = Number(op.counted);
         const reason = String(op.reason ?? "").trim().slice(0, 300);
         if (!Number.isFinite(counted) || counted < 0 || counted > 1e5) return fail("Enter the quantity you counted.");
         if (reason.length < 3) return fail("Say why the item was recounted.");
         const seq = nextSeq();
-        rec.recounts = [...rec.recounts, { id: `RC-${seq}`, checkId: String(op.checkId), outletId: op.outletId, counted, reason, by: u.id, role: u.role, at: env.now, date: env.today, seq }];
-        audit("Recount recorded", `${op.checkId}: ${ingredientById[op.ingredientId].name} recounted at ${counted}. ${reason}`);
+        rec.recounts = [...rec.recounts, { id: `RC-${seq}`, checkId: op.checkId, outletId: check.outletId, counted, reason, by: u.id, role: u.role, at: env.now, date: env.today, seq }];
+        audit("Recount recorded", `${op.checkId}: ${ingredientById[check.ingredientId].name} recounted at ${counted}. ${reason}`);
         return { ok: true, rec };
       });
+    }
     case "recipe.standard":
       return guarded("stock.editPrices", undefined, (u) => {
         const base = itemById[op.itemId]?.recipe?.find((l) => l.ingredientId === op.ingredientId)?.qty;
@@ -299,7 +317,7 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
       const d = env.delivery(op.deliveryId);
       if (!d) return fail("This delivery does not exist.");
       return guarded("stock.count", undefined, (u) => {
-        if (u.propertyIds !== "all" && !u.propertyIds.includes(d.propertyId)) return fail("This property is outside your access.");
+        if (u.propertyIds !== "all" && !u.propertyIds.includes(d.propertyId)) return deny("This property is outside your access.");
         const line = d.lines.find((l) => l.ingredientId === op.ingredientId);
         if (!line) return fail("This item is not on the delivery.");
         const received = Number(op.received);
@@ -320,13 +338,14 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
         if (cost > 100000) return fail("That price looks too high. Check the amount.");
         const value = Math.round(cost * 100) / 100;
         rec.priceOverrides = [...rec.priceOverrides.filter((p) => p.id !== op.ingredientId), { id: op.ingredientId, from: env.today, value }];
-        rec.priceLog = [{ id: `PC-${rec.priceLog.length + 1}`, ingredientId: op.ingredientId, value, from: env.today, by: u.id, role: u.role, at: env.now }, ...rec.priceLog].slice(0, 200);
+        rec.priceLog = [{ id: `PC-${nextSeq()}`, ingredientId: op.ingredientId, value, from: env.today, by: u.id, role: u.role, at: env.now }, ...rec.priceLog].slice(0, 200);
         audit("Ingredient price changed", `${ingredientById[op.ingredientId].name} to €${value.toFixed(2)} from ${fmtDate(env.today)}`);
         return { ok: true, rec };
       });
     case "purchase.approve":
       return guarded("forecast.approve", undefined, (u) => {
-        if (!propertyById[op.propertyId] || (u.propertyIds !== "all" && !u.propertyIds.includes(op.propertyId))) return fail("This property is outside your access.");
+        if (!propertyById[op.propertyId]) return fail("Choose a property.");
+        if (u.propertyIds !== "all" && !u.propertyIds.includes(op.propertyId)) return deny("This property is outside your access.");
         const valid = (Array.isArray(op.lines) ? op.lines : []).filter((l) => Number(l.qty) > 0 && Number.isFinite(Number(l.cost)) && ingredientById[l.ingredientId]);
         if (valid.length === 0) return fail("Nothing to approve.");
         rec.approvals = [
@@ -340,14 +359,15 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
       return guarded("forecast.approve", undefined, (u) => {
         const a = rec.approvals.find((x) => x.id === op.id);
         if (!a) return fail("This approval no longer exists.");
-        if (u.propertyIds !== "all" && !u.propertyIds.includes(a.propertyId)) return fail("This property is outside your access.");
+        if (u.propertyIds !== "all" && !u.propertyIds.includes(a.propertyId)) return deny("This property is outside your access.");
         rec.approvals = rec.approvals.filter((x) => x.id !== op.id);
         audit("Purchase approval withdrawn", op.id);
         return { ok: true, rec };
       });
     case "forecast.inputs":
       return guarded("forecast.approve", undefined, (u) => {
-        if (!propertyById[op.propertyId] || (u.propertyIds !== "all" && !u.propertyIds.includes(op.propertyId))) return fail("This property is outside your access.");
+        if (!propertyById[op.propertyId]) return fail("Choose a property.");
+        if (u.propertyIds !== "all" && !u.propertyIds.includes(op.propertyId)) return deny("This property is outside your access.");
         if (!op.inputs || typeof op.inputs !== "object") return fail("Nothing to save.");
         rec.forecastInputs = { ...rec.forecastInputs, [op.propertyId]: op.inputs };
         audit("Forecast settings changed", propertyById[op.propertyId].name);

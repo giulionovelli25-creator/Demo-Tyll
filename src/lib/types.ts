@@ -536,6 +536,8 @@ export interface InvestigationNote {
   at: string;
   by: string;
   text: string;
+  /** A note Tyll writes itself, shown in the reader's language rather than as typed text. */
+  kind?: "reopen";
 }
 
 export interface InvestigationState {

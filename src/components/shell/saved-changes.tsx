@@ -102,7 +102,11 @@ export function SavedChanges({ user }: { user: User }) {
   return (
     <Panel
       title="Saved changes"
-      description={all ? "Every change saved on the demo server, newest first, with who made it and in which role." : "Your changes saved on the demo server, newest first. Owners, general managers and financial controllers see everyone's."}
+      description={<>
+        {all ? "Every change saved on the demo server, newest first, with who made it and in which role." : "Your changes saved on the demo server, newest first. Owners, general managers and financial controllers see everyone's."}
+        {/* The rest of the demo runs on a simulated clock (8:55 PM); these are real times, so say what they are. */}
+        <span className="mt-1 block">Times are when the change reached the demo server.</span>
+      </>}
       action={all && audit.length > 0 ? <Button size="sm" onClick={() => { downloadCsv(`tyll-changes-${DEMO_TODAY}.csv`, [["Time", "Person", "Role", "Change", "Detail"], ...audit.map((a) => [a.at, personName(a.userId), roleOf(a), a.action, a.detail])]); toast.done("Saved changes exported."); }}><Download size={14} /> Export CSV</Button> : undefined}
       flush
     >

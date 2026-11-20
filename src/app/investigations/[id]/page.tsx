@@ -23,6 +23,7 @@ import { nearbyBreakfastFact, rateName } from "@/lib/domain/guests";
 import { cheapName, mixLabelById, mixValue } from "@/lib/domain/till-rules";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "@/lib/util";
 import { isPastDeadline } from "@/lib/domain/deadline";
+import { REOPEN_NOTE } from "@/lib/domain/records";
 
 
 const SHORTFALL_CAUSES = ["Counting error", "Waste or breakage not logged", "Delivery shorter than recorded", "Portions or recipe differ from the standard", "Transfer not recorded", "Stock taken without authorisation"];
@@ -341,7 +342,8 @@ export default function InvestigationPage() {
               <ul className="space-y-4">
                 {inv.notes.map((n, i) => (
                   <li key={i} className="text-sm">
-                    <p className="text-graphite">{n.text}</p>
+                    {/* Isolated, so a note's full stop stays at its end on right to left pages. Tyll's own notes show in the reader's language. */}
+                    <p className="text-graphite"><bdi>{n.kind === "reopen" || n.text === REOPEN_NOTE ? "Reopened for another look." : n.text}</bdi></p>
                     <p className="mt-0.5 text-xs text-steel">{personName(n.by)} · {fmtDate(n.at)}</p>
                   </li>
                 ))}

@@ -9004,6 +9004,11 @@
 "Riaperto alle {0} con l'accesso cassa di {1}.",
 "أُعيد فتحها الساعة {0} بحساب نقطة البيع {1}."
 ],
+"Reopened for another look.": [
+"Für eine weitere Prüfung wieder geöffnet.",
+"Riaperto per un altro controllo.",
+"أُعيد فتحه لمراجعة أخرى."
+],
 "Reorder by {0}": [
 "Nachbestellen bis {0}",
 "Riordina entro {0}",
@@ -12193,6 +12198,11 @@
 "Abgleich von Kasse, Kartenanbieter und Bank",
 "Abbinamento di cassa, circuiti e banca",
 "مطابقة الصندوق وشركة البطاقات والبنك"
+],
+"Times are when the change reached the demo server.": [
+"Die Zeiten zeigen, wann die Änderung den Demo-Server erreicht hat.",
+"Gli orari indicano quando la modifica ha raggiunto il server della demo.",
+"الأوقات هي وقت وصول التغيير إلى خادم العرض التجريبي."
 ],
 "Tip added to the room charge": [
 "Trinkgeld zur Zimmerbelastung hinzugefügt",

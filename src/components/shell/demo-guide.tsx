@@ -3,6 +3,7 @@
 // records and sign-in; it never performs an action for you or claims one happened. Switching person is a real
 // sign-out and sign-in. Reset puts that story's demo records back to their seeded start.
 import { pullRecords } from "@/lib/records-sync";
+import { useMayReset } from "@/components/shell/saved-changes";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ExternalLink, Minus, PlayCircle, RotateCcw, UserRound, X } from "lucide-react";
 import { useState } from "react";
@@ -196,6 +197,8 @@ export function DemoGuide({ user }: { user: User }) {
   const { scenario, step, min, set } = useGuide();
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
+  // The same rule as Settings and the server: the owner or general manager, or any visitor in their own public demo workspace.
+  const canReset = useMayReset(user);
   const sc = SCENARIOS.find((s) => s.id === scenario);
   if (!sc) return null;
   const at = Math.min(step, sc.steps.length - 1);
@@ -203,7 +206,6 @@ export function DemoGuide({ user }: { user: User }) {
   // The account a step is meant for: its own, or the last one named before it.
   const asId = cur.as ?? [...sc.steps.slice(0, at)].reverse().find((s) => s.as)?.as;
   const wrongPerson = !!asId && asId !== user.id;
-  const canReset = user.role === "owner" || user.role === "gm";
   if (min) {
     return (
       <button type="button" onClick={() => set({ min: false })} className="no-print fixed bottom-20 end-4 md:bottom-4 z-40 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2.5 text-sm shadow-float">
