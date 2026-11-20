@@ -7,6 +7,7 @@ import { canOpen, demoRoleFits, homePath, moduleOfPath } from "./lib/domain/acce
 import { SESSION_COOKIE, demoRoleFor, publicDemo, resolveSession, startDemoSession } from "./lib/server/auth";
 import { freshenPublicDemo } from "./lib/server/demo";
 import { sessionCookie } from "./lib/server/guard";
+import { WORKSPACE_COOKIE, inWorkspace, isWorkspaceId, newWorkspaceId, workspaceCookie } from "./lib/server/workspace";
 import { DAY_COOKIE, DEMO_TODAY } from "./lib/util";
 
 /** The role a deep link opens as, when the visitor has none yet. */
@@ -14,8 +15,12 @@ const PREFERRED: Record<string, string> = { forecast: "u-buy", stock: "u-chef", 
 
 /** Every page carries the server's business date, so the browser shows the same "today" as the server's figures. */
 export function proxy(req: NextRequest) {
-  const res = route(req);
+  // Public demo: each browser gets its own workspace of demo records, kept across role switches (see lib/server/workspace.ts).
+  const had = req.cookies.get(WORKSPACE_COOKIE)?.value;
+  const ws = publicDemo() ? (isWorkspaceId(had) ? had : newWorkspaceId()) : null;
+  const res = inWorkspace(ws, () => route(req));
   res.cookies.set({ name: DAY_COOKIE, value: DEMO_TODAY, path: "/", sameSite: "lax" });
+  if (ws && ws !== had) res.cookies.set(workspaceCookie(ws));
   return res;
 }
 

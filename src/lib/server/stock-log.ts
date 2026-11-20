@@ -4,7 +4,7 @@ import { ingredientById, itemById, outletById } from "../data/catalog";
 import { allowedOutlets, allowedProperties, can } from "../domain/access";
 import type { CountRecord, SharedCount, SharedWaste, SharedWasteCorrection, User, WasteLog, WasteReason } from "../types";
 import { DEMO_TODAY, addDays } from "../util";
-import { loadStore, mutateStore, nextNumber, type Shape } from "./purchasing-store";
+import { loadStore, mutateStore, nextNumber, recordAudit, type Shape } from "./purchasing-store";
 import { notify, peopleWith, resolve } from "./notify";
 
 type Fail = { ok: false; status: number; error: string };
@@ -69,10 +69,11 @@ export function logWasteShared(user: User, body: Record<string, unknown>): Resul
   const entry = mutateStore((x) => {
     const n = nextNumber(x, "WS");
     const w: SharedWaste = {
-      id: `W-S-${n}`, outletId, propertyId: outletById[outletId].propertyId, date, ingredientId, itemId, qty: Math.round(qty * 1000) / 1000, reason, by: user.staffId ?? user.id, byUser: user.id, at: now(),
+      id: `W-S-${n}`, outletId, propertyId: outletById[outletId].propertyId, date, ingredientId, itemId, qty: Math.round(qty * 1000) / 1000, reason, by: user.staffId ?? user.id, byUser: user.id, role: user.role, at: now(),
       synced: true, seq: 1_000_000 + n, note: text(body.note) || undefined, clientKey, periodId: typeof body.periodId === "string" ? body.periodId : undefined,
     };
     x.stockLog.waste.push(w);
+    recordAudit(x, user, "Waste logged", `${ingredientId ? ingredientById[ingredientId].name : itemById[itemId!].name} × ${w.qty} (${reason}) at ${outletById[outletId].name}`);
     return w;
   });
   return { ok: true, entry };
@@ -94,8 +95,9 @@ export function correctWasteShared(user: User, id: string, body: Record<string, 
   if (dup) return { ok: true, correction: dup };
   const correction = mutateStore((x) => {
     const n = nextNumber(x, "WC");
-    const c: SharedWasteCorrection = { id: `WC-S-${n}`, wasteId: id, qty: Math.round(qty * 1000) / 1000, reason, by: user.id, at: now(), seq: n, clientKey };
+    const c: SharedWasteCorrection = { id: `WC-S-${n}`, wasteId: id, qty: Math.round(qty * 1000) / 1000, reason, by: user.id, role: user.role, at: now(), seq: n, clientKey };
     x.stockLog.corrections.push(c);
+    recordAudit(x, user, "Waste entry corrected", `${id}: ${w.qty} to ${c.qty}. ${reason}`);
     return c;
   });
   return { ok: true, correction };
@@ -119,11 +121,12 @@ export function submitCount(user: User, body: Record<string, unknown>, expectedO
   const count = mutateStore((x) => {
     const n = nextNumber(x, "CS");
     const c: SharedCount = {
-      id: `C-S-${n}`, propertyId, ingredientId, date: DEMO_TODAY, expected: Math.round(expected * 100) / 100, counted: Math.round(counted * 1000) / 1000, by: user.staffId ?? user.id, byUser: user.id, at: now(), seq: 1_000_000 + n,
+      id: `C-S-${n}`, propertyId, ingredientId, date: DEMO_TODAY, expected: Math.round(expected * 100) / 100, counted: Math.round(counted * 1000) / 1000, by: user.staffId ?? user.id, byUser: user.id, role: user.role, at: now(), seq: 1_000_000 + n,
       status: reviewer ? "accepted" : "submitted", allocation: ingredientById[ingredientId].dept === "glassware" ? {} : (body.allocation as Record<string, number>) ?? {}, note: text(body.note) || undefined, clientKey,
       ...(reviewer ? { reviewedBy: user.id, reviewedAt: now(), reviewNote: "Counted by a manager" } : {}),
     };
     x.stockLog.counts.push(c);
+    recordAudit(x, user, "Stock counted", `${ingredientById[ingredientId].name}: counted ${c.counted}, expected ${c.expected}${c.status === "submitted" ? ", waiting for a manager" : ""}`);
     if (c.status === "submitted") notify(x, { to: peopleWith("stock.review", propertyId, (u) => u.role === "restaurant_manager" || u.role === "purchasing"), type: "count-review", ref: c.id, propertyId, from: user.id, title: `Count to review: ${ingredientById[ingredientId].name}`, body: `${user.name} counted ${c.counted} (${ingredientById[ingredientId].unit}). Accept or reject it.`, href: "/stock?tab=counts" });
     return c;
   });
@@ -145,6 +148,7 @@ export function reviewCount(user: User, id: string, body: Record<string, unknown
     const y = x.stockLog.counts.find((z) => z.id === id)!;
     y.status = decision; y.reviewedBy = user.id; y.reviewedAt = now(); y.reviewNote = note || undefined;
     resolve(x, "count-review", y.id);
+    recordAudit(x, user, decision === "accepted" ? "Count accepted" : "Count rejected", `${ingredientById[y.ingredientId].name}: counted ${y.counted}${note ? `. ${note}` : ""}`);
     return y;
   });
   return { ok: true, count };

@@ -21,8 +21,8 @@ export function useUser(): User | null {
 
 /** The dataset merged with everything changed in this session. */
 export function useCtx(): Ctx {
-  const wasteLogs = useDemo((s) => s.wasteLogs);
-  const counts = useDemo((s) => s.counts);
+  // Entries waiting on this device count only for the person who made them, never for the next role on the same browser.
+  const { waste: wasteLogs, counts } = useMine();
   const overrides = useDemo((s) => s.priceOverrides);
   const investigations = useDemo((s) => s.investigations);
   const stockCases = useDemo((s) => s.stockCases);
@@ -154,11 +154,22 @@ export function usePost<T>(url: string, body: unknown | null, delayMs = 0): { da
   return { data: state?.data, loading: key !== null && state?.key !== key, error: state?.key === key ? state.error : undefined };
 }
 
+/** Entries waiting on this device that belong to the person signed in. */
+function useMine() {
+  const allWaste = useDemo((s) => s.wasteLogs);
+  const allCounts = useDemo((s) => s.counts);
+  const userId = useDemo((s) => s.userId);
+  return useMemo(() => {
+    const u = userId ? userById[userId] : undefined;
+    const me = u ? (u.staffId ?? u.id) : null;
+    return { waste: allWaste.filter((w) => w.by === me), counts: allCounts.filter((c) => c.by === me) };
+  }, [allWaste, allCounts, userId]);
+}
+
 /** This session's own entries, sent along so the server's figures include them. */
 export function useSessionEntries() {
-  const waste = useDemo((s) => s.wasteLogs);
+  const { waste, counts } = useMine();
   const corrections = useDemo((s) => s.wasteCorrections);
-  const counts = useDemo((s) => s.counts);
   const overrides = useDemo((s) => s.priceOverrides);
   const recipes = useDemo((s) => s.recipeChanges);
   const receipts = useDemo((s) => s.receiptCorrections);

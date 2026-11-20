@@ -20,7 +20,7 @@ interface Notice {
 
 /**
  * One short notice at a time: the most important thing for this user, until they open it or close it.
- * Closed notices stay closed in this browser, so the same one does not keep coming back.
+ * Closed notices stay closed for this person (saved on the demo server), so the same one does not keep coming back.
  */
 type Where = "overview" | "stock" | "forecast" | "events" | "finance" | "rooms";
 /** Which notices belong on which page. Everything still reaches the bell; a page shows only what relates to it. */

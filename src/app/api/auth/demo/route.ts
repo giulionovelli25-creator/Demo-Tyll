@@ -2,11 +2,13 @@ import type { NextRequest } from "next/server";
 import { homePath } from "@/lib/domain/access";
 import { PUBLIC_DEMO_ROLES, SESSION_COOKIE, startDemoSession } from "@/lib/server/auth";
 import { freshenPublicDemo } from "@/lib/server/demo";
-import { clientIp, json, sameOrigin, sessionCookie } from "@/lib/server/guard";
+import { clientIp, enterWorkspaceOf, json, sameOrigin, sessionCookie } from "@/lib/server/guard";
 
 /** Public demo only: enter, or switch role, without a password or PIN. */
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return json({ error: "Request refused." }, 403);
+  // The role changes; the visitor's workspace, and every change made in it, stays.
+  enterWorkspaceOf(req);
   const body = (await req.json().catch(() => ({}))) as { userId?: unknown };
   const userId = typeof body.userId === "string" ? body.userId : PUBLIC_DEMO_ROLES[0].userId;
   const result = startDemoSession(userId, clientIp(req), req.cookies.get(SESSION_COOKIE)?.value);

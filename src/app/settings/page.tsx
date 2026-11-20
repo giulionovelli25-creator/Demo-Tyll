@@ -1,20 +1,17 @@
 "use client";
 import { PurchasingSettings } from "@/components/purchasing/purchasing-settings";
-import { Check, Download, Minus, RotateCcw } from "lucide-react";
-import { useState } from "react";
-import { Badge, Button, EmptyState, Note, PageHeader, Panel, TableWrap, Td, Th, cn, rowClass, toast } from "@/components/ui";
+import { Check, Minus } from "lucide-react";
+import { Badge, Note, PageHeader, Panel, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
+import { DemoDataPanel, SavedChanges } from "@/components/shell/saved-changes";
 import { DATA_SOURCES } from "@/lib/adapters";
-import { ROLE_LABEL, USERS, outletById, propertyById, userById } from "@/lib/data/catalog";
+import { ROLE_LABEL, USERS, outletById, propertyById } from "@/lib/data/catalog";
 import { allowedOutlets, allowedProperties, can, canOpen, type ModuleId, type Permission } from "@/lib/domain/access";
 import { POLICY } from "@/lib/domain/detect";
 import { useApi, useUser } from "@/lib/hooks";
 import { NotificationSettings } from "@/components/shell/notification-settings";
 import { VisitConsentSetting } from "@/components/shell/visit-consent";
-import { api } from "@/lib/api";
-import { usePlanDrafts } from "@/lib/plan-hooks";
-import { useDemo } from "@/lib/store";
 import type { Role } from "@/lib/types";
-import { DEMO_TODAY, downloadCsv } from "@/lib/util";
+
 
 const ROLES: Role[] = ["owner", "gm", "controller", "fnb_director", "restaurant_manager", "event_manager", "purchasing", "chef", "front_office", "housekeeping_manager", "concierge", "bell_captain", "employee"];
 const MODULE_ROWS: [ModuleId, string][] = [["overview", "Overview"], ["money", "Revenue"], ["stock", "Stock"], ["forecast", "Predictions"], ["flow", "Flow"], ["rooms", "Rooms"], ["investigations", "Investigations"], ["reports", "Reports"]];
@@ -30,18 +27,13 @@ const Mark = ({ on }: { on: boolean }) => (on ? <Check size={16} className="mx-a
 
 export default function SettingsPage() {
   const user = useUser()!;
-  const audit = useDemo((s) => s.audit);
-  const reset = useDemo((s) => s.resetDemo);
-  const [confirming, setConfirming] = useState(false);
-  const bump = usePlanDrafts((s) => s.bump);
-  const serverReset = user.role === "owner" || user.role === "gm";
   const mayAudit = can(user, "settings.audit");
   const { data: security } = useApi<{ entries: { at: string; name: string; action: string; detail: string; ip: string }[] }>(mayAudit ? "/api/audit" : null);
   const sample = (role: Role) => USERS.find((u) => u.role === role)!;
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Settings" lead="What this demo is connected to, who can see what, and a record of every change made in this browser." />
+      <PageHeader title="Settings" question="Who changed what, and is it saved?" lead="What this demo is connected to, who can see what, and every change saved on the demo server." />
 
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1fr_1.4fr]">
         <Panel title="Your access">
@@ -51,25 +43,10 @@ export default function SettingsPage() {
             <div><dt className="text-[13px] text-steel">Hotels</dt><dd>{allowedProperties(user).map((p) => propertyById[p].name).join(", ")}</dd></div>
             <div><dt className="text-[13px] text-steel">Outlets</dt><dd>{user.outletIds === "all" ? "All outlets in those hotels" : allowedOutlets(user).map((o) => outletById[o].name).join(", ")}</dd></div>
           </dl>
-          <Note className="mt-4">The server checks your session, role and PIN before every page and every data request, and sends only the records your role may see. Changes you make are still saved in this browser; moving them to the server is the next step.</Note>
+          <Note className="mt-4">The server checks your session, role and PIN before every page and every data request, and sends only the records your role may see. Every change you make is saved on the demo server with your name and role.</Note>
         </Panel>
 
-        <Panel title="Demo data" description={`Business date ${DEMO_TODAY}. Shared records (requests, events, rooms, sales, finance, waste) are on the demo server; investigation decisions and price changes are kept in this browser.`}>
-          <p className="max-w-[70ch] text-sm text-graphite">{serverReset ? "Reset puts every seeded demo record back to its starting point, on the server and in this browser, and clears notifications. Sign-in accounts and the access log are kept." : "Reset clears the changes kept in this browser. Only the owner or general manager can reset the shared demo records."} To reset one story only, use Reset in the guided demo.</p>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {confirming ? (
-              <>
-                <Button variant="danger" onClick={async () => {
-                  if (serverReset) { try { await api("/api/demo/reset", { method: "POST", body: { scope: "all", confirm: true } }); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not reset."); return; } }
-                  reset(); setConfirming(false); bump(); toast.done(serverReset ? "All demo records restored to their starting point." : "This browser's demo changes were cleared.");
-                }}><RotateCcw size={15} /> Yes, reset everything</Button>
-                <Button variant="ghost" onClick={() => setConfirming(false)}>Keep my changes</Button>
-              </>
-            ) : (
-              <Button onClick={() => setConfirming(true)}><RotateCcw size={15} /> Reset demo data</Button>
-            )}
-          </div>
-        </Panel>
+        <DemoDataPanel user={user} />
       </div>
 
       <NotificationSettings />
@@ -126,34 +103,7 @@ export default function SettingsPage() {
         </dl>
       </Panel>
 
-      <Panel
-        title="Audit trail"
-        description="Every sign-in and every change made in this browser, newest first."
-        action={mayAudit && audit.length > 0 ? <Button size="sm" onClick={() => { downloadCsv(`tyll-audit-${DEMO_TODAY}.csv`, [["Time", "User", "Action", "Detail"], ...audit.map((a) => [a.at, userById[a.userId]?.name ?? a.userId, a.action, a.detail])]); toast.done("Audit trail exported."); }}><Download size={14} /> Export CSV</Button> : undefined}
-        flush
-      >
-        {!mayAudit ? (
-          <div className="px-6 pb-6"><Note>Your role cannot see the audit trail. Owners, general managers and financial controllers can.</Note></div>
-        ) : audit.length === 0 ? (
-          <div className="px-6 pb-6"><EmptyState title="Nothing recorded yet">Assign an investigation, log waste or change a price and it appears here.</EmptyState></div>
-        ) : (
-          <div className="scroll-thin max-h-[420px] overflow-y-auto">
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-paper"><tr><Th>Time</Th><Th>User</Th><Th>Action</Th><Th>Detail</Th></tr></thead>
-              <tbody>
-                {audit.map((a, i) => (
-                  <tr key={i} className={rowClass}>
-                    <Td className="num whitespace-nowrap text-graphite">{new Date(a.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", second: "2-digit" })}</Td>
-                    <Td className="whitespace-nowrap">{userById[a.userId]?.name ?? a.userId}</Td>
-                    <Td className="whitespace-nowrap text-ink">{a.action}</Td>
-                    <Td className="text-graphite">{a.detail}</Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Panel>
+      <SavedChanges user={user} />
 
       {mayAudit && (
         <Panel title="Sign-in and access log" description="Recorded on the server: sign-ins, failed attempts, lockouts, PIN unlocks and data requests." flush>

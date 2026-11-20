@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { ChargeEvidence, OrderTimeline, OrderVersusBill, Tickets } from "@/components/order-evidence";
 import { UsageCaseBody } from "@/components/stock/usage";
 import { Badge, Button, EmptyState, Field, Note, PageHeader, Panel, Select, TextArea, cn, report } from "@/components/ui";
-import { ingredientById, outletById, propertyById, staffById } from "@/lib/data/catalog";
+import { ROLE_LABEL, ingredientById, outletById, propertyById, staffById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
 import { TYPE_LABEL, chargedToGuest } from "@/lib/domain/detect";
 import { explain } from "@/lib/domain/explain";
@@ -81,8 +81,8 @@ export default function InvestigationPage() {
   const causeOptions = usage ? causesFor(usage, periodVariance(usage, ctx.adjust)).map((c) => c.title) : stockCase ? SHORTFALL_CAUSES : bought ? BOUGHT_USED_CAUSES.map((c) => c.title.replace(/\.$/, "")) : [];
   // An order whose removed item falls inside a stock period with a case: the two investigations share evidence.
   const linkedStock = inv.orderId ? investigations.filter((i) => i.id !== inv.id && i.period?.removals.some((r) => r.orderId === inv.orderId)) : [];
-  // Every recorded action on this case, newest first, from the audit trail.
-  const history = store.audit.filter((a) => a.detail === inv.id || a.detail.startsWith(`${inv.id} `) || a.detail.startsWith(`${inv.id}:`));
+  // Every recorded action on this case, newest first, from the changes saved on the demo server.
+  const history = store.audit.filter((a) => a.ref === inv.id || a.detail === inv.id || a.detail.startsWith(`${inv.id} `) || a.detail.startsWith(`${inv.id}:`));
   const stockRecords = explanation.stock.length > 0 && (
     <div>
       <h3 className="mb-3 text-[15px]">{stockCase ? "The count" : "Stock records for the items involved"}</h3>
@@ -246,6 +246,7 @@ export default function InvestigationPage() {
               <div>
                 <p className="text-sm text-ink">{OUTCOME_LABEL[inv.outcome!]}</p>
                 <p className="mt-1 text-[13px] text-steel">Closed {inv.closedAt ? fmtDate(inv.closedAt) : ""} by {personName(inv.closedBy)}</p>
+                {inv.updatedRole && inv.updatedBy === inv.closedBy && <p className="text-[13px] text-steel">{ROLE_LABEL[inv.updatedRole]}</p>}
                 {inv.verifiedCause && <p className="mt-3 text-sm"><span className="text-steel">Verified cause: </span>{inv.verifiedCause}</p>}
                 {inv.correctiveAction && <p className="mt-1 text-sm"><span className="text-steel">Corrective action: </span>{inv.correctiveAction}</p>}
                 {mayReopen ? (
@@ -331,7 +332,7 @@ export default function InvestigationPage() {
                 {history.map((a, i) => (
                   <li key={i} className="flex items-baseline justify-between gap-3 text-[13px]">
                     <span className="text-graphite">{a.action}</span>
-                    <span className="shrink-0 text-xs text-steel">{personName(a.userId)} · {fmtDate(DEMO_TODAY)}</span>
+                    <span className="shrink-0 text-end text-xs text-steel"><span translate="no">{personName(a.userId)}</span>{a.role && <>, <span>{ROLE_LABEL[a.role]}</span></>} · {fmtDate(a.at.slice(0, 10))}</span>
                   </li>
                 ))}
               </ul>

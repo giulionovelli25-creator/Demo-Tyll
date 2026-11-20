@@ -48,7 +48,9 @@ export function WasteLogger({ propertyId }: { propertyId: string }) {
   const offline = useDemo((s) => s.offline);
   const setOffline = useDemo((s) => s.setOffline);
   const logWaste = useDemo((s) => s.logWaste);
-  const userLogs = useDemo((s) => s.wasteLogs);
+  const allLogs = useDemo((s) => s.wasteLogs);
+  // Entries waiting on this device belong to the person who made them, never to the next role on the same browser.
+  const userLogs = useMemo(() => allLogs.filter((w) => w.by === (user.staffId ?? user.id)), [allLogs, user]);
   const t = T[lang];
   const property = propertyById[propertyId];
   const money = (n: number) => fmtMoney(n, property.currency, { decimals: true });

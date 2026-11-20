@@ -551,6 +551,10 @@ export interface InvestigationState {
   /** For stock cases: the cause the manager verified, and what was done about it. */
   verifiedCause?: string;
   correctiveAction?: string;
+  /** Who saved the last change, in which role, and when. */
+  updatedBy?: string;
+  updatedRole?: Role;
+  updatedAt?: string;
 }
 
 export interface Investigation extends Exception, InvestigationState {}
@@ -705,6 +709,10 @@ export interface Recount {
   by: string;
   date: string;
   seq: number;
+  /** Where the recount was made, and who made it in which role (saved on the demo server). */
+  outletId?: string;
+  role?: Role;
+  at?: string;
 }
 
 export interface RecipeChange {
@@ -717,6 +725,8 @@ export interface RecipeChange {
   reason: string;
   by: string;
   seq: number;
+  role?: Role;
+  at?: string;
 }
 
 export interface WasteCorrection {
@@ -738,6 +748,9 @@ export interface ReceiptCorrection {
   reason: string;
   by: string;
   seq: number;
+  propertyId?: string;
+  role?: Role;
+  at?: string;
 }
 
 // ---- Hotel context ----------------------------------------------------------
@@ -854,6 +867,9 @@ export interface AuditEntry {
   userId: string;
   action: string;
   detail: string;
+  /** The role the person was in, and the record the change was about. */
+  role?: Role;
+  ref?: string;
 }
 
 // ---- Purchasing and kitchen preparation ---------------------------------------
@@ -1326,13 +1342,14 @@ export interface SharedWaste extends WasteLog {
   propertyId: string;
   /** The account that recorded it, and when. */
   byUser: string;
+  role?: Role;
   at: string;
   note?: string;
   /** The browser entry this came from, so a retry is not saved twice. */
   clientKey?: string;
 }
 
-export interface SharedWasteCorrection { id: string; wasteId: string; qty: number; reason: string; by: string; at: string; seq: number; clientKey?: string }
+export interface SharedWasteCorrection { id: string; wasteId: string; qty: number; reason: string; by: string; role?: Role; at: string; seq: number; clientKey?: string }
 
 export type CountStatus = "submitted" | "accepted" | "rejected";
 
@@ -1346,6 +1363,7 @@ export interface SharedCount {
   counted: number;
   by: string;
   byUser: string;
+  role?: Role;
   at: string;
   seq: number;
   status: CountStatus;

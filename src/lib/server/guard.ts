@@ -2,7 +2,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { can, canOpen, type ModuleId, type Permission } from "../domain/access";
 import type { User } from "../types";
-import { SESSION_COOKIE, resolveSession, type SessionView } from "./auth";
+import { SESSION_COOKIE, publicDemo, resolveSession, type SessionView } from "./auth";
+import { WORKSPACE_COOKIE, enterWorkspace } from "./workspace";
+
+/** Puts the rest of the request in the visitor's own demo workspace (public demo only), before any record is read. */
+export const enterWorkspaceOf = (req: NextRequest) => enterWorkspace(req.cookies.get(WORKSPACE_COOKIE)?.value, publicDemo());
 
 export const clientIp = (req: NextRequest) => req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "local";
 
@@ -24,6 +28,7 @@ type Guarded = { ok: true; user: User; view: SessionView; token: string } | { ok
  * for management roles, then the module or permission the route needs.
  */
 export function guard(req: NextRequest, need: { pin?: boolean; module?: ModuleId; permission?: Permission } = {}): Guarded {
+  enterWorkspaceOf(req);
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   const view = resolveSession(token, { touch: true, pinActivity: need.pin !== false });
   if (!token || !view) return { ok: false, response: json({ error: "Sign in to continue." }, 401) };

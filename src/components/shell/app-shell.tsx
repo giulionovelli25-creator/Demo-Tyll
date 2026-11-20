@@ -38,6 +38,7 @@ import { NotificationBell } from "./notifications";
 import { DemoGuide, DemoPicker } from "./demo-guide";
 import { TakeTourButton, TourOffer, Walkthrough } from "./walkthrough";
 import { SharedStockSync } from "@/lib/shared-stock";
+import { RecordsSync } from "@/lib/records-sync";
 import { PinScreen } from "./pin";
 import { Tour } from "./tour";
 import { PILOT_URL } from "@/lib/pilot";
@@ -324,7 +325,7 @@ function Authed({ children }: { children: ReactNode }) {
 
   if (session.status === "locked" && session.userId) return <PinScreen userId={session.userId} demoPin={session.demoPin} onUnlocked={refresh} />;
   if (session.status !== "ready" || !user) return <BrandLoader />;
-  return <><SharedStockSync user={user} /><Signed user={user}>{children}</Signed></>;
+  return <><SharedStockSync user={user} /><RecordsSync user={user} /><Signed user={user}>{children}</Signed></>;
 }
 
 /** Tyll Staff: phone-first, no management chrome. The same session, PIN and records. */
@@ -775,7 +776,7 @@ function useAlerts(user: User): Alert[] {
     if (canOpen(user, "stock")) {
       const issues = data.deliveries.filter((d) => props.includes(d.propertyId) && d.status === "delivered" && d.date >= addDays(DEMO_TODAY, -1) && deliveryOvercharge(d) > 0);
       if (issues.length) out.push({ id: "suppliers", text: `${issues.length} supplier invoice${issues.length === 1 ? "" : "s"} differ from what was delivered`, detail: "Since yesterday. See Stock, Suppliers.", href: "/stock?tab=suppliers", tone: "warn" });
-      const pending = wasteLogs.filter((w) => !w.synced).length;
+      const pending = wasteLogs.filter((w) => !w.synced && w.by === (user.staffId ?? user.id)).length;
       if (pending) out.push({ id: "offline", text: `${pending} waste entr${pending === 1 ? "y" : "ies"} waiting to synchronise`, detail: "Recorded offline on this device.", href: "/waste?log=1", tone: "neutral" });
     }
     if (canOpen(user, "rooms")) {

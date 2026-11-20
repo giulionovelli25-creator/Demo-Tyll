@@ -2,6 +2,7 @@
 // Guided demo: a short list of stories, then one small card that says what to do next. It uses the real screens,
 // records and sign-in; it never performs an action for you or claims one happened. Switching person is a real
 // sign-out and sign-in. Reset puts that story's demo records back to their seeded start.
+import { pullRecords } from "@/lib/records-sync";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ExternalLink, Minus, PlayCircle, RotateCcw, UserRound, X } from "lucide-react";
 import { useState } from "react";
@@ -131,7 +132,7 @@ async function switchTo(userId: string, next: string) {
   reloadTo(`/login?as=${userId}&next=${encodeURIComponent(next)}`);
 }
 
-/** Resets one story's records on the server and this browser's own entries, so nothing stale is replayed. */
+/** Resets one story's records on the server and this device's unsent entries, so nothing stale is replayed. */
 async function resetScenario(sc: Scenario): Promise<boolean> {
   try {
     await api("/api/demo/reset", { method: "POST", body: { scope: sc.scope, confirm: true } });
@@ -143,6 +144,8 @@ async function resetScenario(sc: Scenario): Promise<boolean> {
   useDemo.getState().resetDemo();
   useDemo.setState(keep);
   useShared.getState().set({ waste: [], corrections: [], counts: [] });
+  // Decisions and corrections live on the server: read back what the reset left for this story's neighbours.
+  await pullRecords().catch(() => undefined);
   usePlanDrafts.getState().bump();
   toast.done(`${sc.title}: demo records are back to their starting point.`);
   return true;
@@ -238,7 +241,7 @@ export function DemoGuide({ user }: { user: User }) {
           ) : <Button size="sm" variant="ghost" onClick={() => switchTo("u-owner", "/")}>Sign in as Layla to reset</Button>
         ) : <Button size="sm" variant="ghost" onClick={() => setConfirming(true)}><RotateCcw size={14} /> Reset</Button>}
       </div>
-      {confirming && canReset && <p className={cn("mt-2 text-xs text-steel")}>Puts this story&rsquo;s demo records back to their seeded start{sc.scope === "stock" ? ", and clears this browser's demo changes" : ""}. Other stories and accounts are not touched.</p>}
+      {confirming && canReset && <p className={cn("mt-2 text-xs text-steel")}>Puts this story&rsquo;s demo records back to their seeded start{sc.scope === "stock" ? ", including stock cases, recounts and price changes" : ""}. Other stories and accounts are not touched.</p>}
     </section>
   );
 }

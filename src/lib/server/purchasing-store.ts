@@ -13,8 +13,23 @@ import { seedStage6, type FinanceShape, type SalesShape, type StockLogShape } fr
 import { DEMO_TODAY, addDays, diffDays } from "../util";
 import { defaultAuto, type AutoShape } from "../domain/auto-order";
 import { seedProcurement, type ProcurementShape } from "./procurement-seed";
-import type { BoughtUsedCheck, CashUp, StockTake, WaiterCoaching } from "../types";
+import type { BoughtUsedCheck, CashUp, Role, StockTake, WaiterCoaching } from "../types";
 import type { EmptyScan } from "../domain/empties";
+import { emptyRecords, type Records } from "../domain/records";
+import { workspaceFile, workspaceId } from "./workspace";
+
+/** Decisions and corrections saved on the server (overnight feature 8): the full set, with each person's closed notices. */
+export interface RecordsShape extends Omit<Records, "dismissedAlerts"> {
+  dismissed: Record<string, string[]>;
+  /** Keys of changes already applied, so a change sent again after a dropped connection is saved once. */
+  applied: string[];
+}
+
+export const emptyRecordsShape = (): RecordsShape => {
+  const { dismissedAlerts: _unused, ...rest } = emptyRecords();
+  void _unused;
+  return { ...rest, dismissed: {}, applied: [] };
+};
 
 export interface Shape {
   version: 1;
@@ -54,6 +69,8 @@ export interface Shape {
   waiterCoaching?: WaiterCoaching[];
   /** Empty wine and spirit bottles scanned by staff before binning, with who and which role. Over pouring counts them. */
   emptyScans?: EmptyScan[];
+  /** Investigation decisions, stock cases, recounts, standards, delivery differences, prices, approvals, order status. */
+  records?: RecordsShape;
   /** The business date the records were last moved to, and the shape of the demo data they were built for. */
   businessDate?: string;
   dataVersion?: number;
@@ -70,10 +87,15 @@ function moveToToday(data: Shape): Shape {
   return { ...(JSON.parse(text) as Shape), businessDate: DEMO_TODAY };
 }
 
-const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), procurement: seedProcurement(), stockTakes: [], cashUps: [], boughtUsedChecks: [], waiterCoaching: [], emptyScans: [], businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
+const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), procurement: seedProcurement(), stockTakes: [], cashUps: [], boughtUsedChecks: [], waiterCoaching: [], emptyScans: [], records: emptyRecordsShape(), businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
 
-const file = () => process.env.TYLL_PURCHASING_STORE ?? dataFile("purchasing.json");
+const sharedFile = () => process.env.TYLL_PURCHASING_STORE ?? dataFile("purchasing.json");
+/** The shared store, or in the public demo the visitor's own workspace copy (see `workspace.ts`). */
+const file = () => workspaceFile("purchasing.json", sharedFile);
+/** Recently read stores, one per file, so visitors in different workspaces do not keep re-reading each other's. */
+const caches = new Map<string, { mtime: number; data: Shape }>();
 let cache: { path: string; mtime: number; data: Shape } | null = null;
+const touched = new Map<string, number>();
 
 export function loadStore(): Shape {
   const f = file();
@@ -81,8 +103,18 @@ export function loadStore(): Shape {
     fs.mkdirSync(path.dirname(f), { recursive: true });
     writeStore(empty());
   }
+  // A workspace in use is marked as used at most every ten minutes, so it is not swept away while someone works in it.
+  if (workspaceId() && Date.now() - (touched.get(f) ?? 0) > 10 * 60 * 1000) {
+    const t = new Date();
+    fs.utimesSync(f, t, t);
+    touched.set(f, Date.now());
+  }
   const mtime = fs.statSync(f).mtimeMs;
-  if (!cache || cache.path !== f || cache.mtime !== mtime) cache = { path: f, mtime, data: JSON.parse(fs.readFileSync(f, "utf8")) as Shape };
+  const hit = caches.get(f);
+  if (hit && hit.mtime === mtime) cache = { path: f, ...hit };
+  else cache = { path: f, mtime, data: JSON.parse(fs.readFileSync(f, "utf8")) as Shape };
+  caches.set(f, { mtime: cache.mtime, data: cache.data });
+  if (caches.size > 60) caches.delete(caches.keys().next().value!);
   if (cache.data.dataVersion !== DATA_VERSION) writeStore(empty());
   else if (cache.data.businessDate !== DEMO_TODAY) writeStore(moveToToday(cache.data));
   // A store from before Stage 4 gets its events and staffing records added once.
@@ -95,6 +127,7 @@ export function loadStore(): Shape {
   if (!cache.data.notify) writeStore({ ...cache.data, notify: emptyNotify() });
   if (!cache.data.autoOrder) writeStore({ ...cache.data, autoOrder: defaultAuto() });
   if (!cache.data.procurement || !cache.data.stockTakes || !cache.data.cashUps) writeStore({ ...cache.data, procurement: cache.data.procurement ?? seedProcurement(), stockTakes: cache.data.stockTakes ?? [], cashUps: cache.data.cashUps ?? [] });
+  if (!cache.data.records) writeStore({ ...cache.data, records: emptyRecordsShape() });
   if (!cache.data.finance || !cache.data.sales || !cache.data.stockLog) {
     const add = seedStage6();
     writeStore({ ...cache.data, finance: cache.data.finance ?? add.finance, sales: cache.data.sales ?? add.sales, stockLog: cache.data.stockLog ?? add.stockLog });
@@ -104,10 +137,12 @@ export function loadStore(): Shape {
 
 function writeStore(data: Shape) {
   const f = file();
+  fs.mkdirSync(path.dirname(f), { recursive: true });
   const tmp = `${f}.${process.pid}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(data, null, 1), { mode: 0o600 });
   fs.renameSync(tmp, f);
   cache = { path: f, mtime: fs.statSync(f).mtimeMs, data };
+  caches.set(f, { mtime: cache.mtime, data });
 }
 
 /** Runs a change against the store and saves it. Node runs one request handler at a time, so changes do not interleave. */
@@ -116,6 +151,12 @@ export function mutateStore<T>(run: (s: Shape) => T): T {
   const out = run(s);
   writeStore(s);
   return out;
+}
+
+/** Adds a line to the trail of saved changes, with the person and the role, inside a store change. */
+export function recordAudit(x: Shape, user: { id: string; role: Role }, action: string, detail: string, ref?: string) {
+  const r = x.records ?? (x.records = emptyRecordsShape());
+  r.audit = [{ at: new Date().toISOString(), userId: user.id, role: user.role, action, detail, ...(ref ? { ref } : {}) }, ...r.audit].slice(0, 400);
 }
 
 export function resetPurchasingStore() {

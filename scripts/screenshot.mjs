@@ -1,5 +1,6 @@
 // Takes full-page screenshots of the running demo with the Chrome installed on this Mac (Playwright is not installed).
-// Usage: node scripts/screenshot.mjs <path> <out.png> [--width 1440|375] [--role u-fnb] [--lang ar] [--base http://localhost:3210]
+// Usage: node scripts/screenshot.mjs <path> <out.png> [--width 1440|375] [--role u-fnb] [--lang ar] [--base http://localhost:3210] [--workspace <id>]
+// --workspace opens a public demo workspace that already holds changes (its id is the tyll_ws cookie of another browser).
 // Sets the role through the public demo's role switch, accepts or skips the cookie banner (stored as "no" so it does not
 // cover the page), and waits for the page to settle. Phone widths get a phone user agent and touch.
 import { spawn } from "node:child_process";
@@ -16,6 +17,7 @@ const role = opt("role", "u-fnb");
 const lang = opt("lang", "en");
 const base = opt("base", "http://localhost:3210");
 const wait = Number(opt("wait", "3500"));
+const workspace = opt("workspace", "");
 const phone = width < 768;
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const port = 9300 + Math.floor(Math.random() * 500);
@@ -45,6 +47,7 @@ try {
     await send("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1" });
     await send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
   }
+  if (workspace) await send("Network.setCookie", { name: "tyll_ws", value: workspace, url: base, httpOnly: true, sameSite: "Lax" });
   // Open the site once to get a demo session, then switch to the role and set the browser-side choices.
   await send("Page.navigate", { url: `${base}/` });
   await sleep(2500);

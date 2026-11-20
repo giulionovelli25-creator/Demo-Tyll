@@ -1,5 +1,6 @@
 // Server-side accounts, sessions, PIN verification, lockouts and the audit log.
 // Runs only on the server (it reads and writes the local auth store with node:fs).
+import { workspaceId } from "./workspace";
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -111,6 +112,8 @@ export interface AuditRecord {
   action: string;
   detail: string;
   ip: string;
+  /** Public demo: the visitor's workspace, so each visitor sees only their own sign-ins and changes. */
+  ws?: string;
 }
 
 interface StoreShape {
@@ -180,12 +183,19 @@ function mutate<T>(run: (s: StoreShape) => T): T {
 
 export function audit(userId: string | null, action: string, detail: string, ip: string) {
   mutate((s) => {
-    s.audit.unshift({ at: new Date().toISOString(), userId, action, detail, ip });
+    const ws = workspaceId() ?? undefined;
+    s.audit.unshift({ at: new Date().toISOString(), userId, action, detail, ip, ...(ws ? { ws } : {}) });
     s.audit = s.audit.slice(0, 2000);
   });
 }
 
-export const readAudit = (limit = 300): AuditRecord[] => load().audit.slice(0, limit);
+/** The access log. In the public demo a visitor sees only the entries of their own workspace, never another visitor's. */
+export function readAudit(limit = 300): AuditRecord[] {
+  const all = load().audit;
+  if (!publicDemo()) return all.slice(0, limit);
+  const ws = workspaceId();
+  return ws ? all.filter((a) => a.ws === ws).slice(0, limit) : [];
+}
 
 // ---- Login ------------------------------------------------------------------
 export type Failure = { ok: false; status: 401 | 403 | 423 | 429; error: string; retryAfter?: number; attemptsLeft?: number };

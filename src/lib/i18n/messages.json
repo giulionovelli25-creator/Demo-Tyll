@@ -39,6 +39,11 @@
 ". Costo {0}. Consumo fino al {1}: {2}.",
 ". التكلفة {0}. الاستخدام حتى {1}: {2}."
 ],
+"1 change is waiting to reach the server.": [
+"1 Änderung wartet darauf, den Server zu erreichen.",
+"1 modifica è in attesa di arrivare al server.",
+"تغيير واحد ينتظر الوصول إلى الخادم."
+],
 "A POS login shows which account was signed in to the terminal. It does not establish who made the change, or why.": [
 "Ein Kassen-Login zeigt, welches Konto am Terminal angemeldet war. Es belegt nicht, wer die Änderung vorgenommen hat oder warum.",
 "Un accesso cassa mostra quale account era collegato al terminale. Non stabilisce chi ha fatto la modifica, né perché.",
@@ -478,6 +483,11 @@
 "Ganztägig",
 "Tutto il giorno",
 "طوال اليوم"
+],
+"All demo records restored to their starting point.": [
+"Alle Demo-Datensätze auf den Anfang zurückgesetzt.",
+"Tutti i record della demo riportati al punto di partenza.",
+"أعيدت كل سجلات العرض إلى نقطة البداية."
 ],
 "All departments": [
 "Alle Abteilungen",
@@ -1694,6 +1704,11 @@
 "Data operativa",
 "تاريخ العمل"
 ],
+"Business date {0}. Every change is saved on the demo server with the name and role of the person who made it: waste, counts, investigation decisions, price changes and corrections.": [
+"Geschäftsdatum {0}. Jede Änderung wird mit Name und Rolle der Person, die sie gemacht hat, auf dem Demo-Server gespeichert: Abfall, Zählungen, Entscheidungen zu Prüfungen, Preisänderungen und Korrekturen.",
+"Data operativa {0}. Ogni modifica è salvata sul server della demo con il nome e il ruolo di chi l'ha fatta: sprechi, conteggi, decisioni sulle verifiche, cambi di prezzo e correzioni.",
+"تاريخ العمل {0}. يُحفظ كل تغيير على خادم العرض مع اسم ودور من أجراه: الهدر، والجرد، وقرارات التحقيق، وتغييرات الأسعار، والتصحيحات."
+],
 "Business date {0}{1}{2}.": [
 "Geschäftsdatum {0}{1}{2}.",
 "Data operativa {0}{1}{2}.",
@@ -2714,6 +2729,11 @@
 "Costo, stima",
 "التكلفة، تقديرية"
 ],
+"Count accepted": [
+"Zählung angenommen",
+"Conteggio accettato",
+"قُبل الجرد"
+],
 "Count another item": [
 "Anderen Artikel zählen",
 "Conta un altro articolo",
@@ -2738,6 +2758,11 @@
 "Zählprotokolle",
 "Registri dei conteggi",
 "سجلات الجرد"
+],
+"Count rejected": [
+"Zählung abgelehnt",
+"Conteggio respinto",
+"رُفض الجرد"
 ],
 "Count saved: {0} items.": [
 "Zählung gespeichert: {0} Artikel.",
@@ -3054,6 +3079,11 @@
 "Data di consegna",
 "تاريخ التوريد"
 ],
+"Delivery difference recorded": [
+"Lieferdifferenz erfasst",
+"Differenza di consegna registrata",
+"سُجّل فرق في التسليم"
+],
 "Demo PIN: {0}": [
 "Demo-PIN: {0}",
 "PIN demo: {0}",
@@ -3063,6 +3093,11 @@
 "Demodaten",
 "Dati demo",
 "البيانات التجريبية"
+],
+"Demo data reset": [
+"Demodaten zurückgesetzt",
+"Dati della demo ripristinati",
+"أُعيد ضبط بيانات العرض"
 ],
 "Demo history, before Tyll": [
 "Demoverlauf, vor Tyll",
@@ -3774,6 +3809,11 @@
 "Ogni caso, aperto e chiuso",
 "كل حالة، مفتوحة ومغلقة"
 ],
+"Every change saved on the demo server, newest first, with who made it and in which role.": [
+"Jede auf dem Demo-Server gespeicherte Änderung, die neueste zuerst, mit wer sie gemacht hat und in welcher Rolle.",
+"Ogni modifica salvata sul server della demo, dalla più recente, con chi l'ha fatta e in quale ruolo.",
+"كل تغيير محفوظ على خادم العرض، الأحدث أولًا، مع من أجراه وبأي دور."
+],
 "Every charge in this period reached the right bill": [
 "Jede Belastung in diesem Zeitraum ist auf der richtigen Rechnung",
 "Ogni addebito del periodo è sul conto giusto",
@@ -4293,6 +4333,11 @@
 "Prognostizierte Gäste",
 "Coperti previsti",
 "الزبائن المتوقعون"
+],
+"Forecast settings changed": [
+"Prognoseeinstellungen geändert",
+"Impostazioni della previsione cambiate",
+"تغيّرت إعدادات التوقع"
 ],
 "Four weeks earlier": [
 "Vier Wochen früher",
@@ -5084,6 +5129,11 @@
 "Costo ingredienti",
 "تكلفة المكونات"
 ],
+"Ingredient price changed": [
+"Zutatenpreis geändert",
+"Prezzo dell'ingrediente cambiato",
+"تغيّر سعر المكوّن"
+],
 "Ingredient prices": [
 "Zutatenpreise",
 "Prezzi degli ingredienti",
@@ -5104,10 +5154,25 @@
 "Verifica",
 "التحقيق"
 ],
+"Investigation assigned": [
+"Prüfung zugewiesen",
+"Verifica assegnata",
+"عُيّن التحقيق"
+],
+"Investigation closed": [
+"Prüfung abgeschlossen",
+"Verifica chiusa",
+"أُغلق التحقيق"
+],
 "Investigation new · {0} involved": [
 "Prüfung neu · {0} betroffen",
 "Verifica nuova · {0} coinvolti",
 "تحقيق جديد · {0} معنية"
+],
+"Investigation reopened": [
+"Prüfung wieder geöffnet",
+"Verifica riaperta",
+"أُعيد فتح التحقيق"
 ],
 "Invoice": [
 "Rechnung",
@@ -5234,6 +5299,11 @@
 "Da allora è cresciuto di più di una consegna, quindi va controllato di nuovo.",
 "ونما منذ ذلك الحين بأكثر من توريد، فيجب التحقق منه مجددًا."
 ],
+"It is sent as soon as the connection allows.": [
+"Sie wird gesendet, sobald die Verbindung es erlaubt.",
+"Viene inviata appena la connessione lo permette.",
+"يُرسل فور أن يسمح الاتصال."
+],
 "It lands on the bill of room {0}": [
 "Sie landet auf der Rechnung von Zimmer {0}",
 "Finisce sul conto della camera {0}",
@@ -5319,10 +5389,20 @@
 "COMANDA CUCINA",
 "تذكرة المطبخ"
 ],
+"Keep my changes": [
+"Meine Änderungen behalten",
+"Mantieni le mie modifiche",
+"احتفظ بتغييراتي"
+],
 "Keeps {0} days: {1} deliveries, next {2}": [
 "Hält {0} Tage: {1} Lieferungen, nächste {2}",
 "Dura {0} giorni: {1} consegne, prossima {2}",
 "يبقى {0} أيام: {1} توريدات، التالي {2}"
+],
+"Kept for {0} hours after it was last used.": [
+"Wird {0} Stunden nach der letzten Nutzung aufbewahrt.",
+"Conservato per {0} ore dopo l'ultimo uso.",
+"يُحفظ لمدة {0} ساعة بعد آخر استخدام."
 ],
 "Kept separate from tips and not distributed here.": [
 "Getrennt vom Trinkgeld und hier nicht verteilt.",
@@ -5558,6 +5638,11 @@
 "Letzter Einkaufspreis",
 "Ultimo prezzo d'acquisto",
 "آخر سعر شراء"
+],
+"Last used {0}, {1}": [
+"Zuletzt genutzt {0}, {1}",
+"Ultimo uso {0}, {1}",
+"آخر استخدام {0}، {1}"
 ],
 "Last {0} days": [
 "Letzte {0} Tage",
@@ -5798,6 +5883,11 @@
 "Anfrage wird geladen",
 "Caricamento della richiesta",
 "جارٍ تحميل الطلب"
+],
+"Loading the saved changes.": [
+"Gespeicherte Änderungen werden geladen.",
+"Caricamento delle modifiche salvate.",
+"جارٍ تحميل التغييرات المحفوظة."
 ],
 "Loading the stock records": [
 "Bestandsdaten werden geladen",
@@ -7034,6 +7124,11 @@
 "Nota (facoltativa)",
 "ملاحظة (اختيارية)"
 ],
+"Note added": [
+"Notiz hinzugefügt",
+"Nota aggiunta",
+"أُضيفت ملاحظة"
+],
 "Note which.": [
 "Vermerken Sie, was zutrifft.",
 "Annotate quale dei due.",
@@ -7123,6 +7218,11 @@
 "Noch nichts erledigt",
 "Ancora nulla di risolto",
 "لم يُحل شيء بعد"
+],
+"Nothing saved yet": [
+"Noch nichts gespeichert",
+"Ancora nulla di salvato",
+"لم يُحفظ شيء بعد"
 ],
 "Nothing started": [
 "Nichts begonnen",
@@ -7318,6 +7418,11 @@
 "Nur die gelieferte Menge wird zum geschätzten Bestand addiert. Lieferungen und Rechnungen sind simuliert. Eine echte Version läse sie aus dem Einkaufssystem.",
 "Solo la quantità consegnata si aggiunge alle scorte stimate. Consegne e fatture sono simulate. Una versione reale le leggerebbe dal sistema acquisti.",
 "تُضاف الكمية المسلّمة فقط إلى المخزون التقديري. التوريدات والفواتير محاكاة. وستقرأها النسخة الفعلية من نظام المشتريات."
+],
+"Only the owner or general manager can reset the demo records.": [
+"Nur der Eigentümer oder der General Manager kann die Demo-Datensätze zurücksetzen.",
+"Solo il proprietario o il direttore generale possono ripristinare i record della demo.",
+"يمكن للمالك أو المدير العام فقط إعادة ضبط سجلات العرض."
 ],
 "Only today's scans can be taken back.": [
 "Nur heutige Scans können zurückgenommen werden.",
@@ -7519,6 +7624,11 @@
 "Apri il PDF inviato",
 "فتح ملف PDF المرسل"
 ],
+"Open the case": [
+"Fall öffnen",
+"Apri il caso",
+"افتح الحالة"
+],
 "Open the first alert": [
 "Erste Warnung öffnen",
 "Apri il primo avviso",
@@ -7669,6 +7779,11 @@
 "Quantità da ordinare in L",
 "كمية الطلب باللتر"
 ],
+"Order status changed": [
+"Bestellstatus geändert",
+"Stato dell'ordine cambiato",
+"تغيّرت حالة الطلب"
+],
 "Order today: {0} items, {1}": [
 "Heute bestellen: {0} Artikel, {1}",
 "Ordina oggi: {0} articoli, {1}",
@@ -7778,6 +7893,11 @@
 "Weitere Tools",
 "Altri strumenti",
 "أدوات أخرى"
+],
+"Other visitors never see your changes, and nothing they change reaches you. Your changes stay when you switch role.": [
+"Andere Besucher sehen Ihre Änderungen nie, und nichts, was sie ändern, erreicht Sie. Ihre Änderungen bleiben, wenn Sie die Rolle wechseln.",
+"Gli altri visitatori non vedono mai le tue modifiche, e nulla di ciò che cambiano arriva a te. Le tue modifiche restano quando cambi ruolo.",
+"لا يرى الزوار الآخرون تغييراتك أبدًا، ولا يصلك شيء مما يغيرونه. تبقى تغييراتك عند تبديل الدور."
 ],
 "Other, such as a tasting": [
 "Sonstiges, etwa eine Verkostung",
@@ -8444,6 +8564,11 @@
 "Raccolta dei dati per la revisione settimanale",
 "تجميع الأرقام للمراجعة الأسبوعية"
 ],
+"Purchase approval withdrawn": [
+"Einkaufsgenehmigung zurückgezogen",
+"Approvazione d'acquisto ritirata",
+"سُحبت موافقة الشراء"
+],
 "Purchase order": [
 "Bestellung",
 "Ordine d'acquisto",
@@ -8463,6 +8588,11 @@
 "Bestellanfragen, die auf eine Entscheidung warten. Jede Stufe (Einkauf, Buchhaltung und bei großen Beträgen der General Manager) prüft Artikel und Kosten, bevor die Bestellung weitergeht.",
 "Richieste d'acquisto in attesa di decisione. Ogni passaggio (acquisti, contabilità e, per importi elevati, il direttore generale) verifica articoli e costi prima che l'ordine proceda.",
 "طلبات شراء بانتظار قرار. تراجع كل مرحلة (المشتريات والمحاسبة والمدير العام للمبالغ الكبيرة) الأصناف والتكاليف قبل المضي في الطلب."
+],
+"Purchase suggestions approved": [
+"Einkaufsvorschläge genehmigt",
+"Proposte di acquisto approvate",
+"اعتُمدت اقتراحات الشراء"
 ],
 "Purchasing": [
 "Einkauf",
@@ -8754,6 +8884,11 @@
 "Il consumo di vino registrato supera il previsto dai {0} calici venduti: {1} usciti rispetto a {2} previsti, differenza di {3}. Controlla dosi, perdite e versamenti omaggio.",
 "استخدام النبيذ المسجل أعلى من المتوقع من {0} كأسًا مبيعة: خرج {1} مقابل {2} متوقعة، بفرق {3}. تحقق من أحجام التقديم والفاقد والسكب المجاني."
 ],
+"Recount recorded": [
+"Nachzählung erfasst",
+"Riconteggio registrato",
+"سُجّلت إعادة الجرد"
+],
 "Recount {0} at {1} and record the recount here.": [
 "{0} in {1} erneut zählen und hier erfassen.",
 "Riconta {0} a {1} e registra qui il nuovo conteggio.",
@@ -8949,6 +9084,16 @@
 "Ripristina dati demo",
 "أعد ضبط البيانات التجريبية"
 ],
+"Reset puts every seeded demo record back to its starting point on the server, and clears notifications. Sign-in accounts and the access log are kept.": [
+"Zurücksetzen stellt jeden vorbereiteten Demo-Datensatz auf dem Server auf den Anfang zurück und leert die Benachrichtigungen. Anmeldekonten und das Zugriffsprotokoll bleiben erhalten.",
+"Il ripristino riporta ogni record preparato della demo al punto di partenza sul server e cancella le notifiche. Gli account di accesso e il registro degli accessi restano.",
+"تعيد إعادة الضبط كل سجل معدّ للعرض إلى نقطة البداية على الخادم وتمسح الإشعارات. تبقى حسابات الدخول وسجل الوصول."
+],
+"Reset puts your workspace back to the starting demo data and clears its notifications. Other visitors are not affected.": [
+"Zurücksetzen stellt Ihren Arbeitsbereich auf die Ausgangsdaten der Demo zurück und leert seine Benachrichtigungen. Andere Besucher sind nicht betroffen.",
+"Il ripristino riporta il tuo spazio ai dati iniziali della demo e ne cancella le notifiche. Gli altri visitatori non sono toccati.",
+"تعيد إعادة الضبط مساحتك إلى بيانات العرض الأولى وتمسح إشعاراتها. لا يتأثر الزوار الآخرون."
+],
 "Resolve": [
 "Erledigen",
 "Risolvi",
@@ -9073,6 +9218,11 @@
 "Hinweise prüfen",
 "Rivedi segnalazioni",
 "راجع الإشارات"
+],
+"Review started": [
+"Prüfung begonnen",
+"Esame avviato",
+"بدأت المراجعة"
 ],
 "Review storeroom access and the issue process with the outlet manager.": [
 "Lagerzugang und Ausgabeprozess mit der Outlet-Leitung besprechen.",
@@ -9664,6 +9814,16 @@
 "Risparmiato",
 "موفَّر"
 ],
+"Saved changes": [
+"Gespeicherte Änderungen",
+"Modifiche salvate",
+"التغييرات المحفوظة"
+],
+"Saved changes exported.": [
+"Gespeicherte Änderungen exportiert.",
+"Modifiche salvate esportate.",
+"صُدّرت التغييرات المحفوظة."
+],
 "Saved is money recovered on closed cases, credits from suppliers, and any loss that ran below the daily pace of the {0} days before, which is an estimate.": [
 "Gespart ist Geld aus abgeschlossenen Fällen, Gutschriften von Lieferanten und jeder Verlust unter dem Tagestempo der {0} Tage davor, was eine Schätzung ist.",
 "Il risparmio è il denaro recuperato nei casi chiusi, gli accrediti dei fornitori e ogni perdita sotto il ritmo giornaliero dei {0} giorni precedenti, che è una stima.",
@@ -10209,6 +10369,11 @@
 "Mostra tutti i {0} conti",
 "عرض كل الفواتير الـ {0}"
 ],
+"Show all {0} changes": [
+"Alle {0} Änderungen zeigen",
+"Mostra tutte le {0} modifiche",
+"اعرض كل التغييرات ({0})"
+],
 "Show all {0} charges": [
 "Alle {0} Belastungen zeigen",
 "Mostra tutti i {0} addebiti",
@@ -10288,6 +10453,11 @@
 "Die fünf größten zeigen",
 "Mostra i cinque più alti",
 "عرض الخمسة الأكبر"
+],
+"Show the five newest": [
+"Die fünf neuesten zeigen",
+"Mostra le cinque più recenti",
+"اعرض الخمسة الأحدث"
 ],
 "Show the five with most": [
 "Die fünf mit den meisten zeigen",
@@ -10399,10 +10569,10 @@
 "Dati simulati. Il sito indica OPERA e Shiji Infrasys.",
 "سجلات محاكاة. يذكر الموقع OPERA وShiji Infrasys."
 ],
-"Simulated records. Waste and counts entered in this demo are stored in your browser.": [
-"Simulierte Daten. Abfall und Zählungen aus dieser Demo liegen in Ihrem Browser.",
-"Dati simulati. Scarti e conteggi inseriti qui restano nel tuo browser.",
-"سجلات محاكاة. يُحفظ الهدر والجرد المدخلان هنا في متصفحك."
+"Simulated records. Waste, counts and corrections entered in this demo are saved on the demo server.": [
+"Simulierte Datensätze. In dieser Demo erfasster Abfall, Zählungen und Korrekturen werden auf dem Demo-Server gespeichert.",
+"Record simulati. Sprechi, conteggi e correzioni inseriti in questa demo sono salvati sul server della demo.",
+"سجلات محاكاة. يُحفظ الهدر والجرد والتصحيحات المدخلة في هذا العرض على خادم العرض."
 ],
 "Since yesterday. See Stock, Suppliers.": [
 "Seit gestern. Siehe Bestand, Lieferanten.",
@@ -10594,6 +10764,11 @@
 "Dose standard",
 "السكب المعياري"
 ],
+"Standard quantity changed": [
+"Standardmenge geändert",
+"Quantità standard cambiata",
+"تغيّرت الكمية القياسية"
+],
 "Start a free {0}-day pilot": [
 "Kostenloses {0}-Tage-Pilotprojekt starten",
 "Inizia un pilota gratuito di {0} giorni",
@@ -10699,10 +10874,20 @@
 "Scorte e sprechi",
 "المخزون والهدر"
 ],
+"Stock case opened": [
+"Bestandsfall eröffnet",
+"Caso di magazzino aperto",
+"فُتحت حالة مخزون"
+],
 "Stock could not load.": [
 "Bestand konnte nicht geladen werden.",
 "Non è stato possibile caricare le scorte.",
 "تعذر تحميل المخزون."
+],
+"Stock counted": [
+"Bestand gezählt",
+"Magazzino contato",
+"جُرد المخزون"
 ],
 "Stock counts": [
 "Bestandszählungen",
@@ -11749,6 +11934,11 @@
 "Il server verifica sessione, ruolo e PIN prima di ogni pagina e richiesta e invia solo i dati consentiti al tuo ruolo. Le modifiche restano in questo browser; spostarle sul server è il prossimo passo.",
 "يتحقق الخادم من الجلسة والدور ورقم PIN قبل كل صفحة وطلب بيانات، ويرسل ما يحق لدورك رؤيته فقط. تُحفظ تغييراتك في هذا المتصفح، ونقلها إلى الخادم هو الخطوة التالية."
 ],
+"The server checks your session, role and PIN before every page and every data request, and sends only the records your role may see. Every change you make is saved on the demo server with your name and role.": [
+"Der Server prüft Sitzung, Rolle und PIN vor jeder Seite und jeder Datenanfrage und sendet nur die Datensätze, die Ihre Rolle sehen darf. Jede Änderung wird mit Ihrem Namen und Ihrer Rolle auf dem Demo-Server gespeichert.",
+"Il server controlla sessione, ruolo e PIN prima di ogni pagina e di ogni richiesta di dati, e invia solo i record che il tuo ruolo può vedere. Ogni modifica che fai è salvata sul server della demo con il tuo nome e il tuo ruolo.",
+"يتحقق الخادم من جلستك ودورك ورمزك قبل كل صفحة وكل طلب بيانات، ويرسل فقط السجلات التي يحق لدورك رؤيتها. يُحفظ كل تغيير تجريه على خادم العرض مع اسمك ودورك."
+],
 "The six demo accounts and what each role can open and do.": [
 "Die sechs Demokonten und was jede Rolle öffnen und tun kann.",
 "I sei account demo e cosa può aprire e fare ogni ruolo.",
@@ -12063,6 +12253,11 @@
 "Bei Lieferanten zu klären",
 "Da verificare con i fornitori",
 "للاستفسار لدى الموردين"
+],
+"To reset one story only, use Reset in the guided demo.": [
+"Um nur eine Geschichte zurückzusetzen, nutzen Sie Zurücksetzen in der geführten Demo.",
+"Per ripristinare una sola storia, usa Ripristina nella demo guidata.",
+"لإعادة ضبط قصة واحدة فقط، استخدم إعادة الضبط في العرض الموجّه."
 ],
 "To review ({0})": [
 "Zu prüfen ({0})",
@@ -12899,10 +13094,20 @@
 "Costo degli scarti",
 "تكلفة الهدر"
 ],
+"Waste entry corrected": [
+"Abfalleintrag korrigiert",
+"Registrazione di spreco corretta",
+"صُحّح إدخال الهدر"
+],
 "Waste log": [
 "Abfallprotokoll",
 "Registro scarti",
 "سجل الهدر"
+],
+"Waste logged": [
+"Abfall erfasst",
+"Spreco registrato",
+"سُجّل الهدر"
 ],
 "Waste per guest": [
 "Abfall pro Gast",
@@ -13154,6 +13359,11 @@
 "A cosa è collegata questa demo, chi vede cosa e ogni modifica fatta in questo browser.",
 "بماذا ترتبط هذه النسخة، ومن يرى ماذا، وسجل كل تغيير في هذا المتصفح."
 ],
+"What this demo is connected to, who can see what, and every change saved on the demo server.": [
+"Womit diese Demo verbunden ist, wer was sehen kann, und jede Änderung, die auf dem Demo-Server gespeichert ist.",
+"A cosa è collegata questa demo, chi può vedere cosa, e ogni modifica salvata sul server della demo.",
+"بماذا يرتبط هذا العرض، ومن يرى ماذا، وكل تغيير محفوظ على خادم العرض."
+],
 "What to buy": [
 "Was einkaufen",
 "Cosa acquistare",
@@ -13193,6 +13403,11 @@
 "Was wurde weggeworfen oder ist zerbrochen?",
 "Cosa è stato scartato o rotto?",
 "ما الذي تم هدره أو كسره؟"
+],
+"What you change, such as waste you log, a count or a decision on a case, appears here with your name and role.": [
+"Was Sie ändern, etwa erfassten Abfall, eine Zählung oder eine Entscheidung zu einem Fall, erscheint hier mit Ihrem Namen und Ihrer Rolle.",
+"Ciò che cambi, come uno spreco registrato, un conteggio o una decisione su un caso, compare qui con il tuo nome e il tuo ruolo.",
+"ما تغيّره، مثل هدر تسجّله أو جرد أو قرار في حالة، يظهر هنا مع اسمك ودورك."
 ],
 "What you checked, who you spoke to": [
 "Was Sie geprüft haben, mit wem Sie gesprochen haben",
@@ -13288,6 +13503,11 @@
 "Weißer Rum",
 "Rum bianco",
 "رم أبيض"
+],
+"Who changed what, and is it saved?": [
+"Wer hat was geändert, und ist es gespeichert?",
+"Chi ha cambiato cosa, ed è salvato?",
+"من غيّر ماذا، وهل حُفظ؟"
 ],
 "Who do we buy from, and on what terms?": [
 "Bei wem kaufen wir ein, und zu welchen Bedingungen?",
@@ -13519,6 +13739,11 @@
 "Sì",
 "نعم"
 ],
+"Yes, reset everything": [
+"Ja, alles zurücksetzen",
+"Sì, ripristina tutto",
+"نعم، أعد ضبط كل شيء"
+],
 "Yest.": [
 "Gest.",
 "Ieri",
@@ -13539,6 +13764,11 @@
 "Il tuo accesso",
 "صلاحياتك"
 ],
+"Your changes saved on the demo server, newest first. Owners, general managers and financial controllers see everyone's.": [
+"Ihre auf dem Demo-Server gespeicherten Änderungen, die neueste zuerst. Eigentümer, General Manager und Financial Controller sehen die aller.",
+"Le tue modifiche salvate sul server della demo, dalla più recente. Proprietari, direttori generali e controller finanziari vedono quelle di tutti.",
+"تغييراتك المحفوظة على خادم العرض، الأحدث أولًا. يرى المالكون والمديرون العامون والمراقبون الماليون تغييرات الجميع."
+],
 "Your count": [
 "Ihre Zählung",
 "Il tuo conteggio",
@@ -13553,6 +13783,11 @@
 "Ihre Zahlen erscheinen hier, sobald Sie oben ein Outlet wählen.",
 "I tuoi dati appaiono qui dopo aver scelto un punto vendita in alto.",
 "تظهر أرقامك هنا بعد اختيار منفذ من الشريط العلوي."
+],
+"Your own demo workspace": [
+"Ihr eigener Demo-Arbeitsbereich",
+"Il tuo spazio di lavoro nella demo",
+"مساحة العرض الخاصة بك"
 ],
 "Your profile and settings": [
 "Ihr Profil und Einstellungen",
@@ -13573,6 +13808,11 @@
 "Ihre Rolle erfasst keine leeren Flaschen.",
 "Il tuo ruolo non registra bottiglie vuote.",
 "دورك لا يسجل الزجاجات الفارغة."
+],
+"Your workspace is back to the starting demo data.": [
+"Ihr Arbeitsbereich ist wieder auf den Ausgangsdaten der Demo.",
+"Il tuo spazio è tornato ai dati iniziali della demo.",
+"عادت مساحتك إلى بيانات العرض الأولى."
 ],
 "a bill changed after payment so the total goes down needs a manager's approval.": [
 "eine nach der Zahlung so geänderte Rechnung, dass die Summe sinkt, braucht die Freigabe eines Managers.",
@@ -14863,6 +15103,11 @@
 "{0} Fälle",
 "{0} casi",
 "{0} حالات"
+],
+"{0} changes are waiting to reach the server.": [
+"{0} Änderungen warten darauf, den Server zu erreichen.",
+"{0} modifiche sono in attesa di arrivare al server.",
+"{0} تغييرات تنتظر الوصول إلى الخادم."
 ],
 "{0} charge": [
 "{0} Belastung",

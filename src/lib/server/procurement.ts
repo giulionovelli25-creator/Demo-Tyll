@@ -17,6 +17,7 @@ import {
 import type { CatalogueLine, CreditRequest, OutboxEmail, ParRecord, PurchaseRequest, PurchasingSettings, RequestLine, SupplierAccount, User, ValuationMethod } from "../types";
 import { DEMO_NOW_MIN, DEMO_TODAY, fmtMoney, round2, sum, timeIn, unitLabel } from "../util";
 import { dataFile } from "./data-file";
+import { workspaceFile } from "./workspace";
 import { PdfDoc } from "./pdf";
 import { canSee, type Result } from "./purchasing";
 import { loadStore, mutateStore, nextNumber, type Shape } from "./purchasing-store";
@@ -495,7 +496,8 @@ export function purchaseOrderPdf(r: PurchaseRequest): Buffer {
   return doc.toBuffer({ title: `Purchase order ${poRef(r)}`, author: prop.name });
 }
 
-const pdfPath = (name: string) => dataFile(`po/${name}`);
+/** Purchase order PDFs belong to the workspace whose order they print, so one visitor never opens another's. */
+const pdfPath = (name: string) => workspaceFile(`po/${name}`, () => dataFile(`po/${name}`));
 export function readPurchaseOrderPdf(user: User, id: string): Result<{ name: string; bytes: Buffer }> {
   const r = loadStore().requests.find((x) => x.id === id);
   if (!r || !canSee(user, r)) return fail(404, "This order is not available.");

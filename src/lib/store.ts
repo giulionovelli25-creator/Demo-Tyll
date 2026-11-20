@@ -1,32 +1,28 @@
 "use client";
-// Everything a user changes during the demo lives here and is saved in the browser.
-// Each action checks the signed-in user's permissions before it changes anything, and writes an audit entry.
+// What a user changes during the demo. Decisions and corrections (investigations, stock cases, recounts, standards,
+// delivery differences, prices, approvals, order status, closed notices) are saved on the demo server: each action runs
+// the shared rules in lib/domain/records.ts for an instant answer, then the change is sent to /api/records, where the
+// server runs the same rules with the person's own session and keeps it with the person and the role
+// (lib/records-sync.ts). Only this device's queue of unsent entries and view settings stay in the browser.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ingredientById, itemById, outletById, propertyById, staffById, storeOwner, userById } from "./data/catalog";
+import { ingredientById, outletById, propertyById, userById } from "./data/catalog";
 import { getDataset } from "./data/dataset";
 import { AccessError, assertCan, clampScope, hasWholeProperty, type Permission } from "./domain/access";
 import type { ForecastInputs } from "./domain/forecast";
-import { chargedToGuest } from "./domain/detect";
-import { countVariance, countVarianceValue } from "./domain/inventory";
-import { headlineFor, periodVariance, type Adjustments } from "./domain/variance";
+import { RECORD_KEYS, applyRecordOp, emptyRecords, type CloseInput, type RecordEnv, type RecordOp, type Records } from "./domain/records";
 import type { FlowSim } from "./domain/operations";
 import type {
-  Arrival, AuditEntry, CountRecord, Exception, ReceiptCorrection, RecipeChange, Recount, UsagePeriod, WasteCorrection, DateRange, FlowStatus, InvestigationState, Outcome, PriceChange, Room, Scope, User, WasteLog, WasteReason,
+  Arrival, AuditEntry, CountRecord, UsagePeriod, WasteCorrection, DateRange, FlowStatus, Room, Scope, User, WasteLog, WasteReason,
 } from "./types";
-import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, fmtDate, fmtQty, presetRange, type RangePreset } from "./util";
+import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, presetRange, type RangePreset } from "./util";
 
 export type Result = { ok: true } | { ok: false; error: string };
 
-export interface PurchaseApproval {
-  id: string;
-  propertyId: string;
-  ingredientId: string;
-  qty: number;
-  cost: number;
-  approvedBy: string;
-  at: string;
-}
+export type { PurchaseApproval } from "./domain/records";
+
+/** A change made on this device that the server has not confirmed yet. */
+export interface PendingOp { key: string; userId: string; op: RecordOp }
 
 interface Persisted {
   userId: string | null;
@@ -37,31 +33,23 @@ interface Persisted {
   preset: RangePreset;
   custom: DateRange;
   seq: number;
-  investigations: Record<string, InvestigationState>;
-  /** Cases opened by hand from a stock count shortfall. */
-  stockCases: Exception[];
-  /** Stock corrections. Each keeps the original record and says who changed what, and why. */
-  recounts: Recount[];
-  recipeChanges: RecipeChange[];
+  /** Waste, corrections and counts made on this device, waiting to be uploaded (offline entries wait here). */
   wasteCorrections: WasteCorrection[];
-  receiptCorrections: ReceiptCorrection[];
-  /** Daily alerts the user has closed. */
-  dismissedAlerts: string[];
   wasteLogs: WasteLog[];
   counts: CountRecord[];
-  priceOverrides: PriceChange[];
-  approvals: PurchaseApproval[];
-  forecastInputs: Record<string, ForecastInputs>;
-  flowStatus: Record<string, FlowStatus>;
+  /** Changes to the saved records not yet confirmed by the server, oldest first. */
+  pendingOps: PendingOp[];
   flowSim: FlowSim;
   roomState: Record<string, Partial<Room>>;
   arrivalState: Record<string, Arrival["status"]>;
   requestsDone: Record<string, boolean>;
-  audit: AuditEntry[];
   offline: boolean;
   tourOpen: boolean;
   tourStep: number;
 }
+
+/** Saved records, as the server last sent them for this person, with this device's unconfirmed changes on top. */
+type RecordState = Records;
 
 interface Actions {
   /** Mirrors the server session. Only the shell calls this, after the server has confirmed who is signed in. */
@@ -73,7 +61,7 @@ interface Actions {
   assignInvestigation(id: string, assigneeId: string, deadline: string): Result;
   addNote(id: string, text: string): Result;
   startReview(id: string): Result;
-  closeInvestigation(id: string, input: { outcome: Outcome; confirmedLoss: number; recovered: number; note: string; verifiedCause?: string; correctiveAction?: string }): Result;
+  closeInvestigation(id: string, input: CloseInput): Result;
   reopenInvestigation(id: string): Result;
   /** Opens an investigation into a count shortfall, charged to one outlet. Returns the existing case if one is already open. */
   openStockCase(countId: string, outletId: string): Result & { id?: string };
@@ -105,9 +93,18 @@ interface Actions {
   resetDemo(): void;
 }
 
-export type DemoState = Persisted & Actions;
+interface SyncActions {
+  /** Takes the server's records for this person, drops a confirmed change, and puts the unconfirmed ones back on top. */
+  receiveRecords(records: Records, confirmed?: string): void;
+  /** Forgets a change the server refused. */
+  dropPending(key: string): void;
+}
 
-const initial = (): Persisted => ({
+export type DemoState = Persisted & RecordState & Actions & SyncActions;
+
+const initial = (): Persisted & RecordState => ({
+  ...emptyRecords(),
+  pendingOps: [],
   userId: null,
   scope: { propertyId: "all", outletId: "all", dept: "all" },
   scopeOwner: null,
@@ -115,24 +112,13 @@ const initial = (): Persisted => ({
   preset: "week",
   custom: { from: addDays(DEMO_TODAY, -13), to: DEMO_TODAY },
   seq: 0,
-  investigations: {},
-  stockCases: [],
-  recounts: [],
-  recipeChanges: [],
   wasteCorrections: [],
-  receiptCorrections: [],
-  dismissedAlerts: [],
   wasteLogs: [],
   counts: [],
-  priceOverrides: [],
-  approvals: [],
-  forecastInputs: {},
-  flowStatus: {},
   flowSim: { kitchenExtra: 0, barExtra: 0 },
   roomState: {},
   arrivalState: {},
   requestsDone: {},
-  audit: [],
   offline: false,
   tourOpen: false,
   tourStep: 0,
@@ -151,6 +137,24 @@ export function correctedWaste(logs: readonly WasteLog[], corrections: readonly 
   });
 }
 const OK: Result = { ok: true };
+
+/** What the browser keeps between visits: view settings and this device's unsent entries, never the saved records. */
+export const storagePolicy = {
+  partialize(s: object): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+    // Identity is never persisted: it always comes from the server session. Saved records come from the server
+    // too, for the person signed in, so nothing one role saw stays in the browser for the next.
+    const server = new Set<string>(RECORD_KEYS);
+    for (const [k, v] of Object.entries(s)) if (typeof v !== "function" && k !== "userId" && !server.has(k)) out[k] = v;
+    return out;
+  },
+  // Version 1 kept decisions and prices in the browser. They are dropped: the server is now the record.
+  migrate(persisted: unknown): Record<string, unknown> {
+    const out = { ...(persisted as Record<string, unknown>) };
+    for (const k of [...RECORD_KEYS, "approvals", "forecastInputs"]) delete out[k];
+    return out;
+  },
+};
 
 export const useDemo = create<DemoState>()(
   persist(
@@ -171,23 +175,35 @@ export const useDemo = create<DemoState>()(
         }
       };
 
-      const exceptionOf = (id: string) => get().stockCases.find((e) => e.id === id) ?? getDataset().exceptions.find((e) => e.id === id);
-      const adjustments = (): Adjustments => {
+      /** The rules' view of the world from this browser's copy of the data. The server checks again with its own. */
+      const env = (): RecordEnv => {
         const s = get();
-        return { recounts: s.recounts, recipes: s.recipeChanges, waste: correctedWaste(s.wasteLogs, s.wasteCorrections) };
+        const d = getDataset();
+        return {
+          user: me(), today: DEMO_TODAY, nowMin: DEMO_NOW_MIN, now: new Date().toISOString(), dataStart: DATA_START,
+          exception: (id) => d.exceptions.find((e) => e.id === id),
+          exceptionForPeriod: (pid) => d.exceptions.find((e) => e.period?.id === pid),
+          seedState: (id) => d.seedInvestigations[id],
+          count: (id) => [...d.counts, ...s.counts].find((c) => c.id === id),
+          period: (p) => p,
+          delivery: (id) => d.deliveries.find((x) => x.id === id),
+          liveOrderOutlet: (id) => d.liveOrders.find((o) => o.id === id)?.outletId,
+          waste: () => correctedWaste(s.wasteLogs, s.wasteCorrections),
+        };
       };
-      /** For a usage case the amount at stake follows the current figures, so corrections are reflected. */
-      const exposureOf = (e: Exception) => (e.period ? Math.max(0, Math.round(periodVariance(e.period, adjustments()).value * 100) / 100) : e.exposure);
-      const currentState = (id: string): InvestigationState => get().investigations[id] ?? getDataset().seedInvestigations[id];
-      const guardInvestigation = (permission: Permission, id: string, run: (user: User, state: InvestigationState, exposure: number) => Result): Result => {
-        const e = exceptionOf(id);
-        if (!e) return fail("This investigation no longer exists.");
-        return guarded(permission, e.outletId, (user) => {
-          if (!e.outletId && !hasWholeProperty(user, e.propertyId)) return fail("This record belongs to the whole property and is outside your access.");
-          return run(user, currentState(id), exposureOf(e));
-        });
+      const records = (s: DemoState): Records => Object.fromEntries(RECORD_KEYS.map((k) => [k, s[k]])) as unknown as Records;
+      let opCount = 0;
+      /** Applies a change here at once and queues it for the server, which keeps it with the person and role. */
+      const run = (op: RecordOp): Result & { id?: string } => {
+        const before = records(get());
+        const r = applyRecordOp(before, op, env());
+        if (!r.ok) return fail(r.error);
+        if (r.rec === before) return r.id ? { ok: true, id: r.id } : OK;
+        const userId = get().userId!;
+        const key = `${Date.now().toString(36)}-${(opCount++).toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+        set((s) => ({ ...r.rec, pendingOps: [...s.pendingOps, { key, userId, op }] }));
+        return r.id ? { ok: true, id: r.id } : OK;
       };
-      const saveInvestigation = (id: string, state: InvestigationState) => set((s) => ({ investigations: { ...s.investigations, [id]: state } }));
 
       return {
         ...initial(),
@@ -232,118 +248,25 @@ export const useDemo = create<DemoState>()(
         },
 
         assignInvestigation(id, assigneeId, deadline) {
-          return guardInvestigation("investigation.assign", id, (_u, state) => {
-            if (state.status === "closed") return fail("Reopen the investigation before assigning it.");
-            if (!assigneeId || !(userById[assigneeId] || staffById[assigneeId])) return fail("Choose who is responsible.");
-            if (!ISO_DATE.test(deadline)) return fail("Choose a deadline.");
-            if (deadline < DEMO_TODAY) return fail("The deadline cannot be in the past.");
-            saveInvestigation(id, { ...state, status: state.status === "new" ? "assigned" : state.status, assigneeId, deadline });
-            log("Investigation assigned", `${id} to ${assigneeId}, due ${deadline}`);
-            return OK;
-          });
+          return run({ kind: "investigation.assign", id, assigneeId, deadline });
         },
         addNote(id, text) {
-          return guardInvestigation("investigation.note", id, (user, state) => {
-            const clean = text.trim();
-            if (clean.length < 3) return fail("Write a short note first.");
-            if (clean.length > 600) return fail("Keep the note under 600 characters.");
-            saveInvestigation(id, { ...state, notes: [...state.notes, { at: DEMO_TODAY, by: user.id, text: clean }] });
-            log("Note added", id);
-            return OK;
-          });
+          return run({ kind: "investigation.note", id, text });
         },
         startReview(id) {
-          return guardInvestigation("investigation.note", id, (user, state) => {
-            if (state.status === "closed") return fail("This investigation is closed.");
-            saveInvestigation(id, { ...state, status: "in_review", assigneeId: state.assigneeId ?? user.id });
-            log("Review started", id);
-            return OK;
-          });
+          return run({ kind: "investigation.review", id });
         },
         closeInvestigation(id, input) {
-          return guardInvestigation("investigation.close", id, (user, state, exposure) => {
-            if (state.status === "closed") return fail("This investigation is already closed.");
-            const { outcome, note } = input;
-            const confirmedLoss = Math.round(input.confirmedLoss * 100) / 100;
-            const recovered = Math.round(input.recovered * 100) / 100;
-            if (!Number.isFinite(confirmedLoss) || !Number.isFinite(recovered) || confirmedLoss < 0 || recovered < 0) return fail("Amounts must be zero or more.");
-            if (confirmedLoss + recovered > exposure + 0.005) return fail(`Loss and recovery together cannot be more than the ${exposure.toFixed(2)} involved.`);
-            if (outcome === "confirmed_loss" && confirmedLoss <= 0) return fail("Enter the amount lost.");
-            if (outcome === "recovered" && recovered <= 0) return fail("Enter the amount recovered.");
-            if ((outcome === "legitimate" || outcome === "inconclusive") && confirmedLoss + recovered > 0) return fail("This outcome carries no amounts. Choose a loss or a recovery instead.");
-            const e = exceptionOf(id)!;
-            if (chargedToGuest(e) && (outcome === "confirmed_loss" || outcome === "recovered")) return fail("The value was charged to the guest. Refund the guest if needed and close as a legitimate correction.");
-            if (note.trim().length < 3) return fail("Add a short note on what you found.");
-            const stockCase = e.type === "usage_variance" || e.type === "stock_shortfall";
-            const verifiedCause = input.verifiedCause?.trim() || undefined;
-            const correctiveAction = input.correctiveAction?.trim().slice(0, 400) || undefined;
-            if (stockCase && outcome !== "inconclusive" && !verifiedCause) return fail("Choose the cause you verified, or record no finding.");
-            saveInvestigation(id, {
-              ...state, status: "closed", outcome, confirmedLoss, recovered, closedAt: DEMO_TODAY, closedBy: user.id, verifiedCause, correctiveAction,
-              assigneeId: state.assigneeId ?? user.id,
-              notes: [...state.notes, { at: DEMO_TODAY, by: user.id, text: note.trim() }],
-            });
-            log("Investigation closed", `${id}: ${outcome}, loss ${confirmedLoss}, recovered ${recovered}`);
-            return OK;
-          });
+          return run({ kind: "investigation.close", id, input });
         },
         reopenInvestigation(id) {
-          return guardInvestigation("investigation.reopen", id, (user, state) => {
-            if (state.status !== "closed") return fail("This investigation is already open.");
-            saveInvestigation(id, {
-              ...state, status: "in_review", outcome: undefined, confirmedLoss: 0, recovered: 0, closedAt: undefined, closedBy: undefined, verifiedCause: undefined, correctiveAction: undefined,
-              notes: [...state.notes, { at: DEMO_TODAY, by: user.id, text: "Reopened for another look." }],
-            });
-            log("Investigation reopened", id);
-            return OK;
-          });
+          return run({ kind: "investigation.reopen", id });
         },
-
         openStockCase(countId, outletId) {
-          return guarded("investigation.assign", outletId, (user) => {
-            const count = [...getDataset().counts, ...get().counts].find((c) => c.id === countId);
-            if (!count) return fail("This count no longer exists.");
-            const outlet = outletById[outletId];
-            if (!outlet || outlet.propertyId !== count.propertyId) return fail("Choose an outlet at this hotel.");
-            const owner = storeOwner(count.propertyId, count.ingredientId);
-            if (owner && owner !== outletId) return fail(`This item is held in ${outletById[owner].name}'s own store.`);
-            const existing = get().stockCases.find((e) => e.countId === countId && e.outletId === outletId);
-            if (existing) return { ok: true, id: existing.id };
-            const value = -countVarianceValue(count, get().priceOverrides);
-            if (value < 0.5) return fail("This count shows no shortfall.");
-            const shares = count.allocation ?? {};
-            const share = owner || Object.keys(shares).length === 0 ? 1 : (shares[outletId] ?? 0);
-            if (share <= 0) return fail(`${outlet.name} did not use this item in the week before the count.`);
-            const g = ingredientById[count.ingredientId];
-            const exposure = Math.round(value * share * 100) / 100;
-            const seq = get().seq + 1;
-            const id = `EX-STK-${String(seq).padStart(3, "0")}`;
-            const e: Exception = {
-              id, type: "stock_shortfall", propertyId: count.propertyId, outletId, date: count.date, min: count.date === DEMO_TODAY ? DEMO_NOW_MIN : 7 * 60,
-              countId, ingredientId: count.ingredientId, exposure,
-              headline: `${g.name}: ${fmtQty(-countVariance(count) * share, g.unit)} short at the ${fmtDate(count.date)} count`,
-            };
-            set((s) => ({ seq, stockCases: [...s.stockCases, e], investigations: { ...s.investigations, [id]: { status: "new", notes: [], confirmedLoss: 0, recovered: 0 } } }));
-            log("Stock case opened", `${id} by ${user.name}`);
-            return { ok: true, id };
-          });
+          return run({ kind: "case.fromCount", countId, outletId });
         },
         openVarianceCase(period) {
-          return guarded("investigation.assign", period.outletId, (user) => {
-            const existing = [...get().stockCases, ...getDataset().exceptions].find((e) => e.period?.id === period.id);
-            if (existing) return { ok: true, id: existing.id };
-            const v = periodVariance(period, adjustments());
-            if (v.unexplained <= 0) return fail("Nothing is unexplained in this period.");
-            const seq = get().seq + 1;
-            const id = `EX-STK-${String(seq).padStart(3, "0")}`;
-            const e: Exception = {
-              id, type: "usage_variance", propertyId: period.propertyId, outletId: period.outletId, date: period.to.date, min: period.to.min,
-              ingredientId: period.ingredientId, exposure: Math.max(0, Math.round(v.value * 100) / 100), headline: headlineFor(period, v), period,
-            };
-            set((s) => ({ seq, stockCases: [...s.stockCases, e], investigations: { ...s.investigations, [id]: { status: "new", notes: [], confirmedLoss: 0, recovered: 0 } } }));
-            log("Stock case opened", `${id} by ${user.name}`);
-            return { ok: true, id };
-          });
+          return run({ kind: "case.fromPeriod", period });
         },
         correctWaste(wasteId, qty, reason) {
           const w = get().wasteLogs.find((x) => x.id === wasteId);
@@ -358,46 +281,16 @@ export const useDemo = create<DemoState>()(
           });
         },
         recordRecount(input) {
-          return guarded("stock.count", input.outletId, (user) => {
-            if (!ingredientById[input.ingredientId]) return fail("Choose an item.");
-            if (!Number.isFinite(input.counted) || input.counted < 0 || input.counted > 1e5) return fail("Enter the quantity you counted.");
-            if (input.reason.trim().length < 3) return fail("Say why the item was recounted.");
-            const seq = get().seq + 1;
-            set((s) => ({ seq, recounts: [...s.recounts, { id: `RC-${seq}`, checkId: input.checkId, counted: input.counted, reason: input.reason.trim(), by: user.id, date: DEMO_TODAY, seq }] }));
-            log("Recount recorded", `${input.checkId}: ${ingredientById[input.ingredientId].name} recounted at ${input.counted}. ${input.reason.trim()}`);
-            return OK;
-          });
+          return run({ kind: "stock.recount", ...input });
         },
         setStandardQty(input) {
-          return guarded("stock.editPrices", undefined, (user) => {
-            const base = itemById[input.itemId]?.recipe?.find((l) => l.ingredientId === input.ingredientId)?.qty;
-            if (base === undefined) return fail("This ingredient is not in that recipe.");
-            if (!Number.isFinite(input.qty) || input.qty < base * 0.5 || input.qty > base * 2) return fail("Choose a quantity between half and double the current standard.");
-            if (!ISO_DATE.test(input.from) || input.from > DEMO_TODAY) return fail("Choose the date the setting was wrong from.");
-            if (input.reason.trim().length < 3) return fail("Say why the standard is changing.");
-            const seq = get().seq + 1;
-            set((s) => ({ seq, recipeChanges: [...s.recipeChanges, { id: `RQ-${seq}`, itemId: input.itemId, ingredientId: input.ingredientId, qty: input.qty, from: input.from, reason: input.reason.trim(), by: user.id, seq }] }));
-            log("Standard quantity changed", `${itemById[input.itemId].name}: ${ingredientById[input.ingredientId].name} ${base} to ${input.qty} from ${input.from}. ${input.reason.trim()}`);
-            return OK;
-          });
+          return run({ kind: "recipe.standard", ...input });
         },
         recordReceipt(input) {
-          const d = getDataset().deliveries.find((x) => x.id === input.deliveryId);
-          if (!d) return fail("This delivery does not exist.");
-          return guarded("stock.count", undefined, (user) => {
-            if (user.propertyIds !== "all" && !user.propertyIds.includes(d.propertyId)) return fail("This property is outside your access.");
-            const line = d.lines.find((l) => l.ingredientId === input.ingredientId);
-            if (!line) return fail("This item is not on the delivery.");
-            if (!Number.isFinite(input.received) || input.received < 0 || input.received > line.ordered * 3) return fail("Enter the quantity actually received.");
-            if (input.reason.trim().length < 3) return fail("Say how the difference was found.");
-            const seq = get().seq + 1;
-            set((s) => ({ seq, receiptCorrections: [...s.receiptCorrections, { id: `RR-${seq}`, deliveryId: d.id, ingredientId: input.ingredientId, received: input.received, reason: input.reason.trim(), by: user.id, seq }] }));
-            log("Delivery difference recorded", `${d.id}: ${ingredientById[input.ingredientId].name} received ${input.received}, recorded ${line.delivered}. ${input.reason.trim()}`);
-            return OK;
-          });
+          return run({ kind: "delivery.receipt", ...input });
         },
         dismissAlert(id) {
-          set((s) => ({ dismissedAlerts: [...new Set([...s.dismissedAlerts, id])] }));
+          if (get().userId) run({ kind: "alert.dismiss", id });
         },
         logWaste(input) {
           return guarded("stock.logWaste", input.outletId, (user) => {
@@ -451,50 +344,19 @@ export const useDemo = create<DemoState>()(
           });
         },
         setIngredientPrice(ingredientId, cost) {
-          return guarded("stock.editPrices", undefined, () => {
-            if (!ingredientById[ingredientId]) return fail("Unknown ingredient.");
-            if (!Number.isFinite(cost) || cost <= 0) return fail("Enter a price above zero.");
-            if (cost > 100000) return fail("That price looks too high. Check the amount.");
-            set((s) => ({ priceOverrides: [...s.priceOverrides.filter((p) => p.id !== ingredientId), { id: ingredientId, from: DEMO_TODAY, value: Math.round(cost * 100) / 100 }] }));
-            log("Ingredient price changed", `${ingredientById[ingredientId].name} to €${cost.toFixed(2)} from ${DEMO_TODAY}`);
-            return OK;
-          });
+          return run({ kind: "price.set", ingredientId, cost });
         },
         approvePurchases(propertyId, lines) {
-          return guarded("forecast.approve", undefined, (user) => {
-            if (user.propertyIds !== "all" && !user.propertyIds.includes(propertyId)) return fail("This property is outside your access.");
-            const valid = lines.filter((l) => l.qty > 0 && ingredientById[l.ingredientId]);
-            if (valid.length === 0) return fail("Nothing to approve.");
-            const at = new Date().toISOString();
-            set((s) => ({
-              approvals: [
-                ...s.approvals.filter((a) => !(a.propertyId === propertyId && valid.some((l) => l.ingredientId === a.ingredientId))),
-                ...valid.map((l) => ({ id: `AP-${propertyId}-${l.ingredientId}`, propertyId, ingredientId: l.ingredientId, qty: l.qty, cost: l.cost, approvedBy: user.id, at })),
-              ],
-            }));
-            log("Purchase suggestions approved", `${valid.length} line${valid.length === 1 ? "" : "s"} at ${propertyById[propertyId].name}`);
-            return OK;
-          });
+          return run({ kind: "purchase.approve", propertyId, lines });
         },
         withdrawApproval(id) {
-          return guarded("forecast.approve", undefined, () => {
-            set((s) => ({ approvals: s.approvals.filter((a) => a.id !== id) }));
-            log("Purchase approval withdrawn", id);
-            return OK;
-          });
+          return run({ kind: "purchase.withdraw", id });
         },
         setForecastInputs(propertyId, inputs) {
-          set((s) => ({ forecastInputs: { ...s.forecastInputs, [propertyId]: inputs } }));
+          if (get().userId) run({ kind: "forecast.inputs", propertyId, inputs });
         },
-
         setFlowStatus(orderId, status) {
-          const order = getDataset().liveOrders.find((o) => o.id === orderId);
-          if (!order) return fail("This order is no longer on the board.");
-          return guarded("flow.updateOrder", order.outletId, () => {
-            set((s) => ({ flowStatus: { ...s.flowStatus, [orderId]: status } }));
-            log("Order status changed", `${orderId} to ${status}`);
-            return OK;
-          });
+          return run({ kind: "flow.status", orderId, status });
         },
         setFlowSim(sim) {
           set((s) => ({ flowSim: { ...s.flowSim, ...sim } }));
@@ -534,6 +396,22 @@ export const useDemo = create<DemoState>()(
         setTour(open, step) {
           set((s) => ({ tourOpen: open, tourStep: step ?? s.tourStep }));
         },
+        receiveRecords(incoming, confirmed) {
+          set((s) => {
+            const pending = s.pendingOps.filter((p) => p.key !== confirmed);
+            // This person's unconfirmed changes go back on top of the server's records; another person's never do.
+            let rec = { ...emptyRecords(), ...incoming };
+            for (const p of pending) {
+              if (p.userId !== s.userId) continue;
+              const r = applyRecordOp(rec, p.op, env());
+              if (r.ok) rec = r.rec;
+            }
+            return { ...rec, pendingOps: pending };
+          });
+        },
+        dropPending(key) {
+          set((s) => ({ pendingOps: s.pendingOps.filter((p) => p.key !== key) }));
+        },
         resetDemo() {
           const userId = get().userId;
           set({ ...initial(), userId });
@@ -545,13 +423,9 @@ export const useDemo = create<DemoState>()(
     },
     {
       name: "tyll-demo-v1",
-      version: 1,
-      partialize: (s) => {
-        const out: Record<string, unknown> = {};
-        // Identity is never persisted: it always comes from the server session.
-        for (const [k, v] of Object.entries(s)) if (typeof v !== "function" && k !== "userId") out[k] = v;
-        return out as unknown as DemoState;
-      },
+      version: 2,
+      partialize: (s) => storagePolicy.partialize(s) as unknown as DemoState,
+      migrate: (persisted) => storagePolicy.migrate(persisted) as unknown as DemoState,
     },
   ),
 );
