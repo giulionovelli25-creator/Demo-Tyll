@@ -212,7 +212,8 @@ export interface RiskRow {
   phase: WarnPhase;
   arrival?: LateArrival & { byName: string };
   handled?: LateHandled & { byName: string; label: string };
-  backup: { supplierId: string; name: string; arrives: string; phone: string } | null;
+  /** The backup supplier for the first short item, when it would deliver, and the quantity a backup order would ask for. */
+  backup: { supplierId: string; name: string; arrives: string; phone: string; qty: number; unit: string } | null;
   supplierPhone: string;
 }
 
@@ -268,7 +269,7 @@ export function deliveryRiskFor(user: User, propertyId: string, planItems: reado
       phase: short.length ? warnPhase(now, c.date, short[0].shortfall!.neededBy) : null,
       arrival: arrival ? { ...arrival, byName: nameOf(arrival.by) } : undefined,
       handled: handled ? { ...handled, byName: nameOf(handled.by), label: HOW_LABEL[handled.how] } : undefined,
-      backup: backupLine && acct ? { supplierId: backupLine.supplierId, name: acct.name, phone: acct.phone, arrives: nextDeliveryDate(DEMO_TODAY, DEMO_NOW_MIN, acct.cutOff, Math.max(acct.leadDays, ingredientById[backupLine.ingredientId].leadDays), acct.deliveryDays) } : null,
+      backup: backupLine && acct && short[0] ? { supplierId: backupLine.supplierId, name: acct.name, phone: acct.phone, arrives: nextDeliveryDate(DEMO_TODAY, DEMO_NOW_MIN, acct.cutOff, Math.max(acct.leadDays, ingredientById[backupLine.ingredientId].leadDays), acct.deliveryDays), qty: ceilToPack(short[0].shortfall!.short, backupLine.packSize), unit: short[0].unit } : null,
       supplierPhone: supplierAccount(propertyId, c.supplierId, s)?.phone ?? "",
     });
   }
@@ -281,10 +282,10 @@ export function deliveryRiskFor(user: User, propertyId: string, planItems: reado
 const SERVICE_WORD: Record<ServiceId, string> = { breakfast: "breakfast", lunch: "lunch", dinner: "dinner" };
 const dayWord = (date: string) => (date === DEMO_TODAY ? "today" : date === addDays(DEMO_TODAY, 1) ? "tomorrow" : date);
 
-/** The line every warning leads with: "Carnes Ribeiro & Filhos, tomorrow 07:00 to 08:00, likely late: Wagyu beef mince runs short at lunch." */
+/** The line every warning leads with, what hurts first: "Wagyu beef mince short before lunch tomorrow: Carnes Ribeiro & Filhos likely late". */
 export function headline(r: RiskRow): string {
   const i = r.items.find((x) => x.shortfall);
-  return `${r.supplier} delivery ${dayWord(r.date)} ${r.window.from} likely late${i ? `: ${i.name} runs short before ${SERVICE_WORD[i.shortfall!.service]}` : ""}`;
+  return i ? `${i.name} short before ${SERVICE_WORD[i.shortfall!.service]} ${dayWord(r.date)}: ${r.supplier} likely late` : `${r.supplier} delivery ${dayWord(r.date)} ${r.window.from} likely late`;
 }
 
 /**

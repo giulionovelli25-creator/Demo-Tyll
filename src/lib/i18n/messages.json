@@ -4274,10 +4274,10 @@
 "Ogni caso finanziario, aperto e chiuso.",
 "كل حالة مالية، مفتوحة ومغلقة."
 ],
-"Every morning at {0} Tyll orders the items due that day or the next;": [
-"Jeden Morgen um {0} bestellt Tyll die Artikel, die an diesem oder dem nächsten Tag fällig sind;",
-"Ogni mattina alle {0} Tyll ordina gli articoli in scadenza quel giorno o il successivo;",
-"كل صباح الساعة {0} يطلب Tyll الأصناف المستحقة في ذلك اليوم أو اليوم التالي؛"
+"Every morning at {0} Tyll orders the items due that day or the next": [
+"Jeden Morgen um {0} bestellt Tyll die Artikel, die an diesem oder dem nächsten Tag fällig sind",
+"Ogni mattina alle {0} Tyll ordina gli articoli in scadenza quel giorno o il successivo",
+"كل صباح الساعة {0} يطلب Tyll الأصناف المستحقة في ذلك اليوم أو اليوم التالي"
 ],
 "Every outlet and shift is pouring close to standard.": [
 "Alle Outlets und Schichten schenken nahe am Standard aus.",
@@ -6228,6 +6228,16 @@
 "Zuletzt genutzt {0}, {1}",
 "Ultimo uso {0}, {1}",
 "آخر استخدام {0}، {1}"
+],
+"Last week": [
+"Letzte Woche",
+"Ultima settimana",
+"الأسبوع الماضي"
+],
+"Last week {0} on time, {1} week average {2}": [
+"Letzte Woche {0} pünktlich, Durchschnitt über {1} Wochen {2}",
+"Ultima settimana {0} in orario, media su {1} settimane {2}",
+"الأسبوع الماضي {0} في الموعد، ومتوسط {1} أسابيع {2}"
 ],
 "Last {0} days": [
 "Letzte {0} Tage",
@@ -9159,16 +9169,6 @@
 "Data ordine",
 "تاريخ الطلب"
 ],
-"Order from Talho Central, arrives today": [
-"Bei Talho Central bestellen, Lieferung heute",
-"Ordina da Talho Central, arriva oggi",
-"اطلب من Talho Central، يصل اليوم"
-],
-"Order from Talho Central, arrives tomorrow": [
-"Bei Talho Central bestellen, Lieferung morgen",
-"Ordina da Talho Central, arriva domani",
-"اطلب من Talho Central، يصل غدا"
-],
 "Order from backup supplier": [
 "Beim Ersatzlieferanten bestellen",
 "Ordina dal fornitore di riserva",
@@ -9248,6 +9248,16 @@
 "{0} kritische Artikel heute bestellen",
 "Ordina oggi {0} articoli critici",
 "اطلب {0} أصناف حرجة اليوم"
+],
+"Order {0} from Talho Central, arrives today": [
+"{0} bei Talho Central bestellen, Lieferung heute",
+"Ordina {0} da Talho Central, arriva oggi",
+"اطلب {0} من Talho Central، يصل اليوم"
+],
+"Order {0} from Talho Central, arrives tomorrow": [
+"{0} bei Talho Central bestellen, Lieferung morgen",
+"Ordina {0} da Talho Central, arriva domani",
+"اطلب {0} من Talho Central، يصل غدا"
 ],
 "Order {0} low item soon": [
 "{0} niedrigen Artikel bald bestellen",
@@ -16459,6 +16469,11 @@
 "sul conto",
 "في الفاتورة"
 ],
+"on time, {0} week average {1}": [
+"pünktlich, Durchschnitt über {0} Wochen {1}",
+"in orario, media su {0} settimane {1}",
+"في الموعد، ومتوسط {0} أسابيع {1}"
+],
 "one charge of {0} on the till, {1} postings on the folio.": [
 "eine Belastung über {0} an der Kasse, {1} Buchungen im Folio.",
 "un addebito di {0} alla cassa, {1} registrazioni nel folio.",
@@ -17519,6 +17534,11 @@
 "Consegna di {0} oggi alle {1} probabilmente in ritardo:",
 "توصيلة {0} اليوم الساعة {1} على الأرجح متأخرة:"
 ],
+"{0} delivery today {1}.": [
+"Lieferung von {0} heute {1}.",
+"Consegna di {0} oggi alle {1}.",
+"توصيلة {0} اليوم الساعة {1}."
+],
 "{0} delivery tomorrow {1} likely late": [
 "Lieferung von {0} morgen {1} wahrscheinlich verspätet",
 "Consegna di {0} domani alle {1} probabilmente in ritardo",
@@ -17528,6 +17548,11 @@
 "Lieferung von {0} morgen {1} wahrscheinlich verspätet:",
 "Consegna di {0} domani alle {1} probabilmente in ritardo:",
 "توصيلة {0} غدا الساعة {1} على الأرجح متأخرة:"
+],
+"{0} delivery tomorrow {1}.": [
+"Lieferung von {0} morgen {1}.",
+"Consegna di {0} domani alle {1}.",
+"توصيلة {0} غدا الساعة {1}."
 ],
 "{0} difference": [
 "{0} Differenz",
@@ -18128,6 +18153,11 @@
 "{0} weniger als in den {1} Tagen davor, Schätzung",
 "{0} in meno rispetto ai {1} giorni precedenti, stima",
 "أقل بـ{0} من الـ{1} يومًا السابقة، تقدير"
+],
+"{0} likely late": [
+"{0} wahrscheinlich verspätet",
+"{0} probabilmente in ritardo",
+"{0} على الأرجح متأخر"
 ],
 "{0} line at {1}": [
 "{0} Position in {1}",
@@ -18868,6 +18898,36 @@
 "{0} zu wenig",
 "mancano {0}",
 "نقص {0}"
+],
+"{0} short before breakfast today:": [
+"{0} fehlt heute vor das Frühstück:",
+"{0} manca oggi prima della colazione:",
+"{0} ينقص قبل الإفطار اليوم:"
+],
+"{0} short before breakfast tomorrow:": [
+"{0} fehlt morgen vor das Frühstück:",
+"{0} manca domani prima della colazione:",
+"{0} ينقص قبل الإفطار غدا:"
+],
+"{0} short before dinner today:": [
+"{0} fehlt heute vor das Abendessen:",
+"{0} manca oggi prima della cena:",
+"{0} ينقص قبل العشاء اليوم:"
+],
+"{0} short before dinner tomorrow:": [
+"{0} fehlt morgen vor das Abendessen:",
+"{0} manca domani prima della cena:",
+"{0} ينقص قبل العشاء غدا:"
+],
+"{0} short before lunch today:": [
+"{0} fehlt heute vor das Mittagessen:",
+"{0} manca oggi prima del pranzo:",
+"{0} ينقص قبل الغداء اليوم:"
+],
+"{0} short before lunch tomorrow:": [
+"{0} fehlt morgen vor das Mittagessen:",
+"{0} manca domani prima del pranzo:",
+"{0} ينقص قبل الغداء غدا:"
 ],
 "{0} short, {1}": [
 "{0} zu wenig, {1}",

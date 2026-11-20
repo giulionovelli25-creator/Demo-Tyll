@@ -50,6 +50,8 @@ Prepared 19 November 2026 from the Tyll demo (branch `feature/purchasing-stock-c
 | Draft credit request from the match | Working and tested | Sending it is logged, not emailed. |
 | Closing an order | Working, logic tested | |
 | Automatic ordering each morning with stated rules | Working and tested | Runs when the demo is opened that day, not on a server timer. |
+| Late delivery prediction: each supplier's on time record (weekday, after public holidays, order size, time slot, recent deliveries weigh more), an alert only when lateness would leave a service short, sent the evening before and before prep, with backup order, call, adjust prep and mark handled | Working and tested | Arrival history is simulated (12 weeks); new arrivals are recorded at goods in with one tap. Warnings go to the bell; emails are prepared, not sent. Backup orders are drafts that need approval. Predictions are labelled as predictions. |
+| Supplier reliability: on time rate, average delay, weekday pattern, confidence | Working and tested | Suppliers with under 8 deliveries show as learning. |
 | Procurement export: CSV and JSON for orders, receipts and invoices, with a field list | Working, logic tested | Field list: `docs/procurement-export.md`. Not connected to any group platform. |
 | Currencies EUR, AED and SAR per hotel; VAT for Portugal, UAE (5%) and Saudi Arabia (15%) | In progress | Formatting and VAT are built and tested; the demo hotel is in EUR, so no AED or SAR hotel is shown. |
 | Oracle Simphony, Lightspeed and SumUp connections; menu sync with "Needs a recipe" | Planned | Waiting for approval of the plan. |

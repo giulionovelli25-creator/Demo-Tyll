@@ -150,8 +150,9 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
       const when = r.date === DEMO_TODAY ? "today" : r.date === addDays(DEMO_TODAY, 1) ? "tomorrow" : fmtDate(r.date, true);
       out.push({
         id: `risk-${r.key}`, kind: "delivery", rag: r.severity === "red" ? "red" : "amber",
-        what: `${r.supplier} delivery ${when} ${fmtTime(minOf(r.window.from))} likely late`,
-        why: `${i.name} runs short before ${i.shortfall.service}${i.outletIds.length ? ` at ${i.outletIds.map((o) => outletById[o]?.name).join(" and ")}` : ""}. ${r.prediction.sentence} A prediction from the supplier's record.`,
+        // What hurts first, then why: a chef reads the item and the service before the supplier.
+        what: `${i.name} short before ${i.shortfall.service} ${when}: ${r.supplier} likely late`,
+        why: `${r.supplier} delivery ${when} ${fmtTime(minOf(r.window.from))}. ${r.prediction.sentence} A prediction from the supplier's record.`,
         where: i.outletIds.map((o) => outletById[o]?.name).join(", ") || propertyById[plan!.propertyId].name, outletId: i.outletIds[0], amount: r.valueAtRisk * rate, amountWord: "sales at risk, an estimate",
         next: { label: r.backup ? "Order from backup supplier" : "See the delivery", href },
         also: { label: "Call supplier", href },

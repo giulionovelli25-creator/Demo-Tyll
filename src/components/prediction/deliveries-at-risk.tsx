@@ -214,7 +214,7 @@ function RiskDetail({ r, mayHandle, mayOrder, mayReceive, propertyId }: { r: Ris
           <h3 className="text-[15px] font-medium text-ink">What to do</h3>
           {r.backup && mayOrder && (
             <Button variant="primary" className="w-full" disabled={busy} onClick={() => void send("backup", `Draft order at ${r.backup!.name}.`)}>
-              Order from {r.backup.name}, arrives {day(r.backup.arrives).toLowerCase()}
+              Order {fmtQty(r.backup.qty, r.backup.unit)} from {r.backup.name}, arrives {day(r.backup.arrives).toLowerCase()}
             </Button>
           )}
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">

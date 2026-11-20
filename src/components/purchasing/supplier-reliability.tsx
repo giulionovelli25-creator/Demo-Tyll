@@ -19,7 +19,7 @@ const SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const pct = (r: number | null) => (r === null ? "No deliveries" : `${Math.round(r * 100)}%`);
 const windowText = (w: string) => { const [a, b] = w.split(" to "); return a && b ? `${fmtTime(minOf(a))} to ${fmtTime(minOf(b))}` : w; };
 
-/** Lateness by weekday: one cell a day, darker the more often late. Each cell says its count, so colour is never alone. */
+/** Lateness by weekday: one cell a day, amber from one in three late, red from one in two. Each cell says its count, so colour is never alone. */
 function WeekdayPattern({ r }: { r: ReliabilityRow }) {
   return (
     <ol className="grid grid-cols-7 gap-1" aria-label={`Late deliveries by weekday, ${r.name}`}>
@@ -27,7 +27,7 @@ function WeekdayPattern({ r }: { r: ReliabilityRow }) {
         const c = r.byWeekday[d];
         const share = c.n ? c.late / c.n : 0;
         return (
-          <li key={d} title={c.n ? `${SHORT[d]}: late on ${c.late} of ${c.n}` : `${SHORT[d]}: no deliveries`} className={cn("flex flex-col items-center rounded-lg border px-0.5 py-1.5 text-center", !c.n ? "border-dashed border-line text-fog" : share >= 0.5 ? "border-neg/30 bg-neg-soft text-ink" : share >= 0.2 ? "border-warn/30 bg-warn-soft text-ink" : "border-line bg-paper text-graphite")}>
+          <li key={d} title={c.n ? `${SHORT[d]}: late on ${c.late} of ${c.n}` : `${SHORT[d]}: no deliveries`} className={cn("flex flex-col items-center rounded-lg border px-0.5 py-1.5 text-center", !c.n ? "border-dashed border-line text-fog" : share >= 0.5 ? "border-neg/30 bg-neg-soft text-ink" : share >= 1 / 3 ? "border-warn/30 bg-warn-soft text-ink" : "border-line bg-paper text-graphite")}>
             <span className="text-[11px] text-steel">{SHORT[d]}</span>
             <span className="num text-[12px]">{c.n ? `${c.late}/${c.n}` : "none"}</span>
           </li>
@@ -89,7 +89,7 @@ export function SupplierReliability({ tabs }: { tabs?: ReactNode }) {
               { label: "Least reliable", value: worst ? worst.name : "None", compare: { text: worst ? `${pct(worst.onTimeRate)} on time` : "", good: null } },
               { label: "Still being learned", value: learning.length, compare: { text: learning.length ? `${learning.map((r) => r.name).join(", ")}: under 8 deliveries` : "Every supplier has a record", good: null } },
             ]}
-            trend={<StripTrend goodWhen="up" title="On time per week, all suppliers" points={overall} format={fmt} summary={`Share of deliveries on time each week over ${data.weeks} weeks, all suppliers with a record.`} note="percent" series={known.slice(0, 2).map((r) => ({ id: r.supplierId, label: r.name, points: weekly(r), format: fmt, axis: "main", explain: `${r.name}: share of its deliveries on time each week.`, goodWhen: "up" as const }))} />}
+            trend={<StripTrend goodWhen="up" title="On time per week, all suppliers" points={overall} format={fmt} summary={`Share of deliveries on time each week over ${data.weeks} weeks, all suppliers with a record.`} note="percent" footer={(() => { const v = overall.filter((p) => p.value !== null); const last = v.at(-1)?.value, avg = v.length ? Math.round(v.reduce((t, p) => t + (p.value ?? 0), 0) / v.length) : null; return last != null && avg != null ? <>Last week <span className="num font-medium text-graphite">{last}%</span> on time, {data.weeks} week average {avg}%</> : null; })()} series={known.slice(0, 2).map((r) => ({ id: r.supplierId, label: r.name, points: weekly(r), format: fmt, axis: "main", explain: `${r.name}: share of its deliveries on time each week.`, goodWhen: "up" as const }))} />}
           />
           {tabs}
           <Panel title="Least reliable first" description="Each supplier's on time rate, how late it is when it is late, and the weekdays it runs late. Deliveries likely to be late show on Predictions under Deliveries at risk." action={<Segmented label="Period" size="sm" value={weeks} onChange={setWeeks} options={[{ value: "4", label: "4 weeks" }, { value: "12", label: "12 weeks" }]} />}>

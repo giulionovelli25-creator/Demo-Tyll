@@ -221,7 +221,7 @@ describe("the demo story", () => {
     const notices = loadStore().notify.notices.filter((n) => n.type === "late-delivery");
     expect(new Set(notices.map((n) => n.to))).toEqual(new Set(["u-buy", "u-chef", "u-rm"]));
     expect(notices).toHaveLength(3);
-    expect(notices[0].title).toMatch(/^Carnes Ribeiro & Filhos delivery tomorrow 07:00 likely late: Wagyu beef mince runs short before lunch$/);
+    expect(notices[0].title).toBe("Wagyu beef mince short before lunch tomorrow: Carnes Ribeiro & Filhos likely late");
     expect(notices[0].body).toContain("This is a prediction");
     const emails = loadStore().notify.emails.filter((e) => e.subject.includes("likely late"));
     expect(emails.length).toBe(3);

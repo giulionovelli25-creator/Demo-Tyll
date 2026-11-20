@@ -43,12 +43,14 @@ node node_modules/next/dist/bin/next build   # the first run can stop on the kno
 | Step | Status | Notes |
 |---|---|---|
 | 2. Learn the demo | done | Summary above |
-| 1. Delivery history and receiving | in progress | History, rules and server module built; goods in screen next |
-| 2. Prediction logic | done (logic) | `src/lib/domain/late-delivery.ts` |
-| 3. Only alert when it matters | done (logic) | `lateShortfall`, per service, prep times |
-| 4. Warn the right people | done (logic) | `ensureLateNotices`, evening and morning, bell and prepared email |
-| 5. Screens | to do | Predictions card, reliability tab, would arrive text, goods in |
-| 6. Demo story | done (data) | See "The demo story" |
+| 1. Delivery history and receiving | done | 12 weeks simulated; goods in one tap on `/staff?do=receive`; "It has arrived" in the drawer for Purchasing |
+| 2. Prediction logic | done | `src/lib/domain/late-delivery.ts`, tested |
+| 3. Only alert when it matters | done | `lateShortfall`, per service, prep times, lateness must be the cause |
+| 4. Warn the right people | done | Evening before and morning before prep, bell and prepared email, actions recorded with person and role |
+| 5. Screens | done | Deliveries at risk on `/forecast`, Reliability tab, alerts, would arrive text, goods in, translations (Arabic checked) |
+| 6. Demo story | done | Overview "Needs you today" number 1, worked example on `/forecast?open=late-example` |
+| Tests and screenshots | done | 24 new tests; `feature-screenshots/` |
+| Report | done | `FEATURE_REPORT.md` |
 
 ## Where things are
 
@@ -81,3 +83,9 @@ Why tonight's stock is low, all as ordinary records:
 10. **"Handled" is shared.** Once one person marks a delivery handled (and how), it is handled for the team: the alert moves to Resolved for everyone and the warning notices are closed. Resolve and snooze on Alerts stay per person, as before.
 11. **A lead time buffer for automatic ordering and Predictions.** When the order would arrive on a day the supplier is likely late by an hour or more, the order date moves a day earlier, with the reason ("Ordered a day early: Carnes Ribeiro & Filhos is often late on Saturdays."). Only the order date moves; stock health keeps its rules.
 12. **Delivery days.** The history keeps the dataset's delivery days for the suppliers that have them (meat, fish and produce daily; dry goods Monday and Thursday; drinks and wine Tuesday and Friday). They differ from the supplier terms on the Suppliers page; that difference was already in the demo and is left as it is.
+13. **Goods in on the phone is for the storekeeper.** The storekeeper is not one of the public demo's four roles, so in the public demo the Purchasing Manager records an arrival with "It has arrived" in the delivery's drawer. The phone screen was checked by signing in as the storekeeper on a copy of the branch outside public demo mode.
+14. **The alert leads with what hurts.** After walking through it as a head chef, the alert reads "Wagyu beef mince short before lunch tomorrow: Carnes Ribeiro & Filhos likely late", with the delivery and the record's sentence underneath. The bell warning reads the same way.
+15. **The backup order asks for the shortfall in whole packs** (2 kg on the demo date), not the whole delivery: the late delivery still comes later.
+16. **Supplier reliability shows the least reliable first**, four open, the rest folded with a one line summary; suppliers still being learned come last. The weekday cells are amber from one in three late and red from one in two, with the count in each cell so colour is never alone.
+17. **No Playwright here.** Screenshots were taken with the project's `scripts/screenshot.mjs`, which drives the installed Chrome, as on the overnight branch.
+18. **Screenshots moved to a separate headless browser.** While testing, the built in browser pane showed clicks the build did not make (most likely the owner using it), so the rest of the checks used the separate headless Chrome to keep out of the way.
