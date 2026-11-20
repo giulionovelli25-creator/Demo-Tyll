@@ -20,6 +20,8 @@ import { orderPack } from "../domain/inventory";
 import { stockFor, type SessionEntries } from "./stock";
 import { applyReceipt, ceilToPack, fullyReceived, outstanding, receiptLine } from "../domain/procurement";
 import { createPurchaseOrders } from "./procurement";
+import { leadBufferFor as bufferFor } from "../data/delivery-history";
+import { deliveryRiskFor, type RiskOut } from "./late-delivery";
 import type { ReceiptLine } from "../types";
 
 export type Result<T = object> = ({ ok: true } & T) | { ok: false; status: number; error: string };
@@ -278,6 +280,10 @@ export interface PlanItem {
   leadDays: number;
   shelfLifeDays: number;
   category: CategoryId | null;
+  /** Predicted use on each of the next three days, from tomorrow: what the late delivery check splits by service. */
+  needByDay: number[];
+  /** An unreliable supplier: the order goes a day early, and why (lib/domain/late-delivery.ts). */
+  leadBuffer: { days: number; why: string } | null;
 }
 
 export interface PlanCategory {
@@ -308,6 +314,8 @@ export interface MonthPlanOut {
     swing: number;
     confidence: ConfidenceLevel;
   };
+  /** Coming deliveries, what each supplier's record predicts and whether lateness would leave a service short. */
+  risk: RiskOut | null;
 }
 
 const monthEnd = (iso: string) => {
@@ -369,7 +377,11 @@ export function monthPlanFor(user: User, propertyId: string, entries: SessionEnt
     const deliveries = orderQty > 0 ? Math.max(1, Math.ceil(days.length / keeps)) : 0;
     const quote = quotesFor(g.id, propertyId, DEMO_TODAY)[0];
     const lead = g.leadDays;
-    const latest = runOutDate ? addDays(runOutDate, -lead) : addDays(period.to, -lead);
+    const plain = runOutDate ? addDays(runOutDate, -lead) : addDays(period.to, -lead);
+    // A supplier often late on the day this order would arrive gets it a day earlier, so lateness does not empty the shelf.
+    const arrival = addDays(plain < DEMO_TODAY ? DEMO_TODAY : plain, lead);
+    const leadBuffer = orderQty > 0 && runOutDate ? bufferFor(quote.supplierId, arrival) : null;
+    const latest = leadBuffer ? addDays(plain, -leadBuffer.days) : plain;
     const orderBy = orderQty > 0 ? (latest < DEMO_TODAY ? DEMO_TODAY : latest) : null;
     const daysUntilOut = runOutDate ? Math.max(0, diffDays(runOutDate, DEMO_TODAY)) : null;
     const usedAtAll = predicted > 1e-9 || row.avgDaily > 0;
@@ -382,6 +394,7 @@ export function monthPlanFor(user: User, propertyId: string, entries: SessionEnt
       lastFourWeeks: past.get(g.id) ?? 0, incoming, buffer, orderQty, cost: Math.round(orderQty * quote.unitPrice * 100) / 100,
       nextQty, nextCost: Math.round(nextQty * quote.unitPrice * 100) / 100, deliveries, orderBy, supplierId: quote.supplierId, unitPrice: quote.unitPrice,
       leadDays: lead, shelfLifeDays: g.shelfLifeDays, category: categoryOf(g.id),
+      needByDay: use.slice(0, 3), leadBuffer,
     };
   });
 
@@ -417,6 +430,7 @@ export function monthPlanFor(user: User, propertyId: string, entries: SessionEnt
         occupancy: occupancyAhead(data.occupancy, propertyId),
         bookedShare, swing, confidence: confidenceOf(bookedShare, swing),
       },
+      risk: can(user, "deliveries.view") ? deliveryRiskFor(user, propertyId, items) : null,
     },
   };
 }

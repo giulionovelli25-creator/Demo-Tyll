@@ -73,6 +73,8 @@ export interface Shape {
   waiterCoaching?: WaiterCoaching[];
   /** Empty wine and spirit bottles scanned by staff before binning, with who and which role. Over pouring counts them. */
   emptyScans?: EmptyScan[];
+  /** Late delivery prediction: arrivals recorded at goods in, what people did about deliveries at risk, warnings sent. */
+  lateDelivery?: import("./late-delivery").LateShape;
   /** Investigation decisions, stock cases, recounts, standards, delivery differences, prices, approvals, order status. */
   records?: RecordsShape;
   /** The business date the records were last moved to, and the shape of the demo data they were built for. */

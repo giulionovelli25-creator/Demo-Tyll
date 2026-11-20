@@ -4,6 +4,7 @@ import { buildMonthOrder, monthPlanFor } from "@/lib/server/purchasing";
 import { cleanEntries } from "@/lib/server/stock";
 import { ensureAutoRun } from "@/lib/server/auto-order";
 import { allowedProperties } from "@/lib/domain/access";
+import { ensureDeliveryStory, warnFromPlan } from "@/lib/server/late-delivery";
 
 /** The Stock page's plan to month end. action "build" also creates or updates a draft purchase order. */
 export async function POST(req: NextRequest) {
@@ -22,6 +23,9 @@ export async function POST(req: NextRequest) {
     const r = buildMonthOrder(g.user, propertyId, entries, quantities);
     return r.ok ? json({ request: r.request, lines: r.lines, total: r.total }) : json({ error: r.error }, r.status);
   }
+  ensureDeliveryStory();
   const r = monthPlanFor(g.user, propertyId, entries);
+  // Deliveries likely to be late that would leave a service short: the bell and a prepared email, once per phase.
+  if (r.ok) warnFromPlan(propertyId, r.plan.items);
   return r.ok ? json({ plan: r.plan }) : json({ error: r.error }, r.status);
 }

@@ -20,6 +20,12 @@ export const ROOM_STORY = { room: "1412", folioRoom: "1421", checkoutMin: 24 * 6
  * so the right answer to the flag is "Counted: the stock is on the shelf", and to order less. The check flags it every day.
  */
 export const BOUGHT_STORY = { ingredientId: "coke", extraPerDelivery: 72, fromDay: -24 } as const;
+/**
+ * Late delivery prediction: today's meat delivery from Carnes Ribeiro & Filhos came with no Wagyu mince (not charged);
+ * the 5 kg are owed with tomorrow's delivery, which the supplier's record says is likely to be late. Mercado's chef also
+ * threw away the Wagyu from the fridge that lost temperature this afternoon, which leaves about `tonight` kg for tomorrow.
+ */
+export const WAGYU_STORY = { ingredientId: "wagyu", supplierId: "meat", backupId: "meat-alt", owed: 5, tonight: 2.4 } as const;
 export const BOUGHT_STORY_EXCEPTION_ID = `EX-BU-LIS-COKE-${mmdd(DEMO_TODAY)}`;
 /**
  * Drinks per guest by waiter: on evening shifts at Mercado, Rahul Okafor (POS login MER-S1) sells fewer drinks than the

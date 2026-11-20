@@ -47,7 +47,7 @@ export function resetDemo(user: User, raw: unknown): { ok: true; scope: ResetSco
   mutateStore((x) => {
     const six = seedStage6();
     if (has("stock")) { x.stockLog = six.stockLog; x.stockTakes = []; x.cashUps = []; x.boughtUsedChecks = []; x.waiterCoaching = []; x.emptyScans = []; }
-    if (has("purchasing") || has("events")) { x.requests = seedRequests(); x.plans = []; x.finance = six.finance; x.seq = x.requests.length; x.autoOrder = defaultAuto(); x.procurement = seedProcurement(); }
+    if (has("purchasing") || has("events")) { x.requests = seedRequests(); x.plans = []; x.finance = six.finance; x.seq = x.requests.length; x.autoOrder = defaultAuto(); x.procurement = seedProcurement(); x.lateDelivery = undefined; }
     if (has("events") || has("sales")) { const ops = seedOps(); x.events = ops.events; x.support = ops.support; x.assignments = ops.assignments; Object.assign(x.counters, ops.counters); for (const k of Object.keys(x.counters)) if (/^(SR|EVT)-/.test(k) && !(k in ops.counters)) delete x.counters[k]; }
     if (has("sales")) x.sales = six.sales;
     if (has("guest")) x.guest = seedGuest();

@@ -33,6 +33,7 @@ const PERMISSION_LABEL: Record<Permission, string | null> = {
   "roomcharge.view": "See the room charge check", "till.view": "See the till rule check", "covers.view": "See booked against billed covers",
   "guests.view": "See hotel guests against outlet charges", "waiters.view": "See drinks per guest by waiter", "waiters.coach": "Record coaching",
   "adapters.view": "See the POS and PMS adapters on sample data",
+  "deliveries.view": "See deliveries at risk of arriving late", "deliveries.handle": "Act on a late delivery",
   "reports.export": "Export reports", "settings.audit": "See the audit trail", "settings.reset": null,
   "purchase.create": null, "purchase.review": null, "purchase.approveFinance": null, "purchase.approveFnb": null, "purchase.approveManager": null, "purchase.receive": null,
   "prep.plan": null, "prep.complete": null, "events.plan": null, "staff.request": null, "staff.lend": null, "rooms.view": null, "hk.manage": null, "hk.clean": null,

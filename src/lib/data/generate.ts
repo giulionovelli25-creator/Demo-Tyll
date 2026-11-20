@@ -45,7 +45,7 @@ export interface Dataset {
 }
 
 import {
-  BREAKFAST_EXAMPLE, BREAKFAST_EXAMPLE_EXCEPTION_ID, BREAKFAST_EXAMPLE_VISIT_ID, BREAKFAST_STORY, BREAKFAST_STORY_EXCEPTION_ID, BREAKFAST_STORY_VISIT_ID, BOUGHT_STORY, COVERS_EXAMPLE, COVERS_EXAMPLE_BOOKING_ID, COVERS_EXAMPLE_EXCEPTION_ID, COVERS_STORY, COVERS_STORY_BOOKING_ID, COVERS_STORY_EXCEPTION_ID, HERO_EXCEPTION_ID, HERO_ORDER_ID, MIX_HISTORY, MIX_STORY, MIX_STORY_EXCEPTION_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID,
+  BREAKFAST_EXAMPLE, BREAKFAST_EXAMPLE_EXCEPTION_ID, BREAKFAST_EXAMPLE_VISIT_ID, BREAKFAST_STORY, BREAKFAST_STORY_EXCEPTION_ID, BREAKFAST_STORY_VISIT_ID, BOUGHT_STORY, COVERS_EXAMPLE, COVERS_EXAMPLE_BOOKING_ID, COVERS_EXAMPLE_EXCEPTION_ID, COVERS_STORY, COVERS_STORY_BOOKING_ID, COVERS_STORY_EXCEPTION_ID, HERO_EXCEPTION_ID, HERO_ORDER_ID, MIX_HISTORY, MIX_STORY, MIX_STORY_EXCEPTION_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID, WAGYU_STORY,
   TILL_PRICE_ORDER_ID, TILL_RING_ORDER_ID, TILL_STORY_EXCEPTION_ID, TILL_STORY_ORDER_ID, WAITER_STORY,
 } from "./constants";
 import { MIX_LABELS, MIX_OUTLETS, detectMix, perBottle } from "../domain/till-rules";
@@ -934,6 +934,17 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
           // The 30 kg of chicken for Thursday's conference came with the same delivery (issued today as T-7).
           const chicken = lines.find((l) => l.ingredientId === "chicken");
           if (chicken) for (const k of ["ordered", "delivered", "invoiced"] as const) chicken[k] += 30;
+        }
+        // Late delivery story (lib/server/late-delivery.ts): today's meat delivery came with no Wagyu mince, and the supplier
+        // did not charge it. Goods in recorded the difference (a saved record, seeded on the server), and the 5 kg are owed
+        // with tomorrow's delivery, so tomorrow's lunch depends on that delivery arriving on time.
+        if (p.id === "lis" && supplierId === WAGYU_STORY.supplierId && date === DEMO_TODAY) {
+          const wagyu = lines.find((l) => l.ingredientId === WAGYU_STORY.ingredientId);
+          if (wagyu) wagyu.invoiced = 0;
+        }
+        if (p.id === "lis" && supplierId === WAGYU_STORY.supplierId && date === addDays(DEMO_TODAY, 1)) {
+          const wagyu = lines.find((l) => l.ingredientId === WAGYU_STORY.ingredientId);
+          if (wagyu) wagyu.ordered += WAGYU_STORY.owed;
         }
         // Bought against used: a standing order adds three cases of Coca-Cola to every drinks delivery, whatever the bars
         // need. The cases go into the main store, where the weekly counts find them (see storyOnShelf).
