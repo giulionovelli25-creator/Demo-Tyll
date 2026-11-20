@@ -257,7 +257,8 @@ export type ExceptionType =
   | "bill_reopened"
   | "cheaper_item_rung"
   | "price_override"
-  | "duplicate_ring";
+  | "duplicate_ring"
+  | "seated_no_bill";
 
 export interface Exception {
   id: string;
@@ -285,6 +286,65 @@ export interface Exception {
   boughtUsed?: BoughtUsedEvidence;
   /** For a cheaper item rung up: the week of bottles issued against what was billed. */
   mix?: MixEvidence;
+  /** For a seated table with no bill: the booking from the reservation book and the bills around it. */
+  booking?: BookingEvidence;
+}
+
+/** The meal a booking or a bill belongs to, by the time it starts. */
+export type Service = "breakfast" | "lunch" | "dinner";
+
+/**
+ * One booking in an outlet's reservation book (simulated, server only). Seated bookings carry the times the host marked
+ * the table seated and finished; no-shows and cancellations never sat down.
+ */
+export interface Booking {
+  id: string;
+  outletId: string;
+  date: string;
+  service: Service;
+  /** Guests on the booking. */
+  party: number;
+  table: string;
+  /** The time booked for, in minutes from midnight. */
+  bookedFor: number;
+  status: "seated" | "no_show" | "cancelled";
+  seatedMin?: number;
+  /** When the host marked the table finished. */
+  leftMin?: number;
+  via: "phone" | "online" | "concierge";
+  /** When the booking was made by a hotel guest: the room. */
+  room?: string;
+}
+
+/** A bill near a booking with no bill, as the case page lists it. */
+export interface NearbyBill {
+  orderId: string;
+  table: string;
+  openMin: number;
+  closeMin: number;
+  covers: number;
+}
+
+/** The facts behind a seated table with no bill. */
+export interface BookingEvidence {
+  bookingId: string;
+  service: Service;
+  table: string;
+  party: number;
+  bookedFor: number;
+  seatedMin: number;
+  leftMin?: number;
+  via: Booking["via"];
+  room?: string;
+  /** The window searched for a bill at the table, in minutes from midnight. */
+  from: number;
+  to: number;
+  /** Other bills at the same table that day, all outside the window. */
+  atTable: NearbyBill[];
+  /** Bills opened elsewhere at the outlet near the seating time, none for a party of this size. */
+  nearby: NearbyBill[];
+  /** The outlet's average spend per guest at this service over the days before, the basis of the estimate. */
+  spendPerGuest: number;
 }
 
 /** A week of premium bottles issued to a bar against the premium serves billed, and the cheaper serve billed beside them. */

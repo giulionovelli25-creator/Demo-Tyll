@@ -58,7 +58,7 @@ export const SECTIONS: NavSection[] = [
   {
     id: "revenue", title: "Revenue and reconciliation", icon: Banknote, tone: "violet",
     items: [
-      { id: "revenue", label: "Revenue", href: "/money", icon: Banknote, also: ["/money?tab=outlets", "/money?tab=waiters"] },
+      { id: "revenue", label: "Revenue", href: "/money", icon: Banknote, also: ["/money?tab=outlets", "/money?tab=waiters", "/money?tab=covers"] },
       { id: "flags", label: "Flagged transactions", short: "Flags", href: "/money?tab=flags", icon: Flag, also: ["/money?tab=mistakes", "/money?tab=cash", "/money?tab=rooms", "/money?tab=till"] },
       { id: "reports", label: "Reports", href: "/reports", icon: FileText },
     ],

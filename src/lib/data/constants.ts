@@ -52,3 +52,17 @@ export const MIX_HISTORY = { outletId: "lis-lobby", labelId: "gin", extraPerDay:
 export const TILL_PRICE_ORDER_ID = `IRD-${mmdd(rel(-2))}-301`;
 export const TILL_RING_ORDER_ID = `AZU-${mmdd(rel(-2))}-301`;
 export const TILL_EXAMPLE_EXCEPTION_IDS = [`EX-${TILL_PRICE_ORDER_ID}`, `EX-${TILL_RING_ORDER_ID}`];
+/**
+ * Booked against billed covers (overnight feature 6). The worked example: last night at Mercado a booking for four, made
+ * by phone by the guest in room 1108, was seated at 8:12 PM and marked finished at 10:04 PM, and no bill was opened at its
+ * table that evening, nor for a party of that size anywhere near the time. The table is the first of `tables` with no
+ * bill near the time (bills pick their tables at random). The checked example, two days ago at lunch: a booking for four
+ * with no bill at its table; the guests had joined colleagues already seated and paid on their bill (legitimate). Both
+ * parties are larger than any walk-in bill at Mercado, so no bill nearby can be theirs.
+ */
+export const COVERS_STORY = { outletId: "lis-terrace", date: -1, party: 4, bookedFor: 20 * 60, seatedMin: 20 * 60 + 12, leftMin: 22 * 60 + 4, room: "1108", tables: [31, 27, 35, 23, 39, 19, 11, 6] } as const;
+export const COVERS_EXAMPLE = { outletId: "lis-terrace", date: -2, party: 4, bookedFor: 13 * 60, seatedMin: 13 * 60 + 5, leftMin: 14 * 60 + 18, tables: [12, 16, 8, 29, 33, 4] } as const;
+export const COVERS_STORY_BOOKING_ID = `BK-MER-${mmdd(rel(-1))}-90`;
+export const COVERS_STORY_EXCEPTION_ID = `EX-${COVERS_STORY_BOOKING_ID}`;
+export const COVERS_EXAMPLE_BOOKING_ID = `BK-MER-${mmdd(rel(-2))}-90`;
+export const COVERS_EXAMPLE_EXCEPTION_ID = `EX-${COVERS_EXAMPLE_BOOKING_ID}`;

@@ -47,6 +47,7 @@ export const TYPE_LABEL: Record<ExceptionType, string> = {
   cheaper_item_rung: "Cheaper item rung up",
   price_override: "Open item or price set by hand",
   duplicate_ring: "Rung twice or unusual quantity",
+  seated_no_bill: "Seated table with no bill",
 };
 
 export const REMOVAL_TYPES: ExceptionType[] = ["removed_after_dispatch", "prepared_not_charged", "bill_mismatch"];

@@ -1,7 +1,7 @@
 // Builds the simulated demo dataset. Deterministic: the same records are produced on every load.
 // Everything here is fictional and stands in for what POS, PMS and stock adapters would supply.
 import type {
-  Arrival, Attendant, BottleIssue, CountRecord, DayItem, DayOutlet, Delivery, Exception, GuestRequest, HotelEvent, InvestigationState,
+  Arrival, Attendant, Booking, BottleIssue, CountRecord, DayItem, DayOutlet, Delivery, Exception, GuestRequest, HotelEvent, InvestigationState,
   LiveOrder, OccupancyDay, Order, OrderLine, Outcome, Outlet, ReservationDay, Room, RoomCharge, RoomStatus, Transfer, WasteLog, WasteReason,
 } from "../types";
 import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, eachDay, isWeekend, rng, round2, weekday, rel } from "../util";
@@ -34,15 +34,18 @@ export interface Dataset {
   requests: GuestRequest[];
   /** Premium bottles issued to the bar, one for each empty handed back. Server only: the till rule check reads it. */
   bottleIssues: BottleIssue[];
+  /** The reservation book, booking by booking, for closed days. Server only: the booked against billed check reads it. */
+  bookings: Booking[];
   /** Sent to the browser instead of raw order history, for Flow's delay estimates. */
   prepRatios?: Record<string, number>;
 }
 
 import {
-  BOUGHT_STORY, HERO_EXCEPTION_ID, HERO_ORDER_ID, MIX_HISTORY, MIX_STORY, MIX_STORY_EXCEPTION_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID,
+  BOUGHT_STORY, COVERS_EXAMPLE, COVERS_EXAMPLE_BOOKING_ID, COVERS_EXAMPLE_EXCEPTION_ID, COVERS_STORY, COVERS_STORY_BOOKING_ID, COVERS_STORY_EXCEPTION_ID, HERO_EXCEPTION_ID, HERO_ORDER_ID, MIX_HISTORY, MIX_STORY, MIX_STORY_EXCEPTION_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID,
   TILL_PRICE_ORDER_ID, TILL_RING_ORDER_ID, TILL_STORY_EXCEPTION_ID, TILL_STORY_ORDER_ID, WAITER_STORY,
 } from "./constants";
 import { MIX_LABELS, MIX_OUTLETS, detectMix, perBottle } from "../domain/till-rules";
+import { COVER_RULES, detectSeatedNoBill, matchBookings, serviceOf } from "../domain/covers";
 import { billFacts } from "../domain/waiters";
 import { shiftOf } from "../domain/pour";
 import { SCENARIOS, buildOutletStock, latestPeriods, type OutletStock } from "./outlet-stock";
@@ -643,6 +646,20 @@ const TILL_CLOSING: Partial<Record<Exception["type"], { weights: Record<Outcome,
       inconclusive: "The guest had left and nobody on shift could say. Closed without a finding.",
     },
   },
+  // A seated table with no bill: most turn out to be a party that paid on another table's bill. Recovered only when the
+  // booking was made by a hotel guest (the meal can go on the room); see `closingOf`.
+  seated_no_bill: {
+    weights: { legitimate: 0.55, confirmed_loss: 0.15, recovered: 0.2, inconclusive: 0.1 },
+    text: {
+      legitimate: [
+        "The party joined friends at another table and paid on that bill. Checked with the server.",
+        "The host had marked the wrong booking as seated. The bill for the table was under the walk-in's name.",
+      ],
+      confirmed_loss: "The table was served and left without paying. Recorded as a loss; the host now checks for a bill before marking a table finished.",
+      recovered: "The guests were staying in the hotel. The meal was added to their room with their agreement.",
+      inconclusive: "Nobody on shift remembered the table. Closed without a finding.",
+    },
+  },
   cheaper_item_rung: {
     weights: { legitimate: 0.3, confirmed_loss: 0.55, recovered: 0, inconclusive: 0.15 },
     text: {
@@ -654,7 +671,15 @@ const TILL_CLOSING: Partial<Record<Exception["type"], { weights: Record<Outcome,
   },
 };
 
+/** How a past case of this type closes. A table with no bill can only be recovered on the room of a hotel guest who booked. */
+function closingOf(e: Exception) {
+  const c = TILL_CLOSING[e.type];
+  if (!c || e.type !== "seated_no_bill" || e.booking?.room) return c;
+  return { ...c, weights: { ...c.weights, recovered: 0 } };
+}
+
 const TILL_EXAMPLES: Record<string, { outcome: Outcome; note: string }> = {
+  [COVERS_EXAMPLE_EXCEPTION_ID]: { outcome: "legitimate", note: "The four guests joined colleagues who were already seated at another table and paid on their bill. Checked with the server on that section." },
   [`EX-${TILL_PRICE_ORDER_ID}`]: { outcome: "confirmed_loss", note: "Charged below the menu without agreement. Recorded as a loss; open prices now need a manager's code at this till." },
   [`EX-${TILL_RING_ORDER_ID}`]: { outcome: "legitimate", note: "The guests confirmed 12 cappuccinos: colleagues joined them at the table after the order was taken. Everything on the bill was served." },
 };
@@ -666,7 +691,7 @@ function seedInvestigation(e: Exception): InvestigationState {
   const supervisor = code ? `${code}-S6` : "u-fc";
   const age = diffDays(DEMO_TODAY, e.date);
   const roomCharge = e.type.startsWith("room_charge");
-  const till = TILL_CLOSING[e.type];
+  const till = closingOf(e);
   const closed = (): InvestigationState => {
     const outcome = till ? r.weighted(OUTCOMES, (x) => till.weights[x]) : roomCharge
       ? r.weighted(["recovered", "legitimate", "confirmed_loss", "inconclusive"] as const, (x) => ({ recovered: 0.7, legitimate: 0.15, confirmed_loss: 0.12, inconclusive: 0.03 })[x])
@@ -690,14 +715,14 @@ function seedInvestigation(e: Exception): InvestigationState {
       closedAt, closedBy: by, notes: [{ at: closedAt, by, text: said }],
     };
   };
-  // The two checked till examples: closed yesterday by the outlet's manager, with what they found.
+  // The checked examples (two till rules, one covers): closed the day after by the outlet's manager, with what they found.
   const example = TILL_EXAMPLES[e.id];
   if (example) {
     const by = `${code}-S7`;
     const closedAt = addDays(e.date, 1);
     return { status: "closed", assigneeId: by, deadline: addDays(e.date, 3), outcome: example.outcome, confirmedLoss: example.outcome === "confirmed_loss" ? e.exposure : 0, recovered: 0, closedAt, closedBy: by, notes: [{ at: closedAt, by, text: example.note }] };
   }
-  if (e.id === HERO_EXCEPTION_ID || e.id === ROOM_STORY_EXCEPTION_ID || e.id === TILL_STORY_EXCEPTION_ID || e.id === MIX_STORY_EXCEPTION_ID) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
+  if (e.id === HERO_EXCEPTION_ID || e.id === ROOM_STORY_EXCEPTION_ID || e.id === TILL_STORY_EXCEPTION_ID || e.id === MIX_STORY_EXCEPTION_ID || e.id === COVERS_STORY_EXCEPTION_ID) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
   if (age > 6) return closed();
   // The front office settles posting differences at the night audit, so only today's are still open. The worked example
   // survived it: nothing failed, the posting simply sat on another guest's folio.
@@ -947,6 +972,106 @@ function buildContext(dayOutlets: DayOutlet[]): { occupancy: OccupancyDay[]; res
   return { occupancy, reservations, events };
 }
 
+/**
+ * How often the simulated reservation book holds something the covers check looks at. Per booking: a party one guest
+ * bigger or smaller than booked, a party seated at another table than the one booked, two bookings seated together on
+ * one bill. Per outlet and day: a party that left before ordering, and a seated booking whose table never got a bill
+ * (rare: two or three a month, most of them explained when checked).
+ */
+export const BOOKING_RATES = { sizeChange: 0.12, moved: 0.05, joined: 0.03, leftEarlyPerDay: 0.2, noBillPerDay: 0.12, noShowShare: 0.06, cancelledPerDay: 2 } as const;
+const VIA: Booking["via"][] = ["phone", "online", "online", "concierge"];
+
+/** A table at the outlet with no bill opened from `from` to `to` that day: the first free one of `prefer`. */
+function freeTable(bills: readonly Order[], date: string, outletId: string, from: number, to: number, prefer: readonly number[]): string {
+  const busy = new Set(bills.filter((o) => o.outletId === outletId && o.date === date && o.openMin >= from - 120 && o.openMin <= to).map((o) => o.table));
+  const n = prefer.find((t) => !busy.has(`Table ${t}`)) ?? prefer[0];
+  return `Table ${n}`;
+}
+
+/**
+ * The reservation book of each outlet that takes bookings, for every closed day. Built from that day's lunch and dinner
+ * bills, from its own random stream, so no bill changes: most bookings are a bill's party (sometimes a guest more or
+ * less), seated a few minutes before the bill was opened. Booked covers each day add up exactly to the reservation book
+ * figure Predictions uses (`ReservationDay`): the bookings that sat down plus the no-shows. Breakfast is hotel guests
+ * walking in, so it takes no bookings. A few seated bookings have no bill (the stories and `noBillPerDay`), and a few
+ * parties leave before ordering; neither changes a bill.
+ */
+function buildBookings(orders: readonly Order[], reservations: readonly ReservationDay[]): Booking[] {
+  const out: Booking[] = [];
+  const target = new Map(reservations.map((r) => [`${r.outletId}|${r.date}`, r.covers]));
+  const byDay = new Map<string, Order[]>();
+  for (const o of orders) byDay.set(`${o.outletId}|${o.date}`, [...(byDay.get(`${o.outletId}|${o.date}`) ?? []), o]);
+  const days = eachDay({ from: DATA_START, to: rel(-1) });
+  for (const outlet of OUTLETS.filter((x) => x.reservable)) {
+    for (const date of days) {
+      const r = rng(`book|${outlet.id}|${date}`);
+      const mmdd = `${date.slice(5, 7)}${date.slice(8, 10)}`;
+      let seq = 0;
+      let left = target.get(`${outlet.id}|${date}`) ?? 0;
+      const bills = byDay.get(`${outlet.id}|${date}`) ?? [];
+      const add = (b: Omit<Booking, "id" | "outletId" | "date" | "service" | "via"> & { id?: string; via?: Booking["via"] }) => {
+        const booking: Booking = { id: b.id ?? `BK-${outlet.code}-${mmdd}-${String(++seq).padStart(2, "0")}`, outletId: outlet.id, date, service: serviceOf(b.bookedFor), via: b.via ?? r.pick(VIA), ...b } as Booking;
+        out.push(booking);
+        if (booking.status !== "cancelled") left -= booking.party;
+        return booking;
+      };
+      const roomOf = () => (r.chance(0.3) ? String(r.int(3, 24) * 100 + r.int(1, 28)) : undefined);
+      const quarter = (min: number) => Math.round(min / 15) * 15;
+
+      // The worked example (last night) and the checked example (two days ago): seated, and no bill at the table.
+      for (const st of [{ ...COVERS_STORY, id: COVERS_STORY_BOOKING_ID }, { ...COVERS_EXAMPLE, id: COVERS_EXAMPLE_BOOKING_ID, room: undefined }]) {
+        if (outlet.id !== st.outletId || date !== rel(st.date)) continue;
+        const table = freeTable(orders, date, outlet.id, st.seatedMin - COVER_RULES.beforeSeat, st.leftMin, st.tables);
+        add({ id: st.id, party: st.party, table, bookedFor: st.bookedFor, status: "seated", seatedMin: st.seatedMin, leftMin: st.leftMin, via: "phone", room: st.room });
+      }
+      // A seated table with no bill, rarely, and a party that left before ordering.
+      const extra = (stay: [number, number], party: [number, number]) => {
+        const dinner = r.chance(0.65);
+        const seatedMin = dinner ? r.int(19 * 60 + 15, 21 * 60 + 30) : r.int(12 * 60 + 30, 14 * 60);
+        add({ party: r.int(party[0], party[1]), table: `Table ${r.int(1, 42)}`, bookedFor: quarter(seatedMin - r.int(0, 12)), status: "seated", seatedMin, leftMin: seatedMin + r.int(stay[0], stay[1]), room: roomOf() });
+      };
+      if (r.chance(BOOKING_RATES.noBillPerDay)) extra([55, 120], [2, 5]);
+      if (r.chance(BOOKING_RATES.leftEarlyPerDay)) extra([6, COVER_RULES.leftEarly - 3], [2, 4]);
+      // No-shows: a share of the book that never came.
+      const noShowGuests = Math.round(left * BOOKING_RATES.noShowShare);
+      for (let g = noShowGuests; g > 0;) {
+        const party = Math.min(g, r.int(1, 3));
+        const at = r.chance(0.65) ? r.int(19 * 60, 21 * 60) : r.int(12 * 60 + 30, 14 * 60);
+        add({ party, table: `Table ${r.int(1, 42)}`, bookedFor: quarter(at), status: "no_show", room: roomOf() });
+        g -= party;
+      }
+      // The rest of the book: the parties of lunch and dinner bills, taken in a random order until the day's figure is met.
+      const meals = bills.filter((o) => !o.voided && serviceOf(o.openMin) !== "breakfast").map((o) => ({ o, k: r.next() })).sort((a, b) => a.k - b.k).map((x) => x.o);
+      for (const o of meals) {
+        if (left <= 0) break;
+        const seatedMin = o.openMin - r.int(1, 6);
+        const leftMin = o.closeMin + r.int(2, 12);
+        const bookedFor = quarter(seatedMin - r.int(-8, 12));
+        if (o.covers >= 2 && r.chance(BOOKING_RATES.joined)) {
+          // Two bookings that sat together and paid on one bill.
+          const a = r.int(1, o.covers - 1);
+          if (o.covers > left) continue;
+          add({ party: a, table: o.table, bookedFor, status: "seated", seatedMin, leftMin, room: roomOf() });
+          add({ party: o.covers - a, table: o.table, bookedFor, status: "seated", seatedMin: seatedMin + r.int(0, 8), leftMin, room: roomOf() });
+          continue;
+        }
+        const party = Math.max(1, o.covers + (r.chance(BOOKING_RATES.sizeChange) ? (r.chance(0.5) ? 1 : -1) : 0));
+        if (party > left) continue;
+        const table = r.chance(BOOKING_RATES.moved) ? `Table ${r.int(1, 42)}` : o.table;
+        add({ party, table, bookedFor, status: "seated", seatedMin, leftMin, room: roomOf() });
+      }
+      // Whatever the bills could not fill is booked and never came, so the day adds up to the reservation book.
+      while (left > 0) {
+        const party = Math.min(left, 4);
+        add({ party, table: `Table ${r.int(1, 42)}`, bookedFor: quarter(r.int(19 * 60, 21 * 60)), status: "no_show", room: roomOf() });
+      }
+      // Cancellations are in the book, never in its figure.
+      for (let i = r.int(0, BOOKING_RATES.cancelledPerDay); i > 0; i--) add({ party: r.int(2, 4), table: `Table ${r.int(1, 42)}`, bookedFor: quarter(r.int(12 * 60 + 30, 21 * 60)), status: "cancelled" });
+    }
+  }
+  return out;
+}
+
 function buildLiveOrders(): LiveOrder[] {
   const out: LiveOrder[] = [];
   for (const o of OUTLETS) {
@@ -1074,7 +1199,12 @@ export function getDataset(): Dataset {
   const bottleIssues = buildBottleIssues(orders);
   const mixed = detectMix(dayItems, bottleIssues, DEMO_TODAY);
   for (const e of mixed) seedInvestigations[e.id] = seedInvestigation(e);
-  const exceptions = [...flagged, ...variances, ...mixed];
+  // Booked against billed covers: each seated booking on a closed day against the bills at its table.
+  const context = buildContext(dayOutlets);
+  const bookings = buildBookings(orders, context.reservations);
+  const seated = detectSeatedNoBill(bookings, orders, matchBookings(bookings, orders));
+  for (const e of seated) seedInvestigations[e.id] = seedInvestigation(e);
+  const exceptions = [...flagged, ...variances, ...mixed, ...seated];
   const deliveries = buildDeliveries(dayItems);
   cached = {
     orders,
@@ -1089,10 +1219,11 @@ export function getDataset(): Dataset {
     counts: buildCounts(orders, dayItems, deliveries),
     deliveries,
     transfers: buildTransfers(),
-    ...buildContext(dayOutlets),
+    ...context,
     liveOrders: buildLiveOrders(),
     ...buildRooms(),
     bottleIssues,
+    bookings,
   };
   return cached;
 }

@@ -8,7 +8,7 @@ import type { Dataset } from "./generate";
 let current: Dataset | null = null;
 
 export function hydrateDataset(s: Snapshot): Dataset {
-  current = { ...s, orders: [], ordersById: new Map(), bottleIssues: [], chargesById: new Map(s.roomCharges.map((c) => [c.id, c])) };
+  current = { ...s, orders: [], ordersById: new Map(), bottleIssues: [], bookings: [], chargesById: new Map(s.roomCharges.map((c) => [c.id, c])) };
   return current;
 }
 

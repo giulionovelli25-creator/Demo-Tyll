@@ -17,7 +17,8 @@ import { BOUGHT_USED_CAUSES } from "@/lib/domain/bought-used";
 import { assignablePeople, personName, useCtx, useInvestigations, useOrder, usePatterns, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { AMOUNT_OUTCOMES, GUEST_OUTCOME_HELP, OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL, STOCK_OUTCOME_HELP } from "@/lib/labels";
-import type { BoughtUsedEvidence, MixEvidence, Outcome } from "@/lib/types";
+import type { BookingEvidence, BoughtUsedEvidence, MixEvidence, Outcome } from "@/lib/types";
+import { COVER_RULES, VIA_LABEL, fmtStay, partyRange } from "@/lib/domain/covers";
 import { cheapName, mixLabelById, mixValue } from "@/lib/domain/till-rules";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "@/lib/util";
 import { isPastDeadline } from "@/lib/domain/deadline";
@@ -72,6 +73,7 @@ export default function InvestigationPage() {
   const usage = inv.type === "usage_variance" && inv.period ? inv.period : null;
   const bought = inv.type === "bought_not_used" && inv.boughtUsed && inv.ingredientId ? { ...inv.boughtUsed, ingredientId: inv.ingredientId } : null;
   const mix = inv.type === "cheaper_item_rung" && inv.mix ? inv.mix : null;
+  const booking = inv.type === "seated_no_bill" && inv.booking ? inv.booking : null;
   const stockAny = stockCase || !!usage || !!bought;
   // A stock case asks for the cause the manager verified. The choices are the possibilities Tyll listed.
   const causeOptions = usage ? causesFor(usage, periodVariance(usage, ctx.adjust)).map((c) => c.title) : stockCase ? SHORTFALL_CAUSES : bought ? BOUGHT_USED_CAUSES.map((c) => c.title.replace(/\.$/, "")) : [];
@@ -121,7 +123,7 @@ export default function InvestigationPage() {
       >
         <Badge tone={closed ? (inv.outcome === "confirmed_loss" ? "neg" : inv.outcome === "recovered" ? "pos" : "neutral") : "warn"}>{closed ? OUTCOME_LABEL[inv.outcome!] : STATUS_LABEL[inv.status]}</Badge>
         <Badge>{TYPE_LABEL[inv.type]}</Badge>
-        {inv.basis && <Badge tone={inv.basis === "confirmed" ? "ink" : "neutral"}>{inv.basis === "confirmed" ? "Confirmed by a stock take" : mix ? "Estimate from bottles issued" : "Estimate until a stock take"}</Badge>}
+        {inv.basis && <Badge tone={inv.basis === "confirmed" ? "ink" : "neutral"}>{inv.basis === "confirmed" ? "Confirmed by a stock take" : mix ? "Estimate from bottles issued" : booking ? "Estimate at the spend per guest" : "Estimate until a stock take"}</Badge>}
       </PageHeader>
       {inv.comparedWith && <p className="rounded-panel border border-line bg-paper px-5 py-3 text-[13px] leading-relaxed text-graphite shadow-panel sm:px-6"><span className="font-medium text-ink">What it was compared against. </span>{inv.comparedWith.replace(/^Compared with /, "")}</p>}
 
@@ -134,9 +136,10 @@ export default function InvestigationPage() {
               <div><dt className="text-[13px] text-steel">{stockCase ? "Count date" : usage ? "Counted" : bought || mix ? "Checked" : "Date and time"}</dt><dd className="num">{fmtDate(inv.date, true)}{stockCase ? "" : `, ${fmtTime(inv.min)}`}</dd></div>
               <div>
                 <dt className="text-[13px] text-steel">Transaction</dt>
-                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : usage ? <Link href={`/stock?tab=where&period=${usage.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{ingredientById[usage.ingredientId].name} stock period</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : bought ? <Link prefetch={false} href={`/stock?tab=bought&item=${bought.ingredientId}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">Bought against used, 30 days</Link> : mix ? <Link prefetch={false} href="/money?tab=till" className="underline decoration-line underline-offset-4 hover:decoration-ink">Till rule check, 7 days of bottles</Link> : <span className="num">{charge?.id ?? "None"}</span>}</dd>
+                <dd>{order ? <Link href={`/money/orders/${order.id}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{order.id}</Link> : usage ? <Link href={`/stock?tab=where&period=${usage.id}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">{ingredientById[usage.ingredientId].name} stock period</Link> : stockCase ? <Link href="/stock?tab=counts" className="underline decoration-line underline-offset-4 hover:decoration-ink">Stock count, {fmtDate(inv.date)}</Link> : bought ? <Link prefetch={false} href={`/stock?tab=bought&item=${bought.ingredientId}`} className="underline decoration-line underline-offset-4 hover:decoration-ink">Bought against used, 30 days</Link> : mix ? <Link prefetch={false} href="/money?tab=till" className="underline decoration-line underline-offset-4 hover:decoration-ink">Till rule check, 7 days of bottles</Link> : booking ? <Link prefetch={false} href="/money?tab=covers" className="underline decoration-line underline-offset-4 hover:decoration-ink">Booking {booking.bookingId}</Link> : <span className="num">{charge?.id ?? "None"}</span>}</dd>
               </div>
               {order && <div><dt className="text-[13px] text-steel">Table or room</dt><dd>{order.table}</dd></div>}
+              {booking && <div><dt className="text-[13px] text-steel">Table</dt><dd>{booking.table}</dd></div>}
               {inv.staffId && (
                 <div>
                   <dt className="text-[13px] text-steel">POS login used</dt>
@@ -158,7 +161,7 @@ export default function InvestigationPage() {
 
           {usage ? <UsageCaseBody p={usage} /> : (<>
 
-          <Panel title={<span id="evidence" className="scroll-mt-24">Evidence</span>} description={stockCase ? "Taken directly from the stock count. Nothing here is inferred." : bought ? "Taken from supplier deliveries, till sales with their recipes, and the waste log. No stock count is used, so the gap is an estimate." : mix ? "Taken from the bottles issued to the bar and the till sales of the same week. No count of the open bottles is used, so the gap is an estimate." : "Taken directly from the recorded transaction. Nothing here is inferred."}>
+          <Panel title={<span id="evidence" className="scroll-mt-24">Evidence</span>} description={stockCase ? "Taken directly from the stock count. Nothing here is inferred." : bought ? "Taken from supplier deliveries, till sales with their recipes, and the waste log. No stock count is used, so the gap is an estimate." : mix ? "Taken from the bottles issued to the bar and the till sales of the same week. No count of the open bottles is used, so the gap is an estimate." : booking ? "Taken from the reservation book and the bills of the same day. The value is an estimate at the outlet's spend per guest." : "Taken directly from the recorded transaction. Nothing here is inferred."}>
             {orderStatus === "loading" && <p className="text-sm text-steel">Loading the order records.</p>}
             {order && (
               <div className="space-y-6">
@@ -176,6 +179,7 @@ export default function InvestigationPage() {
             )}
             {stockCase && stockRecords}
             {mix && <MixWeek m={mix} money={(n) => fmtMoney(n, property.currency)} />}
+            {booking && <BookingFacts b={booking} value={inv.exposure} money={(n) => fmtMoney(n, property.currency)} />}
             {bought && <BoughtEvidence b={bought} money={(n) => fmtMoney(n, property.currency)} mayCount={can(user, "stock.count")} />}
             {charge && !order && <ChargeEvidence charge={charge} />}
             {charge && order && <div className="mt-6"><h3 className="mb-3 text-[15px]">Guest bill posting</h3><ChargeEvidence charge={charge} /></div>}
@@ -390,6 +394,41 @@ function MixWeek({ m, money }: { m: MixEvidence; money: (n: number) => string })
       <p className="num flex flex-wrap justify-between gap-2 rounded-2xl bg-mist px-4 py-3 text-sm"><span>{m.bottles} bottles give about {m.bottles * m.perBottle} {l.unit}, {m.gap} more than the bills account for</span><span className="font-medium text-ink">{money(Math.round(mixValue(m)))}, an estimate</span></p>
       <Note className="max-w-[80ch]">One open bottle can always be part used, so a gap under two bottles is never flagged. Bottles issued and the bills are simulated.</Note>
       <Link prefetch={false} href="/money?tab=till" className="inline-block text-[13px] underline underline-offset-4">See the till rule check</Link>
+    </div>
+  );
+}
+
+/** The booking behind a seated table with no bill, and the bills around it. */
+function BookingFacts({ b, value, money }: { b: BookingEvidence; value: number; money: (n: number) => string }) {
+  const sizes = [...new Set(b.nearby.map((o) => o.covers))].sort((x, y) => x - y);
+  const facts: [string, string][] = [
+    ["Booking", `${b.bookingId}, for ${b.party} at ${fmtTime(b.bookedFor)}`],
+    ["Made", `${VIA_LABEL[b.via].charAt(0).toUpperCase()}${VIA_LABEL[b.via].slice(1)}${b.room ? `, by the guest in room ${b.room}` : ""}`],
+    ["Seated", `${b.table} at ${fmtTime(b.seatedMin)}`],
+    ["Finished", b.leftMin === undefined ? "Not recorded" : `${fmtTime(b.leftMin)}, after ${fmtStay(b.leftMin - b.seatedMin)}`],
+  ];
+  return (
+    <div className="space-y-4">
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+        {facts.map(([k, v]) => <div key={k}><dt className="text-[13px] text-steel">{k}</dt><dd className="text-ink">{v}</dd></div>)}
+      </dl>
+      <p className="num flex flex-wrap justify-between gap-2 rounded-2xl bg-mist px-4 py-3 text-sm"><span>No bill at {b.table} opened from {fmtTime(b.from)} to {fmtTime(b.to)}</span><span className="font-medium text-ink">{money(value)}, an estimate</span></p>
+      <div>
+        <h3 className="mb-2 text-[15px]">Bills at {b.table} that day</h3>
+        {b.atTable.length === 0 ? <p className="text-sm text-graphite">None.</p> : (
+          <ul className="divide-y divide-hair rounded-2xl border border-line text-sm">
+            {b.atTable.map((o) => (
+              <li key={o.orderId} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 px-4 py-2.5">
+                <Link prefetch={false} href={`/money/orders/${o.orderId}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{o.orderId}</Link>
+                <span className="num text-graphite">{fmtTime(o.openMin)} to {fmtTime(o.closeMin)}, {o.covers} {o.covers === 1 ? "guest" : "guests"}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <p className="text-sm text-graphite">{b.nearby.length ? `${b.nearby.length} ${b.nearby.length === 1 ? "bill was" : "bills were"} opened elsewhere within ${COVER_RULES.moved} minutes of seating, for ${sizes.join(" or ")} ${sizes.length === 1 && sizes[0] === 1 ? "guest" : "guests"}: none for ${partyRange(b.party)}.` : `No bill was opened elsewhere within ${COVER_RULES.moved} minutes of seating.`}</p>
+      <Note className="max-w-[80ch]">{`Valued at the spend per guest at this service over the ${COVER_RULES.spendDays} days before, ${money(b.spendPerGuest)}. The reservation book and the bills are simulated.`}</Note>
+      <Link prefetch={false} href="/money?tab=covers" className="inline-block text-[13px] underline underline-offset-4">See booked against billed covers</Link>
     </div>
   );
 }

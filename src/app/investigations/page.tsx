@@ -183,7 +183,7 @@ export default function MoneyBackListPage() {
                         <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}{i.type === "stock_shortfall" ? ", count" : i.type === "bought_not_used" ? ", 30 day check" : i.type === "cheaper_item_rung" ? ", weekly check" : `, ${fmtTime(i.min)}`}</Td>
                         <Td className={cn(!i.assigneeId && "text-steel")}>{personName(i.assigneeId)}</Td>
                         <Td className={cn("num whitespace-nowrap", late ? "text-neg" : "text-graphite")}>{i.deadline ? fmtDate(i.deadline) : <span className="text-fog">not set</span>}{late && <span className="block text-xs">overdue</span>}</Td>
-                        <Td align="right">{money(toDisplay(i, i.exposure))}{(i.type === "bought_not_used" || i.type === "cheaper_item_rung") && <span className="block text-xs text-steel">estimate</span>}</Td>
+                        <Td align="right">{money(toDisplay(i, i.exposure))}{(i.type === "bought_not_used" || i.type === "cheaper_item_rung" || i.type === "seated_no_bill") && <span className="block text-xs text-steel">estimate</span>}</Td>
                         <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
                         <Td>
                           {i.outcome ? (

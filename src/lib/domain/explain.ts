@@ -8,6 +8,7 @@ import { POLICY, REMOVAL_TYPES, belowMenu, fmtClock, folioTime, ringFinding, rin
 import { cheapName, mixLabelById, mixValue } from "./till-rules";
 import { countVariance, countVarianceValue } from "./inventory";
 import { BOUGHT_USED_CAUSES, boughtQty, itemWords } from "./bought-used";
+import { COVER_RULES, SERVICE_LABEL, VIA_LABEL, fmtStay, partyRange } from "./covers";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 import { lineValue, orderTotals } from "./orders";
@@ -175,6 +176,37 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
     base.message = wine
       ? `${m.bottles} bottles of ${l.name} went to the bar in the 7 days to ${fmtDate(m.to)}, enough for about ${n} glasses, and ${m.billed} were billed as reserve. The ${m.gap} glasses not billed as reserve are about ${value} at the difference to ${cheap}, an estimate. Please count the bar's bottles and check which key the team uses for the reserve.`
       : `${m.bottles} bottles of ${l.name} went to the bar in the 7 days to ${fmtDate(m.to)}, about ${n} single measures, and the bills account for ${m.billed}. The ${m.gap} measures not billed are about ${value} if they were doubles rung as singles, an estimate. Please count the bar's bottles and check how the team rings a double.`;
+    return base;
+  }
+
+  if (e.type === "seated_no_bill" && e.booking) {
+    const b = e.booking;
+    const where = outlet?.name ?? propertyById[e.propertyId].name;
+    const meal = SERVICE_LABEL[b.service].toLowerCase();
+    const value = fmtMoney(e.exposure, currency);
+    const stay = b.leftMin === undefined ? null : fmtStay(b.leftMin - b.seatedMin);
+    const sizes = [...new Set(b.nearby.map((o) => o.covers))].sort((x, y) => x - y);
+    base.whatHappened = `A booking for ${b.party} was seated at ${b.table} at ${fmtTime(b.seatedMin)}${stay ? ` and stayed ${stay}` : ""}. No bill was found for the table.`;
+    base.facts = [
+      `The reservation book shows booking ${b.bookingId}, for ${b.party} at ${fmtTime(b.bookedFor)}, made ${VIA_LABEL[b.via]}${b.room ? ` by the guest in room ${b.room}` : ""}.`,
+      b.leftMin === undefined ? `The host marked it seated at ${b.table} at ${fmtTime(b.seatedMin)}. No finish time was recorded.` : `The host marked it seated at ${b.table} at ${fmtTime(b.seatedMin)} and the table finished at ${fmtTime(b.leftMin)}.`,
+      `No bill at ${b.table} was opened between ${fmtTime(b.from)} and ${fmtTime(b.to)}.${b.atTable.length ? (b.atTable.length === 1 ? " The table had 1 other bill that day, outside that time." : ` The table had ${b.atTable.length} other bills that day, all outside that time.`) : ""}`,
+      b.nearby.length ? `${b.nearby.length} ${b.nearby.length === 1 ? "bill was" : "bills were"} opened elsewhere at ${where} within ${COVER_RULES.moved} minutes of seating, for ${sizes.join(" or ")} ${sizes.length === 1 && sizes[0] === 1 ? "guest" : "guests"}: none for ${partyRange(b.party)}.` : `No bill was opened elsewhere at ${where} within ${COVER_RULES.moved} minutes of seating.`,
+      `The ${meal} spend per guest at ${where} over the ${COVER_RULES.spendDays} days before was ${fmtMoney(b.spendPerGuest, currency)}, so ${b.party} guests are about ${value}. An estimate.`,
+    ];
+    base.possibleCauses = [
+      "The party joined another table and paid on its bill.",
+      "The host marked the wrong booking as seated, or the party sat at a different table.",
+      "The bill was opened under another table number.",
+      "The meal was served and never billed, or the party left without paying.",
+    ];
+    base.recommended = [
+      `Ask the host and the server for that section where the party sat and which bill they paid.`,
+      `Look for a bill around ${fmtTime(b.seatedMin)} with more guests than its own booking.`,
+      ...(b.room ? [`The booking was made by the guest in room ${b.room}. If the guest is still in house and dined, the front office can add the meal to the room with the guest's agreement.`] : []),
+      "If a bill is found, close as a legitimate correction. If the meal was served and not billed, record the amount as a loss, or as recovered if it is paid.",
+    ];
+    base.message = `At ${where}, a booking for ${b.party} was seated at ${b.table} ${b.leftMin === undefined ? `at ${fmtTime(b.seatedMin)}` : `from ${fmtTime(b.seatedMin)} to ${fmtTime(b.leftMin)}`}, and Tyll found no bill for the table, nor for a party of that size nearby. That is about ${value} at the ${meal} spend per guest, an estimate. Please check with the host and the server whether the party paid on another bill.`;
     return base;
   }
 
