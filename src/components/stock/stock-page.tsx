@@ -7,6 +7,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { Section, useRemembered } from "@/components/disclosure";
 import { useCountDraft } from "@/components/stock/count-flow";
 import { QuickCount } from "@/components/stock/quick-count";
+import { OnOrder, OrderNowButton } from "@/components/stock/order-now";
 import { EmptyState, PageHeader, Panel, Segmented, Skeleton, StatusPill, SummaryBar, TableWrap, Tabs, Td, Th, WidgetError, cn, linkButton, rowClass, textLink, useSort, type Rag } from "@/components/ui";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { ingredientById, propertyById } from "@/lib/data/catalog";
@@ -35,17 +36,18 @@ function CriticalItems({ plan }: { plan: MonthPlanOut }) {
   const rows = plan.items.filter((i) => i.health === "critical").sort((a, b) => (a.daysUntilOut ?? 99) - (b.daysUntilOut ?? 99));
   if (rows.length === 0) return <Panel><p className="text-sm text-graphite">Nothing is critical. Every item can wait for a normal order.</p></Panel>;
   return (
-    <Panel title="Critical items" description="An order placed today would arrive too late." action={<Link href="/forecast" className={textLink}>See what to order</Link>} flush>
+    <Panel title="Critical items" description="An order placed today would arrive too late." action={<span className="flex items-center gap-3"><OrderNowButton items={rows} propertyId={plan.propertyId} label={rows.length > 1 ? `Order all ${rows.length} now` : "Order now"} /><Link href="/forecast" className={textLink}>See what to order</Link></span>} flush>
       {STOCK_AREAS.filter((area) => rows.some((r) => stockAreaOf(r.ingredientId) === area.id)).map((area) => (
         <div key={area.id}>
           <h3 className="border-t border-hair bg-cloud px-4 py-1.5 text-xs font-semibold text-ink sm:px-6">{area.name}</h3>
           <ul>
             {rows.filter((r) => stockAreaOf(r.ingredientId) === area.id).map((r) => (
-              <li key={r.ingredientId} className="border-t border-hair">
-                <Link href={`/stock?tab=inventory&item=${r.ingredientId}`} className="flex flex-col gap-0.5 px-4 py-2.5 transition-colors duration-150 hover:bg-cloud sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+              <li key={r.ingredientId} className="flex items-center gap-3 border-t border-hair pe-4 sm:pe-6">
+                <Link href={`/stock?tab=inventory&item=${r.ingredientId}`} className="flex min-w-0 flex-1 flex-col gap-0.5 px-4 py-2.5 transition-colors duration-150 hover:bg-cloud sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
                   <span className="text-sm font-medium text-ink">{name(r)}</span>
                   <span className="num text-table text-graphite">{STOCK_GROUPS.find((g) => g.id === stockGroupOf(r.ingredientId))!.name}, {fmtQty(r.onHand, r.unit)} left, runs out in {daysWords(r, plan.period.to).toLowerCase()}</span>
                 </Link>
+                <OrderNowButton items={[r]} propertyId={plan.propertyId} /><OnOrder item={r} />
               </li>
             ))}
           </ul>
@@ -96,6 +98,7 @@ function AllItems({ plan, area, initialShow = "all" }: { plan: MonthPlanOut; are
               <li key={r.ingredientId} className="border-t border-hair px-4 py-3">
                 <div className="flex items-start justify-between gap-2"><span className="text-sm font-medium text-ink">{name(r)}</span><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill></div>
                 {why(r) && <p className="mt-0.5 text-xs text-steel">{why(r)}</p>}
+                <OrderNowButton items={[r]} propertyId={plan.propertyId} className="mt-2" /><OnOrder item={r} />
                 <dl className="mt-2 grid grid-cols-3 gap-2 text-table">
                   <div><dt className="text-xs text-steel">On hand</dt><dd className="num text-ink">{fmtQty(r.onHand, r.unit)}</dd></div>
                   <div><dt className="text-xs text-steel">Target stock</dt><dd className="num text-ink">{fmtQty(r.par, r.unit)}</dd></div>
@@ -122,7 +125,7 @@ function AllItems({ plan, area, initialShow = "all" }: { plan: MonthPlanOut; are
                     <Td align="right">{fmtQty(r.par, r.unit)}</Td>
                     <Td align="right">{fmtMoney(worth(r), propertyById[plan.propertyId].currency)}</Td>
                     <Td align="right"><span className={r.health === "critical" ? "text-neg" : r.health === "low" ? "text-warn" : "text-ink"}>{daysWords(r, plan.period.to)}</span></Td>
-                    <Td><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill>{why(r) && <span className="mt-0.5 block text-xs text-steel">{why(r)}</span>}</Td>
+                    <Td><div className="flex items-start justify-between gap-3"><div><StatusPill rag={RAG[r.health]}>{WORD[r.health]}</StatusPill>{why(r) && <span className="mt-0.5 block text-xs text-steel">{why(r)}</span>}</div><OrderNowButton items={[r]} propertyId={plan.propertyId} /><OnOrder item={r} /></div></Td>
                   </tr>
                 ))}</Fragment>)}
               </tbody>

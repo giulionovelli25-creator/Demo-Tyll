@@ -19,7 +19,7 @@ import { CATEGORIES, categoryOf, type CategoryId } from "../data/locations";
 import { orderPack } from "../domain/inventory";
 import { stockFor, type SessionEntries } from "./stock";
 import { applyReceipt, ceilToPack, fullyReceived, outstanding, receiptLine } from "../domain/procurement";
-import { createPurchaseOrders } from "./procurement";
+import { catalogueFor, createPurchaseOrders, openDraftFor, supplierAccount } from "./procurement";
 import { leadBufferFor as bufferFor } from "../data/delivery-history";
 import { deliveryRiskFor, type RiskOut } from "./late-delivery";
 import type { ReceiptLine } from "../types";
@@ -450,6 +450,51 @@ export function buildMonthOrder(user: User, propertyId: string, entries: Session
   if (!made.ok) return made;
   const lines = sum(made.orders, (r) => r.lines.length);
   return { ok: true, request: made.orders[0], requests: made.orders, warnings: made.warnings, lines, total: Math.round(sum(made.orders, (r) => sum(r.lines, (l) => l.qty * l.unitPrice)) * 100) / 100 };
+}
+
+export interface OrderNowOut {
+  ingredientId: string;
+  qty: number;
+  unit: string;
+  supplierId: string;
+  supplierName: string;
+  value: number;
+  health: PlanItem["health"];
+  /** The author's open draft for this supplier that the item joins, with how many other items it holds. */
+  draft: { id: string; otherItems: number } | null;
+  request?: PurchaseRequest;
+}
+
+/**
+ * Order now, from Stock levels, Alerts or the Overview: one critical or low item at the plan's suggested quantity, from its
+ * usual supplier (the catalogue's preferred one). It joins the person's open draft for that supplier, or starts one, and
+ * goes to purchasing for approval. With preview, nothing is saved. A second press finds the item already on order.
+ */
+export function orderNow(user: User, propertyId: string, ingredientId: string, entries: SessionEntries, opts: { preview?: boolean } = {}): Result<OrderNowOut> {
+  if (!can(user, "purchase.create")) return fail(403, "Your role cannot create purchase orders.");
+  const res = monthPlanFor(user, propertyId, entries);
+  if (!res.ok) return res;
+  const item = res.plan.items.find((i) => i.ingredientId === ingredientId);
+  if (!item) return fail(404, "That item is not stocked at this hotel.");
+  const g = ingredientById[ingredientId];
+  if (item.health === "fine") return fail(409, `${g.name} is not low, so there is nothing to order now.`);
+  const qty = item.nextQty > 0 ? item.nextQty : 0;
+  if (qty <= 0) return fail(409, `${g.name} is already on order. The open orders cover it until the next delivery.`);
+  const line = catalogueFor(propertyId, ingredientId)[0];
+  if (!line) return fail(409, `${g.name} is not in any supplier's catalogue at this hotel.`);
+  const location = storeOwner(propertyId, ingredientId) ?? "main";
+  const open = openDraftFor(loadStore(), user, propertyId, line.supplierId, location);
+  const out: OrderNowOut = {
+    ingredientId, qty, unit: g.unit, supplierId: line.supplierId, supplierName: supplierAccount(propertyId, line.supplierId)?.name ?? line.supplierId,
+    value: Math.round(qty * line.agreedPrice * 100) / 100, health: item.health,
+    draft: open ? { id: open.id, otherItems: open.lines.filter((l) => l.ingredientId !== ingredientId).length } : null,
+  };
+  if (opts.preview) return { ok: true, ...out };
+  const made = createPurchaseOrders(user, propertyId, [{ ingredientId, qty, suggested: item.nextQty, requirement: item.predicted, available: item.onHand, incoming: item.incoming }], { source: "now" });
+  if (!made.ok) return made;
+  const sent = actOnRequest(user, made.orders[0].id, { action: "submit" });
+  if (!sent.ok) return sent;
+  return { ok: true, ...out, request: sent.request };
 }
 
 /** Lines to buy for one event. Empty when the user cannot see the event's purchasing. */

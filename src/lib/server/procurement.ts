@@ -310,6 +310,10 @@ export const costCentreFor = (lines: { ingredientId: string }[], settings: Purch
   return settings.costCentres.find((c) => c.id === id) ? `${id} ${settings.costCentres.find((c) => c.id === id)!.name}` : settings.costCentres[0] ? `${settings.costCentres[0].id} ${settings.costCentres[0].name}` : undefined;
 };
 
+/** The author's own draft for a supplier and delivery location, which a new order for them is added to. */
+export const openDraftFor = (st: Shape, user: User, propertyId: string, supplierId: string, location: string) =>
+  st.requests.find((r) => r.propertyId === propertyId && r.createdBy === user.id && r.status === "draft" && r.supplierId === supplierId && (location === "main" ? r.outletIds.length !== 1 || outletsOfProperty(propertyId).length === 1 : r.outletIds[0] === location) && !r.eventId && !r.deptId);
+
 export interface CreateLine { ingredientId: string; qty: number; supplierId?: string; available?: number; incoming?: number; requirement?: number; suggested?: number }
 
 /**
@@ -317,7 +321,7 @@ export interface CreateLine { ingredientId: string; qty: number; supplierId?: st
  * catalogue's agreed prices and packs, for the supplier's next delivery day. A draft already open for the same supplier
  * and location is updated rather than duplicated.
  */
-export function createPurchaseOrders(user: User, propertyId: string, raw: unknown, opts: { source: "par" | "prediction" | "manual"; notes?: string } = { source: "manual" }): Result<{ orders: PurchaseRequest[]; warnings: string[] }> {
+export function createPurchaseOrders(user: User, propertyId: string, raw: unknown, opts: { source: "par" | "prediction" | "manual" | "now"; notes?: string } = { source: "manual" }): Result<{ orders: PurchaseRequest[]; warnings: string[] }> {
   if (!can(user, "purchase.create")) return fail(403, "Your role cannot create purchase orders.");
   if (!allowedProperties(user).includes(propertyId)) return fail(403, "This hotel is outside your access.");
   if (!Array.isArray(raw) || !raw.length) return fail(400, "Choose at least one item to order.");
@@ -349,14 +353,14 @@ export function createPurchaseOrders(user: User, propertyId: string, raw: unknow
   const warnings: string[] = [...rounded];
   const money = (n: number) => fmtMoney(n, propertyById[propertyId].currency);
   const stamp = now();
-  const from = { par: "To order", prediction: "the recommended order on Predictions", manual: "a manual order" }[opts.source];
+  const from = { par: "To order", prediction: "the recommended order on Predictions", manual: "a manual order", now: "Order now" }[opts.source];
   const orders = mutateStore((st) => {
     const made: PurchaseRequest[] = [];
     for (const grp of groups.values()) {
       const acct = supplierAccount(propertyId, grp.supplierId, st);
       const lead = Math.max(acct?.leadDays ?? 1, ...grp.lines.map((l) => ingredientById[l.ingredientId].leadDays));
       const deliveryDate = nextDeliveryDate(DEMO_TODAY, DEMO_NOW_MIN, acct?.cutOff ?? "14:00", lead, acct?.deliveryDays ?? []);
-      const open = st.requests.find((r) => r.propertyId === propertyId && r.createdBy === user.id && r.status === "draft" && r.supplierId === grp.supplierId && (grp.location === "main" ? r.outletIds.length !== 1 || outletsOfProperty(propertyId).length === 1 : r.outletIds[0] === grp.location) && !r.eventId && !r.deptId);
+      const open = openDraftFor(st, user, propertyId, grp.supplierId, grp.location);
       if (open) {
         for (const l of grp.lines) {
           const i = open.lines.findIndex((x) => x.ingredientId === l.ingredientId);

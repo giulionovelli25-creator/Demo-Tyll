@@ -184,6 +184,16 @@
 "Un responsabile ha offerto la colazione e non è stato registrato.",
 "قدّم أحد المديرين الإفطار ولم يُسجَّل ذلك."
 ],
+"A new order to {0}": [
+"Eine neue Bestellung an {0}",
+"Un nuovo ordine a {0}",
+"طلب جديد إلى {0}"
+],
+"A new order to {0}.": [
+"Eine neue Bestellung an {0}.",
+"Un nuovo ordine a {0}.",
+"طلب جديد إلى {0}."
+],
 "A posting that reached the bill after the guest had checked out.": [
 "Eine Buchung, die nach dem Check-out des Gastes auf der Rechnung ankam.",
 "Un addebito arrivato sul conto dopo il check-out dell'ospite.",
@@ -3959,6 +3969,16 @@
 "Ogni transazione segnalata, chi la segue, la scadenza e l'esito. Prima le scadute, poi gli importi maggiori.",
 "كل معاملة مُعلَّمة، ومن يتابعها، والموعد النهائي، والنتيجة. المتأخرة أولا ثم الأعلى قيمة."
 ],
+"Each goes to purchasing for approval": [
+"Jeder geht zur Freigabe an den Einkauf",
+"Ognuno va all'ufficio acquisti per l'approvazione",
+"يذهب كل منها إلى المشتريات للموافقة"
+],
+"Each goes to purchasing for approval.": [
+"Jeder geht zur Freigabe an den Einkauf.",
+"Ognuno va all'ufficio acquisti per l'approvazione.",
+"يذهب كل منها إلى المشتريات للموافقة."
+],
 "Each invoice is compared with the purchase order and what was received.": [
 "Jede Rechnung wird mit der Bestellung und dem Wareneingang verglichen.",
 "Ogni fattura è confrontata con l'ordine e con quanto ricevuto.",
@@ -5989,6 +6009,16 @@
 "Finisce in qualcosa senza ricetta in cassa: un pacchetto bevande, un menu per eventi, minibar o bevande del personale.",
 "يدخل في شيء بلا وصفة في نقطة البيع: باقة مشروبات أو قائمة فعالية أو الميني بار أو مشروبات الموظفين."
 ],
+"It goes to purchasing for approval, and is sent to the supplier once it is approved": [
+"Sie geht zur Freigabe an den Einkauf und wird nach der Freigabe an den Lieferanten gesendet",
+"Va all'ufficio acquisti per l'approvazione e viene inviato al fornitore una volta approvato",
+"يذهب إلى المشتريات للموافقة، ويُرسل إلى المورد بعد الموافقة عليه"
+],
+"It goes to purchasing for approval, and is sent to the supplier once it is approved.": [
+"Sie geht zur Freigabe an den Einkauf und wird nach der Freigabe an den Lieferanten gesendet.",
+"Va all'ufficio acquisti per l'approvazione e viene inviato al fornitore una volta approvato.",
+"يذهب إلى المشتريات للموافقة، ويُرسل إلى المورد بعد الموافقة عليه."
+],
 "It has arrived": [
 "Ist angekommen",
 "È arrivata",
@@ -6098,6 +6128,21 @@
 "Einer anderen Reservierung angeschlossen",
 "Uniti a un'altra prenotazione",
 "انضموا إلى حجز آخر"
+],
+"Joins your open draft for {0}, which has {1} other item": [
+"Kommt zu Ihrem offenen Entwurf für {0}, der {1} weiteren Artikel enthält",
+"Si aggiunge alla tua bozza aperta per {0}, che ha {1} altro articolo",
+"يُضاف إلى مسودتك المفتوحة لدى {0}، وفيها {1} عنصر آخر"
+],
+"Joins your open draft for {0}, which has {1} other items": [
+"Kommt zu Ihrem offenen Entwurf für {0}, der {1} weitere Artikel enthält",
+"Si aggiunge alla tua bozza aperta per {0}, che ha altri {1} articoli",
+"يُضاف إلى مسودتك المفتوحة لدى {0}، وفيها {1} عناصر أخرى"
+],
+"Joins your open draft for {0}, which has {1} other items.": [
+"Kommt zu Ihrem offenen Entwurf für {0}, der {1} weitere Artikel enthält.",
+"Si aggiunge alla tua bozza aperta per {0}, che ha altri {1} articoli.",
+"يُضاف إلى مسودتك المفتوحة لدى {0}، وفيها {1} عناصر أخرى."
 ],
 "KITCHEN TICKET": [
 "KÜCHENBON",
@@ -8099,6 +8144,11 @@
 "No",
 "لا"
 ],
+"No AI chooses a quantity": [
+"Keine KI wählt eine Menge",
+"Nessuna IA sceglie una quantità",
+"لا يختار أي ذكاء اصطناعي الكمية"
+],
 "No AI chooses a quantity.": [
 "Keine KI wählt eine Menge.",
 "Nessuna IA sceglie una quantità.",
@@ -8653,6 +8703,16 @@
 "Nichts unterwegs",
 "Nulla in arrivo",
 "لا شيء في الطريق"
+],
+"Nothing reaches a supplier before the order is approved, and in this demo nothing is sent to a real supplier": [
+"Nichts geht an einen Lieferanten, bevor die Bestellung freigegeben ist, und in dieser Demo wird nichts an einen echten Lieferanten gesendet",
+"Nulla arriva a un fornitore prima che l'ordine sia approvato, e in questa demo nulla viene inviato a un fornitore reale",
+"لا يصل شيء إلى المورد قبل الموافقة على الطلب، وفي هذا العرض لا يُرسل شيء إلى مورد حقيقي"
+],
+"Nothing reaches a supplier before the order is approved, and in this demo nothing is sent to a real supplier.": [
+"Nichts geht an einen Lieferanten, bevor die Bestellung freigegeben ist, und in dieser Demo wird nichts an einen echten Lieferanten gesendet.",
+"Nulla arriva a un fornitore prima che l'ordine sia approvato, e in questa demo nulla viene inviato a un fornitore reale.",
+"لا يصل شيء إلى المورد قبل الموافقة على الطلب، وفي هذا العرض لا يُرسل شيء إلى مورد حقيقي."
 ],
 "Nothing recovered yet": [
 "Noch nichts zurückgeholt",
@@ -9359,6 +9419,11 @@
 "Ordine",
 "الطلب"
 ],
+"Order all {0} now": [
+"Alle {0} jetzt bestellen",
+"Ordina ora tutti i {0}",
+"اطلب الآن جميع العناصر الـ{0}"
+],
 "Order and bill differ": [
 "Bestellung und Rechnung weichen ab",
 "Ordine e conto diversi",
@@ -9403,6 +9468,11 @@
 "Bestellverlauf",
 "Storico ordini",
 "سجل الطلبات"
+],
+"Order now": [
+"Jetzt bestellen",
+"Ordina ora",
+"اطلب الآن"
 ],
 "Order number, table or login": [
 "Bestellnummer, Tisch oder Login",
@@ -9483,6 +9553,11 @@
 "{0} niedrige Artikel bald bestellen",
 "Ordina presto {0} articoli bassi",
 "اطلب قريبًا {0} أصناف منخفضة"
+],
+"Order {0} now": [
+"{0} jetzt bestellen",
+"Ordina ora {0}",
+"اطلب {0} الآن"
 ],
 "Order {0} opened at {1} on room {2} under POS login {3}, for {4} guest.": [
 "Bestellung {0} um {1} für Zimmer {2} unter dem Kassen-Login {3} geöffnet, für {4} Gast.",
@@ -10243,6 +10318,16 @@
 "Zubereitet, nicht berechnet",
 "Preparato, non addebitato",
 "حُضر ولم يُحتسب"
+],
+"Preparing the order": [
+"Bestellung wird vorbereitet",
+"Preparazione dell'ordine",
+"جارٍ تجهيز الطلب"
+],
+"Preparing the order.": [
+"Bestellung wird vorbereitet.",
+"Preparazione dell'ordine.",
+"جارٍ تجهيز الطلب."
 ],
 "Preview": [
 "Vorschau",
@@ -11604,6 +11689,26 @@
 "Le regole su mance e servizio variano per paese e hotel. Una versione reale conterrebbe la regola di ogni struttura e richiederebbe una verifica legale locale.",
 "تختلف قواعد الإكراميات ورسوم الخدمة بين الدول وسياسات الفنادق. ستحتفظ النسخة الفعلية بقاعدة كل فندق وتحتاج إلى مراجعة قانونية محلية."
 ],
+"Run out before a later order could arrive": [
+"Gehen aus, bevor eine spätere Bestellung ankommen könnte",
+"Finiscono prima che un ordine successivo possa arrivare",
+"تنفد قبل أن يصل أي طلب لاحق"
+],
+"Run out before a later order could arrive, already on order": [
+"Gehen aus, bevor eine spätere Bestellung ankommen könnte, bereits bestellt",
+"Finiscono prima che un ordine successivo possa arrivare, già ordinati",
+"تنفد قبل أن يصل أي طلب لاحق، وهي مطلوبة بالفعل"
+],
+"Run out before a later order could arrive, already on order.": [
+"Gehen aus, bevor eine spätere Bestellung ankommen könnte, bereits bestellt.",
+"Finiscono prima che un ordine successivo possa arrivare, già ordinati.",
+"تنفد قبل أن يصل أي طلب لاحق، وهي مطلوبة بالفعل."
+],
+"Run out before a later order could arrive.": [
+"Gehen aus, bevor eine spätere Bestellung ankommen könnte.",
+"Finiscono prima che un ordine successivo possa arrivare.",
+"تنفد قبل أن يصل أي طلب لاحق."
+],
 "Rung twice or unusual quantity": [
 "Doppelt boniert oder ungewöhnliche Menge",
 "Battuto due volte o quantità insolita",
@@ -11618,6 +11723,26 @@
 "Läuft als eigenes Tyll-Produkt und wird hier nicht nachgebaut.",
 "È un prodotto Tyll a sé e non è ricreato qui.",
 "يعمل كمنتج Tyll مستقل ولا يُعاد بناؤه هنا."
+],
+"Runs out before a later order could arrive": [
+"Geht aus, bevor eine spätere Bestellung ankommen könnte",
+"Finisce prima che un ordine successivo possa arrivare",
+"ينفد قبل أن يصل أي طلب لاحق"
+],
+"Runs out before a later order could arrive, already on order": [
+"Geht aus, bevor eine spätere Bestellung ankommen könnte, bereits bestellt",
+"Finisce prima che un ordine successivo possa arrivare, già ordinato",
+"ينفد قبل أن يصل أي طلب لاحق، وهو مطلوب بالفعل"
+],
+"Runs out before a later order could arrive, already on order.": [
+"Geht aus, bevor eine spätere Bestellung ankommen könnte, bereits bestellt.",
+"Finisce prima che un ordine successivo possa arrivare, già ordinato.",
+"ينفد قبل أن يصل أي طلب لاحق، وهو مطلوب بالفعل."
+],
+"Runs out before a later order could arrive.": [
+"Geht aus, bevor eine spätere Bestellung ankommen könnte.",
+"Finisce prima che un ordine successivo possa arrivare.",
+"ينفد قبل أن يصل أي طلب لاحق."
 ],
 "Runs out in": [
 "Reicht noch",
@@ -12207,12 +12332,17 @@
 "Send for approval": [
 "Zur Freigabe senden",
 "Invia per approvazione",
-"إرسال للموافقة"
+"أرسل للموافقة"
 ],
 "Send to the supplier": [
 "An den Lieferanten senden",
 "Invia al fornitore",
 "إرسال إلى المورّد"
+],
+"Sending for approval": [
+"Wird zur Freigabe gesendet",
+"Invio per approvazione",
+"جارٍ الإرسال للموافقة"
 ],
 "Sent": [
 "Gesendet",
@@ -12223,6 +12353,21 @@
 "Per E-Mail um {0} Uhr an die Führungskräfte, die es in den Einstellungen wählen. Die Zahlen sind in dieser Demo simuliert.",
 "Inviato via email alle {0} ai responsabili che lo scelgono nelle Impostazioni. I dati sono simulati in questa demo.",
 "يُرسل بالبريد الساعة {0} صباحًا إلى المديرين الذين يختارونه في الإعدادات. الأرقام محاكاة في هذا العرض."
+],
+"Sent for approval": [
+"Zur Freigabe gesendet",
+"Inviato per approvazione",
+"أُرسل للموافقة"
+],
+"Sent for approval as {0}": [
+"Zur Freigabe gesendet als {0}",
+"Inviato per approvazione come {0}",
+"أُرسل للموافقة برقم {0}"
+],
+"Sent for approval as {0}.": [
+"Zur Freigabe gesendet als {0}.",
+"Inviato per approvazione come {0}.",
+"أُرسل للموافقة برقم {0}."
 ],
 "Sent for preparation, then removed or voided": [
 "Zur Zubereitung geschickt, dann entfernt oder storniert",
@@ -13192,7 +13337,7 @@
 "Suggested": [
 "Vorgeschlagen",
 "Suggerito",
-"المقترح"
+"مقترح"
 ],
 "Sun": [
 "So",
@@ -14254,6 +14399,16 @@
 "L'importo è stato addebitato all'ospite. Rimborsate l'ospite se necessario e chiudete come correzione legittima.",
 "حُسبت القيمة على الضيف. أعيدوها إلى الضيف عند الحاجة وأغلقوا الحالة كتصحيح مشروع."
 ],
+"The whole order then goes to purchasing for approval": [
+"Die ganze Bestellung geht dann zur Freigabe an den Einkauf",
+"L'intero ordine va poi all'ufficio acquisti per l'approvazione",
+"ثم يذهب الطلب كله إلى المشتريات للموافقة"
+],
+"The whole order then goes to purchasing for approval.": [
+"Die ganze Bestellung geht dann zur Freigabe an den Einkauf.",
+"L'intero ordine va poi all'ufficio acquisti per l'approvazione.",
+"ثم يذهب الطلب كله إلى المشتريات للموافقة."
+],
 "The wrong price was typed.": [
 "Ein falscher Preis wurde eingetippt.",
 "È stato digitato il prezzo sbagliato.",
@@ -14968,6 +15123,11 @@
 "Tyll schlägt vor",
 "Suggerito da Tyll",
 "اقترح Tyll"
+],
+"Tyll suggests the quantity from the predicted use, what is in stock and what is already on order": [
+"Tyll schlägt die Menge aus dem erwarteten Verbrauch, dem Bestand und den offenen Bestellungen vor",
+"Tyll suggerisce la quantità in base al consumo previsto, alle scorte e a quanto è già ordinato",
+"يقترح Tyll الكمية من الاستهلاك المتوقع والمخزون وما هو مطلوب بالفعل"
 ],
 "Tyll value this year": [
 "Tyll-Wert in diesem Jahr",
@@ -18054,6 +18214,11 @@
 "{0} coperti previsti, {1} evento, consumi delle ultime {2} settimane. Affidabilità alta.",
 "{0} زبونًا متوقعًا، {1} فعالية، استخدام آخر {2} أسابيع. الثقة عالية."
 ],
+"{0} from {1}, {2} before VAT": [
+"{0} von {1}, {2} ohne MwSt.",
+"{0} da {1}, {2} IVA esclusa",
+"{0} من {1}، {2} قبل الضريبة"
+],
 "{0} full bottles were issued to the bar for empties handed back, against {1} a week on average in the weeks before.": [
 "{0} volle Flaschen wurden gegen zurückgegebene Leergut an die Bar ausgegeben, gegenüber durchschnittlich {1} pro Woche in den Wochen davor.",
 "{0} bottiglie piene sono state consegnate al bar in cambio dei vuoti restituiti, contro una media di {1} a settimana nelle settimane precedenti.",
@@ -18404,6 +18569,16 @@
 "{0} articoli usati più di quanto spieghino vendite e scarti, circa",
 "{0} أصناف استُخدمت أكثر مما تفسره المبيعات والهدر، بنحو"
 ],
+"{0} items, each from its usual supplier, at the suggested quantity": [
+"{0} Artikel, jeder beim üblichen Lieferanten, in der vorgeschlagenen Menge",
+"{0} articoli, ognuno dal suo fornitore abituale, nella quantità suggerita",
+"{0} عناصر، كل منها من مورده المعتاد، بالكمية المقترحة"
+],
+"{0} items, each from its usual supplier, at the suggested quantity.": [
+"{0} Artikel, jeder beim üblichen Lieferanten, in der vorgeschlagenen Menge.",
+"{0} articoli, ognuno dal suo fornitore abituale, nella quantità suggerita.",
+"{0} عناصر، كل منها من مورده المعتاد، بالكمية المقترحة."
+],
 "{0} items, {1} critical": [
 "{0} Artikel, {1} kritisch",
 "{0} articoli, {1} critici",
@@ -18650,8 +18825,8 @@
 "ورد {0} أكثر مما تفسره نقطة البيع وسجل الهدر. يُعلِّمه Tyll لأن الفرق أكبر مما قد يتركه آخر توريد على الرف."
 ],
 "{0} more low.": [
-"{0} weitere knapp.",
-"Altri {0} scarsi.",
+"{0} weitere niedrig.",
+"Altri {0} bassi.",
 "{0} أخرى منخفضة."
 ],
 "{0} more on the invoices than was delivered or agreed.": [
@@ -19779,6 +19954,16 @@
 "{0} con più acquistato che usato, {1} con più usato che acquistato. Prima il divario maggiore.",
 "{0} بمشتريات أكثر من الاستخدام، و{1} باستخدام أكثر من المشتريات. الأكبر فرقًا أولًا."
 ],
+"{0} {1} from {2}": [
+"{0} {1} von {2}",
+"{0} {1} da {2}",
+"{0} {1} من {2}"
+],
+"{0} {1} from {2}.": [
+"{0} {1} von {2}.",
+"{0} {1} da {2}.",
+"{0} {1} من {2}."
+],
 "{0} · invoice {1}": [
 "{0} · Rechnung {1}",
 "{0} · fattura {1}",
@@ -20193,6 +20378,16 @@
 "{0}, für {1} um {2}",
 "{0}, per {1} alle {2}",
 "{0}، لـ {1} الساعة {2}"
+],
+"{0}, from its usual supplier, at the suggested quantity": [
+"{0}, beim üblichen Lieferanten, in der vorgeschlagenen Menge",
+"{0}, dal fornitore abituale, nella quantità suggerita",
+"{0}، من المورد المعتاد، بالكمية المقترحة"
+],
+"{0}, from its usual supplier, at the suggested quantity.": [
+"{0}, beim üblichen Lieferanten, in der vorgeschlagenen Menge.",
+"{0}, dal fornitore abituale, nella quantità suggerita.",
+"{0}، من المورد المعتاد، بالكمية المقترحة."
 ],
 "{0}, glasses billed": [
 "{0}, berechnete Gläser",

@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
-import { buildMonthOrder, monthPlanFor } from "@/lib/server/purchasing";
+import { buildMonthOrder, monthPlanFor, orderNow } from "@/lib/server/purchasing";
 import { cleanEntries } from "@/lib/server/stock";
 import { ensureAutoRun } from "@/lib/server/auto-order";
 import { allowedProperties } from "@/lib/domain/access";
@@ -22,6 +22,14 @@ export async function POST(req: NextRequest) {
     const quantities = Object.fromEntries(Object.entries(raw).filter(([k, v]) => typeof k === "string" && k.length < 64 && typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 100000).slice(0, 500)) as Record<string, number>;
     const r = buildMonthOrder(g.user, propertyId, entries, quantities);
     return r.ok ? json({ request: r.request, lines: r.lines, total: r.total }) : json({ error: r.error }, r.status);
+  }
+  if (body.action === "order-now" || body.action === "order-now-preview") {
+    const ingredientId = typeof body.ingredientId === "string" ? body.ingredientId.slice(0, 64) : "";
+    const r = orderNow(g.user, propertyId, ingredientId, entries, { preview: body.action === "order-now-preview" });
+    if (!r.ok) return json({ error: r.error }, r.status);
+    const { ok: _ok, ...out } = r;
+    void _ok;
+    return json(out);
   }
   ensureDeliveryStory();
   const r = monthPlanFor(g.user, propertyId, entries);

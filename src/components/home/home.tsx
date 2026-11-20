@@ -5,6 +5,7 @@ import { awaitingDelivery } from "@/lib/domain/procurement";
 import { useRequests } from "@/lib/plan-hooks";
 import { featureOn } from "@/lib/features";
 import Link from "next/link";
+import { OrderNowButton } from "@/components/stock/order-now";
 import { ArrowRight, ChevronRight, Sunrise } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { MODULE_ICON, MODULE_TONE } from "@/components/theme";
@@ -53,7 +54,7 @@ function Split({ parts }: { parts: { n: number; className: string }[] }) {
   );
 }
 
-function Card({ module, title, number, tone, line, cta, href, picture, loading }: { module: ModuleId; title: string; number: ReactNode; tone?: Tone; line: ReactNode; cta: string; href: string; picture?: ReactNode; loading?: boolean }) {
+function Card({ module, title, number, tone, line, cta, href, picture, loading, action }: { module: ModuleId; title: string; number: ReactNode; tone?: Tone; line: ReactNode; cta: string; href: string; picture?: ReactNode; loading?: boolean; action?: ReactNode }) {
   const Icon = MODULE_ICON[module];
   return (
     <section aria-label={title} data-mod={MODULE_TONE[module]} className="relative flex min-w-0 items-center gap-3 rounded-panel border border-line bg-paper p-3 shadow-panel transition-shadow duration-200 ease-tyll hover:shadow-lift sm:flex-col sm:items-stretch sm:gap-0 sm:p-4">
@@ -71,6 +72,7 @@ function Card({ module, title, number, tone, line, cta, href, picture, loading }
       </div>
       {/* The whole card opens the page, and the button says where it goes. */}
       <Link href={href} className={cn(linkButton("secondary"), "shrink-0 px-3 text-[13px] after:absolute after:inset-0 after:rounded-panel after:content-[''] sm:mt-3 sm:w-full sm:px-4 sm:text-sm")}>{cta} <ArrowRight size={15} className="hidden sm:block" aria-hidden /></Link>
+      {action && <div className="relative z-10 shrink-0 sm:mt-2 [&>button]:w-full">{action}</div>}
     </section>
   );
 }
@@ -281,9 +283,10 @@ export function Home() {
       {/* Four cards, each one thing to act on, in plain words. Revenue reporting stays on Revenue and Reports. */}
       <div data-tour="kpis" className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         <Card
-          module="stock" title="Stock levels" picture={<Split parts={[{ n: critical.length, className: "bg-neg" }, { n: low.length, className: "bg-warn" }, { n: items.length - critical.length - low.length, className: "bg-pos" }]} />} number={critical.length ? `${critical.length} to order today` : "Nothing urgent"} tone={critical.length ? "neg" : "pos"} loading={!plan && loading}
-          line={critical.length ? `${critical.length === 1 ? "This item runs" : "These items run"} out before a later order could arrive. ${low.length} more low.` : `${low.length} low and ${items.length - low.length} fine.`}
+          module="stock" title="Stock levels" picture={<Split parts={[{ n: critical.length, className: "bg-neg" }, { n: low.length, className: "bg-warn" }, { n: items.length - critical.length - low.length, className: "bg-pos" }]} />} number={critical.length ? `${critical.length} critical` : "Nothing urgent"} tone={critical.length ? "neg" : "pos"} loading={!plan && loading}
+          line={critical.length ? `${critical.length === 1 ? "Runs" : "Run"} out before a later order could arrive${critical.every((i) => i.nextQty === 0 && i.incoming > 0) ? ", already on order" : ""}. ${low.length} more low.` : `${low.length} low and ${items.length - low.length} fine.`}
           cta="Check stock" href="/stock"
+          action={plan ? <OrderNowButton items={[...critical, ...low]} propertyId={plan.propertyId} variant="primary" size="md" /> : undefined}
         />
         <Card
           module="drinks" title="Drinks not billed" picture={<Bars values={pourDaily.slice(-7).map((d) => d.value)} />} number={money(lostWeek.drinks, { compact: true })}

@@ -15,7 +15,7 @@ import { useMonthPlan, useRequests } from "./plan-hooks";
 import { useExpiring } from "./procurement-hooks";
 import type { PourOut } from "./server/pour";
 import { useEmptiesVersion } from "./empties-version";
-import type { MonthPlanOut } from "./server/purchasing";
+import type { MonthPlanOut, PlanItem } from "./server/purchasing";
 import { useDemo } from "./store";
 import { DEMO_TODAY, addDays, fmtDate, fmtTime, fxRate } from "./util";
 import { minOf } from "./domain/late-delivery";
@@ -43,6 +43,8 @@ export interface FeedAlert {
   caseHref?: string;
   /** Handled for the whole team (a delivery at risk someone acted on): resolved for everyone, whoever opens Alerts. */
   teamResolved?: boolean;
+  /** Stock alerts: the items behind it, for Order now. */
+  orderNow?: { propertyId: string; items: Pick<PlanItem, "ingredientId" | "health" | "nextQty" | "unit">[] };
 }
 
 /** Before feature 8 resolve and snooze were kept in this browser under this key. They are dropped, not uploaded: they
@@ -123,6 +125,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
           id: "stock-critical", kind: "stock", rag: "red", what: `Order ${critical.length} critical ${critical.length === 1 ? "item" : "items"} today`,
           why: `${ingredientById[first.ingredientId].name} runs out first${first.runOutDate ? `, ${fmtDate(first.runOutDate, true)}` : ""}. An order placed later arrives too late.`,
           where, amount: cost, amountWord: "to order", next: { label: "See what to order", href: "/forecast" },
+          orderNow: { propertyId: plan.propertyId, items: critical },
         });
       }
       const low = plan.items.filter((l) => l.health === "low" && l.nextQty > 0 && l.orderBy);
@@ -131,6 +134,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
           id: "stock-low", kind: "stock", rag: "amber", what: `Order ${low.length} low ${low.length === 1 ? "item" : "items"} soon`,
           why: `${ingredientById[low[0].ingredientId].name} and others need an order in the next few days.`,
           where, amount: low.reduce((n, l) => n + l.nextCost, 0) * rate, amountWord: "to order", next: { label: "See what to order", href: "/forecast" },
+          orderNow: { propertyId: plan.propertyId, items: low },
         });
       }
     }

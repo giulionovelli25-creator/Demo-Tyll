@@ -66,3 +66,12 @@ Measured on the simplify build, public demo, as the Purchasing Manager, F&B Dire
 | Deep links | Checked, already working | `?request=PR-LIS-0008` opens the order | Same, also measured: 121 to 129 ms |
 
 The 15 s and 502/503 seen on the hosted demo cannot be reproduced locally. The likely causes are the host's cold start (now shortened by the warm-up) and the request count (now lower). Tests: `src/lib/__tests__/radisson.test.ts`, Orders filters (4 tests).
+
+## 5. Features
+
+### 1. Order now (done)
+- **Server:** `orderNow` in `lib/server/purchasing.ts`, action `order-now` (and `order-now-preview`, which saves nothing) on `/api/plan/month`. One critical or low item at the plan's suggested quantity (`nextQty`, whole packs), from the catalogue's preferred supplier. It joins the person's open draft for that supplier (`openDraftFor`, the same rule To order uses) or starts one, then is submitted to purchasing, so it enters the normal approval chain. A second press finds the item on order and is refused (409). Roles without `purchase.create` are refused (403).
+- **Screens:** Stock levels (critical list, with "Order all N now", and every row of the item table, phone and desktop), the stock alerts on Alerts, and the Stock levels card on the Overview. A drawer shows what will happen (quantity, supplier, value, new order or joins your draft) before anything is saved, then "Sent for approval as PR-LIS-0012" with "Open the order".
+- **Decision:** items that are critical or low but already covered by an open order show "On order" instead of the button. Today the two critical items (cheddar, flour) are in this morning's automatic order, waiting for approval; the Overview card now says "2 critical ... already on order" instead of "2 to order today", which asked for an order that already exists.
+- **Tests:** 6 in `radisson.test.ts` (suggested quantity and usual supplier, preview saves nothing, no double order, joins the open draft, refused for the controller and for an item that is fine).
+- **Checked in the browser:** as the Head Chef, Stock levels, Low, Wagyu beef mince: 23.0 kg from Carnes Ribeiro & Filhos, €1,104; sent as PR-LIS-0012; the link opens the order, "Draft purchase order created from Order now", "Submitted to purchasing".

@@ -4,6 +4,7 @@ import { BellOff, Check, RotateCcw } from "lucide-react";
 import { OutletDot, StatusPill, cn, toast } from "@/components/ui";
 import type { AlertState, FeedAlert } from "@/lib/alert-feed";
 import { useDemo } from "@/lib/store";
+import { OrderNowButton } from "@/components/stock/order-now";
 
 const KIND_WORDS: Record<FeedAlert["kind"], string> = { stock: "Stock", money: "Money", pour: "Over pouring", waste: "Waste", margin: "Menu", supplier: "Supplier", delivery: "Delivery", expiry: "Expiry" };
 
@@ -31,6 +32,7 @@ export function AlertRow({ alert, money, userId, state, compact, grouped }: { al
       {alert.amount !== null && <p className="shrink-0 sm:w-32 sm:text-end"><span className="num text-lg font-medium text-ink">{money(alert.amount)}</span> <span className="text-xs text-steel sm:block">{alert.amountWord}</span></p>}
       <div className="flex shrink-0 flex-wrap items-center gap-1">
         <Link href={alert.next.href} className={cn("inline-flex h-10 items-center rounded-full px-4 text-[13px] font-medium transition-colors duration-200", "bg-accent-soft text-accent-ink hover:bg-line")}>{alert.next.label}</Link>
+        {alert.orderNow && <OrderNowButton items={alert.orderNow.items} propertyId={alert.orderNow.propertyId} size="md" className="text-[13px]" />}
         {alert.also && <Link href={alert.also.href} className="inline-flex h-10 items-center rounded-full border border-line px-4 text-[13px] font-medium text-ink transition-colors duration-200 hover:bg-cloud">{alert.also.label}</Link>}
         {userId && state === "open" && (
           <>
