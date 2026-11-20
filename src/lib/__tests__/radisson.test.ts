@@ -307,3 +307,115 @@ describe("Automatic orders in the approval chain", () => {
     if (r.status === "fnb") expect(P.actOnRequest(userById["u-fnb"], own, { action: "fnb", decision: "approve" }).ok).toBe(false);
   });
 });
+
+const MS = await import("../domain/menu-sync");
+const SIM = await import("../server/integrations/simphony-sample");
+const MSV = await import("../server/menu-sync");
+const { MENU_ITEMS, itemById } = await import("../data/catalog");
+const { ingredientCostAt } = await import("../domain/pricing");
+const { DEMO_TODAY: TODAY, addDays: plusDays } = await import("../util");
+
+describe("Simphony: the connected point of sale (demo connection, recorded samples)", () => {
+  it("reads the menu with prices, family groups and the modifiers each item offers", async () => {
+    const { pos, transport } = SIM.sampleSimphony();
+    const menu = await pos.readMenu("lis-terrace");
+    expect(menu.find((m) => m.itemId === "burger")).toMatchObject({ price: 24, category: "Mains", modifiers: ["no-cheese"] });
+    expect(menu.find((m) => m.itemId === "mojito")!.modifiers).toEqual(["double"]);
+    expect(menu.filter((m) => !m.itemId).map((m) => m.name)).toEqual(["Sea bass with lemon butter", "Lobster burger"]);
+    expect(transport.requests[0]).toMatchObject({ system: "simphony", method: "GET" });
+  });
+  it("maps guest checks to Tyll bills behind the same PosAdapter: sales, modifiers, voids, discounts, room charges", async () => {
+    const { pos } = SIM.sampleSimphony(SIM.SIMPHONY_SAMPLE_DATE);
+    const day = await pos.readDay("lis-terrace", SIM.SIMPHONY_SAMPLE_DATE);
+    expect(day.orders).toHaveLength(3);
+    const [a, b] = day.orders;
+    expect(a.lines.find((l) => l.itemId === "burger")).toBeTruthy();
+    expect(a.modifiers[0]).toEqual(["no-cheese"]);
+    expect(b.modifiers[0]).toEqual(["double"]);
+    expect(b.lines[0].unitPrice).toBe(15.5);
+    const voided = b.lines.find((l) => l.itemId === "fondant")!;
+    expect(voided).toMatchObject({ state: "removed_post", reason: "Ordered by mistake" });
+    expect(b.discountReason).toBe("Hotel guest 10%");
+    expect(b.discountPct).toBeCloseTo(0.1, 3);
+    expect(b.payment).toBe("room");
+    expect(day.unmapped.sort()).toEqual(["1031", "1032"]);
+    // The plain PosAdapter call gives the same bills, without the modifier detail.
+    const plain = await pos.fetchOrders("lis-terrace", SIM.SIMPHONY_SAMPLE_DATE);
+    expect(plain.map((o) => o.id)).toEqual(day.orders.map((o) => o.id));
+    // Another day of the sample has no sales: nothing is invented.
+    expect(await pos.fetchOrders("lis-terrace", "2020-01-01")).toEqual([]);
+  });
+  it("is listed in Data sources as a demo connection, with what it reads", async () => {
+    const { DATA_SOURCES } = await import("../adapters");
+    const s = DATA_SOURCES.find((x) => x.id === "pos-simphony")!;
+    expect(s.state).toBe("demo_connection");
+    expect(s.note).toMatch(/Last sync 06:00, demo connection/);
+    for (const w of ["Sales", "menu items and prices", "modifiers", "voids", "discounts"]) expect(s.supplies.toLowerCase()).toContain(w.toLowerCase());
+  });
+});
+
+describe("Menu sync and new dishes", () => {
+  it("finds what changed on the till: two new dishes, one price change, one dish taken off", async () => {
+    const menu = await SIM.sampleSimphony().pos.readMenu("lis-terrace");
+    const known = [...new Set(Object.values(SIM.SIMPHONY_CONFIG.items))].map((id) => ({ itemId: id, name: itemById[id].name, price: itemById[id].price }));
+    const d = MS.diffMenu(menu, known);
+    expect(d.added.map((a) => a.name)).toEqual(["Sea bass with lemon butter", "Lobster burger"]);
+    expect(d.priceChanged).toEqual([{ itemId: "burger", name: "Wagyu beef burger", from: 22, to: 24 }]);
+    expect(d.removed).toEqual([{ itemId: "kidspasta", name: "Kids pasta" }]);
+  });
+  it("suggests a recipe from the closest dish, saying which and what was swapped", () => {
+    const cost = (g: string) => ingredientCostAt(g, TODAY);
+    const bass = MS.suggestRecipe("Sea bass with lemon butter", "Mains", MENU_ITEMS, cost);
+    expect(bass.from?.itemId).toBe("salmon");
+    expect(bass.swapped).toEqual({ from: "salmon", to: "hammour" });
+    expect(bass.lines.some((l) => l.ingredientId === "hammour")).toBe(true);
+    expect(bass.lines.some((l) => l.ingredientId === "salmon")).toBe(false);
+    const lob = MS.suggestRecipe("Lobster burger", "Mains", MENU_ITEMS, cost);
+    expect(lob.from?.itemId).toBe("burger");
+    expect(lob.swapped).toEqual({ from: "wagyu", to: "lobster" });
+    expect(MS.suggestRecipe("Chef's surprise", "Mains", MENU_ITEMS, cost).lines).toEqual([]);
+  });
+  it("costs a new dish at a labelled standard share of its price until the recipe is confirmed", () => {
+    expect(MS.standardCost(29, "food")).toBe(8.7);
+    expect(MS.standardCost(10, "beverage")).toBe(2.2);
+  });
+  it("applies modifiers: Double doubles the spirit, No cheese takes the cheese out", () => {
+    const mojito = itemById["mojito"].recipe!;
+    expect(MS.applyModifiers(mojito, ["double"]).find((l) => l.ingredientId === "rum")!.qty).toBeCloseTo(0.1, 6);
+    const burger = itemById["burger"].recipe!;
+    const plain = MS.applyModifiers(burger, ["no-cheese"]);
+    expect(plain.some((l) => l.ingredientId === "cheddar")).toBe(false);
+    expect(plain).toHaveLength(burger.length - 1);
+    expect(MS.applyModifiers(burger, [])).toEqual(burger);
+  });
+  it("syncs once a day at 06:00, archives the removed dish, keeps the new price, and tells the chef", async () => {
+    const s = (await MSV.ensureMenuSync())!;
+    expect(s.at).toBe(`${TODAY}T06:00`);
+    expect(MSV.syncLine(s)).toBe("Menu synced from Simphony at 06:00: 2 new dishes, 1 price change, 1 dish removed");
+    expect(s.prices.burger).toBe(24);
+    expect(s.archived.kidspasta).toBeTruthy();
+    expect(s.newDishes.every((d) => d.status === "needs_recipe" && d.standardCost > 0)).toBe(true);
+    expect(loadStore().notify.notices.some((n) => n.type === "menu-new-dish" && n.to === "u-chef" && n.title === "2 new dishes need a recipe")).toBe(true);
+    const again = (await MSV.ensureMenuSync())!;
+    expect(again.newDishes).toHaveLength(2);
+    expect(loadStore().notify.notices.filter((n) => n.type === "menu-new-dish" && n.to === "u-chef")).toHaveLength(1);
+  });
+  it("the chef confirms a recipe on one screen; roles without recipes cannot; bad lines are refused", async () => {
+    const s = (await MSV.ensureMenuSync())!;
+    const dish = s.newDishes.find((d) => d.name === "Sea bass with lemon butter")!;
+    expect(MSV.confirmRecipe(userById["u-buy"], { posId: dish.posId, lines: dish.suggestion.lines }).ok).toBe(false);
+    expect(MSV.confirmRecipe(userById["u-chef"], { posId: dish.posId, lines: [{ ingredientId: "nope", qty: 1 }] }).ok).toBe(false);
+    expect(MSV.confirmRecipe(userById["u-chef"], { posId: dish.posId, lines: [{ ingredientId: "hammour", qty: 0 }] }).ok).toBe(false);
+    const ok = MSV.confirmRecipe(userById["u-chef"], { posId: dish.posId, lines: dish.suggestion.lines });
+    if (!ok.ok) throw new Error(ok.error);
+    expect(ok.dish).toMatchObject({ status: "confirmed", confirmed: { by: "u-chef", role: "chef" } });
+    expect(MSV.confirmRecipe(userById["u-chef"], { posId: dish.posId, lines: dish.suggestion.lines }).ok).toBe(false);
+    const out = await MSV.menuFor(userById["u-chef"]);
+    if (!out.ok) throw new Error(out.error);
+    expect(out.menu.newDishes.find((d) => d.posId === dish.posId)!.recipeCost).toBeGreaterThan(0);
+    // Last night's example: modifiers read from Simphony and what they did.
+    expect(out.menu.examples.map((e) => e.modifier).sort()).toEqual(["Double", "No cheese"]);
+    expect(out.menu.examples.find((e) => e.modifier === "No cheese")!.used).toBe(0);
+    void plusDays;
+  });
+});

@@ -9,6 +9,7 @@ import { basePriceAt, ingredientCostAt, itemCostAt, recipeBreakdown } from "@/li
 import { useCtx, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
 import { DATA_START, DEMO_TODAY, fmtMoney, fmtPct, fmtQty } from "@/lib/util";
+import { MenuSyncLine, Modifiers, NewDishes, useMenu } from "./menu-sync";
 
 const aed = (n: number) => fmtMoney(n, "EUR", { decimals: true });
 
@@ -19,10 +20,16 @@ export function Recipes() {
   const [open, setOpen] = useState<string | null>("burger");
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const mayEdit = can(user, "stock.editPrices");
-  const recipes = MENU_ITEMS.filter((m) => m.recipe);
+  const { menu } = useMenu();
+  const recipes = MENU_ITEMS.filter((m) => m.recipe && !menu?.archived[m.id]);
   const ingredients = INGREDIENTS.filter((g) => g.dept !== "glassware");
+  // The till's price where the morning sync found a change; otherwise the group list price.
+  const priceOf = (id: string) => menu?.prices[id] ?? basePriceAt(id, DEMO_TODAY);
 
   return (
+    <div className="space-y-5">
+    {menu && <MenuSyncLine menu={menu} />}
+    {menu && <NewDishes menu={menu} />}
     <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.25fr_1fr]">
       <Panel title="Recipes for the top 20 items" description="Cost per portion at today's ingredient prices, against the group list price. Choose a recipe to see what goes into it." flush>
         <TableWrap>
@@ -32,7 +39,7 @@ export function Recipes() {
               {recipes.map((item) => {
                 const cost = itemCostAt(item.id, DEMO_TODAY, ctx.overrides);
                 const start = itemCostAt(item.id, DATA_START, ctx.overrides);
-                const price = basePriceAt(item.id, DEMO_TODAY);
+                const price = priceOf(item.id);
                 const isOpen = open === item.id;
                 const lines = recipeBreakdown(item, DEMO_TODAY, ctx.overrides);
                 return [
@@ -44,7 +51,7 @@ export function Recipes() {
                       </button>
                     </Td>
                     <Td align="right">{aed(cost)}</Td>
-                    <Td align="right">{aed(price)}</Td>
+                    <Td align="right">{aed(price)}{menu?.prices[item.id] !== undefined && <span className="block text-[11px] text-steel">from Simphony</span>}</Td>
                     <Td align="right">{aed(price - cost)}</Td>
                     <Td align="right" className="text-ink">{fmtPct((price - cost) / price)}</Td>
                     <Td align="right">{Math.abs(cost / start - 1) < 0.0005 ? <span className="text-xs text-fog">none</span> : <Delta value={cost / start - 1} goodWhen="down" />}</Td>
@@ -109,6 +116,8 @@ export function Recipes() {
           </table>
         </div>
       </Panel>
+    </div>
+    {menu && <Modifiers menu={menu} />}
     </div>
   );
 }

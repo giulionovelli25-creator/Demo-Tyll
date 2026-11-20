@@ -1,0 +1,195 @@
+{
+ "comment": "Recorded sample for the Tyll demo: guest checks of revenue centre 21 (Mercado) for one business day, shaped after Oracle Simphony's published guest check data (detail lines for menu items, condiments, discounts and voids). Simulated content; field names to be confirmed in a sandbox.",
+ "locRef": "LIS01",
+ "busDt": "2026-11-18",
+ "guestChecks": [
+  {
+   "guestCheckId": 880101,
+   "chkNum": 4101,
+   "rvcNum": 21,
+   "tblNum": "12",
+   "gstCnt": 2,
+   "empNum": 14671,
+   "opnUTC": "2026-11-18T19:05:00",
+   "clsdUTC": "2026-11-18T20:31:00",
+   "clsdFlag": true,
+   "detailLines": [
+    {
+     "lineNum": 1,
+     "detailUTC": "2026-11-18T19:08:00",
+     "dspQty": 1,
+     "dspTtl": "24.00",
+     "menuItem": {
+      "miNum": 1001
+     }
+    },
+    {
+     "lineNum": 2,
+     "detailUTC": "2026-11-18T19:08:00",
+     "dspQty": 1,
+     "dspTtl": "0.00",
+     "menuItem": {
+      "miNum": 9201
+     },
+     "parentLineNum": 1
+    },
+    {
+     "lineNum": 3,
+     "detailUTC": "2026-11-18T19:09:00",
+     "dspQty": 1,
+     "dspTtl": "28.00",
+     "menuItem": {
+      "miNum": 1004
+     }
+    },
+    {
+     "lineNum": 4,
+     "detailUTC": "2026-11-18T19:06:00",
+     "dspQty": 2,
+     "dspTtl": "18.00",
+     "menuItem": {
+      "miNum": 2006
+     }
+    }
+   ],
+   "tenders": [
+    {
+     "tmedName": "Visa",
+     "ttl": "70.00"
+    }
+   ]
+  },
+  {
+   "guestCheckId": 880102,
+   "chkNum": 4102,
+   "rvcNum": 21,
+   "tblNum": "4",
+   "gstCnt": 3,
+   "empNum": 14672,
+   "opnUTC": "2026-11-18T19:40:00",
+   "clsdUTC": "2026-11-18T21:15:00",
+   "clsdFlag": true,
+   "detailLines": [
+    {
+     "lineNum": 1,
+     "detailUTC": "2026-11-18T19:44:00",
+     "dspQty": 2,
+     "dspTtl": "26.00",
+     "menuItem": {
+      "miNum": 2004
+     }
+    },
+    {
+     "lineNum": 2,
+     "detailUTC": "2026-11-18T19:44:00",
+     "dspQty": 1,
+     "dspTtl": "5.00",
+     "menuItem": {
+      "miNum": 9101
+     },
+     "parentLineNum": 1
+    },
+    {
+     "lineNum": 3,
+     "detailUTC": "2026-11-18T19:52:00",
+     "dspQty": 3,
+     "dspTtl": "84.00",
+     "menuItem": {
+      "miNum": 1004
+     }
+    },
+    {
+     "lineNum": 4,
+     "detailUTC": "2026-11-18T19:53:00",
+     "dspQty": 1,
+     "dspTtl": "29.00",
+     "menuItem": {
+      "miNum": 1031
+     }
+    },
+    {
+     "lineNum": 5,
+     "detailUTC": "2026-11-18T20:40:00",
+     "dspQty": 1,
+     "dspTtl": "11.00",
+     "menuItem": {
+      "miNum": 1013
+     },
+     "vdFlag": true,
+     "reasonCode": "Ordered by mistake"
+    },
+    {
+     "lineNum": 6,
+     "detailUTC": "2026-11-18T21:10:00",
+     "dspQty": 1,
+     "dspTtl": "-14.40",
+     "discount": {
+      "dscNum": 31,
+      "name": "Hotel guest 10%"
+     }
+    }
+   ],
+   "tenders": [
+    {
+     "tmedName": "Room charge",
+     "ttl": "129.60"
+    }
+   ]
+  },
+  {
+   "guestCheckId": 880103,
+   "chkNum": 4103,
+   "rvcNum": 21,
+   "tblNum": "9",
+   "gstCnt": 2,
+   "empNum": 14673,
+   "opnUTC": "2026-11-18T20:10:00",
+   "clsdUTC": "2026-11-18T21:40:00",
+   "clsdFlag": true,
+   "detailLines": [
+    {
+     "lineNum": 1,
+     "detailUTC": "2026-11-18T20:14:00",
+     "dspQty": 1,
+     "dspTtl": "34.00",
+     "menuItem": {
+      "miNum": 1032
+     }
+    },
+    {
+     "lineNum": 2,
+     "detailUTC": "2026-11-18T20:14:00",
+     "dspQty": 1,
+     "dspTtl": "38.00",
+     "menuItem": {
+      "miNum": 1005
+     }
+    },
+    {
+     "lineNum": 3,
+     "detailUTC": "2026-11-18T20:12:00",
+     "dspQty": 2,
+     "dspTtl": "13.00",
+     "menuItem": {
+      "miNum": 2009
+     }
+    },
+    {
+     "lineNum": 4,
+     "detailUTC": "2026-11-18T21:20:00",
+     "dspQty": 2,
+     "dspTtl": "20.00",
+     "menuItem": {
+      "miNum": 1014
+     }
+    }
+   ],
+   "tenders": [
+    {
+     "tmedName": "Mastercard",
+     "ttl": "105.00"
+    }
+   ]
+  }
+ ]
+}

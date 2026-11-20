@@ -49,6 +49,11 @@
 "1 modifica è in attesa di arrivare al server.",
 "تغيير واحد ينتظر الوصول إلى الخادم."
 ],
+"1 needs a recipe": [
+"1 braucht ein Rezept",
+"1 ha bisogno di una ricetta",
+"1 بحاجة إلى وصفة"
+],
 "A POS login shows which account was signed in to the terminal. It does not establish who made the change, or why.": [
 "Ein Kassen-Login zeigt, welches Konto am Terminal angemeldet war. Es belegt nicht, wer die Änderung vorgenommen hat oder warum.",
 "Un accesso cassa mostra quale account era collegato al terminale. Non stabilisce chi ha fatto la modifica, né perché.",
@@ -503,6 +508,11 @@
 "Notiz hinzufügen",
 "Aggiungi una nota",
 "إضافة ملاحظة"
+],
+"Add an ingredient": [
+"Zutat hinzufügen",
+"Aggiungi un ingrediente",
+"أضف مكوّنًا"
 ],
 "Add note": [
 "Notiz hinzufügen",
@@ -2029,6 +2039,11 @@
 "Costruito dalla documentazione pubblica della Connector API di Mews e provato solo su risposte di esempio. Non verificato finché non viene provato con credenziali sandbox. La demo continua a usare dati simulati.",
 "بُني من وثائق Connector API العامة لدى Mews واختُبر على ردود نموذجية فقط. غير متحقق منه حتى يُختبر ببيانات اعتماد بيئة تجريبية. يواصل العرض استخدام سجلات محاكاة."
 ],
+"Built from {0}, the closest dish in {1}, with the main ingredient swapped.": [
+"Aus {0} erstellt, dem ähnlichsten Gericht in {1}, mit getauschter Hauptzutat.",
+"Costruita da {0}, il piatto più simile in {1}, con l'ingrediente principale sostituito.",
+"بُنيت من {0}، أقرب طبق في {1}، مع استبدال المكوّن الرئيسي."
+],
 "Burgundy": [
 "Burgund",
 "Borgogna",
@@ -2649,6 +2664,11 @@
 "Tortino al cioccolato",
 "فوندان شوكولاتة"
 ],
+"Choose": [
+"Auswählen",
+"Scegli",
+"اختر"
+],
 "Choose a person": [
 "Person wählen",
 "Scegli una persona",
@@ -3024,6 +3044,11 @@
 "Concierge",
 "الكونسيرج"
 ],
+"Condiments on a line, such as Double or No cheese, applied to the recipe": [
+"Zusätze auf einer Zeile, etwa Doppelt oder Ohne Käse, auf das Rezept angewendet",
+"Aggiunte su una riga, come Doppio o Senza formaggio, applicate alla ricetta",
+"إضافات على السطر، مثل مضاعف أو بدون جبن، تُطبق على الوصفة"
+],
 "Conference lunch buffet": [
 "Konferenz-Mittagsbuffet",
 "Buffet pranzo per conferenze",
@@ -3048,6 +3073,16 @@
 "Zählung bestätigen",
 "Conferma conteggio",
 "أكد الجرد"
+],
+"Confirm recipe": [
+"Rezept bestätigen",
+"Conferma la ricetta",
+"أكّد الوصفة"
+],
+"Confirm recipes": [
+"Rezepte bestätigen",
+"Conferma le ricette",
+"أكّد الوصفات"
 ],
 "Confirmed and closed by {0}.": [
 "Bestätigt und geschlossen von {0}.",
@@ -3604,6 +3639,11 @@
 "PIN demo: {0}",
 "رقم PIN التجريبي: {0}"
 ],
+"Demo connection": [
+"Demo-Verbindung",
+"Connessione demo",
+"اتصال تجريبي"
+],
 "Demo data": [
 "Demodaten",
 "Dati demo",
@@ -3759,6 +3799,11 @@
 "Limite sconti",
 "حد الخصم"
 ],
+"Discount lines, by name, against the check they reduce": [
+"Rabattzeilen, nach Name, gegen die Rechnung, die sie mindern",
+"Righe di sconto, per nome, sul conto che riducono",
+"أسطر الخصم، بالاسم، مقابل الفاتورة التي تخفضها"
+],
 "Discounted bills": [
 "Rabattierte Rechnungen",
 "Conti scontati",
@@ -3793,6 +3838,11 @@
 "Schließen",
 "Chiudi",
 "إغلاق"
+],
+"Double": [
+"Doppelt",
+"Doppio",
+"مضاعف"
 ],
 "Doubles rung on the single key.": [
 "Doppelte auf der Taste für einfache boniert.",
@@ -4063,6 +4113,16 @@
 "Jede Rechnung wird mit der Bestellung und dem Wareneingang verglichen.",
 "Ogni fattura è confrontata con l'ordine e con quanto ricevuto.",
 "تُقارن كل فاتورة بأمر الشراء وبما تم استلامه."
+],
+"Each is costed at a standard share of its price until its recipe is confirmed. Check the suggested recipe, change what is different, and confirm.": [
+"Jedes wird mit einem Standardanteil seines Preises kalkuliert, bis sein Rezept bestätigt ist. Prüfen Sie das vorgeschlagene Rezept, ändern Sie, was abweicht, und bestätigen Sie.",
+"Ognuno è calcolato a una quota standard del prezzo finché la ricetta non è confermata. Controlla la ricetta suggerita, cambia ciò che è diverso e conferma.",
+"يُحسب كل طبق بنسبة قياسية من سعره حتى تُؤكَّد وصفته. راجع الوصفة المقترحة، وغيّر ما يختلف، ثم أكّد."
+],
+"Each menu item, its family group and its price, read at the morning sync": [
+"Jeder Menüartikel, seine Gruppe und sein Preis, gelesen bei der Morgensynchronisierung",
+"Ogni voce di menu, il suo gruppo e il suo prezzo, letti alla sincronizzazione del mattino",
+"كل صنف في القائمة ومجموعته وسعره، تُقرأ في مزامنة الصباح"
 ],
 "Each outlet counts its own bar and kitchen stock. Tyll compares what left between two counts with what the POS sold and what was logged as waste.": [
 "Jedes Outlet zählt seinen eigenen Bar- und Küchenbestand. Tyll vergleicht den Abgang zwischen zwei Zählungen mit den POS-Verkäufen und dem erfassten Abfall.",
@@ -5354,6 +5414,11 @@
 "Registrazioni sui conti ospite, camere occupate, ospiti per camera, orari di check-out",
 "القيود على فواتير النزلاء، والغرف المشغولة، وعدد النزلاء في كل غرفة، وأوقات المغادرة"
 ],
+"Guest checks with every line, per revenue centre and business day": [
+"Gastrechnungen mit jeder Zeile, je Umsatzzentrum und Geschäftstag",
+"Conti con ogni riga, per centro di ricavo e giorno operativo",
+"فواتير الضيوف بكل سطر، لكل مركز إيرادات ويوم عمل"
+],
 "Guest folios, room numbers and check-out times are simulated, as is the PMS they come from. Minibar, spa and laundry postings cover the last {0} days.": [
 "Gästefolios, Zimmernummern und Check-out-Zeiten sind simuliert, ebenso das PMS, aus dem sie stammen. Minibar-, Spa- und Wäschebuchungen umfassen die letzten {0} Tage.",
 "Folio degli ospiti, numeri di camera e orari di check-out sono simulati, come il PMS da cui provengono. Gli addebiti di minibar, spa e lavanderia coprono gli ultimi {0} giorni.",
@@ -6469,6 +6534,11 @@
 "La notte scorsa",
 "ليلة أمس"
 ],
+"Last night at Mercado, from Simphony": [
+"Gestern Abend im Mercado, aus Simphony",
+"Ieri sera al Mercado, da Simphony",
+"الليلة الماضية في Mercado، من Simphony"
+],
 "Last night at {0}. How one difference is found, step by step.": [
 "Gestern Abend im {0}. Wie eine Abweichung gefunden wird, Schritt für Schritt.",
 "Ieri sera al {0}. Come si trova una differenza, passo dopo passo.",
@@ -6513,6 +6583,16 @@
 "Letzter Einkaufspreis",
 "Ultimo prezzo d'acquisto",
 "آخر سعر شراء"
+],
+"Last sync {0}, demo connection. Recorded Simphony responses for Mercado are replayed each morning; no Oracle account is connected. The menu sync on Recipes and costs reads from it.": [
+"Letzte Synchronisierung {0}, Demo-Verbindung. Aufgezeichnete Simphony-Antworten für Mercado werden jeden Morgen abgespielt; kein Oracle-Konto ist verbunden. Die Menüsynchronisierung auf Rezepte und Kosten liest daraus.",
+"Ultima sincronizzazione {0}, connessione demo. Le risposte Simphony registrate per Mercado vengono riprodotte ogni mattina; nessun account Oracle è collegato. La sincronizzazione del menu in Ricette e costi legge da qui.",
+"آخر مزامنة {0}، اتصال تجريبي. تُعاد ردود Simphony المسجلة لـMercado كل صباح؛ لا يوجد حساب Oracle متصل. تقرأ منها مزامنة القائمة في الوصفات والتكاليف."
+],
+"Last sync {0}, recorded Simphony responses for Mercado. No Oracle account is connected.": [
+"Letzte Synchronisierung {0}, aufgezeichnete Simphony-Antworten für Mercado. Kein Oracle-Konto ist verbunden.",
+"Ultima sincronizzazione {0}, risposte Simphony registrate per Mercado. Nessun account Oracle è collegato.",
+"آخر مزامنة {0}، ردود Simphony مسجلة لـMercado. لا يوجد حساب Oracle متصل."
 ],
 "Last used {0}, {1}": [
 "Zuletzt genutzt {0}, {1}",
@@ -7164,6 +7244,11 @@
 "Righe sui conti",
 "البنود في الفواتير"
 ],
+"Lines taken off a check, with the reason code": [
+"Von einer Rechnung genommene Zeilen, mit dem Grundcode",
+"Righe tolte da un conto, con il codice motivo",
+"أسطر حُذفت من الفاتورة، مع رمز السبب"
+],
 "Linguine": [
 "Linguine",
 "Linguine",
@@ -7710,7 +7795,7 @@
 "ثقة متوسطة، {0} توصيلات"
 ],
 "Menu": [
-"Speisekarte",
+"Menü",
 "Menu",
 "القائمة"
 ],
@@ -7723,6 +7808,11 @@
 "Menüartikel",
 "Voci di menu",
 "أصناف القائمة"
+],
+"Menu items and prices": [
+"Menüartikel und Preise",
+"Voci di menu e prezzi",
+"أصناف القائمة والأسعار"
 ],
 "Menu performance": [
 "Menüleistung",
@@ -7738,6 +7828,16 @@
 "Kartenpreis je {0}.",
 "Prezzo di listino {0} l'uno.",
 "سعر القائمة {0} للواحد."
+],
+"Menu synced from Simphony at {0}: no changes": [
+"Menü um {0} aus Simphony synchronisiert: keine Änderungen",
+"Menu sincronizzato da Simphony alle {0}: nessuna modifica",
+"تمت مزامنة القائمة من Simphony الساعة {0}: لا تغييرات"
+],
+"Menu synced from Simphony at {0}: {1} new dishes, {2} price change, {3} dish removed": [
+"Menü um {0} aus Simphony synchronisiert: {1} neue Gerichte, {2} Preisänderung, {3} Gericht entfernt",
+"Menu sincronizzato da Simphony alle {0}: {1} nuovi piatti, {2} variazione di prezzo, {3} piatto rimosso",
+"تمت مزامنة القائمة من Simphony الساعة {0}: {1} أطباق جديدة، {2} تغيير سعر، {3} طبق محذوف"
 ],
 "Menu, Menu": [
 "Menü, Menü",
@@ -7833,6 +7933,11 @@
 "Gemischte Beeren",
 "Frutti di bosco",
 "توت"
+],
+"Modifiers": [
+"Modifikatoren",
+"Modificatori",
+"المعدِّلات"
 ],
 "Mon": [
 "Mo",
@@ -8119,6 +8224,11 @@
 "Da controllare",
 "يحتاج إلى مراجعة"
 ],
+"Needs a recipe": [
+"Braucht ein Rezept",
+"Serve una ricetta",
+"يحتاج إلى وصفة"
+],
 "Needs attention": [
 "Braucht Aufmerksamkeit",
 "Richiede attenzione",
@@ -8189,6 +8299,11 @@
 "Nuovo",
 "جديد"
 ],
+"New dishes from Simphony": [
+"Neue Gerichte aus Simphony",
+"Nuovi piatti da Simphony",
+"أطباق جديدة من Simphony"
+],
 "New here?": [
 "Neu hier?",
 "Sei nuovo?",
@@ -8208,6 +8323,11 @@
 "Neu diese Woche",
 "Nuove questa settimana",
 "جديدة هذا الأسبوع"
+],
+"New: {0}, {1}.": [
+"Neu: {0}, {1}.",
+"Nuovi: {0}, {1}.",
+"جديد: {0}، {1}."
 ],
 "Next": [
 "Weiter",
@@ -8349,6 +8469,11 @@
 "Quella mattina non è stata addebitata alcuna colazione alla camera {0}.",
 "لم يُحتسب أي إفطار على الغرفة {0} ذلك الصباح."
 ],
+"No cheese": [
+"Ohne Käse",
+"Senza formaggio",
+"بدون جبن"
+],
 "No confirmation recorded.": [
 "Keine Bestätigung erfasst.",
 "Nessuna conferma registrata.",
@@ -8398,6 +8523,11 @@
 "Es wurde keine Endzeit erfasst.",
 "Non è stato registrato un orario di fine.",
 "لم يُسجَّل وقت انتهاء."
+],
+"No ingredients yet.": [
+"Noch keine Zutaten.",
+"Ancora nessun ingrediente.",
+"لا توجد مكونات بعد."
 ],
 "No item stands out": [
 "Kein Artikel fällt auf",
@@ -8578,6 +8708,11 @@
 "Keines der angezeigten Outlets nimmt Tischreservierungen an",
 "Nessuno dei punti vendita visibili accetta prenotazioni di tavoli",
 "لا يقبل أي من المنافذ المعروضة حجز الطاولات"
+],
+"Not AI": [
+"Keine KI",
+"Non è IA",
+"ليس ذكاءً اصطناعيًا"
 ],
 "Not a confirmed loss. It becomes one only if the outcome below says so.": [
 "Kein bestätigter Verlust. Das wird es nur, wenn das Ergebnis unten es so festhält.",
@@ -9573,6 +9708,16 @@
 "Oder tippen Sie auf die Flasche. Antippen speichert sie.",
 "Oppure tocca la bottiglia. Toccarla la salva.",
 "أو اضغط على الزجاجة. الضغط يحفظها."
+],
+"Oracle Simphony (MICROS)": [
+"Oracle Simphony (MICROS)",
+"Oracle Simphony (MICROS)",
+"Oracle Simphony (MICROS)"
+],
+"Oracle Simphony runs as a demo connection on recorded responses. Lightspeed Restaurant K Series and Mews adapters are built from their public API documentation and tested on sample responses only. None is connected to a live account.": [
+"Oracle Simphony läuft als Demo-Verbindung mit aufgezeichneten Antworten. Die Adapter für Lightspeed Restaurant K Series und Mews sind nach ihrer öffentlichen API-Dokumentation gebaut und nur mit Beispielantworten getestet. Keiner ist mit einem echten Konto verbunden.",
+"Oracle Simphony funziona come connessione demo con risposte registrate. Gli adattatori Lightspeed Restaurant K Series e Mews sono costruiti dalla loro documentazione API pubblica e testati solo su risposte di esempio. Nessuno è collegato a un account reale.",
+"يعمل Oracle Simphony كاتصال تجريبي على ردود مسجلة. محوّلات Lightspeed Restaurant K Series وMews مبنية من وثائق واجهاتها العامة ومختبرة على ردود نموذجية فقط. لا يتصل أي منها بحساب حقيقي."
 ],
 "Oranges": [
 "Orangen",
@@ -10739,6 +10884,11 @@
 "Tariffa:",
 "السعر:"
 ],
+"Read from recorded Simphony checks (demo connection). The simulated sales behind the rest of the demo carry no modifiers.": [
+"Aus aufgezeichneten Simphony-Rechnungen gelesen (Demo-Verbindung). Die simulierten Verkäufe im Rest der Demo haben keine Modifikatoren.",
+"Letto da conti Simphony registrati (connessione demo). Le vendite simulate nel resto della demo non hanno modificatori.",
+"مقروءة من فواتير Simphony مسجلة (اتصال تجريبي). المبيعات المحاكاة في باقي العرض لا تحمل معدِّلات."
+],
 "Reason": [
 "Grund",
 "Motivo",
@@ -10794,9 +10944,14 @@
 "Ricetta e costo",
 "الوصفة والتكلفة"
 ],
+"Recipe confirmed": [
+"Rezept bestätigt",
+"Ricetta confermata",
+"تم تأكيد الوصفة"
+],
 "Recipe cost": [
 "Rezeptkosten",
-"Costo ricetta",
+"Costo della ricetta",
 "تكلفة الوصفة"
 ],
 "Recipe cost of items sold": [
@@ -10808,6 +10963,11 @@
 "Rezeptkosten pro Portion",
 "Costo ricetta per porzione",
 "تكلفة الوصفة للحصة"
+],
+"Recipe cost, as below": [
+"Rezeptkosten, wie unten",
+"Costo della ricetta, come sotto",
+"تكلفة الوصفة، كما أدناه"
 ],
 "Recipes and costs": [
 "Rezepte und Kosten",
@@ -11975,7 +12135,7 @@
 "خضار السلطة"
 ],
 "Sales": [
-"Umsatz",
+"Verkäufe",
 "Vendite",
 "المبيعات"
 ],
@@ -11988,6 +12148,11 @@
 "Verkauf und Betriebsübersicht, Oktober bis heute",
 "Sintesi vendite e operazioni, ottobre a oggi",
 "ملخص المبيعات والعمليات، أكتوبر حتى اليوم"
+],
+"Sales (guest checks), menu items and prices, modifiers, voids and discounts": [
+"Verkäufe (Gastrechnungen), Menüartikel und Preise, Modifikatoren, Stornos und Rabatte",
+"Vendite (conti), voci di menu e prezzi, modificatori, storni e sconti",
+"المبيعات (فواتير الضيوف)، أصناف القائمة والأسعار، المعدِّلات، الإلغاءات والخصومات"
 ],
 "Sales and Performance": [
 "Verkauf und Leistung",
@@ -12393,6 +12558,11 @@
 "So wird das geprüft",
 "Come viene verificato",
 "كيف يُتحقق من ذلك"
+],
+"See it on Recipes and costs": [
+"Auf Rezepte und Kosten ansehen",
+"Vedi in Ricette e costi",
+"اعرضه في الوصفات والتكاليف"
 ],
 "See it run on sample responses": [
 "Mit Beispielantworten ansehen",
@@ -13299,6 +13469,11 @@
 "Personale, stima",
 "الموظفون، تقديري"
 ],
+"Standard cost, for now": [
+"Standardkosten, vorerst",
+"Costo standard, per ora",
+"تكلفة قياسية، مؤقتًا"
+],
 "Standard pour": [
 "Standardausschank",
 "Dose standard",
@@ -13618,6 +13793,11 @@
 "Vorgeschlagen",
 "Suggerito",
 "مقترح"
+],
+"Suggested, please check": [
+"Vorgeschlagen, bitte prüfen",
+"Suggerita, da controllare",
+"مقترحة، يرجى المراجعة"
 ],
 "Sun": [
 "So",
@@ -14148,6 +14328,11 @@
 "Die Änderung war berechtigt. Es ging nichts verloren.",
 "La modifica era valida. Non si è perso nulla.",
 "كان التغيير صحيحًا. لم يُفقد شيء."
+],
+"The chef confirms the recipe.": [
+"Der Küchenchef bestätigt das Rezept.",
+"Lo chef conferma la ricetta.",
+"يؤكد الشيف الوصفة."
 ],
 "The complete record of each order: created, items entered, tickets sent, changes, final bill and payment.": [
 "Der vollständige Verlauf jeder Bestellung: Anlage, Artikel, gesendete Bons, Änderungen, Endrechnung und Zahlung.",
@@ -15849,6 +16034,11 @@
 "Vodka",
 "فودكا"
 ],
+"Voids": [
+"Stornos",
+"Storni",
+"الإلغاءات"
+],
 "Voids, refunds and over pouring": [
 "Stornos, Erstattungen und Überschenken",
 "Annullamenti, rimborsi e versamenti eccessivi",
@@ -16128,6 +16318,11 @@
 "Was eine Führungskraft um {0} Uhr liest. In dieser Demo eine Vorschau: Es wird nichts gesendet.",
 "Cosa legge un responsabile alle {0}. In questa demo è un'anteprima: non viene inviato nulla.",
 "ما يقرؤه المدير الساعة {0} صباحًا. في هذا العرض هي معاينة: لا يُرسل شيء."
+],
+"What a modifier rung on the till does to the recipe, so stock use follows what was served.": [
+"Was ein in der Kasse gebuchter Modifikator mit dem Rezept macht, damit der Verbrauch dem Servierten folgt.",
+"Cosa fa alla ricetta un modificatore battuto in cassa, così il consumo segue ciò che è stato servito.",
+"ما يفعله المعدِّل المسجّل في نقطة البيع بالوصفة، ليتبع استهلاك المخزون ما قُدّم."
 ],
 "What are you logging?": [
 "Was erfassen Sie?",
@@ -16989,6 +17184,11 @@
 "bottiglie aperte simulate",
 "الزجاجات المفتوحة محاكاة"
 ],
+"built by a fixed rule.": [
+"nach einer festen Regel erstellt.",
+"costruita con una regola fissa.",
+"بُنيت بقاعدة ثابتة."
+],
 "by the day of the charge": [
 "nach Tag der Belastung",
 "per giorno dell'addebito",
@@ -17054,6 +17254,11 @@
 "coperto",
 "مغطى"
 ],
+"doubles the spirit ({0})": [
+"verdoppelt die Spirituose ({0})",
+"raddoppia il distillato ({0})",
+"يضاعف المشروب الروحي ({0})"
+],
 "drinks per guest": [
 "Getränke pro Gast",
 "bevande per ospite",
@@ -17098,6 +17303,11 @@
 "für morgen",
 "per domani",
 "لغد"
+],
+"from Simphony": [
+"aus Simphony",
+"da Simphony",
+"من Simphony"
 ],
 "from recipes and sales": [
 "aus Rezepten und Verkäufen",
@@ -17488,6 +17698,11 @@
 "nach Zahlung entfernt",
 "tolto dopo il pagamento",
 "أُزيل بعد الدفع"
+],
+"takes the cheese out ({0})": [
+"lässt den Käse weg ({0})",
+"toglie il formaggio ({0})",
+"يزيل الجبن ({0})"
 ],
 "the F&B director {0}": [
 "der F&B Director {0}",
@@ -18789,6 +19004,11 @@
 "in media {0} ore e {1} minuti di ritardo",
 "تأخير {0} ساعات و{1} دقيقة في المتوسط"
 ],
+"{0} in place of {1}.": [
+"{0} statt {1}.",
+"{0} al posto di {1}.",
+"{0} بدلًا من {1}."
+],
 "{0} in the sample": [
 "{0} im Beispiel",
 "{0} nell'esempio",
@@ -19259,6 +19479,21 @@
 "Sono arrivati {0} di {1} in più di quanto spieghino cassa e registro sprechi, nei {2} giorni fino al {3}.",
 "ورد {0} من {1} أكثر مما تفسره نقطة البيع وسجل الهدر، خلال {2} يومًا حتى {3}."
 ],
+"{0} need a recipe": [
+"{0} brauchen ein Rezept",
+"{0} hanno bisogno di una ricetta",
+"{0} بحاجة إلى وصفة"
+],
+"{0} new dish needs a recipe": [
+"{0} neues Gericht braucht ein Rezept",
+"{0} nuovo piatto ha bisogno di una ricetta",
+"{0} طبق جديد بحاجة إلى وصفة"
+],
+"{0} new dishes need a recipe": [
+"{0} neue Gerichte brauchen ein Rezept",
+"{0} nuovi piatti hanno bisogno di una ricetta",
+"{0} أطباق جديدة بحاجة إلى وصفة"
+],
 "{0} not billed": [
 "{0} nicht abgerechnet",
 "{0} non fatturati",
@@ -19293,6 +19528,11 @@
 "{0} Umsatz gefährdet, eine Schätzung.",
 "{0} di vendite a rischio, una stima.",
 "{0} من المبيعات معرضة للخطر، تقدير."
+],
+"{0} of the price until the recipe is confirmed": [
+"{0} des Preises, bis das Rezept bestätigt ist",
+"{0} del prezzo finché la ricetta non è confermata",
+"{0} من السعر حتى تُؤكَّد الوصفة"
 ],
 "{0} of them, for {1} guest, was already matched to another booking:": [
 "{0} davon, für {1} Gast, war bereits einer anderen Reservierung zugeordnet:",
@@ -20349,6 +20589,11 @@
 "{0} con più acquistato che usato, {1} con più usato che acquistato. Prima il divario maggiore.",
 "{0} بمشتريات أكثر من الاستخدام، و{1} باستخدام أكثر من المشتريات. الأكبر فرقًا أولًا."
 ],
+"{0} with {1}": [
+"{0} mit {1}",
+"{0} con {1}",
+"{0} مع {1}"
+],
 "{0} {1} from {2}": [
 "{0} {1} von {2}",
 "{0} {1} da {2}",
@@ -20929,6 +21174,11 @@
 "{0}, {1} dell'uso, segnalato",
 "{0}، {1} من الاستخدام، مُعلَّم"
 ],
+"{0}, {1} on the till": [
+"{0}, {1} in der Kasse",
+"{0}, {1} in cassa",
+"{0}، {1} في نقطة البيع"
+],
 "{0}, {1} ordered": [
 "{0}, {1} bestellt",
 "{0}, {1} ordinati",
@@ -21084,6 +21334,26 @@
 "{0}: nessun riscontro",
 "{0}: لا توجد نتيجة"
 ],
+"{0}: no longer on the till, archived.": [
+"{0}: nicht mehr in der Kasse, archiviert.",
+"{0}: non più in cassa, archiviato.",
+"{0}: لم يعد في نقطة البيع، أُرشف."
+],
+"{0}: none used, instead of the recipe's {1}.": [
+"{0}: nichts verbraucht, statt der {1} des Rezepts.",
+"{0}: nulla usato, invece dei {1} della ricetta.",
+"{0}: لم يُستخدم شيء، بدلًا من {1} في الوصفة."
+],
+"{0}: price {1} to {2}. Margins below use the new price.": [
+"{0}: Preis {1} auf {2}. Die Margen unten nutzen den neuen Preis.",
+"{0}: prezzo da {1} a {2}. I margini qui sotto usano il nuovo prezzo.",
+"{0}: السعر من {1} إلى {2}. تستخدم الهوامش أدناه السعر الجديد."
+],
+"{0}: recipe confirmed. It is now costed from the recipe.": [
+"{0}: Rezept bestätigt. Es wird jetzt nach dem Rezept kalkuliert.",
+"{0}: ricetta confermata. Ora è calcolato dalla ricetta.",
+"{0}: تم تأكيد الوصفة. يُحسب الآن من الوصفة."
+],
 "{0}: revenue recovered, {1}": [
 "{0}: Umsatz zurückgewonnen, {1}",
 "{0}: ricavi recuperati, {1}",
@@ -21173,6 +21443,11 @@
 "{0}: {1} Stück mehr gekauft als verbraucht, {2} Stück über die letzte Lieferung hinaus",
 "{0}: {1} unità acquistate più di quelle usate, {2} unità oltre l'ultima consegna",
 "{0}: {1} وحدة مشتراة أكثر من المستخدم، منها {2} وحدة بعد آخر توريد"
+],
+"{0}: {1} used instead of the recipe's {2}.": [
+"{0}: {1} verbraucht statt der {2} des Rezepts.",
+"{0}: {1} usati invece dei {2} della ricetta.",
+"{0}: استُخدم {1} بدلًا من {2} في الوصفة."
 ],
 "{0}d": [
 "{0} T.",

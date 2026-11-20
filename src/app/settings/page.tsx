@@ -43,7 +43,7 @@ const PERMISSION_LABEL: Record<Permission, string | null> = {
   "sales.work": null, "sales.approve": null, "sales.view": null,
 };
 const PERMISSION_ROWS = (Object.entries(PERMISSION_LABEL) as [Permission, string | null][]).filter((r): r is [Permission, string] => r[1] !== null);
-const STATE: Record<ConnectionState, { label: string; tone: "neutral" | "warn" | "ink" | "accent" }> = { simulated: { label: "Simulated", tone: "ink" }, adapter_built: { label: "Adapter built, not yet connected to a live account", tone: "accent" }, not_connected: { label: "Not connected", tone: "warn" }, planned: { label: "Planned", tone: "neutral" } };
+const STATE: Record<ConnectionState, { label: string; tone: "neutral" | "warn" | "ink" | "accent" }> = { simulated: { label: "Simulated", tone: "ink" }, adapter_built: { label: "Adapter built, not yet connected to a live account", tone: "accent" }, demo_connection: { label: "Demo connection", tone: "accent" }, not_connected: { label: "Not connected", tone: "warn" }, planned: { label: "Planned", tone: "neutral" } };
 
 const Mark = ({ on }: { on: boolean }) => (on ? <Check size={16} className="mx-auto text-pos" aria-label="Yes" /> : <Minus size={16} className="mx-auto text-fog" aria-label="No" />);
 

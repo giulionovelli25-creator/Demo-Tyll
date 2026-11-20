@@ -11,17 +11,18 @@ import { allowedProperties, can, canOpen } from "./domain/access";
 import { buildIssues, type Issue } from "./domain/issues";
 import { alertStateOf, type AlertStateName } from "./domain/records";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "./hooks";
-import { useMonthPlan, useRequests } from "./plan-hooks";
+import { useMonthPlan, usePlanDrafts, useRequests } from "./plan-hooks";
 import { useExpiring } from "./procurement-hooks";
 import type { PourOut } from "./server/pour";
 import { useEmptiesVersion } from "./empties-version";
 import type { MonthPlanOut, PlanItem } from "./server/purchasing";
+import type { MenuOut } from "./server/menu-sync";
 import { useDemo } from "./store";
 import { DEMO_TODAY, addDays, fmtDate, fmtTime, fxRate } from "./util";
 import { minOf } from "./domain/late-delivery";
 import { featureOn } from "./features";
 
-export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier" | "delivery" | "expiry";
+export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier" | "delivery" | "expiry" | "menu";
 export type AlertState = AlertStateName;
 
 export interface FeedAlert {
@@ -92,6 +93,10 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
   // Batches that normal use will not finish before they expire, in the next three days.
   const seesBatches = can(user, "stock.count") || can(user, "stock.review") || can(user, "purchase.create");
   const expiring = useExpiring(featureOn("expiry") && canOpen(user, "stock") && seesBatches && user.role !== "employee" ? pid : null, 3).data;
+  // New dishes from the morning menu sync that need a recipe: for the chef and whoever sets prices.
+  const planVersion = usePlanDrafts((s) => s.version);
+  const seesMenu = canOpen(user, "stock") && user.role !== "employee" && (can(user, "prep.plan") || can(user, "stock.editPrices"));
+  const menu = useApi<{ menu: MenuOut }>(seesMenu ? `/api/menu?v=${planVersion}` : null).data?.menu;
 
   const value = useMemo<Feed>(() => {
     const out: FeedAlert[] = [];
@@ -190,6 +195,14 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
         where: pid ? propertyById[pid].name : "", amount: risky.reduce((t, r) => t + r.value, 0) * (pid ? fxRate(propertyById[pid].currency, sel.currency) : 1), amountWord: "at risk", next: { label: "See expiring soon", href: "/stock?tab=expiry" },
       });
     }
+    const newDishes = menu?.newDishes.filter((d) => d.status === "needs_recipe") ?? [];
+    if (menu?.sync && newDishes.length) {
+      out.push({
+        id: `menu-${menu.sync.at}`, kind: "menu", rag: "amber", what: `${newDishes.length} new ${newDishes.length === 1 ? "dish needs a recipe" : "dishes need a recipe"}`,
+        why: `${newDishes.map((d) => d.name).join(" and ")} came from Simphony at ${menu.sync.at.slice(11, 16)}. Until the recipe is confirmed, ${newDishes.length === 1 ? "it is" : "they are"} costed at a standard cost.`,
+        where: outletById["lis-terrace"].name, outletId: "lis-terrace", amount: null, amountWord: "", next: { label: "Confirm recipes", href: "/stock?tab=recipes#new-dishes" },
+      });
+    }
     // Most urgent first, then the most money inside each level.
     const RANK = { red: 0, amber: 1, green: 2 } as const;
     out.sort((a, b) => RANK[a.rag as keyof typeof RANK] - RANK[b.rag as keyof typeof RANK] || Number(b.kind === "delivery") - Number(a.kind === "delivery") || (b.amount ?? -1) - (a.amount ?? -1));
@@ -198,7 +211,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
       alerts: out, open: out.filter((a) => state(a) === "open"), snoozed: out.filter((a) => state(a) === "snoozed"), resolved: out.filter((a) => state(a) === "resolved"),
       loading: planned.loading, error: planned.error, plan, pour, propertyId: pid,
     };
-  }, [ctx, sel, investigations, patterns, plan, pour, orders, expiring, pid, user, money, memory, planned.loading, planned.error]);
+  }, [ctx, sel, investigations, patterns, plan, pour, orders, expiring, menu, pid, user, money, memory, planned.loading, planned.error]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

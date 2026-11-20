@@ -6,7 +6,7 @@ import type { AlertState, FeedAlert } from "@/lib/alert-feed";
 import { useDemo } from "@/lib/store";
 import { OrderNowButton } from "@/components/stock/order-now";
 
-const KIND_WORDS: Record<FeedAlert["kind"], string> = { stock: "Stock", money: "Money", pour: "Over pouring", waste: "Waste", margin: "Menu", supplier: "Supplier", delivery: "Delivery", expiry: "Expiry" };
+const KIND_WORDS: Record<FeedAlert["kind"], string> = { stock: "Stock", money: "Money", pour: "Over pouring", waste: "Waste", margin: "Menu", supplier: "Supplier", delivery: "Delivery", expiry: "Expiry", menu: "Menu" };
 
 /** What happened, why it matters in money, and the one next step. */
 export function AlertRow({ alert, money, userId, state, compact, grouped }: { alert: FeedAlert; money: (n: number) => string; userId?: string; state?: AlertState; compact?: boolean; grouped?: boolean }) {

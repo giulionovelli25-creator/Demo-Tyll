@@ -31,7 +31,8 @@ export interface AccountingAdapter {
 }
 
 /** `adapter_built`: code written and tested on sample responses, not yet connected to a live account (unverified). */
-export type ConnectionState = "simulated" | "adapter_built" | "not_connected" | "planned";
+/** `demo_connection`: the adapter runs in the demo on recorded responses from the system, replayed on a schedule. Not a live account. */
+export type ConnectionState = "simulated" | "adapter_built" | "demo_connection" | "not_connected" | "planned";
 
 export interface DataSource {
   id: string;
@@ -49,6 +50,7 @@ export interface DataSource {
 /** What is and is not connected in this demo. Shown on the Settings page so nothing passes as a live integration. */
 export const DATA_SOURCES: DataSource[] = [
   { id: "pos", system: "Point of sale", kind: "PosAdapter", state: "simulated", supplies: "Orders, modifications, discounts, refunds, voids, kitchen and bar tickets", note: "Simulated records. The website lists MICROS Simphony, Sapaad and HMS as systems Tyll can connect to." },
+  { id: "pos-simphony", system: "Oracle Simphony (MICROS)", kind: "PosAdapter: SimphonyPos", state: "demo_connection", verified: false, detail: "/settings/adapters", supplies: "Sales (guest checks), menu items and prices, modifiers, voids and discounts", note: "Last sync 06:00, demo connection. Recorded Simphony responses for Mercado are replayed each morning; no Oracle account is connected. The menu sync on Recipes and costs reads from it." },
   { id: "pos-lightspeed", system: "Lightspeed Restaurant K Series", kind: "PosAdapter: LightspeedKSeriesPos", state: "adapter_built", verified: false, detail: "/settings/adapters", supplies: "Bills, lines, voids, discounts, refunds, payments and room charges, per business day", note: "Built from Lightspeed's public API documentation and tested on sample responses only. Unverified until tested with sandbox credentials. The demo keeps using simulated records." },
   { id: "pms", system: "Property management system", kind: "PmsAdapter", state: "simulated", supplies: "Guest bill postings, occupancy, arrivals, room status", note: "Simulated records. The website lists OPERA and Shiji Infrasys." },
   { id: "pms-mews", system: "Mews", kind: "PmsAdapter: MewsPms", state: "adapter_built", verified: false, detail: "/settings/adapters", supplies: "Guest bill postings, rooms in house, guests per room, check-out times", note: "Built from Mews's public Connector API documentation and tested on sample responses only. Unverified until tested with sandbox credentials. The demo keeps using simulated records." },

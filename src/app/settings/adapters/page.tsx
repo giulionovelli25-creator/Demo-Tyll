@@ -10,6 +10,8 @@ import { outletLabel } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
 import { ROOM_STATUS_LABEL } from "@/lib/domain/room-charges";
 import { useApi, useUser } from "@/lib/hooks";
+import { useMenu } from "@/components/stock/menu-sync";
+import { SIMPHONY_READS } from "@/lib/server/integrations/simphony";
 import type { AdapterSampleView, SampleCharge } from "@/lib/server/integrations/sample";
 import { fmtDate, fmtMoney, fmtNum, fmtPct, fmtTime } from "@/lib/util";
 
@@ -65,7 +67,7 @@ export default function AdaptersPage() {
     <PageHeader
       title="POS and PMS adapters"
       question="Can Tyll read our own tills and guest bills?"
-      lead="Lightspeed Restaurant K Series and Mews adapters, built from their public API documentation and tested on sample responses only. Not yet connected to a live account. The demo keeps running on simulated data."
+      lead="Oracle Simphony runs as a demo connection on recorded responses. Lightspeed Restaurant K Series and Mews adapters are built from their public API documentation and tested on sample responses only. None is connected to a live account."
     />
   );
   if (error) return <div className="space-y-5">{header}<WidgetError>The sample could not be read.</WidgetError></div>;
@@ -80,6 +82,8 @@ export default function AdaptersPage() {
   return (
     <div className="space-y-5">
       {header}
+
+      <SimphonyPanel />
 
       <SummaryBar
         items={[
@@ -248,5 +252,27 @@ function FieldTable({ title, rows }: { title: string; rows: [string, string][] }
         </table>
       </TableWrap>
     </div>
+  );
+}
+
+/** Simphony, the hotel's till: a demo connection on recorded responses, and what this morning's sync found. */
+function SimphonyPanel() {
+  const { menu } = useMenu();
+  return (
+    <Panel title="Oracle Simphony (MICROS)" description="PosAdapter: SimphonyPos">
+      <div className="space-y-4 text-sm">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge tone="accent">Demo connection</Badge>
+          <span className="text-graphite">Last sync {menu?.sync ? menu.sync.at.slice(11, 16) : "06:00"}, recorded Simphony responses for Mercado. No Oracle account is connected.</span>
+        </div>
+        <div>
+          <h3 className="text-[13px] font-medium text-ink">What it reads</h3>
+          <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+            {SIMPHONY_READS.map((r) => <li key={r.what}><span className="text-ink">{r.what}</span><span className="block text-graphite">{r.detail}</span></li>)}
+          </ul>
+        </div>
+        {menu?.sync && <p className="text-graphite">{menu.sync.label}. <Link prefetch={false} href="/stock?tab=recipes" className={textLink}>See it on Recipes and costs</Link></p>}
+      </div>
+    </Panel>
   );
 }

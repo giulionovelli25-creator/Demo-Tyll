@@ -3,7 +3,7 @@
 // recorded sample responses (tests and the Settings sample), and one that refuses, because no live account is connected.
 // A live transport (OAuth2 for Lightspeed, ClientToken and AccessToken for Mews) is the step after sandbox testing.
 
-export type SourceSystem = "lightspeed" | "mews";
+export type SourceSystem = "lightspeed" | "mews" | "simphony";
 
 export interface SourceRequest {
   system: SourceSystem;
@@ -19,7 +19,7 @@ export type Transport = (req: SourceRequest) => Promise<unknown>;
 
 export class NotConnectedError extends Error {
   constructor(system: SourceSystem) {
-    super(`${system === "lightspeed" ? "Lightspeed" : "Mews"} is not connected to a live account in this demo.`);
+    super(`${system === "lightspeed" ? "Lightspeed" : system === "mews" ? "Mews" : "Simphony"} is not connected to a live account in this demo.`);
   }
 }
 

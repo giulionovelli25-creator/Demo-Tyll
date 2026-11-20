@@ -1,0 +1,36 @@
+{
+  "comment": "Recorded sample for the Tyll demo: the menu of revenue centre 21 (Mercado) as read at 06:00, shaped after Oracle Simphony's published menu data (menu items with their prices and condiment groups). Simulated content; field names to be confirmed in a sandbox.",
+  "locRef": "LIS01",
+  "rvcNum": 21,
+  "menuItems": [
+    { "miNum": 1001, "name": "Wagyu beef burger", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "24.00", "effFrDt": "2026-11-18" }], "condimentGroups": ["BURGER-MODS"] },
+    { "miNum": 1002, "name": "Club sandwich", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "18.00" }], "condimentGroups": [] },
+    { "miNum": 1003, "name": "Chicken Caesar salad", "majGrpName": "Food", "famGrpName": "Starters", "prices": [{ "prcLvl": 1, "price": "16.00" }], "condimentGroups": [] },
+    { "miNum": 1004, "name": "Grilled salmon", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "28.00" }], "condimentGroups": [] },
+    { "miNum": 1005, "name": "Beef tenderloin", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "38.00" }], "condimentGroups": [] },
+    { "miNum": 1006, "name": "Lobster linguine", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "39.00" }], "condimentGroups": [] },
+    { "miNum": 1007, "name": "Truffle risotto", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "26.00" }], "condimentGroups": [] },
+    { "miNum": 1008, "name": "Margherita pizza", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "16.00" }], "condimentGroups": [] },
+    { "miNum": 1009, "name": "Lamb chops", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "34.00" }], "condimentGroups": [] },
+    { "miNum": 1012, "name": "Fish and chips", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "21.00" }], "condimentGroups": [] },
+    { "miNum": 1013, "name": "Chocolate fondant", "majGrpName": "Food", "famGrpName": "Desserts", "prices": [{ "prcLvl": 1, "price": "11.00" }], "condimentGroups": [] },
+    { "miNum": 1014, "name": "Berry cheesecake", "majGrpName": "Food", "famGrpName": "Desserts", "prices": [{ "prcLvl": 1, "price": "10.00" }], "condimentGroups": [] },
+    { "miNum": 1015, "name": "Truffle fries", "majGrpName": "Food", "famGrpName": "Starters", "prices": [{ "prcLvl": 1, "price": "8.00" }], "condimentGroups": [] },
+    { "miNum": 1016, "name": "Roasted tomato soup", "majGrpName": "Food", "famGrpName": "Starters", "prices": [{ "prcLvl": 1, "price": "9.00" }], "condimentGroups": [] },
+    { "miNum": 1031, "name": "Sea bass with lemon butter", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "29.00", "effFrDt": "2026-11-18" }], "condimentGroups": [] },
+    { "miNum": 1032, "name": "Lobster burger", "majGrpName": "Food", "famGrpName": "Mains", "prices": [{ "prcLvl": 1, "price": "34.00", "effFrDt": "2026-11-18" }], "condimentGroups": ["BURGER-MODS"] },
+    { "miNum": 2001, "name": "Coca-Cola", "majGrpName": "Beverage", "famGrpName": "Soft drinks", "prices": [{ "prcLvl": 1, "price": "5.00" }], "condimentGroups": [] },
+    { "miNum": 2002, "name": "Fresh orange juice", "majGrpName": "Beverage", "famGrpName": "Soft drinks", "prices": [{ "prcLvl": 1, "price": "6.50" }], "condimentGroups": [] },
+    { "miNum": 2003, "name": "Cappuccino", "majGrpName": "Beverage", "famGrpName": "Coffee", "prices": [{ "prcLvl": 1, "price": "4.50" }], "condimentGroups": [] },
+    { "miNum": 2004, "name": "Signature mojito", "majGrpName": "Beverage", "famGrpName": "Cocktails", "prices": [{ "prcLvl": 1, "price": "13.00" }], "condimentGroups": ["SPIRIT-MODS"] },
+    { "miNum": 2005, "name": "Espresso martini", "majGrpName": "Beverage", "famGrpName": "Cocktails", "prices": [{ "prcLvl": 1, "price": "14.00" }], "condimentGroups": ["SPIRIT-MODS"] },
+    { "miNum": 2006, "name": "House wine, glass", "majGrpName": "Beverage", "famGrpName": "Wine and beer", "prices": [{ "prcLvl": 1, "price": "9.00" }], "condimentGroups": [] },
+    { "miNum": 2007, "name": "Still water", "majGrpName": "Beverage", "famGrpName": "Soft drinks", "prices": [{ "prcLvl": 1, "price": "4.50" }], "condimentGroups": [] },
+    { "miNum": 2008, "name": "Sparkling water", "majGrpName": "Beverage", "famGrpName": "Soft drinks", "prices": [{ "prcLvl": 1, "price": "5.00" }], "condimentGroups": [] },
+    { "miNum": 2009, "name": "Draught beer", "majGrpName": "Beverage", "famGrpName": "Wine and beer", "prices": [{ "prcLvl": 1, "price": "6.50" }], "condimentGroups": [] }
+  ],
+  "condimentGroups": [
+    { "id": "SPIRIT-MODS", "condiments": [{ "miNum": 9101, "name": "Double", "price": "5.00" }] },
+    { "id": "BURGER-MODS", "condiments": [{ "miNum": 9201, "name": "No cheese", "price": "0.00" }] }
+  ]
+}
