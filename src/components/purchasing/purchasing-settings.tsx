@@ -49,6 +49,11 @@ export function PurchasingSettings({ propertyId }: { propertyId: string }) {
           </ul>
         </section>
         <section>
+          <h3 className="text-[13px] font-medium text-ink">Sending approved orders</h3>
+          <p className="mt-1 text-graphite">{data.autoSend ? "On: once an order has every approval it needs, it goes to the supplier on its own, by the supplier's channel (email with the PDF, or the supplier's ordering system). Suppliers who take orders by phone wait for purchasing to call." : "Off: purchasing sends each approved order from the order itself."} Simulated in this demo: no supplier is contacted.</p>
+          {data.maySending && <Button className="mt-3" onClick={async () => { try { await act("/api/procurement", { action: "save_settings", propertyId, autoSend: !data.autoSend }); toast.done(data.autoSend ? "Approved orders now wait for purchasing to send them." : "Approved orders now go to the supplier on their own."); } catch (e) { toast.error(e instanceof Error ? e.message : "The setting could not be saved."); } }}>{data.autoSend ? "Turn automatic sending off" : "Turn automatic sending on"}</Button>}
+        </section>
+        <section>
           <h3 className="text-[13px] font-medium text-ink">Purchase order statuses</h3>
           <div className="mt-2 flex flex-wrap gap-1.5">{data.statuses.filter((s) => !["rejected", "changes"].includes(s.id)).map((s) => <Badge key={s.id}>{s.label}</Badge>)}</div>
         </section>

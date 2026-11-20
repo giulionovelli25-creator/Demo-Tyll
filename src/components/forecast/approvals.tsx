@@ -16,6 +16,7 @@ import { supplierById } from "@/lib/data/catalog";
 import Link from "next/link";
 import { Choice } from "./parts";
 import { type Queue, inQueue, openingQueue } from "@/lib/domain/order-queues";
+import { CHANNEL_LABEL, SEND_LABEL, sendKey, sendState } from "@/lib/domain/dispatch";
 import { MATCH_FLAG, PO_STATUS, orderTotals, outstanding, packsText, poStatus } from "@/lib/domain/procurement";
 
 export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "warn" | "pos" | "neg" | "ink" }> = {
@@ -146,6 +147,9 @@ function Progress({ d }: { d: RequestDetail }) {
 /** The purchase order's status in one word everyone reads the same way, or Late when the supplier has missed its time. */
 export function OrderBadge({ r }: { r: PurchaseRequest }) {
   if (orderStage(r) === "late") return <Badge tone="neg">Late</Badge>;
+  if (r.status === "approved" && sendState(r) === "failed") return <Badge tone="neg">Sending failed</Badge>;
+  if (r.status === "approved" && r.confirmation?.state === "changed") return <Badge tone="warn">Supplier change</Badge>;
+  if (r.status === "approved" && sendState(r) === "approved" && r.supplierId) return <Badge tone="warn">Approved, not sent yet</Badge>;
   const s = PO_STATUS[poStatus(r)];
   return <Badge tone={s.tone}>{s.label}</Badge>;
 }
@@ -216,29 +220,91 @@ function PoDetails({ d, editable }: { d: RequestDetail; editable: boolean }) {
   );
 }
 
-/** Email the approved order to the supplier, with the PDF; or what was sent and when. */
+/** Sending to the supplier: how it goes (the supplier's channel), where it is (approved, sending, sent, failed) with every
+ * try, a safe retry, the phone order for suppliers that take orders by phone, and the supplier's confirmation. */
 function SendPanel({ d, user, run, busy }: { d: RequestDetail; user: User; run: (url: string, body: unknown, ok: string) => Promise<boolean>; busy: boolean }) {
   const r = d.request;
+  const [note, setNote] = useState("");
+  const [why, setWhy] = useState("");
+  const [declining, setDeclining] = useState(false);
   if (!r.supplierId || !d.supplier) return null;
-  if (r.sent) {
-    return (
-      <Panel title="Sent to the supplier (demo: logged, not emailed)">
-        <p className="text-sm text-ink">Prepared for {r.sent.to} on {fmtDate(r.sent.at.slice(0, 10), true)} at {r.sent.at.slice(11, 16)}, with {r.sent.pdf}, by {personName(r.sent.by)}.</p>
-        <p className="mt-1 text-[13px] text-graphite">Expected {r.deliveryDate ? fmtDate(r.deliveryDate, true) : "on the next delivery day"}. The PDF is kept with the order.</p>
-        <a href={`/api/purchasing/${r.id}/pdf`} target="_blank" rel="noreferrer" className={cn(textLink, "mt-3")}>Open the order PDF</a>
-        <Note className="mt-3">In this demo the email is logged with its PDF and never sent: no supplier is contacted. With an email provider connected, this would say when the provider accepted it.</Note>
-      </Panel>
-    );
-  }
-  if (d.poStatus !== "approved" || !(can(user, "purchase.review") || r.createdBy === user.id)) return null;
+  const sup = d.supplier;
+  const state = sendState(r);
+  if (state === "draft") return null;
+  const channel = sup.channel ?? "email";
+  const po = r.poNumber ?? r.id;
+  const buyer = can(user, "purchase.review");
+  const maySend = buyer || r.createdBy === user.id;
+  const tone = state === "sent" ? "pos" : state === "failed" ? "neg" : state === "sending" ? "ink" : "warn";
+  const how = channel === "email" ? `${CHANNEL_LABEL.email}, to ${sup.orderEmail}` : channel === "portal" ? `${CHANNEL_LABEL.portal} (${sup.name})` : `By phone: ${sup.contact}, ${sup.phone}`;
+  const attempts = r.dispatch?.attempts ?? [];
+  const c = r.confirmation;
   return (
-    <Panel title="Send to the supplier">
-      <p className="text-sm text-ink">Email {r.poNumber ?? r.id} to {d.supplier.orderEmail} as a PDF. A copy is kept with the order.</p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Button variant="primary" disabled={busy} onClick={() => { if (window.confirm(`Send ${r.poNumber ?? r.id} to ${d.supplier!.name} (${d.supplier!.orderEmail})? In this demo the email is logged with its PDF, not sent.`)) void run(`/api/purchasing/${r.id}`, { action: "send" }, `${r.poNumber ?? r.id} logged for ${d.supplier!.name}. In this demo nothing is emailed.`); }}>Send the order</Button>
-        <a href={`/api/purchasing/${r.id}/pdf`} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center rounded-full border border-line px-4 text-sm text-ink hover:bg-cloud">Preview the PDF</a>
-      </div>
-      <Note className="mt-3">In this demo the email is logged with its PDF, not sent.</Note>
+    <Panel title="Sending to the supplier" action={<Badge tone={tone}>{SEND_LABEL[state]}</Badge>}>
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+        <div><dt className="text-xs text-steel">How {sup.name} takes orders</dt><dd className="text-ink">{how}</dd></div>
+        <div><dt className="text-xs text-steel">Sending reference</dt><dd className="num text-ink">{r.dispatch?.key ?? sendKey(r)}</dd><dd className="text-xs text-steel">The same on every try, so a retry never makes a second order.</dd></div>
+      </dl>
+      {state === "pending" && <p className="mt-3 text-sm text-graphite">{d.autoSend && channel !== "manual" ? `Once the last approval is given, ${po} goes to ${sup.name} on its own.` : channel === "manual" ? `Once approved, purchasing phones ${sup.name} and records the call.` : "Once approved, purchasing sends it from here."}</p>}
+      {state === "approved" && channel === "manual" && (buyer ? (
+        <div className="mt-3 space-y-2">
+          <p className="text-sm text-ink">{sup.name} takes orders by phone. Call {sup.contact} on {sup.phone}, read out the order, then record the call.</p>
+          <Field label="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: their order number" />
+          <Button variant="primary" disabled={busy} onClick={() => void run(`/api/purchasing/${r.id}`, { action: "phoned", note }, `${po} recorded as phoned to ${sup.name}.`)}>Record the phone order</Button>
+        </div>
+      ) : <p className="mt-3 text-sm text-graphite">Waiting for purchasing to phone {sup.name}.</p>)}
+      {state === "approved" && channel !== "manual" && maySend && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button variant="primary" disabled={busy} onClick={() => { if (window.confirm(`Send ${po} to ${sup.name}? In this demo nothing reaches a real supplier.`)) void run(`/api/purchasing/${r.id}`, { action: "send" }, `${po} sent to ${sup.name} (simulated).`); }}>Send the order</Button>
+          <a href={`/api/purchasing/${r.id}/pdf`} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center rounded-full border border-line px-4 text-sm text-ink hover:bg-cloud">Preview the PDF</a>
+        </div>
+      )}
+      {state === "failed" && (
+        <div className="mt-3 space-y-2">
+          <p className="rounded-xl bg-neg-soft px-3 py-2 text-[13px] text-ink">{attempts.at(-1)?.detail}</p>
+          {maySend && <Button variant="primary" disabled={busy} onClick={() => void run(`/api/purchasing/${r.id}`, { action: "send" }, `${po} sent to ${sup.name} (simulated).`)}>Retry sending</Button>}
+        </div>
+      )}
+      {state === "sent" && r.sentAt && (
+        <p className="mt-3 text-sm text-ink">Sent {fmtDate(r.sentAt.slice(0, 10), true)} at {r.sentAt.slice(11, 16)}{r.sent ? `, with ${r.sent.pdf}` : ""}. Expected {r.deliveryDate ? fmtDate(r.deliveryDate, true) : "on the next delivery day"}.{r.sent && <> <a href={`/api/purchasing/${r.id}/pdf`} target="_blank" rel="noreferrer" className={textLink}>Open the PDF that was sent</a></>}</p>
+      )}
+      {attempts.length > 0 && (
+        <ol className="mt-3 space-y-1 text-[13px]">
+          {attempts.map((a, i) => <li key={i} className="text-graphite"><span className={cn("font-medium", a.result === "sent" ? "text-pos" : "text-neg")}>{a.result === "sent" ? "Sent" : "Failed"}</span> {fmtDate(a.at.slice(0, 10))} {a.at.slice(11, 16)}, {personName(a.by)}. {a.detail}</li>)}
+        </ol>
+      )}
+      {state === "sent" && (
+        <div className="mt-4 border-t border-hair pt-3">
+          <h3 className="text-sm font-medium text-ink">Supplier confirmation</h3>
+          {!c && <p className="mt-1 text-sm text-graphite">No confirmation recorded.</p>}
+          {c?.state === "confirmed" && <p className="mt-1 text-sm text-ink">Confirmed by {c.from}, {sup.name}, at {c.at.slice(11, 16)}, as ordered.</p>}
+          {c && c.state !== "confirmed" && (
+            <div className="mt-1 space-y-2">
+              <p className="text-sm text-ink">{c.state === "changed" ? `${c.from} at ${sup.name} proposes a change:` : c.state === "accepted" ? `Change from ${sup.name} accepted by ${personName(c.decided!.by)}:` : `Change from ${sup.name} declined by ${personName(c.decided!.by)}:`}</p>
+              <ul className="space-y-1 text-sm">
+                {c.changes.map((x, i) => <li key={i} className="rounded-xl bg-cloud px-3 py-2"><span className="font-medium text-ink">{x.kind === "qty" && x.ingredientId ? `${ingredientById[x.ingredientId].name}: ${fmtQty(Number(x.from), ingredientById[x.ingredientId].unit)} to ${fmtQty(Number(x.to), ingredientById[x.ingredientId].unit)}` : `Delivery ${fmtDate(x.from, true)} to ${fmtDate(x.to, true)}`}</span><span className="block text-[13px] text-graphite">{x.reason}</span></li>)}
+              </ul>
+              {c.state === "declined" && c.decided?.note && <p className="text-[13px] text-graphite">Reason: {c.decided.note}</p>}
+              {c.state === "changed" && buyer && (declining ? (
+                <div className="space-y-2">
+                  <TextArea label="Why decline? The supplier is told." value={why} onChange={(e) => setWhy(e.target.value)} rows={2} />
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="danger" disabled={busy || why.trim().length < 3} onClick={() => void run(`/api/purchasing/${r.id}`, { action: "supplier-change", decision: "decline", note: why }, "Change declined. The order stays as sent.")}>Decline the change</Button>
+                    <Button variant="ghost" onClick={() => setDeclining(false)}>Cancel</Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="primary" disabled={busy} onClick={() => void run(`/api/purchasing/${r.id}`, { action: "supplier-change", decision: "accept" }, "Change accepted. The order now shows it.")}>Accept the change</Button>
+                  <Button disabled={busy} onClick={() => setDeclining(true)}>Decline</Button>
+                </div>
+              ))}
+              {c.state === "changed" && !buyer && <p className="text-[13px] text-steel">Waiting for purchasing to accept or decline.</p>}
+            </div>
+          )}
+        </div>
+      )}
+      <Note className="mt-3">Simulated: no supplier is contacted. Email is logged with its PDF, the ordering system and the supplier&rsquo;s answers are simulated.</Note>
     </Panel>
   );
 }

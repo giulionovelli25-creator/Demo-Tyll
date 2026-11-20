@@ -83,7 +83,7 @@ export interface Shape {
 }
 
 /** 2: Grand Hotel Lumière, Lisbon, in euros. A store built for an older demo hotel is rebuilt from the seeds. */
-const DATA_VERSION = 3;
+const DATA_VERSION = 5;
 
 /** Moves every date in the stored records forward by the days since they were saved, so the demo story stays current. */
 function moveToToday(data: Shape): Shape {

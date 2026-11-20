@@ -23,7 +23,7 @@ export const useSuppliers = (pid: string | null) => useProcurement<{ suppliers: 
 export const usePrices = (pid: string | null, ingredientId: string | null) => useProcurement<{ points: PricePoint[]; above: PricePoint[] }>(ingredientId ? "prices" : null, pid, { ingredientId });
 export const useOutbox = (pid: string | null) => useProcurement<{ emails: OutboxEmail[] }>("outbox", pid);
 export interface SettingsOut {
-  settings: PurchasingSettings; valuationLabel: string; currency: string; mayChange: boolean;
+  settings: PurchasingSettings; valuationLabel: string; currency: string; mayChange: boolean; maySending: boolean; autoSend: boolean;
   vat: { scheme: string; label: string; rates: { area: string; rate: number }[] };
   limits: { accountingAbove: number; fnbAbove: number; fnbLabel: string; managerAbove: number; managerLabel: string };
   statuses: { id: string; label: string }[];

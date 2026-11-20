@@ -6,7 +6,8 @@ import { quotesFor, supplierName } from "../data/purchasing-rules";
 import { stockAreaOf } from "../data/locations";
 import { avgDailyUsage, orderPack, usageFromSales } from "../domain/inventory";
 import { VAT_SCHEMES, suggestPar } from "../domain/procurement";
-import type { CatalogueLine, OutboxEmail, ParRecord, PurchasingSettings, SupplierAccount } from "../types";
+import type { CatalogueLine, OutboxEmail, ParRecord, PurchasingSettings, SendChannel, SupplierAccount } from "../types";
+import type { InboxEntry } from "./supplier-sim";
 import { DEMO_TODAY, addDays, rel } from "../util";
 
 export interface ProcurementShape {
@@ -15,7 +16,12 @@ export interface ProcurementShape {
   pars: ParRecord[];
   settings: Record<string, PurchasingSettings>;
   outbox: OutboxEmail[];
+  /** The suppliers' ordering systems, simulated: the sending references each has received. */
+  inbox?: InboxEntry[];
 }
+
+/** How each supplier takes orders in the demo. The rest take email with the PDF. */
+const CHANNEL: Record<string, SendChannel> = { dry: "portal", wine: "portal", ware: "manual", hk: "manual" };
 
 type Terms = Omit<SupplierAccount, "id" | "propertyId" | "name" | "active">;
 const TERMS: Record<string, Terms> = {
@@ -67,7 +73,7 @@ export function seedProcurement(): ProcurementShape {
   const propertyId = "lis";
   const scheme = VAT_SCHEMES.PT;
   const ids = [...new Set([...INGREDIENTS.map((g) => g.supplierId), ...INGREDIENTS.map((g) => ALT_OF[g.supplierId]).filter(Boolean)])];
-  const suppliers: SupplierAccount[] = ids.filter((id) => TERMS[id]).map((id) => ({ id, propertyId, name: supplierById[id]?.name ?? supplierName(id), active: true, ...TERMS[id] }));
+  const suppliers: SupplierAccount[] = ids.filter((id) => TERMS[id]).map((id) => ({ id, propertyId, name: supplierById[id]?.name ?? supplierName(id), active: true, ...TERMS[id], channel: CHANNEL[id] ?? "email" }));
   const catalogue: CatalogueLine[] = [];
   INGREDIENTS.forEach((g, i) => {
     const pack = packOf(g.id);

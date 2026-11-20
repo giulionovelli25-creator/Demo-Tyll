@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { APPROVAL_POLICY, approvalSteps, quotesFor } from "@/lib/data/purchasing-rules";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
 import { actOnRequest, budgetFor, canSee, requestTotal, requestsFor } from "@/lib/server/purchasing";
-import { closePurchaseOrder, draftCredit, matchFor, sendCredit, sendPurchaseOrder, settingsOf, supplierAccount, updatePurchaseOrder } from "@/lib/server/procurement";
+import { closePurchaseOrder, decideSupplierChange, draftCredit, matchFor, recordPhoneOrder, sendApproved, sendCredit, sendPurchaseOrder, settingsOf, supplierAccount, updatePurchaseOrder } from "@/lib/server/procurement";
 import { orderTotals, poStatus } from "@/lib/domain/procurement";
 import { propertyById } from "@/lib/data/catalog";
 import { DEMO_TODAY } from "@/lib/util";
@@ -16,6 +16,8 @@ export async function GET(req: NextRequest, { params }: Params) {
   const g = f.ok ? f : guard(req, { module: "staff", permission: "purchase.receive" });
   if (!g.ok) return f.ok ? g.response : f.response;
   const { id } = await params;
+  const mine = requestsFor(g.user).find((x) => x.id === id);
+  if (mine) sendApproved(mine.propertyId);
   const r = requestsFor(g.user).find((x) => x.id === id);
   if (!r || !canSee(g.user, r)) return json({ error: "Not found." }, 404);
   const total = requestTotal(r);
@@ -31,6 +33,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     currency: propertyById[r.propertyId].currency,
     supplier: r.supplierId ? supplierAccount(r.propertyId, r.supplierId) ?? null : null,
     costCentres: settingsOf(r.propertyId).costCentres.map((c) => `${c.id} ${c.name}`),
+    autoSend: settingsOf(r.propertyId).autoSend !== false,
     match: (() => { const m = matchFor(g.user, r.id); return m.ok ? { invoices: m.invoices, ...m.match } : null; })(),
   });
 }
@@ -45,6 +48,8 @@ export async function POST(req: NextRequest, { params }: Params) {
   const { id } = await params;
   // Purchase order steps after approval, and edits to a draft.
   const po = body.action === "send" ? sendPurchaseOrder(g.user, id)
+    : body.action === "phoned" ? recordPhoneOrder(g.user, id, body)
+    : body.action === "supplier-change" ? decideSupplierChange(g.user, id, body)
     : body.action === "update" ? updatePurchaseOrder(g.user, id, body)
     : body.action === "close" ? closePurchaseOrder(g.user, id, body)
     : null;
@@ -52,5 +57,12 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (body.action === "credit") { const c = draftCredit(g.user, id); return c.ok ? json({ credit: c.credit }) : json({ error: c.error }, c.status); }
   if (body.action === "credit_send") { const c = sendCredit(g.user, id, String(body.creditId ?? "")); return c.ok ? json({ credit: c.credit }) : json({ error: c.error }, c.status); }
   const r = actOnRequest(g.user, id, body);
-  return r.ok ? json({ request: r.request }) : json({ error: r.error }, r.status);
+  if (!r.ok) return json({ error: r.error }, r.status);
+  // The last approval sends the order straight away, by the supplier's channel.
+  // The last approval sends the order straight away, by the supplier's channel; the answer shows how that went.
+  if (r.request.status === "approved") {
+    sendApproved(r.request.propertyId);
+    return json({ request: requestsFor(g.user).find((x) => x.id === id) ?? r.request });
+  }
+  return json({ request: r.request });
 }

@@ -996,6 +996,10 @@ export interface PurchaseRequest {
   credits?: CreditRequest[];
   /** Created by the morning automatic ordering run, with the rule that decided whether it was sent or held. */
   auto?: { runAt: string; decision: "sent" | "held"; why: string };
+  /** Sending to the supplier after approval: channel, state and every try. */
+  dispatch?: Dispatch;
+  /** The supplier's answer to the order. */
+  confirmation?: SupplierConfirmation;
   history: RequestEvent[];
 }
 
@@ -1404,6 +1408,40 @@ export interface SupplierAccount {
   leadDays: number;
   active: boolean;
   notes?: string;
+  /** How approved orders reach this supplier: email with the PDF, a push to the supplier's ordering system, or by
+   * phone, recorded by purchasing. Email when not set. All simulated in this demo. */
+  channel?: SendChannel;
+}
+
+export type SendChannel = "email" | "portal" | "manual";
+
+/** One try at sending an approved order to its supplier. */
+export interface SendAttempt {
+  at: string;
+  by: string;
+  channel: SendChannel;
+  result: "sent" | "failed";
+  detail: string;
+}
+
+/** Sending an approved order: one reference for every try, so a retry never makes a second order at the supplier. */
+export interface Dispatch {
+  channel: SendChannel;
+  state: "sending" | "sent" | "failed";
+  /** The order's sending reference. The supplier's side keeps the ones it has seen. */
+  key: string;
+  attempts: SendAttempt[];
+}
+
+/** What the supplier answered after receiving the order (simulated in this demo). */
+export interface SupplierConfirmation {
+  state: "confirmed" | "changed" | "accepted" | "declined";
+  at: string;
+  /** The supplier's contact who answered. */
+  from: string;
+  /** Changes the supplier proposed: a quantity on one line, or the delivery date. */
+  changes: { kind: "qty" | "date"; ingredientId?: string; from: string; to: string; reason: string }[];
+  decided?: { at: string; by: string; note?: string };
 }
 
 /** What a supplier sells a hotel: its code and barcode, the pack, and the agreed price per unit of the item. */
@@ -1441,6 +1479,8 @@ export interface PurchasingSettings {
   valuation: ValuationMethod;
   vatScheme: VatScheme;
   costCentres: { id: string; name: string }[];
+  /** Fully approved orders go to the supplier on their own, by the supplier's channel. On unless switched off. */
+  autoSend?: boolean;
 }
 
 /** An email Tyll prepared, with its attachments kept. In this demo emails to suppliers are logged, never sent. */
@@ -1454,6 +1494,8 @@ export interface OutboxEmail {
   subject: string;
   body: string;
   attachments: { name: string; file: string; bytes: number }[];
+  /** Email, or a push to the supplier's ordering system. Email when not set. */
+  kind?: "email" | "portal";
   status: "logged";
   note: string;
 }

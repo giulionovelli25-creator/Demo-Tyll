@@ -99,7 +99,7 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
     return run;
   });
   // Orders the rule approved go to the supplier as any purchase order does: by email with the PDF, kept with the order.
-  for (const id of toSend) sendPurchaseOrder(owner, id);
+  for (const id of toSend) sendPurchaseOrder(owner, id, { auto: true });
   return result;
 }
 

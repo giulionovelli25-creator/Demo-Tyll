@@ -108,6 +108,8 @@ export interface RequestDetail {
   currency: import("./types").Currency;
   supplier: import("./types").SupplierAccount | null;
   costCentres: string[];
+  /** Whether fully approved orders go to the supplier on their own (Settings, Purchasing). */
+  autoSend: boolean;
   match: (import("./domain/procurement").ThreeWay & { invoices: { id: string; supplierRef: string; status: string; date: string }[] }) | null;
 }
 

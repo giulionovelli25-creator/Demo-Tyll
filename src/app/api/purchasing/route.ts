@@ -1,12 +1,16 @@
 import type { NextRequest } from "next/server";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
 import { requestsFor, saveRequest } from "@/lib/server/purchasing";
+import { sendApproved } from "@/lib/server/procurement";
+import { allowedProperties } from "@/lib/domain/access";
 
 /** Purchase requests the user may see. */
 export async function GET(req: NextRequest) {
   const f = guard(req, { module: "forecast" });
   const g = f.ok ? f : guard(req, { module: "staff", permission: "purchase.receive" });
   if (!g.ok) return f.ok ? g.response : f.response;
+  // Fully approved orders go to their suppliers before the list is read.
+  for (const p of allowedProperties(g.user)) sendApproved(p);
   return json({ requests: requestsFor(g.user) });
 }
 

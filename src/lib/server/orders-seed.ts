@@ -5,6 +5,7 @@ import { getDataset } from "../data/generate";
 import { ingredientCostAt } from "../domain/pricing";
 import type { PurchaseRequest, RequestEvent, RequestLine, RequestStatus } from "../types";
 import { DEMO_TODAY, rel, round2 } from "../util";
+import { nextDeliveryDate } from "../domain/procurement";
 
 const at = (day: number, time: string) => `${rel(day)}T${time}:00.000Z`;
 const local = (day: number, time: string) => `${rel(day)}T${time}`;
@@ -33,8 +34,9 @@ export function seedRequests(): PurchaseRequest[] {
   return [
     base(1, ["lis-terrace"], "u-fnb", at(0, "16:20"), "draft", [line("saladveg", 20), line("romaine", 10), line("asparagus", 6), line("herbs", 2), line("berries", 5)],
       { comment: "Weekend brunch. Still checking the berry quantity." }),
+    // A purchase order to one supplier, Douro Cellars, which takes orders through its own ordering system (simulated).
     base(2, ["lis-lobby"], "u-lby", at(0, "11:05"), "purchasing", [line("wine", 54), line("rum", 6), line("vodka", 6)],
-      {}, [ev(at(0, "11:12"), "u-lby", "Submitted to purchasing", "purchasing")]),
+      { supplierId: "wine", deliveryDate: nextDeliveryDate(DEMO_TODAY, 11 * 60, "12:00", 2, [2, 4]) }, [ev(at(0, "11:12"), "u-lby", "Submitted to purchasing", "purchasing")]),
     base(3, ["lis-banquets"], "u-events", at(-1, "10:30"), "manager", [line("tenderloin", 70), line("chicken", 60), line("lamb", 25)],
       { comment: "Gala dinner for 220 on Saturday." },
       [ev(at(-1, "10:41"), "u-events", "Submitted to purchasing", "purchasing"), ev(at(-1, "14:02"), "u-buy", "Purchasing review approved", "accounting"), ev(at(0, "09:15"), "u-fc", "Accounting review approved", "manager", "Within the events budget.")]),

@@ -404,6 +404,11 @@
 "Accetta i cookie",
 "قبول ملفات تعريف الارتباط"
 ],
+"Accept the change": [
+"Änderung annehmen",
+"Accetta la modifica",
+"اقبل التعديل"
+],
 "Accounting approves every order.": [
 "Die Buchhaltung genehmigt jede Bestellung.",
 "La contabilità approva ogni ordine.",
@@ -918,6 +923,11 @@
 "Genehmigt, nicht gesendet",
 "Approvato, non inviato",
 "معتمد، لم يُرسل"
+],
+"Approved, not sent yet": [
+"Freigegeben, noch nicht gesendet",
+"Approvato, non ancora inviato",
+"تمت الموافقة، لم يُرسل بعد"
 ],
 "Arborio rice": [
 "Arborio-Reis",
@@ -1969,6 +1979,11 @@
 "Budget rispetto alle spese registrate. Fatture in revisione e ordini approvati sono mostrati a parte e mai sommati alle spese registrate.",
 "الميزانية مقابل المصروفات المسجلة. تُعرض الفواتير قيد المراجعة والطلبات المعتمدة منفصلة ولا تضاف أبدًا إلى المصروفات المسجلة."
 ],
+"Budget and approval rules": [
+"Budget und Freigaberegeln",
+"Budget e regole di approvazione",
+"الميزانية وقواعد الموافقة"
+],
 "Budget vs. actual": [
 "Budget und Ist",
 "Budget e consuntivo",
@@ -2093,6 +2108,16 @@
 "Telefonisch, vom Gast in Zimmer {0}",
 "Per telefono, dall'ospite della camera {0}",
 "عبر الهاتف، من نزيل الغرفة {0}"
+],
+"By phone, recorded by purchasing": [
+"Telefonisch, vom Einkauf erfasst",
+"Per telefono, registrato dall'ufficio acquisti",
+"بالهاتف، تسجله المشتريات"
+],
+"By phone: {0}, {1}": [
+"Telefonisch: {0}, {1}",
+"Per telefono: {0}, {1}",
+"بالهاتف: {0}، {1}"
 ],
 "By reason": [
 "Nach Grund",
@@ -2254,15 +2279,45 @@
 "Cambia un prezzo: costi ricetta, margini e previsioni che lo usano si aggiornano da oggi.",
 "غيّر سعرًا وستتحدث من اليوم كل تكلفة وصفة وهامش وتوقع يستخدمه."
 ],
+"Change accepted. The order now shows it.": [
+"Änderung angenommen. Die Bestellung zeigt sie jetzt.",
+"Modifica accettata. L'ordine ora la mostra.",
+"قُبل التعديل. يظهر الآن في الطلب."
+],
 "Change count": [
 "Zählung ändern",
 "Cambia conteggio",
 "غيّر الجرد"
 ],
+"Change declined. The order stays as sent.": [
+"Änderung abgelehnt. Die Bestellung bleibt wie gesendet.",
+"Modifica rifiutata. L'ordine resta come inviato.",
+"رُفض التعديل. يبقى الطلب كما أُرسل."
+],
 "Change expected guests": [
 "Erwartete Gäste ändern",
 "Cambia ospiti previsti",
 "غيّر الضيوف المتوقعين"
+],
+"Change from {0} accepted by {1}": [
+"Änderung von {0} angenommen von {1}",
+"Modifica di {0} accettata da {1}",
+"التعديل من {0} قبله {1}"
+],
+"Change from {0} accepted by {1}:": [
+"Änderung von {0} angenommen von {1}:",
+"Modifica di {0} accettata da {1}:",
+"التعديل من {0} قبله {1}:"
+],
+"Change from {0} declined by {1}": [
+"Änderung von {0} abgelehnt von {1}",
+"Modifica di {0} rifiutata da {1}",
+"التعديل من {0} رفضه {1}"
+],
+"Change from {0} declined by {1}:": [
+"Änderung von {0} abgelehnt von {1}:",
+"Modifica di {0} rifiutata da {1}:",
+"التعديل من {0} رفضه {1}:"
 ],
 "Change ingredient prices": [
 "Zutatenpreise ändern",
@@ -3004,6 +3059,11 @@
 "Confermato e chiuso.",
 "تم التأكيد والإغلاق."
 ],
+"Confirmed by {0}, {1}, at {2}, as ordered.": [
+"Bestätigt von {0}, {1}, um {2}, wie bestellt.",
+"Confermato da {0}, {1}, alle {2}, come ordinato.",
+"أكده {0}، {1}، الساعة {2}، كما طُلب."
+],
 "Confirmed event guests": [
 "Bestätigte Eventgäste",
 "Ospiti di eventi confermati",
@@ -3249,10 +3309,20 @@
 "Formaggio spalmabile",
 "جبن كريمي"
 ],
+"Created automatically": [
+"Automatisch erstellt",
+"Creato automaticamente",
+"أُنشئ تلقائيًا"
+],
 "Created by": [
 "Erstellt von",
 "Creato da",
 "أنشأه"
+],
+"Created by automatic ordering at {0}": [
+"Von der automatischen Bestellung um {0} erstellt",
+"Creato dall'ordine automatico alle {0}",
+"أنشأه الطلب التلقائي الساعة {0}"
 ],
 "Credited {0}": [
 "Gutgeschrieben {0}",
@@ -3413,6 +3483,16 @@
 "Frist",
 "Scadenza",
 "الموعد النهائي"
+],
+"Decline": [
+"Ablehnen",
+"Rifiuta",
+"ارفض"
+],
+"Decline the change": [
+"Änderung ablehnen",
+"Rifiuta la modifica",
+"ارفض التعديل"
 ],
 "Delete": [
 "Löschen",
@@ -4084,6 +4164,16 @@
 "Invia l'ordine via email",
 "إرسال الطلب بالبريد الإلكتروني"
 ],
+"Email with the PDF": [
+"E-Mail mit dem PDF",
+"Email con il PDF",
+"بريد إلكتروني مع ملف PDF"
+],
+"Email with the PDF, to {0}": [
+"E-Mail mit dem PDF an {0}",
+"Email con il PDF a {0}",
+"بريد إلكتروني مع ملف PDF إلى {0}"
+],
 "Emerald": [
 "Smaragd",
 "Smeraldo",
@@ -4598,6 +4688,11 @@
 "F&B-Direktor",
 "Direttore F&B",
 "مدير الأغذية والمشروبات"
+],
+"Failed": [
+"Fehlgeschlagen",
+"Non riuscito",
+"فشل"
 ],
 "Falling margin": [
 "Sinkende Marge",
@@ -5159,6 +5254,11 @@
 "Bicchieri per cestello",
 "الأواني الزجاجية حسب حامل الغسالة"
 ],
+"Go to receiving": [
+"Zur Warenannahme",
+"Vai al ricevimento",
+"انتقل إلى الاستلام"
+],
 "Go to your home page": [
 "Zu Ihrer Startseite",
 "Vai alla tua home",
@@ -5559,6 +5659,11 @@
 "Come prevede Tyll",
 "كيف يتوقع Tyll"
 ],
+"How approved orders are sent": [
+"Wie freigegebene Bestellungen gesendet werden",
+"Come vengono inviati gli ordini approvati",
+"كيف تُرسل الطلبات الموافق عليها"
+],
 "How many bills or bottle weeks met a till rule each day.": [
 "Wie viele Rechnungen oder Flaschenwochen täglich eine Kassenregel erfüllten.",
 "Quanti conti o settimane di bottiglie hanno soddisfatto una regola di cassa ogni giorno.",
@@ -5633,6 +5738,11 @@
 "Wie wurde es festgestellt?",
 "Come è stato rilevato?",
 "كيف اكتُشف ذلك؟"
+],
+"How {0} takes orders": [
+"Wie {0} Bestellungen annimmt",
+"Come {0} riceve gli ordini",
+"كيف يستقبل {0} الطلبات"
 ],
 "If a bill is found, close as a legitimate correction.": [
 "Wird eine Rechnung gefunden, als berechtigte Korrektur schließen.",
@@ -6939,6 +7049,11 @@
 "Esci, i conteggi sono salvati",
 "خروج، تم حفظ العدّ"
 ],
+"Left after this request": [
+"Verbleibend nach dieser Anforderung",
+"Resta dopo questa richiesta",
+"المتبقي بعد هذا الطلب"
+],
 "Left at prep": [
 "Übrig zur Vorbereitung",
 "Rimasto alla preparazione",
@@ -7398,6 +7513,11 @@
 "Hauptlager",
 "Magazzino centrale",
 "المخزن الرئيسي"
+],
+"Main store, receiving dock": [
+"Hauptlager, Warenannahme",
+"Magazzino centrale, banchina di ricevimento",
+"المخزن الرئيسي، رصيف الاستلام"
 ],
 "Mains": [
 "Hauptgerichte",
@@ -8114,6 +8234,11 @@
 "Prossimo ordine {0}.",
 "الطلب التالي {0}."
 ],
+"Next step": [
+"Nächster Schritt",
+"Prossimo passo",
+"الخطوة التالية"
+],
 "Next {0} days": [
 "Nächste {0} Tage",
 "Prossimi {0} giorni",
@@ -8223,6 +8348,11 @@
 "An diesem Morgen wurde Zimmer {0} kein Frühstück berechnet.",
 "Quella mattina non è stata addebitata alcuna colazione alla camera {0}.",
 "لم يُحتسب أي إفطار على الغرفة {0} ذلك الصباح."
+],
+"No confirmation recorded.": [
+"Keine Bestätigung erfasst.",
+"Nessuna conferma registrata.",
+"لم يُسجَّل أي تأكيد."
 ],
 "No count of this item yet. A count confirms the gap.": [
 "Dieser Artikel wurde noch nicht gezählt. Eine Zählung bestätigt die Lücke.",
@@ -8694,6 +8824,11 @@
 "Nessun risultato. Prova un'altra parola.",
 "لا توجد نتائج. جرّب كلمة أخرى."
 ],
+"Nothing more is coming: close the order as delivered short.": [
+"Es kommt nichts mehr: Bestellung als unvollständig geliefert schließen.",
+"Non arriva altro: chiudi l'ordine come consegnato incompleto.",
+"لن يصل شيء آخر: أغلق الطلب كتسليم ناقص."
+],
 "Nothing needs you right now.": [
 "Gerade ist nichts zu tun.",
 "Al momento non serve nulla.",
@@ -8984,6 +9119,21 @@
 "In rotta per perdere",
 "في الطريق لخسارة"
 ],
+"Once approved, purchasing phones {0} and records the call.": [
+"Nach der Freigabe ruft der Einkauf {0} an und erfasst den Anruf.",
+"Una volta approvato, l'ufficio acquisti telefona a {0} e registra la chiamata.",
+"بعد الموافقة، تتصل المشتريات بـ{0} وتسجّل المكالمة."
+],
+"Once approved, purchasing sends it from here.": [
+"Nach der Freigabe sendet der Einkauf sie von hier.",
+"Una volta approvato, l'ufficio acquisti lo invia da qui.",
+"بعد الموافقة، ترسله المشتريات من هنا."
+],
+"Once the last approval is given, {0} goes to {1} on its own.": [
+"Sobald die letzte Freigabe erteilt ist, geht {0} von selbst an {1}.",
+"Una volta data l'ultima approvazione, {0} va a {1} da solo.",
+"بعد آخر موافقة، يذهب {0} إلى {1} تلقائيًا."
+],
 "One bill was paid to a room with no room number on the payment. Its room charge cannot be checked until the room is known.": [
 "Eine Rechnung wurde auf ein Zimmer bezahlt, ohne Zimmernummer auf der Zahlung. Ihre Zimmerbelastung lässt sich erst prüfen, wenn das Zimmer bekannt ist.",
 "Un conto è stato pagato in camera senza numero di camera sul pagamento. Il suo addebito non si può verificare finché la camera non è nota.",
@@ -9083,6 +9233,21 @@
 "Nur wo es entfernt, storniert oder gratis gegeben wurde",
 "Solo dove è stato rimosso, annullato o offerto",
 "فقط حيث حُذف أو أُلغي أو قُدم مجانًا"
+],
+"Only {0} of {1} available for this delivery": [
+"Nur {0} {1} für diese Lieferung verfügbar",
+"Solo {0} di {1} disponibili per questa consegna",
+"يتوفر {0} فقط من {1} لهذا التسليم"
+],
+"Only {0} of {1} available for this delivery. The rest can come on the next one.": [
+"Nur {0} {1} für diese Lieferung verfügbar. Der Rest kann mit der nächsten kommen.",
+"Solo {0} di {1} disponibili per questa consegna. Il resto può arrivare con la prossima.",
+"يتوفر {0} فقط من {1} لهذا التسليم. ويمكن أن يأتي الباقي في التسليم التالي."
+],
+"Only {0} of {1} available for this delivery. The rest can come on the next one. Simulated supplier answer, waiting for purchasing.": [
+"Nur {0} {1} für diese Lieferung verfügbar. Der Rest kann mit der nächsten kommen. Simulierte Antwort des Lieferanten, wartet auf den Einkauf.",
+"Solo {0} di {1} disponibili per questa consegna. Il resto può arrivare con la prossima. Risposta simulata del fornitore, in attesa dell'ufficio acquisti.",
+"يتوفر {0} فقط من {1} لهذا التسليم. ويمكن أن يأتي الباقي في التسليم التالي. رد مورد محاكى، بانتظار المشتريات."
 ],
 "Open": [
 "Offen",
@@ -9317,7 +9482,7 @@
 "Open the PDF that was sent": [
 "Gesendetes PDF öffnen",
 "Apri il PDF inviato",
-"فتح ملف PDF المرسل"
+"افتح ملف PDF المُرسل"
 ],
 "Open the case": [
 "Fall öffnen",
@@ -9484,6 +9649,11 @@
 "Ordine aperto",
 "فُتح الطلب"
 ],
+"Order phoned to {0}": [
+"Bestellung telefonisch an {0}",
+"Ordine telefonato a {0}",
+"طُلب هاتفيًا من {0}"
+],
 "Order price": [
 "Bestellpreis",
 "Prezzo d'ordine",
@@ -9503,6 +9673,11 @@
 "Bestellmenge in L",
 "Quantità da ordinare in L",
 "كمية الطلب باللتر"
+],
+"Order sent to {0} ordering system with {1}.pdf": [
+"Bestellung an das Bestellsystem von {0} gesendet, mit {1}.pdf",
+"Ordine inviato al sistema ordini di {0} con {1}.pdf",
+"أُرسل الطلب إلى نظام طلبات {0} مع {1}.pdf"
 ],
 "Order status changed": [
 "Bestellstatus geändert",
@@ -9649,6 +9824,11 @@
 "Ordini, modifiche, sconti, rimborsi, annullamenti, comande di cucina e bar",
 "الطلبات والتعديلات والخصومات والمبالغ المستردة والإلغاءات وتذاكر المطبخ والبار"
 ],
+"Orders: {0}": [
+"Bestellungen: {0}",
+"Ordini: {0}",
+"الطلبات: {0}"
+],
 "Original order": [
 "Ursprüngliche Bestellung",
 "Ordine originale",
@@ -9663,6 +9843,11 @@
 "Sonstiges",
 "Altro",
 "أخرى"
+],
+"Other approved Tyll orders": [
+"Andere freigegebene Tyll-Bestellungen",
+"Altri ordini Tyll approvati",
+"طلبات Tyll أخرى موافق عليها"
 ],
 "Other operating costs": [
 "Sonstige Betriebskosten",
@@ -9778,6 +9963,11 @@
 "In den letzten {0} Tagen erhielt das Hotel {1} {2}, und die Unterlagen erklären {3}. Die Differenz von {4} ist eine Schätzung, bis eine Zählung sie bestätigt. Bitte zählen Sie und prüfen Sie, ob es in etwas ohne Kassenrezept eingeht.",
 "Negli ultimi {0} giorni l'hotel ha ricevuto {1} di {2} e i registri ne giustificano {3}. La differenza di {4} è una stima finché un conteggio non la conferma. Contalo e verifica se finisce in qualcosa senza ricetta in cassa.",
 "خلال آخر {0} يومًا استلم الفندق {1} من {2} وتفسر السجلات {3}. الفرق البالغ {4} تقديري حتى يؤكده الجرد. يرجى جرده والتحقق مما إذا كان يدخل في شيء بلا وصفة في نقطة البيع."
+],
+"Over the {0} limit for sending without approval.": [
+"Über dem Limit von {0} für das Senden ohne Freigabe.",
+"Oltre il limite di {0} per l'invio senza approvazione.",
+"فوق حد {0} للإرسال دون موافقة."
 ],
 "Overview": [
 "Übersicht",
@@ -10569,6 +10759,11 @@
 "Ricevuta",
 "تم الاستلام"
 ],
+"Received by {0} ordering system (simulated), reference {1}.": [
+"Empfangen vom Bestellsystem von {0} (simuliert), Referenz {1}.",
+"Ricevuto dal sistema ordini di {0} (simulato), riferimento {1}.",
+"استلمه نظام طلبات {0} (محاكاة)، المرجع {1}."
+],
 "Received from suppliers": [
 "Von Lieferanten erhalten",
 "Ricevuto dai fornitori",
@@ -10704,10 +10899,20 @@
 "Registra la consegna",
 "تسجيل التوريد"
 ],
+"Record the delivery when it arrives": [
+"Lieferung bei Ankunft erfassen",
+"Registra la consegna quando arriva",
+"سجّل التسليم عند وصوله"
+],
 "Record the outcome": [
 "Ergebnis erfassen",
 "Registra l'esito",
 "تسجيل النتيجة"
+],
+"Record the phone order": [
+"Telefonbestellung erfassen",
+"Registra l'ordine telefonico",
+"سجّل الطلب الهاتفي"
 ],
 "Record the verified cause and any corrective action, then resolve the case.": [
 "Bestätigte Ursache und Korrekturmaßnahme erfassen, dann den Fall abschließen.",
@@ -10768,6 +10973,11 @@
 "Offline auf diesem Gerät erfasst.",
 "Registrato offline su questo dispositivo.",
 "سُجل دون اتصال على هذا الجهاز."
+],
+"Recorded or invoiced this month": [
+"Diesen Monat erfasst oder berechnet",
+"Registrato o fatturato questo mese",
+"مسجّل أو مفوتر هذا الشهر"
 ],
 "Recorded waste": [
 "Erfasster Abfall",
@@ -11093,6 +11303,11 @@
 "Ergebnisse",
 "Risultati",
 "النتائج"
+],
+"Retry sending": [
+"Erneut senden",
+"Riprova l'invio",
+"أعد محاولة الإرسال"
 ],
 "Returned to the requester": [
 "An den Anfordernden zurück",
@@ -12334,20 +12549,60 @@
 "Invia per approvazione",
 "أرسل للموافقة"
 ],
+"Send the order": [
+"Bestellung senden",
+"Invia l'ordine",
+"أرسل الطلب"
+],
 "Send to the supplier": [
 "An den Lieferanten senden",
 "Invia al fornitore",
 "إرسال إلى المورّد"
+],
+"Sending": [
+"Wird gesendet",
+"Invio in corso",
+"جارٍ الإرسال"
+],
+"Sending approved orders": [
+"Freigegebene Bestellungen senden",
+"Invio degli ordini approvati",
+"إرسال الطلبات الموافق عليها"
+],
+"Sending failed": [
+"Senden fehlgeschlagen",
+"Invio non riuscito",
+"فشل الإرسال"
 ],
 "Sending for approval": [
 "Wird zur Freigabe gesendet",
 "Invio per approvazione",
 "جارٍ الإرسال للموافقة"
 ],
+"Sending reference": [
+"Sendereferenz",
+"Riferimento di invio",
+"مرجع الإرسال"
+],
+"Sending to the supplier": [
+"Senden an den Lieferanten",
+"Invio al fornitore",
+"الإرسال إلى المورد"
+],
+"Sending to {0} failed": [
+"Senden an {0} fehlgeschlagen",
+"Invio a {0} non riuscito",
+"فشل الإرسال إلى {0}"
+],
 "Sent": [
 "Gesendet",
 "Inviato",
 "أُرسل"
+],
+"Sent automatically once fully approved. Received by {0} ordering system (simulated), reference {1}. Simulated: no real supplier is reached.": [
+"Nach vollständiger Freigabe automatisch gesendet. Empfangen vom Bestellsystem von {0} (simuliert), Referenz {1}. Simuliert: Kein echter Lieferant wird erreicht.",
+"Inviato automaticamente dopo l'approvazione completa. Ricevuto dal sistema ordini di {0} (simulato), riferimento {1}. Simulato: nessun fornitore reale viene raggiunto.",
+"أُرسل تلقائيًا بعد اكتمال الموافقات. استلمه نظام طلبات {0} (محاكاة)، المرجع {1}. محاكاة: لا يُتصل بأي مورد حقيقي."
 ],
 "Sent by email at {0} AM to the managers who choose it in Settings. Figures are simulated in this demo.": [
 "Per E-Mail um {0} Uhr an die Führungskräfte, die es in den Einstellungen wählen. Die Zahlen sind in dieser Demo simuliert.",
@@ -12382,12 +12637,22 @@
 "Sent to the supplier": [
 "An den Lieferanten gesendet",
 "Inviato al fornitore",
-"أُرسل إلى المورّد"
+"أُرسل إلى المورد"
 ],
 "Sent to {0} (simulated)": [
 "An {0} gesendet (simuliert)",
 "Inviato a {0} (simulato)",
 "أُرسل إلى {0} (محاكاة)"
+],
+"Sent {0} at {1}, with {2}.pdf. Expected {3}.": [
+"Gesendet {0} um {1}, mit {2}.pdf. Erwartet {3}.",
+"Inviato {0} alle {1}, con {2}.pdf. Previsto {3}.",
+"أُرسل {0} الساعة {1}، مع {2}.pdf. متوقع {3}."
+],
+"Sent {0} at {1}. Expected {2}.": [
+"Gesendet {0} um {1}. Erwartet {2}.",
+"Inviato {0} alle {1}. Previsto {2}.",
+"أُرسل {0} الساعة {1}. متوقع {2}."
 ],
 "Separate Tyll product": [
 "Eigenes Tyll-Produkt",
@@ -12813,6 +13078,16 @@
 "Simulierte Datensätze. In dieser Demo erfasster Abfall, Zählungen und Korrekturen werden auf dem Demo-Server gespeichert.",
 "Record simulati. Sprechi, conteggi e correzioni inseriti in questa demo sono salvati sul server della demo.",
 "سجلات محاكاة. يُحفظ الهدر والجرد والتصحيحات المدخلة في هذا العرض على خادم العرض."
+],
+"Simulated supplier answer, waiting for purchasing.": [
+"Simulierte Antwort des Lieferanten, wartet auf den Einkauf.",
+"Risposta simulata del fornitore, in attesa dell'ufficio acquisti.",
+"رد مورد محاكى، بانتظار المشتريات."
+],
+"Simulated: no supplier is contacted. Email is logged with its PDF, the ordering system and the supplier’s answers are simulated.": [
+"Simuliert: Kein Lieferant wird kontaktiert. E-Mails werden mit ihrem PDF protokolliert, das Bestellsystem und die Antworten der Lieferanten sind simuliert.",
+"Simulato: nessun fornitore viene contattato. L'email viene registrata con il suo PDF, il sistema ordini e le risposte dei fornitori sono simulati.",
+"محاكاة: لا يُتصل بأي مورد. يُسجَّل البريد مع ملف PDF، ونظام الطلبات وردود المورد محاكاة."
 ],
 "Since yesterday. See Stock, Suppliers.": [
 "Seit gestern. Siehe Bestand, Lieferanten.",
@@ -13329,6 +13604,11 @@
 "Inviata agli acquisti",
 "أُرسل إلى المشتريات"
 ],
+"Submitted to purchasing by automatic ordering": [
+"Von der automatischen Bestellung an den Einkauf übermittelt",
+"Inviato all'ufficio acquisti dall'ordine automatico",
+"أرسله الطلب التلقائي إلى المشتريات"
+],
 "Sugar": [
 "Zucker",
 "Zucchero",
@@ -13358,6 +13638,26 @@
 "Lieferant",
 "Fornitore",
 "المورد"
+],
+"Supplier change": [
+"Änderung des Lieferanten",
+"Modifica del fornitore",
+"تعديل المورد"
+],
+"Supplier change accepted": [
+"Änderung des Lieferanten angenommen",
+"Modifica del fornitore accettata",
+"قُبل تعديل المورد"
+],
+"Supplier change declined": [
+"Änderung des Lieferanten abgelehnt",
+"Modifica del fornitore rifiutata",
+"رُفض تعديل المورد"
+],
+"Supplier confirmation": [
+"Bestätigung des Lieferanten",
+"Conferma del fornitore",
+"تأكيد المورد"
 ],
 "Supplier deliveries. Tap Received when the van arrives.": [
 "Lieferungen der Lieferanten. Auf Erhalten tippen, wenn der Lieferwagen da ist.",
@@ -14269,6 +14569,16 @@
 "Il libro prenotazioni mostra la prenotazione {0}, per {1} alle {2}, fatta tramite il concierge.",
 "يُظهر سجل الحجوزات الحجز {0}، لـ {1} الساعة {2}، عبر الكونسيرج."
 ],
+"The rest can come on the next one": [
+"Der Rest kann mit der nächsten kommen",
+"Il resto può arrivare con la prossima",
+"ويمكن أن يأتي الباقي في التسليم التالي"
+],
+"The rest can come on the next one.": [
+"Der Rest kann mit der nächsten kommen.",
+"Il resto può arrivare con la prossima.",
+"ويمكن أن يأتي الباقي في التسليم التالي."
+],
 "The room charge check's own rule, run on what the two adapters read. Largest amount to check first. Sample data: it changes no figure in the demo.": [
 "Die Regel der Zimmerbelastungsprüfung, angewendet auf das, was die beiden Adapter lesen. Größter zu prüfender Betrag zuerst. Beispieldaten: Sie ändern keine Zahl in der Demo.",
 "La regola del controllo addebiti in camera, applicata a ciò che leggono i due adattatori. Prima l'importo più alto da verificare. Dati di esempio: non cambiano alcuna cifra nella demo.",
@@ -14309,6 +14619,16 @@
 "Lo stesso articolo battuto due volte entro {0} secondi, oppure {1} o più di un articolo con più di {2} per ospite.",
 "الصنف نفسه سُجّل مرتين خلال {0} ثوانٍ، أو {1} أو أكثر من صنف واحد بأكثر من {2} لكل ضيف."
 ],
+"The same on every try, so a retry never makes a second order": [
+"Bei jedem Versuch gleich, daher erzeugt ein neuer Versuch nie eine zweite Bestellung",
+"Uguale a ogni tentativo, quindi un nuovo tentativo non crea mai un secondo ordine",
+"هو نفسه في كل محاولة، لذلك لا تُنشئ إعادة المحاولة طلبًا ثانيًا أبدًا"
+],
+"The same on every try, so a retry never makes a second order.": [
+"Bei jedem Versuch gleich, daher erzeugt ein neuer Versuch nie eine zweite Bestellung.",
+"Uguale a ogni tentativo, quindi un nuovo tentativo non crea mai un secondo ordine.",
+"هو نفسه في كل محاولة، لذلك لا تُنشئ إعادة المحاولة طلبًا ثانيًا أبدًا."
+],
 "The same weekdays have moved about {0} over the last {1} weeks, and {2} of guests are already booked. Within {3} is high, within {4} is medium.": [
 "Dieselben Wochentage schwankten in den letzten {0} Wochen um etwa {1}, und {2} der Gäste sind bereits gebucht. Innerhalb {3} ist hoch, innerhalb {4} ist mittel.",
 "Gli stessi giorni si sono mossi di circa {0} nelle ultime {1} settimane e {2} degli ospiti è già prenotato. Entro {3} è alta, entro {4} è media.",
@@ -14348,6 +14668,16 @@
 "Die Bestandsprognose konnte nicht geladen werden. Die anderen Zahlen sind aktuell.",
 "Non è stato possibile caricare la previsione. Gli altri dati sono aggiornati.",
 "تعذر تحميل توقع المخزون. الأرقام الأخرى ما زالت محدثة."
+],
+"The supplier's ordering system ({0})": [
+"Das Bestellsystem des Lieferanten ({0})",
+"Il sistema ordini del fornitore ({0})",
+"نظام الطلبات لدى المورد ({0})"
+],
+"The supplier’s ordering system": [
+"Das Bestellsystem des Lieferanten",
+"Il sistema ordini del fornitore",
+"نظام الطلبات لدى المورد"
 ],
 "The table had {0} other bill that day, outside that time.": [
 "Der Tisch hatte an diesem Tag {0} weitere Rechnung, außerhalb dieser Zeit.",
@@ -14834,6 +15164,11 @@
 "Totale",
 "الإجمالي"
 ],
+"Total (EUR)": [
+"Summe (EUR)",
+"Totale (EUR)",
+"الإجمالي (EUR)"
+],
 "Total check": [
 "Gesamtprüfung",
 "Controllo totale",
@@ -14958,6 +15293,16 @@
 "Putenspeck",
 "Bacon di tacchino",
 "لحم ديك رومي مقدد"
+],
+"Turn automatic sending off": [
+"Automatisches Senden ausschalten",
+"Disattiva l'invio automatico",
+"أوقف الإرسال التلقائي"
+],
+"Turn automatic sending on": [
+"Automatisches Senden einschalten",
+"Attiva l'invio automatico",
+"شغّل الإرسال التلقائي"
 ],
 "Turn email off": [
 "E-Mail ausschalten",
@@ -15593,6 +15938,16 @@
 "Warten auf Einkauf ({0})",
 "In attesa degli acquisti ({0})",
 "بانتظار المشتريات ({0})"
+],
+"Waiting for purchasing to accept or decline.": [
+"Wartet darauf, dass der Einkauf annimmt oder ablehnt.",
+"In attesa che l'ufficio acquisti accetti o rifiuti.",
+"بانتظار قبول المشتريات أو رفضها."
+],
+"Waiting for purchasing to phone {0}.": [
+"Wartet darauf, dass der Einkauf {0} anruft.",
+"In attesa che l'ufficio acquisti telefoni a {0}.",
+"بانتظار أن تتصل المشتريات بـ{0}."
 ],
 "Waiting for your approval, {0} in all.": [
 "Wartet auf Ihre Freigabe, insgesamt {0}.",
@@ -16233,6 +16588,11 @@
 "Warum Belastungen nicht passten",
 "Perché gli addebiti non corrispondevano",
 "لماذا لم تتطابق الرسوم"
+],
+"Why decline? The supplier is told.": [
+"Warum ablehnen? Der Lieferant wird informiert.",
+"Perché rifiutare? Il fornitore viene informato.",
+"لماذا الرفض؟ سيُبلَّغ المورد."
 ],
 "Why recount?": [
 "Warum nachzählen?",
@@ -16899,6 +17259,11 @@
 "nessun motivo, nessuna approvazione.",
 "لا سبب ولا موافقة."
 ],
+"no supplier is contacted. Email is logged with its PDF, the ordering system and the supplier’s answers are simulated.": [
+"Kein Lieferant wird kontaktiert. E-Mails werden mit ihrem PDF protokolliert, das Bestellsystem und die Antworten der Lieferanten sind simuliert.",
+"nessun fornitore viene contattato. L'email viene registrata con il suo PDF, il sistema ordini e le risposte dei fornitori sono simulati.",
+"لا يُتصل بأي مورد. يُسجَّل البريد مع ملف PDF، ونظام الطلبات وردود المورد محاكاة."
+],
 "no unmatched bill for {0} to {1} guests.": [
 "keine nicht zugeordnete Rechnung für {0} bis {1} Gäste.",
 "nessun conto non abbinato per {0} a {1} ospiti.",
@@ -17453,6 +17818,16 @@
 "{0} um {1} und {2}, {3} für {4} Gäste, {5} auf der zweiten Eingabe.",
 "{0} alle {1} e alle {2}, {3} per {4} ospiti, {5} sul secondo inserimento.",
 "{0} الساعة {1} و{2}، {3} لعدد {4} ضيوف، و{5} على الإدخال الثاني."
+],
+"{0} at {1} proposes a change": [
+"{0} von {1} schlägt eine Änderung vor",
+"{0} di {1} propone una modifica",
+"يقترح {0} من {1} تعديلًا"
+],
+"{0} at {1} proposes a change:": [
+"{0} von {1} schlägt eine Änderung vor:",
+"{0} di {1} propone una modifica:",
+"يقترح {0} من {1} تعديلًا:"
 ],
 "{0} at {1} stands out against the rota. Chart and table inside.": [
 "{0} bei {1} fällt gegenüber dem Dienstplan auf. Diagramm und Tabelle im Inneren.",
@@ -19234,6 +19609,11 @@
 "{0} di profitto, stima",
 "{0} ربح، تقديري"
 ],
+"{0} proposed a change": [
+"{0} hat eine Änderung vorgeschlagen",
+"{0} ha proposto una modifica",
+"اقترح {0} تعديلًا"
+],
 "{0} pts": [
 "{0} Pkt.",
 "{0} pt",
@@ -19248,6 +19628,11 @@
 "{0} aus dem Hauptlager erhalten",
 "{0} ricevuti dal magazzino centrale",
 "{0} مستلمة من المخزن الرئيسي"
+],
+"{0} recorded as phoned to {1}.": [
+"{0} als telefonisch an {1} erfasst.",
+"{0} registrato come telefonato a {1}.",
+"سُجّل {0} كطلب هاتفي إلى {1}."
 ],
 "{0} recovered": [
 "{0} zurückgeholt",
@@ -19449,6 +19834,11 @@
 "{0} inviato in cucina",
 "أُرسل {0} إلى المطبخ"
 ],
+"{0} sent to {1} (simulated).": [
+"{0} an {1} gesendet (simuliert).",
+"{0} inviato a {1} (simulato).",
+"أُرسل {0} إلى {1} (محاكاة)."
+],
 "{0} serve walk-in and hotel guests, so there is no reservation book to compare. Choose {1} in the outlet selector.": [
 "{0} bedient Laufkundschaft und Hotelgäste, daher gibt es kein Reservierungsbuch zum Vergleich. Wählen Sie {1} in der Outlet-Auswahl.",
 "{0} serve clienti di passaggio e ospiti dell'hotel, quindi non c'è un libro prenotazioni da confrontare. Scegliete {1} nel selettore dei punti vendita.",
@@ -19618,6 +20008,11 @@
 "{0} von der bezahlten Rechnung entfernt",
 "{0} tolto dal conto pagato",
 "أُزيل {0} من الفاتورة المدفوعة"
+],
+"{0} takes orders by phone. Call {1} on {2}, read out the order, then record the call.": [
+"{0} nimmt Bestellungen telefonisch an. Rufen Sie {1} unter {2} an, lesen Sie die Bestellung vor und erfassen Sie dann den Anruf.",
+"{0} riceve ordini per telefono. Chiama {1} al {2}, leggi l'ordine, poi registra la chiamata.",
+"يستقبل {0} الطلبات بالهاتف. اتصل بـ{1} على {2}، واقرأ الطلب، ثم سجّل المكالمة."
 ],
 "{0} things need you today.": [
 "{0} Dinge brauchen heute Ihre Aufmerksamkeit.",

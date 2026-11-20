@@ -4,12 +4,14 @@
 // price sits beside the agreed one, and a price above it is flagged. Another hotel keeps its own suppliers and terms.
 import { Fragment, useMemo, useState, type ReactNode } from "react";
 import { Search } from "lucide-react";
-import { Badge, Button, Drawer, EmptyState, Field, Note, PageHeader, Panel, Segmented, Skeleton, SummaryBar, TableWrap, Td, Th, WidgetError, cn, rowClass, textLink, toast } from "@/components/ui";
+import { Badge, Button, Drawer, EmptyState, Field, Note, PageHeader, Panel, Segmented, Select, Skeleton, SummaryBar, TableWrap, Td, Th, WidgetError, cn, rowClass, textLink, toast } from "@/components/ui";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { propertyById } from "@/lib/data/catalog";
 import { useView } from "@/lib/hooks";
 import { usePrices, useProcAction, useSuppliers } from "@/lib/procurement-hooks";
 import type { CatalogueView, SupplierView } from "@/lib/server/procurement";
+import type { SendChannel } from "@/lib/types";
+import { CHANNEL_LABEL } from "@/lib/domain/dispatch";
 import { fmtDate, fmtMoney, fmtPct } from "@/lib/util";
 
 const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -23,7 +25,7 @@ function usePid() {
 
 function SupplierEditor({ s, pid, onClose }: { s: SupplierView; pid: string; onClose: () => void }) {
   const act = useProcAction();
-  const [v, setV] = useState({ contact: s.contact, phone: s.phone, orderEmail: s.orderEmail, cutOff: s.cutOff, minOrderValue: s.minOrderValue, paymentTerms: s.paymentTerms, leadDays: s.leadDays, deliveryDays: s.deliveryDays });
+  const [v, setV] = useState({ contact: s.contact, phone: s.phone, orderEmail: s.orderEmail, cutOff: s.cutOff, minOrderValue: s.minOrderValue, paymentTerms: s.paymentTerms, leadDays: s.leadDays, deliveryDays: s.deliveryDays, channel: s.channel ?? "email" });
   const [busy, setBusy] = useState(false);
   const save = async () => {
     setBusy(true);
@@ -36,6 +38,11 @@ function SupplierEditor({ s, pid, onClose }: { s: SupplierView; pid: string; onC
       <Field label="Contact" value={v.contact} onChange={(e) => setV({ ...v, contact: e.target.value })} />
       <Field label="Phone" value={v.phone} onChange={(e) => setV({ ...v, phone: e.target.value })} />
       <Field label="Order email" type="email" value={v.orderEmail} onChange={(e) => setV({ ...v, orderEmail: e.target.value })} hint="Purchase orders are sent here as a PDF." />
+      <Select label="How approved orders are sent" value={v.channel} onChange={(e) => setV({ ...v, channel: e.target.value as SendChannel })}>
+        <option value="email">Email with the PDF</option>
+        <option value="portal">The supplier&rsquo;s ordering system</option>
+        <option value="manual">By phone, recorded by purchasing</option>
+      </Select>
       <div>
         <p className="mb-2 text-[13px] font-medium text-ink">Delivery days</p>
         <div className="flex flex-wrap gap-1.5">
@@ -119,7 +126,7 @@ export function SupplierDirectory({ view, tabs }: { view: "suppliers" | "catalog
                   <tbody>
                     {suppliers.map((s) => (
                       <tr key={s.id} className={rowClass}>
-                        <Td><span className="font-medium text-ink">{s.name}</span><span className="block text-xs text-steel">{s.contact}, {s.phone}</span><span className="block text-xs text-steel">{s.orderEmail}</span></Td>
+                        <Td><span className="font-medium text-ink">{s.name}</span><span className="block text-xs text-steel">{s.contact}, {s.phone}</span><span className="block text-xs text-steel">{s.orderEmail}</span><span className="block text-xs text-steel">Orders: {CHANNEL_LABEL[s.channel ?? "email"].toLowerCase()}</span></Td>
                         <Td>{daysText(s.deliveryDays)}<span className="block text-xs text-steel">{s.leadDays} {s.leadDays === 1 ? "day" : "days"} lead time</span></Td>
                         <Td className="num">{s.cutOff}</Td>
                         <Td align="right">{money(s.minOrderValue)}</Td>

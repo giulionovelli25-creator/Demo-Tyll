@@ -14,7 +14,10 @@ import {
   PO_STATUS, VALUATION_LABEL, VAT_SCHEMES, ceilToPack, creditLines, nextDeliveryDate, orderTotals, outstanding, parTrigger, poStatus, suggestPar, threeWay,
   valueOnHand, type Lot, type MatchLineIn, type Par,
 } from "../domain/procurement";
-import type { CatalogueLine, CreditRequest, OutboxEmail, ParRecord, PurchaseRequest, PurchasingSettings, RequestLine, SupplierAccount, User, ValuationMethod } from "../types";
+import type { CatalogueLine, CreditRequest, OutboxEmail, ParRecord, PurchaseRequest, PurchasingSettings, RequestLine, SendChannel, SupplierAccount, User, ValuationMethod } from "../types";
+import { canMove, sendKey, sendState } from "../domain/dispatch";
+import { confirmationFor, pushOutcome } from "./supplier-sim";
+import { notify, peopleWith, resolve } from "./notify";
 import { DEMO_NOW_MIN, DEMO_TODAY, fmtMoney, round2, sum, timeIn, unitLabel } from "../util";
 import { dataFile } from "./data-file";
 import { workspaceFile } from "./workspace";
@@ -160,6 +163,11 @@ export function saveSupplier(user: User, propertyId: string, body: Record<string
     next.leadDays = v;
   }
   if (body.active !== undefined) next.active = body.active === true;
+  if (body.channel !== undefined) {
+    const c = (["email", "portal", "manual"] as const).find((x) => x === body.channel);
+    if (!c) return fail(400, "Choose email, the supplier's ordering system, or phone.");
+    next.channel = c;
+  }
   const supplier = mutateStore((x) => {
     x.procurement ??= seedProcurement();
     const i = x.procurement.suppliers.findIndex((y) => y.propertyId === propertyId && y.id === cur.id);
@@ -510,17 +518,40 @@ export function readPurchaseOrderPdf(user: User, id: string): Result<{ name: str
   return { ok: true, name: `${poRef(r)}-preview.pdf`, bytes: purchaseOrderPdf(r) };
 }
 
-/** Emails the approved order to the supplier's order address with the PDF, and keeps both. In this demo the email is logged, not sent. */
-export function sendPurchaseOrder(user: User, id: string): Result<{ request: PurchaseRequest; email: OutboxEmail }> {
+/**
+ * Sends an approved order to its supplier, by the supplier's channel: email with the PDF, or a push to the supplier's
+ * ordering system. In this demo the email is logged, not sent, and the push reaches a simulated supplier.
+ * The order moves approved, sending, then sent or failed (lib/domain/dispatch.ts). Every try carries the same sending
+ * reference, so a retry after a failure never makes a second order: the supplier's side recognises it. A sent order is
+ * never sent again. Suppliers who take orders by phone are recorded with recordPhoneOrder.
+ */
+export function sendPurchaseOrder(user: User, id: string, opts: { auto?: boolean } = {}): Result<{ request: PurchaseRequest; email?: OutboxEmail }> {
   const s = loadStore();
   const r = s.requests.find((x) => x.id === id);
-  if (!r || !canSee(user, r)) return fail(404, "This order is not available.");
-  if (!(can(user, "purchase.review") || r.createdBy === user.id)) return fail(403, "Purchasing or the person who raised the order sends it.");
+  if (!r || (!opts.auto && !canSee(user, r))) return fail(404, "This order is not available.");
+  if (!opts.auto && !(can(user, "purchase.review") || r.createdBy === user.id)) return fail(403, "Purchasing or the person who raised the order sends it.");
   if (r.status !== "approved") return fail(409, "Only an approved order can be sent.");
   if (r.sent) return fail(409, `Already sent to ${r.sent.to} on ${r.sent.at.slice(0, 10)}.`);
+  const before = sendState(r);
+  if (before === "sent") return fail(409, "This order has already been sent.");
+  if (before === "sending") return fail(409, "This order is being sent.");
   const sup = r.supplierId ?? r.lines[0]?.supplierId;
   const acct = sup ? supplierAccount(r.propertyId, sup, s) : undefined;
   if (!acct) return fail(409, "This supplier has no order email at this hotel. Add it under Suppliers first.");
+  const channel: SendChannel = acct.channel ?? "email";
+  if (channel === "manual") return fail(409, `${acct.name} takes orders by phone. Phone the order, then record the call.`);
+  const key = r.dispatch?.key ?? sendKey(r);
+  // 1. Claim the order: only one try at a time, and only from approved or failed.
+  const claimed = mutateStore((x) => {
+    const y = x.requests.find((z) => z.id === id)!;
+    const st = sendState(y);
+    if (!canMove(st, "sending")) return false;
+    y.dispatch = { channel, key, state: "sending", attempts: y.dispatch?.attempts ?? [] };
+    return true;
+  });
+  if (!claimed) return fail(409, "This order is already being sent, or has been sent.");
+
+  // 2. The try itself, simulated. The PDF is made and kept either way.
   const po = poRef(r);
   const bytes = purchaseOrderPdf(r);
   const name = `${po}.pdf`;
@@ -531,28 +562,136 @@ export function sendPurchaseOrder(user: User, id: string): Result<{ request: Pur
   const date = r.deliveryDate ?? r.period.from;
   // The time it was sent, in the hotel's local time, so it agrees with the order's history.
   const at = `${DEMO_TODAY}T${timeIn(propertyById[r.propertyId].timeZone)}`;
+  const portalTo = `${acct.name} ordering system`;
   const email: OutboxEmail = {
-    id: "", at: now(), by: user.id, propertyId: r.propertyId, ref: r.id, to: acct.orderEmail,
+    id: "", at: now(), by: user.id, propertyId: r.propertyId, ref: r.id, to: channel === "email" ? acct.orderEmail : portalTo,
     subject: `Purchase order ${po} from ${prop.name}, delivery ${date}`,
-    body: [`Hello ${acct.contact.split(" ")[0] || ""},`.trim(), "", `Please find attached purchase order ${po} for delivery on ${date} to ${prop.name}.`, `${r.lines.length} items, ${fmtMoney(t.net, prop.currency, { decimals: true })} before VAT.`, "", "Please quote the order number on the delivery note and the invoice.", "", `${userById[user.id]?.name ?? "Purchasing"}`, prop.name].join("\n"),
-    attachments: [{ name, file: `po/${name}`, bytes: bytes.length }], status: "logged", note: "Logged with its PDF. This demo never emails suppliers.",
+    body: [`Hello ${acct.contact.split(" ")[0] || ""},`.trim(), "", `Please find attached purchase order ${po} for delivery on ${date} to ${prop.name}.`, `${r.lines.length} items, ${fmtMoney(t.net, prop.currency, { decimals: true })} before VAT.`, `Sending reference ${key}.`, "", "Please quote the order number on the delivery note and the invoice.", "", `${userById[user.id]?.name ?? "Purchasing"}`, prop.name].join("\n"),
+    attachments: [{ name, file: `po/${name}`, bytes: bytes.length }], kind: channel, status: "logged",
+    note: channel === "email" ? "Logged with its PDF. This demo never emails suppliers." : "Pushed to a simulated ordering system. This demo never reaches a real supplier.",
   };
+  const auto = opts.auto ? "Sent automatically once fully approved. " : "";
   const out = mutateStore((x) => {
-    // Checked again inside the write, against the store as saved: a second send never logs a second email.
     const y = x.requests.find((z) => z.id === id)!;
-    if (y.sent || y.status !== "approved") return null;
     x.procurement ??= seedProcurement();
-    email.id = `MAIL-${String(nextNumber(x, "MAIL")).padStart(5, "0")}`;
-    x.procurement.outbox.push(email);
-    y.sent = { at, by: user.id, to: acct.orderEmail, subject: email.subject, pdf: name, emailId: email.id };
+    x.procurement.inbox ??= [];
+    const attempt = (y.dispatch?.attempts.length ?? 0) + 1;
+    const outcome = channel === "email" ? "received" : pushOutcome(x.procurement.inbox, acct.id, key, attempt);
+    // The supplier received it (email logged, or the push arrived): one copy kept, never a second.
+    if (outcome !== "already") {
+      email.id = `MAIL-${String(nextNumber(x, "MAIL")).padStart(5, "0")}`;
+      x.procurement.outbox.push(email);
+      if (channel === "portal") x.procurement.inbox.push({ key, supplierId: acct.id, at: now() });
+    }
+    y.updatedAt = now();
+    if (outcome === "timeout") {
+      const detail = `No answer from ${portalTo} within 30 seconds (simulated). The order may have arrived. A retry uses the same reference ${key}, so it cannot arrive twice.`;
+      y.dispatch = { channel, key, state: "failed", attempts: [...(y.dispatch?.attempts ?? []), { at, by: user.id, channel, result: "failed", detail }] };
+      y.history.push({ at: y.updatedAt, by: user.id, action: `Sending to ${acct.name} failed`, status: "approved", comment: `${auto}${detail}` });
+      notify(x, { to: peopleWith("purchase.review", y.propertyId), type: "po-send-failed", ref: y.id, propertyId: y.propertyId, from: user.id, title: `${po} could not be sent to ${acct.name}`, body: "Retry from the order. The same reference is used, so the supplier cannot receive it twice.", href: `/forecast?tab=approvals&request=${y.id}` });
+      return { y, sentOk: false, detail };
+    }
+    const detail = outcome === "already" ? `${portalTo} already had this order under reference ${key}, so it was not sent a second time.`
+      : channel === "email" ? `Logged for ${acct.orderEmail} with ${name}. Not emailed in this demo.` : `Received by ${portalTo} (simulated), reference ${key}.`;
+    y.dispatch = { channel, key, state: "sent", attempts: [...(y.dispatch?.attempts ?? []), { at, by: user.id, channel, result: "sent", detail }] };
+    y.sent = { at, by: user.id, to: email.to, subject: email.subject, pdf: name, emailId: email.id || (x.procurement.outbox.find((e) => e.ref === y.id)?.id ?? "") };
     y.sentAt = at;
     y.expectedAt = `${date}T07:30`;
+    y.history.push(channel === "email"
+      ? { at: y.updatedAt, by: user.id, action: `Order logged for ${acct.name} (${acct.orderEmail}) with ${name}`, status: "approved", comment: `${auto}In this demo nothing is emailed. The PDF is kept with the order.` }
+      : { at: y.updatedAt, by: user.id, action: `Order sent to ${portalTo} with ${name}`, status: "approved", comment: `${auto}${detail} Simulated: no real supplier is reached.` });
+    resolve(x, "po-send-failed", y.id);
+    confirm(x, y, acct);
+    return { y, sentOk: true, detail };
+  });
+  if (!out.sentOk) return fail(502, out.detail);
+  return { ok: true, request: out.y, email: channel === "email" ? email : undefined };
+}
+
+/** The supplier's answer, simulated, kept on the order. A change waits for purchasing. */
+function confirm(x: Shape, y: PurchaseRequest, acct: SupplierAccount) {
+  const at = `${DEMO_TODAY}T${timeIn(propertyById[y.propertyId].timeZone)}`;
+  y.confirmation = confirmationFor(y, acct.contact, at, (g) => ingredientById[g].name, unitWord);
+  // A plain confirmation is kept on the order (its Supplier confirmation panel); only a change goes in the history.
+  if (y.confirmation.state === "confirmed") return;
+  const what = y.confirmation.changes.map((c) => c.reason).join(" ");
+  y.history.push({ at: now(), by: y.sent?.by ?? y.createdBy, action: `${acct.name} proposed a change`, status: "approved", comment: `${what} Simulated supplier answer, waiting for purchasing.` });
+  notify(x, { to: peopleWith("purchase.review", y.propertyId), type: "po-supplier-change", ref: y.id, propertyId: y.propertyId, title: `${acct.name} changed ${poRef(y)}`, body: what, href: `/forecast?tab=approvals&request=${y.id}`, email: true });
+}
+
+/** A supplier that takes orders by phone: purchasing phones it and records the call. Then it counts as sent. */
+export function recordPhoneOrder(user: User, id: string, body: Record<string, unknown>): Result<{ request: PurchaseRequest }> {
+  const r = loadStore().requests.find((x) => x.id === id);
+  if (!r || !canSee(user, r)) return fail(404, "This order is not available.");
+  if (!can(user, "purchase.review")) return fail(403, "Purchasing records phone orders.");
+  if (r.status !== "approved") return fail(409, "Only an approved order can be sent.");
+  const acct = r.supplierId ? supplierAccount(r.propertyId, r.supplierId) : undefined;
+  if (!acct || (acct.channel ?? "email") !== "manual") return fail(409, "This supplier is sent orders by email or its ordering system.");
+  const note = text(body.note, 200);
+  const out = mutateStore((x) => {
+    const y = x.requests.find((z) => z.id === id)!;
+    if (sendState(y) === "sent") return null;
+    const at = `${DEMO_TODAY}T${timeIn(propertyById[y.propertyId].timeZone)}`;
+    const detail = `Phoned to ${acct.contact} on ${acct.phone}${note ? `. ${note}` : ""}.`;
+    y.dispatch = { channel: "manual", key: y.dispatch?.key ?? sendKey(y), state: "sent", attempts: [...(y.dispatch?.attempts ?? []), { at, by: user.id, channel: "manual", result: "sent", detail }] };
+    y.sentAt = at;
+    y.expectedAt = `${y.deliveryDate ?? y.period.from}T07:30`;
     y.updatedAt = now();
-    y.history.push({ at: y.updatedAt, by: user.id, action: `Order logged for ${acct.name} (${acct.orderEmail}) with ${name}`, status: "approved", comment: "In this demo nothing is emailed. The PDF is kept with the order." });
+    y.history.push({ at: y.updatedAt, by: user.id, action: `Order phoned to ${acct.name}`, status: "approved", comment: detail });
+    y.confirmation = { state: "confirmed", at, from: acct.contact, changes: [] };
     return y;
   });
   if (!out) return fail(409, "This order has already been sent.");
-  return { ok: true, request: out, email };
+  return { ok: true, request: out };
+}
+
+/** Purchasing accepts the supplier's change (the order takes the new quantity or date) or declines it with a reason. */
+export function decideSupplierChange(user: User, id: string, body: Record<string, unknown>): Result<{ request: PurchaseRequest }> {
+  const r = loadStore().requests.find((x) => x.id === id);
+  if (!r || !canSee(user, r)) return fail(404, "This order is not available.");
+  if (!can(user, "purchase.review")) return fail(403, "Purchasing decides on a supplier's change.");
+  if (r.confirmation?.state !== "changed") return fail(409, "There is no change from the supplier waiting.");
+  const accept = body.decision === "accept";
+  if (!accept && body.decision !== "decline") return fail(400, "Accept or decline the change.");
+  const note = text(body.note, 300);
+  if (!accept && note.length < 3) return fail(400, "Say why, so the supplier can be told.");
+  const out = mutateStore((x) => {
+    const y = x.requests.find((z) => z.id === id)!;
+    if (y.confirmation?.state !== "changed") return null;
+    const words: string[] = [];
+    if (accept) {
+      for (const c of y.confirmation.changes) {
+        if (c.kind === "qty" && c.ingredientId) {
+          const l = y.lines.find((z) => z.ingredientId === c.ingredientId);
+          if (l) { l.qty = Number(c.to); words.push(`${ingredientById[c.ingredientId].name} ${c.from} to ${c.to} ${unitWord(c.ingredientId)}`); }
+        }
+        if (c.kind === "date") { y.deliveryDate = c.to; y.expectedAt = `${c.to}T${y.expectedAt?.slice(11, 16) ?? "07:30"}`; words.push(`delivery ${c.from} to ${c.to}`); }
+      }
+    }
+    y.confirmation = { ...y.confirmation, state: accept ? "accepted" : "declined", decided: { at: now(), by: user.id, note: note || undefined } };
+    y.updatedAt = now();
+    y.history.push({ at: y.updatedAt, by: user.id, action: accept ? "Supplier change accepted" : "Supplier change declined", status: "approved", comment: accept ? `${words.join(", ")}.` : note });
+    resolve(x, "po-supplier-change", y.id);
+    return y;
+  });
+  if (!out) return fail(409, "The change was already decided.");
+  return { ok: true, request: out };
+}
+
+/** The sender: every fully approved supplier order not yet sent goes now, by its supplier's channel. Called whenever
+ * orders are read or changed, so an order goes as soon as its last approval is given. Orders that failed wait for a
+ * person to retry; phone suppliers wait for purchasing to call. */
+export function sendApproved(propertyId: string): string[] {
+  const s = loadStore();
+  if (settingsOf(propertyId, s).autoSend === false) return [];
+  const due = s.requests.filter((r) => r.propertyId === propertyId && r.status === "approved" && r.supplierId && !r.deliveryId && sendState(r) === "approved" && (supplierAccount(propertyId, r.supplierId, s)?.channel ?? "email") !== "manual");
+  const sent: string[] = [];
+  for (const r of due) {
+    // Sent in the name of whoever gave the last approval.
+    const by = userById[[...r.history].reverse().find((h) => h.status === "approved")?.by ?? ""] ?? userById["u-buy"];
+    if (sendPurchaseOrder(by, r.id, { auto: true }).ok) sent.push(r.id);
+  }
+  return sent;
 }
 
 // ---- Three way match, credit requests and closing ----------------------------------------------------------------
@@ -687,14 +826,24 @@ export function purchasingSettingsFor(user: User, propertyId: string) {
   return {
     ok: true as const, settings: s, valuationLabel: VALUATION_LABEL[s.valuation], currency: propertyById[propertyId].currency,
     vat: { scheme: s.vatScheme, label: VAT_SCHEMES[s.vatScheme].label, rates: STOCK_AREAS.map((a) => ({ area: a.name, rate: VAT_SCHEMES[s.vatScheme].rates[a.id] })) },
-    limits: policy, mayChange: can(user, "finance.review") || can(user, "purchase.approveManager"),
+    limits: policy, mayChange: can(user, "finance.review") || can(user, "purchase.approveManager"), maySending: mayManage(user), autoSend: s.autoSend !== false,
     statuses: Object.entries(PO_STATUS).map(([id, v]) => ({ id, label: v.label })),
   };
 }
 
 export function savePurchasingSettings(user: User, propertyId: string, body: Record<string, unknown>): Result<{ settings: PurchasingSettings }> {
-  if (!(can(user, "finance.review") || can(user, "purchase.approveManager"))) return fail(403, "Only the financial controller or the general manager can change how stock is valued.");
   if (!allowedProperties(user).includes(propertyId)) return fail(403, "This hotel is outside your access.");
+  // Automatic sending of approved orders: purchasing, the F&B director or the general manager decide.
+  if (typeof body.autoSend === "boolean" && body.valuation === undefined) {
+    if (!mayManage(user)) return fail(403, "Purchasing, the F&B director or the general manager decide whether approved orders go on their own.");
+    const settings = mutateStore((x) => {
+      x.procurement ??= seedProcurement();
+      x.procurement.settings[propertyId] = { ...settingsOf(propertyId, x), autoSend: body.autoSend as boolean };
+      return x.procurement.settings[propertyId];
+    });
+    return { ok: true, settings };
+  }
+  if (!(can(user, "finance.review") || can(user, "purchase.approveManager"))) return fail(403, "Only the financial controller or the general manager can change how stock is valued.");
   const method = (["wac", "fifo", "last"] as const).find((m) => m === body.valuation);
   if (!method) return fail(400, "Choose weighted average cost, FIFO or last purchase price.");
   const settings = mutateStore((x) => {

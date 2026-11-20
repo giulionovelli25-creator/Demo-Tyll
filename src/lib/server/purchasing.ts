@@ -21,7 +21,7 @@ import { stockFor, type SessionEntries } from "./stock";
 import { applyReceipt, ceilToPack, fullyReceived, outstanding, receiptLine } from "../domain/procurement";
 import { catalogueFor, createPurchaseOrders, openDraftFor, supplierAccount } from "./procurement";
 import { leadBufferFor as bufferFor } from "../data/delivery-history";
-import { deliveryRiskFor, type RiskOut } from "./late-delivery";
+import { deliveryRiskFor, emptyLate, type RiskOut } from "./late-delivery";
 import type { ReceiptLine } from "../types";
 
 export type Result<T = object> = ({ ok: true } & T) | { ok: false; status: number; error: string };
@@ -855,6 +855,10 @@ const nextAfter = (r: PurchaseRequest, stage: "purchasing" | "accounting" | "fnb
 
 type Decision = "approve" | "changes" | "reject";
 
+/** Whether this person raised the order. An automatic order was raised by the ordering rule, not by the person whose
+ * name keeps the rule, so they may approve it like anyone else; they still sign one step only. */
+const raisedBy = (r: PurchaseRequest, user: User) => r.createdBy === user.id && !r.auto;
+
 /** Every step of the workflow. Each checks the role, the stage and the user's access to the hotel. */
 export function actOnRequest(user: User, id: string, body: Record<string, unknown>): Result<{ request: PurchaseRequest }> {
   const r = loadStore().requests.find((x) => x.id === id);
@@ -935,20 +939,20 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
     case "accounting": {
       if (!can(user, "purchase.approveFinance")) return fail(403, "Only accounting can approve the spend.");
       if (r.status !== "accounting") return fail(409, "This request is not waiting for accounting.");
-      if (r.createdBy === user.id) return fail(403, "You cannot approve your own request.");
+      if (raisedBy(r, user)) return fail(403, "You cannot approve your own request.");
       return decide("accounting", "Accounting review");
     }
     case "fnb": {
       // The general manager may sign in the F&B director's place, for instance when the director raised the order.
       if (!can(user, "purchase.approveFnb") && !can(user, "purchase.approveManager")) return fail(403, `Only the ${APPROVAL_POLICY[r.propertyId].fnbLabel} or the general manager can give this approval.`);
       if (r.status !== "fnb") return fail(409, `This request is not waiting for the ${APPROVAL_POLICY[r.propertyId].fnbLabel}.`);
-      if (r.createdBy === user.id) return fail(403, "You cannot approve your own request.");
+      if (raisedBy(r, user)) return fail(403, "You cannot approve your own request.");
       return decide("fnb", APPROVAL_POLICY[r.propertyId].fnbLabel);
     }
     case "manager": {
       if (!can(user, "purchase.approveManager")) return fail(403, `Only a ${APPROVAL_POLICY[r.propertyId].managerLabel.toLowerCase()} can give this approval.`);
       if (r.status !== "manager") return fail(409, "This request is not waiting for a manager's approval.");
-      if (r.createdBy === user.id) return fail(403, "You cannot approve your own request.");
+      if (raisedBy(r, user)) return fail(403, "You cannot approve your own request.");
       return decide("manager", APPROVAL_POLICY[r.propertyId].managerLabel);
     }
     case "receive": {
@@ -982,6 +986,12 @@ export function actOnRequest(user: User, id: string, body: Record<string, unknow
       return apply((x, store) => {
         const receipt = { id: `GR-${(x.poNumber ?? x.id).replace(/^P[OR]-/, "")}-${(x.receipts?.length ?? 0) + 1}`, at: `${DEMO_TODAY}T${timeIn(propertyById[x.propertyId].timeZone)}`, by: user.id, final, lines };
         x.receipts = [...(x.receipts ?? []), receipt];
+        // The one delivery record: the first goods receipt is also the order's arrival at goods in, with its time, so
+        // Orders (Delivered), goods in (Received) and supplier reliability read the same record.
+        store.lateDelivery ??= emptyLate();
+        if (!store.lateDelivery.arrivals.some((a) => a.key === `PR:${x.id}`)) {
+          store.lateDelivery.arrivals.push({ key: `PR:${x.id}`, supplierId: x.supplierId ?? x.lines[0]?.supplierId ?? "", date: DEMO_TODAY, at: receipt.at, complete: final || fullyReceived(applyReceipt(r.lines, lines)), by: user.id, role: user.role, recordedAt: new Date().toISOString() });
+        }
         x.lines = applyReceipt(x.lines, lines).map((l) => ({ ...l, receiveNote: lines.find((y) => y.ingredientId === l.ingredientId)?.note ?? l.receiveNote }));
         if (final || fullyReceived(x.lines)) x.status = "received";
         // Bought for an event: the delivery is issued straight to it, so it is not also counted as storeroom stock.

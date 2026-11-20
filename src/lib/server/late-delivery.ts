@@ -19,7 +19,7 @@ import { notify, resolve } from "./notify";
 import { catalogueFor, createPurchaseOrders, supplierAccount } from "./procurement";
 import { loadStore, mutateStore, type Shape } from "./purchasing-store";
 import { stockFor } from "./stock";
-import type { PlanItem } from "./purchasing";
+import { actOnRequest, type PlanItem } from "./purchasing";
 
 type Fail = { ok: false; status: number; error: string };
 type Result<T = object> = ({ ok: true } & T) | Fail;
@@ -382,6 +382,14 @@ export function reopenRisk(user: User, body: Record<string, unknown>): Result {
 export function recordArrival(user: User, body: Record<string, unknown>): Result<{ arrival: LateArrival }> {
   if (!can(user, "purchase.receive")) return fail(403, "Your role does not receive deliveries.");
   const key = clean(body.key, 80);
+  // A purchase order's delivery: Received is the goods receipt on the order itself, so there is one record.
+  if (key.startsWith("PR:")) {
+    if (body.complete === false) return fail(400, "Record what arrived on the order itself, line by line.");
+    const done = actOnRequest(user, key.slice(3), { action: "receive" });
+    if (!done.ok) return done;
+    const a = lateOf(loadStore()).arrivals.find((x) => x.key === key);
+    return a ? { ok: true, arrival: a } : fail(409, "The delivery could not be recorded.");
+  }
   const propertyId = allowedProperties(user)[0];
   const c = propertyId ? comingFor(propertyId).find((x) => x.key === key) ?? todaysDue(propertyId).find((x) => x.key === key) : undefined;
   if (!c) return fail(404, "This delivery is not expected.");
