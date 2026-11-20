@@ -13,7 +13,7 @@ process.env.TYLL_PURCHASING_STORE = path.join(dir, "purchasing.json");
 const { userById } = await import("../data/catalog");
 const { getDataset, getOutletStock } = await import("../data/generate");
 const { BREAKFAST_EXAMPLE_EXCEPTION_ID, COVERS_EXAMPLE_EXCEPTION_ID, TILL_EXAMPLE_EXCEPTION_IDS, TILL_STORY_EXCEPTION_ID } = await import("../data/constants");
-const { applyRecordOp, emptyRecords } = await import("../domain/records");
+const { alertStateOf, applyRecordOp, emptyRecords } = await import("../domain/records");
 const { listInvestigations } = await import("../domain/metrics");
 const { allowedOutlets } = await import("../domain/access");
 const { applyRecord, recordsFor, serverEnv, seededHistory } = await import("../server/records");
@@ -26,7 +26,7 @@ const { snapshotFor } = await import("../server/snapshot");
 const recordsRoute = await import("../../app/api/records/route");
 const demoRoute = await import("../../app/api/auth/demo/route");
 const { proxy } = await import("../../proxy");
-const { DEMO_TODAY } = await import("../util");
+const { DEMO_TODAY, addDays } = await import("../util");
 
 const u = (id: string) => userById[id];
 const STORY = TILL_STORY_EXCEPTION_ID;
@@ -376,5 +376,65 @@ describe("public demo workspaces", () => {
     expect(loadStore().records!.investigations[STORY]).toMatchObject({ status: "closed" });
     expect(fs.existsSync(path.join(workspaceRoot(), ws))).toBe(false);
     expect(allowedOutlets(u("u-fnb")).length).toBeGreaterThan(1);
+  });
+});
+
+describe("review fixes, second round", () => {
+  it("keeps resolve and snooze on Alerts on the server, per person, with the role, and a reset clears them", () => {
+    ok(applyRecord(u("u-fnb"), { op: { kind: "alert.state", id: "stock-critical", state: "resolved", label: "Order 3 critical items today" } }));
+    ok(applyRecord(u("u-fnb"), { op: { kind: "alert.state", id: STORY, state: "snoozed", label: "Bill reopened after payment" } }));
+    const view = (id: string) => recordsFor(u(id)).records;
+    expect(view("u-fnb").alertStates).toEqual({ "stock-critical": { state: "resolved", on: DEMO_TODAY }, [STORY]: { state: "snoozed", on: DEMO_TODAY } });
+    // Another person, also one who keeps the audit trail, starts with every alert open.
+    expect(view("u-fc").alertStates).toEqual({});
+    expect(view("u-fnb").audit[0]).toMatchObject({ userId: "u-fnb", role: "fnb_director", action: "Alert snoozed", detail: "Bill reopened after payment" });
+    expect(view("u-fc").audit.some((a) => a.action === "Alert resolved" && a.userId === "u-fnb")).toBe(true);
+    expect(view("u-rm").audit.some((a) => a.action.startsWith("Alert"))).toBe(false);
+    // Back in open alerts, and the same change sent twice is saved once.
+    ok(applyRecord(u("u-fnb"), { key: "open-1", op: { kind: "alert.state", id: "stock-critical", state: "open", label: "Order 3 critical items today" } }));
+    ok(applyRecord(u("u-fnb"), { key: "open-1", op: { kind: "alert.state", id: "stock-critical", state: "open", label: "Order 3 critical items today" } }));
+    expect(view("u-fnb").alertStates["stock-critical"]).toBeUndefined();
+    expect(view("u-fnb").audit.filter((a) => a.action === "Alert back in open alerts")).toHaveLength(1);
+    expect(applyRecord(u("u-fnb"), { op: { kind: "alert.state", id: "stock-low", state: "gone" } })).toMatchObject({ ok: false, status: 400 });
+    expect(applyRecord(u("u-fnb"), { op: { kind: "alert.state", id: "", state: "resolved" } })).toMatchObject({ ok: false, status: 400 });
+    ok(resetDemo(u("u-gm"), "all"));
+    expect(view("u-fnb").alertStates).toEqual({});
+  });
+
+  it("lets a snooze last until the next business day, and a resolve until it is reopened", () => {
+    expect(alertStateOf(undefined, DEMO_TODAY)).toBe("open");
+    expect(alertStateOf({ state: "snoozed", on: DEMO_TODAY }, DEMO_TODAY)).toBe("snoozed");
+    expect(alertStateOf({ state: "snoozed", on: addDays(DEMO_TODAY, -1) }, DEMO_TODAY)).toBe("open");
+    expect(alertStateOf({ state: "resolved", on: addDays(DEMO_TODAY, -5) }, DEMO_TODAY)).toBe("resolved");
+  });
+
+  it("checks forecast inputs before they are shared with every planner at the hotel", () => {
+    const good = { occupancy: 0.82, reservations: 640, eventAttendance: 180, safetyDays: 1, stockOverride: { coke: 120 } };
+    const send = (inputs: unknown) => applyRecord(u("u-fnb"), { op: { kind: "forecast.inputs", propertyId: "lis", inputs } });
+    ok(send(good));
+    const many = Object.fromEntries(Array.from({ length: 301 }, (_, i) => [`x${i}`, 1]));
+    for (const bad of [
+      { ...good, occupancy: 1.5 }, { ...good, occupancy: -0.1 }, { ...good, reservations: "640" }, { ...good, reservations: Number.POSITIVE_INFINITY },
+      { ...good, eventAttendance: 200000 }, { ...good, safetyDays: 30 }, { ...good, stockOverride: { nope: 3 } }, { ...good, stockOverride: { coke: -1 } },
+      { ...good, stockOverride: [1, 2] }, { ...good, stockOverride: many }, "text", null,
+    ]) expect(send(bad)).toMatchObject({ ok: false, status: 400 });
+    expect(loadStore().records!.forecastInputs.lis).toEqual(good);
+  });
+
+  it("gives a stock case opened by hand the same number in every browser and on the server", () => {
+    const short = getDataset().counts.find((c) => c.propertyId === "lis" && c.kind === "weekly" && (c.allocation["lis-terrace"] ?? 0) > 0 && c.counted < c.expected - 0.5)!;
+    const op = { kind: "case.fromCount", countId: short.id, outletId: "lis-terrace" } as const;
+    // The browser's rules give the number at once, before the server has answered.
+    const local = applyRecordOp(emptyRecords(), op, serverEnv(u("u-gm")));
+    const a = ok(applyRecord(u("u-fnb"), { key: "a", op }));
+    const b = ok(applyRecord(u("u-gm"), { key: "b", op }));
+    expect(a.id).toBe(`EX-STK-MER-${short.id}`);
+    expect(local).toMatchObject({ ok: true, id: a.id });
+    expect(b.id).toBe(a.id);
+    expect(loadStore().records!.stockCases.map((e) => e.id)).toEqual([a.id]);
+    // A case for a stock period is named after the period.
+    const period = getOutletStock().periods.find((p) => p.outletId === "lis-terrace" && applyRecordOp(emptyRecords(), { kind: "case.fromPeriod", period: p }, serverEnv(u("u-fnb"))).ok)!;
+    const c = ok(applyRecord(u("u-fnb"), { op: { kind: "case.fromPeriod", period } }));
+    expect(c.id).toBe(`EX-STK-${period.id.replace(/^UP-/, "")}`);
   });
 });

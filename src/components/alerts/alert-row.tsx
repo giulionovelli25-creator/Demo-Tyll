@@ -2,17 +2,20 @@
 import Link from "next/link";
 import { BellOff, Check, RotateCcw } from "lucide-react";
 import { OutletDot, StatusPill, cn, toast } from "@/components/ui";
-import { useAlertMemory, type AlertState, type FeedAlert } from "@/lib/alert-feed";
+import type { AlertState, FeedAlert } from "@/lib/alert-feed";
+import { useDemo } from "@/lib/store";
 
 const KIND_WORDS: Record<FeedAlert["kind"], string> = { stock: "Stock", money: "Money", pour: "Over pouring", waste: "Waste", margin: "Menu", supplier: "Supplier", delivery: "Delivery", expiry: "Expiry" };
 
 /** What happened, why it matters in money, and the one next step. */
 export function AlertRow({ alert, money, userId, state, compact, grouped }: { alert: FeedAlert; money: (n: number) => string; userId?: string; state?: AlertState; compact?: boolean; grouped?: boolean }) {
-  const remember = useAlertMemory((s) => s.set);
+  const remember = useDemo((s) => s.setAlertState);
+  // Saved on the demo server for this person, with the role; a refusal is shown, never a false "done".
   const change = (next: AlertState, said: string) => {
     if (!userId) return;
-    remember(userId, alert.id, next);
-    toast.done(said);
+    const r = remember(alert.id, next, alert.what);
+    if (r.ok) toast.done(said);
+    else toast.error(r.error);
   };
   const quiet = "inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] text-graphite transition-colors duration-200 hover:bg-mist";
   return (

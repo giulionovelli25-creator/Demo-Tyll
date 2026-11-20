@@ -180,7 +180,7 @@ export default function FlowPage() {
           })}
         </div>
       </div>
-      <Note>{cancelled > 0 ? `${cancelled} ticket${cancelled === 1 ? "" : "s"} cancelled this service. ` : ""}Live tickets are simulated. A live version would read them from the point of sale and kitchen display. Changing a status here is saved in this browser and is not sent to any system.</Note>
+      <Note>{cancelled > 0 ? `${cancelled} ticket${cancelled === 1 ? "" : "s"} cancelled this service. ` : ""}Live tickets are simulated. A live version would read them from the point of sale and kitchen display. Changing a status here is saved on the demo server and is not sent to any system.</Note>
     </div>
   );
 }

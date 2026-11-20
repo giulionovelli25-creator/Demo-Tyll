@@ -23,6 +23,9 @@ function when(iso: string): string {
   return `${fmtDate(`${parts.year}-${parts.month}-${parts.day}`)}, ${fmtTime(Number(parts.hour) * 60 + Number(parts.minute))}`;
 }
 const roleOf = (a: AuditEntry) => (a.role ? ROLE_LABEL[a.role] : "");
+/** Changes whose detail holds words someone typed (a note or a reason): shown as written. Tyll builds the others from
+ * its own words, figures and names, so they are translated like the rest of the page. */
+const TYPED = new Set(["Note added", "Recount recorded", "Standard quantity changed", "Delivery difference recorded", "Waste entry corrected", "Count accepted", "Count rejected"]);
 
 /** Who may put the records back to the start: the owner or general manager, or any visitor in their own public demo workspace. */
 export function useMayReset(user: User): boolean {
@@ -123,7 +126,7 @@ export function SavedChanges({ user }: { user: User }) {
                 <span className="order-2 min-w-0 text-[13px] text-steel sm:order-none"><span translate="no" className="text-graphite sm:text-ink">{personName(a.userId)}</span>{a.role && <><span className="sm:hidden">, </span><span className="sm:block">{roleOf(a)}</span></>}</span>
                 <span className="order-1 min-w-0 sm:order-none">
                   <span className="text-ink">{a.action}</span>
-                  <span className="mt-0.5 block break-words text-[13px] text-graphite"><bdi translate="no">{a.detail}</bdi></span>
+                  <span className="mt-0.5 block break-words text-[13px] text-graphite"><bdi translate={TYPED.has(a.action) ? "no" : undefined}>{a.detail}</bdi></span>
                   {a.ref && <span className="mt-1 hidden sm:block"><Link prefetch={false} href={`/investigations/${encodeURIComponent(a.ref)}`} className={textLink}>Open the case</Link></span>}
                 </span>
                 {a.ref && <span className="order-3 sm:hidden"><Link prefetch={false} href={`/investigations/${encodeURIComponent(a.ref)}`} className={textLink}>Open the case</Link></span>}

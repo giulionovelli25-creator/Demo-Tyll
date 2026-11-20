@@ -53,6 +53,23 @@ describe("changes made in the browser", () => {
     expect(stored).not.toHaveProperty("userId");
   });
 
+  it("write no trail line of their own for signing in or out: the server's access log has those, with the role", () => {
+    s().signOut();
+    s().signIn("u-fnb");
+    s().signOut();
+    s().signIn("u-fc");
+    expect(s().audit).toEqual([]);
+  });
+
+  it("keep resolve and snooze on Alerts in the queue for the server, never in browser storage", () => {
+    s().signIn("u-fnb");
+    expect(s().setAlertState("stock-critical", "resolved", "Order 3 critical items today")).toEqual({ ok: true });
+    expect(s().alertStates["stock-critical"]).toEqual({ state: "resolved", on: DEMO_TODAY });
+    expect(s().pendingOps.at(-1)).toMatchObject({ userId: "u-fnb", op: { kind: "alert.state", id: "stock-critical", state: "resolved" } });
+    expect(s().audit[0]).toMatchObject({ userId: "u-fnb", role: "fnb_director", action: "Alert resolved" });
+    expect(storagePolicy.partialize(s())).not.toHaveProperty("alertStates");
+  });
+
   it("drops records an older browser kept, when it loads", () => {
     const out = storagePolicy.migrate({ investigations: { X: {} }, priceOverrides: [1], approvals: [1], scope: { propertyId: "lis" } });
     expect(out).toEqual({ scope: { propertyId: "lis" } });

@@ -1,19 +1,21 @@
 "use client";
 // What a user changes during the demo. Decisions and corrections (investigations, stock cases, recounts, standards,
-// delivery differences, prices, approvals, order status, closed notices) are saved on the demo server: each action runs
+// delivery differences, prices, approvals, order status, closed notices, resolve and snooze on Alerts) are saved on the
+// demo server: each action runs
 // the shared rules in lib/domain/records.ts for an instant answer, then the change is sent to /api/records, where the
 // server runs the same rules with the person's own session and keeps it with the person and the role
-// (lib/records-sync.ts). Only this device's queue of unsent entries and view settings stay in the browser.
+// (lib/records-sync.ts). Only this device's queue of unsent entries and view settings stay in the browser. The trail of
+// saved changes (`audit`) is written only by those rules and by the server, so every line in it carries the role.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ingredientById, outletById, propertyById, userById } from "./data/catalog";
+import { ingredientById, userById } from "./data/catalog";
 import { getDataset } from "./data/dataset";
 import { AccessError, assertCan, clampScope, hasWholeProperty, type Permission } from "./domain/access";
 import type { ForecastInputs } from "./domain/forecast";
-import { RECORD_KEYS, applyRecordOp, emptyRecords, type CloseInput, type RecordEnv, type RecordOp, type Records } from "./domain/records";
+import { RECORD_KEYS, applyRecordOp, emptyRecords, type AlertStateName, type CloseInput, type RecordEnv, type RecordOp, type Records } from "./domain/records";
 import type { FlowSim } from "./domain/operations";
 import type {
-  Arrival, AuditEntry, CountRecord, UsagePeriod, WasteCorrection, DateRange, FlowStatus, Room, Scope, User, WasteLog, WasteReason,
+  Arrival, CountRecord, UsagePeriod, WasteCorrection, DateRange, FlowStatus, Room, Scope, User, WasteLog, WasteReason,
 } from "./types";
 import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, presetRange, type RangePreset } from "./util";
 
@@ -74,6 +76,8 @@ interface Actions {
   setStandardQty(input: { itemId: string; ingredientId: string; qty: number; from: string; reason: string }): Result;
   recordReceipt(input: { deliveryId: string; ingredientId: string; received: number; reason: string }): Result;
   dismissAlert(id: string): void;
+  /** Resolve, snooze or reopen an alert for the person signed in. `label` is the alert as they read it. */
+  setAlertState(id: string, state: AlertStateName, label?: string): Result;
   syncWaste(): void;
   setOffline(offline: boolean): void;
   /** Removes this device's copies of entries now saved on the server. */
@@ -160,8 +164,6 @@ export const useDemo = create<DemoState>()(
   persist(
     (set, get) => {
       const me = (): User | undefined => (get().userId ? userById[get().userId!] : undefined);
-      const audit = (action: string, detail: string): AuditEntry => ({ at: new Date().toISOString(), userId: get().userId ?? "unknown", action, detail });
-      const log = (action: string, detail: string) => set((s) => ({ audit: [audit(action, detail), ...s.audit].slice(0, 400) }));
 
       /** Runs a guarded change. Permission failures come back as a message instead of an exception. */
       const guarded = (permission: Permission, outletId: string | undefined, run: (user: User) => Result): Result => {
@@ -221,10 +223,8 @@ export const useDemo = create<DemoState>()(
             const fresh: Scope = { propertyId: s.scopeOwner ? s.scope.propertyId : "all", outletId: "all", dept: "all" };
             return { userId, scopeOwner: userId, scopes, scope: clampScope(user, scopes[userId] ?? fresh) };
           });
-          log("Signed in", user.name);
         },
         signOut() {
-          log("Signed out", me()?.name ?? "");
           set({ userId: null });
         },
         setScope(scope) {
@@ -278,7 +278,6 @@ export const useDemo = create<DemoState>()(
             if (reason.trim().length < 3) return fail("Say why the entry is being corrected.");
             const seq = get().seq + 1;
             set((s) => ({ seq, wasteCorrections: [...s.wasteCorrections, { id: `WC-${seq}`, wasteId, qty, reason: reason.trim(), by: user.id, seq }] }));
-            log("Waste entry corrected", `${wasteId}: ${w.qty} to ${qty}. ${reason.trim()}`);
             return OK;
           });
         },
@@ -294,6 +293,10 @@ export const useDemo = create<DemoState>()(
         dismissAlert(id) {
           if (get().userId) run({ kind: "alert.dismiss", id });
         },
+        setAlertState(id, state, label) {
+          if (!get().userId) return fail("Sign in to continue.");
+          return run({ kind: "alert.state", id, state, label });
+        },
         logWaste(input) {
           return guarded("stock.logWaste", input.outletId, (user) => {
             if (!input.ingredientId && !input.itemId) return fail("Choose an item.");
@@ -307,15 +310,12 @@ export const useDemo = create<DemoState>()(
               qty: input.qty, reason: input.reason, by: user.staffId ?? user.id, synced: !get().offline, seq,
             };
             set((s) => ({ seq, wasteLogs: [...s.wasteLogs, entry] }));
-            log("Waste logged", `${input.ingredientId ?? input.itemId} × ${input.qty} (${input.reason}) at ${outletById[input.outletId].name}${entry.synced ? "" : ", saved offline"}`);
             return OK;
           });
         },
         syncWaste() {
-          const pending = get().wasteLogs.filter((w) => !w.synced).length;
-          if (pending === 0) return;
+          if (!get().wasteLogs.some((w) => !w.synced)) return;
           set((s) => ({ wasteLogs: s.wasteLogs.map((w) => ({ ...w, synced: true })) }));
-          log("Offline entries synchronised", `${pending} waste entr${pending === 1 ? "y" : "ies"}`);
         },
         setOffline(offline) {
           set({ offline });
@@ -341,7 +341,6 @@ export const useDemo = create<DemoState>()(
               allocation: ingredientById[input.ingredientId].dept === "glassware" ? {} : input.allocation,
             };
             set((st) => ({ seq, counts: [...st.counts, record] }));
-            log("Stock counted", `${ingredientById[input.ingredientId].name} at ${propertyById[input.propertyId].name}: counted ${input.counted}, expected ${record.expected}`);
             return OK;
           });
         },
@@ -370,7 +369,6 @@ export const useDemo = create<DemoState>()(
           return guarded("rooms.manage", undefined, (user) => {
             if (!hasWholeProperty(user, room.propertyId)) return fail("This property is outside your access.");
             set((s) => ({ roomState: { ...s.roomState, [roomId]: { ...s.roomState[roomId], ...patch } } }));
-            log("Room updated", `${room.number}: ${Object.entries(patch).map(([k, v]) => `${k} ${v}`).join(", ")}`);
             return OK;
           });
         },
@@ -380,7 +378,6 @@ export const useDemo = create<DemoState>()(
           return guarded("rooms.manage", undefined, (user) => {
             if (!hasWholeProperty(user, arrival.propertyId)) return fail("This property is outside your access.");
             set((s) => ({ arrivalState: { ...s.arrivalState, [arrivalId]: status } }));
-            log("Arrival updated", `${arrival.guest}: ${status}`);
             return OK;
           });
         },
@@ -390,7 +387,6 @@ export const useDemo = create<DemoState>()(
           return guarded("rooms.manage", undefined, (user) => {
             if (!hasWholeProperty(user, request.propertyId)) return fail("This property is outside your access.");
             set((s) => ({ requestsDone: { ...s.requestsDone, [requestId]: true } }));
-            log("Guest request completed", `Room ${request.room}: ${request.text}`);
             return OK;
           });
         },
@@ -419,7 +415,6 @@ export const useDemo = create<DemoState>()(
           set({ ...initial(), userId });
           const user = me();
           if (user) set((s) => ({ scope: clampScope(user, s.scope) }));
-          log("Demo data reset", "All changes made in this browser were cleared");
         },
       };
     },

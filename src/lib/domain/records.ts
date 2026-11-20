@@ -1,5 +1,6 @@
 // Decisions and corrections people make in Tyll: investigation steps, stock cases opened by hand, recounts, standard
-// quantities, delivery differences, ingredient prices, purchase approvals, order status and closed notices.
+// quantities, delivery differences, ingredient prices, purchase approvals, forecast inputs, order status, closed notices
+// and what each person resolved or snoozed on Alerts.
 // One set of rules for both sides: the browser runs them for an instant answer, the demo server runs them again with
 // the person's own session and keeps the result. Every change carries the person and the role that made it.
 import { ingredientById, itemById, outletById, propertyById, staffById, storeOwner, userById } from "../data/catalog";
@@ -35,6 +36,16 @@ export interface PriceLogEntry {
   at: string;
 }
 
+/** Resolve or snooze on Alerts, kept per person. `on` is the business date it was set: a snooze lasts until the next day. */
+export interface AlertMark { state: "snoozed" | "resolved"; on: string }
+export type AlertStateName = "open" | AlertMark["state"];
+
+/** Where an alert stands for one person: resolved, snoozed until the next business day, or open. */
+export function alertStateOf(mark: AlertMark | undefined, today: string): AlertStateName {
+  if (!mark) return "open";
+  return mark.state === "snoozed" && mark.on < today ? "open" : mark.state;
+}
+
 /** What one person may hold of the saved records. The server keeps the full set; each person receives their view. */
 export interface Records {
   /** Numbers the records made here (stock cases, recounts, standards, receipts). */
@@ -52,13 +63,15 @@ export interface Records {
   flowStatus: Record<string, FlowStatus>;
   /** Notices this person closed. Kept per person, so another role on the same browser still sees them. */
   dismissedAlerts: string[];
+  /** Alerts this person resolved or snoozed, by alert id. Kept per person, like closed notices. */
+  alertStates: Record<string, AlertMark>;
   audit: AuditEntry[];
 }
 
-export const RECORD_KEYS = ["recordSeq", "investigations", "stockCases", "recounts", "recipeChanges", "receiptCorrections", "priceOverrides", "priceLog", "approvals", "forecastInputs", "flowStatus", "dismissedAlerts", "audit"] as const satisfies readonly (keyof Records)[];
+export const RECORD_KEYS = ["recordSeq", "investigations", "stockCases", "recounts", "recipeChanges", "receiptCorrections", "priceOverrides", "priceLog", "approvals", "forecastInputs", "flowStatus", "dismissedAlerts", "alertStates", "audit"] as const satisfies readonly (keyof Records)[];
 
 export const emptyRecords = (): Records => ({
-  recordSeq: 0, investigations: {}, stockCases: [], recounts: [], recipeChanges: [], receiptCorrections: [], priceOverrides: [], priceLog: [], approvals: [], forecastInputs: {}, flowStatus: {}, dismissedAlerts: [], audit: [],
+  recordSeq: 0, investigations: {}, stockCases: [], recounts: [], recipeChanges: [], receiptCorrections: [], priceOverrides: [], priceLog: [], approvals: [], forecastInputs: {}, flowStatus: {}, dismissedAlerts: [], alertStates: {}, audit: [],
 });
 
 export interface CloseInput { outcome: Outcome; confirmedLoss: number; recovered: number; note: string; verifiedCause?: string; correctiveAction?: string }
@@ -79,11 +92,13 @@ export type RecordOp =
   | { kind: "purchase.withdraw"; id: string }
   | { kind: "forecast.inputs"; propertyId: string; inputs: ForecastInputs }
   | { kind: "flow.status"; orderId: string; status: FlowStatus }
-  | { kind: "alert.dismiss"; id: string };
+  | { kind: "alert.dismiss"; id: string }
+  /** `label` is the alert as the person read it, for the trail of saved changes. */
+  | { kind: "alert.state"; id: string; state: AlertStateName; label?: string };
 
 export const OP_KINDS: RecordOp["kind"][] = [
   "investigation.assign", "investigation.note", "investigation.review", "investigation.close", "investigation.reopen", "case.fromCount", "case.fromPeriod",
-  "stock.recount", "recipe.standard", "delivery.receipt", "price.set", "purchase.approve", "purchase.withdraw", "forecast.inputs", "flow.status", "alert.dismiss",
+  "stock.recount", "recipe.standard", "delivery.receipt", "price.set", "purchase.approve", "purchase.withdraw", "forecast.inputs", "flow.status", "alert.dismiss", "alert.state",
 ];
 
 /** What the rules need to know about the world, supplied by the browser or the server from their own data. */
@@ -248,7 +263,9 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
         if (share <= 0) return fail(`${outlet.name} did not use this item in the week before the count.`);
         const g = ingredientById[count.ingredientId];
         const exposure = Math.round(value * share * 100) / 100;
-        const id = `EX-STK-${String(nextSeq()).padStart(3, "0")}`;
+        // Named after the count and the outlet, so the browser and the server always give the same case the same number,
+        // and two managers opening it at the same moment reach the same case.
+        const id = `EX-STK-${outlet.code}-${op.countId}`;
         const e: Exception = {
           id, type: "stock_shortfall", propertyId: count.propertyId, outletId: op.outletId, date: count.date, min: count.date === env.today ? env.nowMin : 7 * 60,
           countId: op.countId, ingredientId: count.ingredientId, exposure,
@@ -267,7 +284,8 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
         if (existing) return { ok: true, rec: prev, id: existing.id };
         const v = periodVariance(period, adjustments());
         if (v.unexplained <= 0) return fail("Nothing is unexplained in this period.");
-        const id = `EX-STK-${String(nextSeq()).padStart(3, "0")}`;
+        // Named after the stock period, for the same reason as a case opened from a count.
+        const id = `EX-STK-${period.id.replace(/^UP-/, "")}`;
         const e: Exception = {
           id, type: "usage_variance", propertyId: period.propertyId, outletId: period.outletId, date: period.to.date, min: period.to.min,
           ingredientId: period.ingredientId, exposure: Math.max(0, Math.round(v.value * 100) / 100), headline: headlineFor(period, v), period,
@@ -368,8 +386,9 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
       return guarded("forecast.approve", undefined, (u) => {
         if (!propertyById[op.propertyId]) return fail("Choose a property.");
         if (u.propertyIds !== "all" && !u.propertyIds.includes(op.propertyId)) return deny("This property is outside your access.");
-        if (!op.inputs || typeof op.inputs !== "object") return fail("Nothing to save.");
-        rec.forecastInputs = { ...rec.forecastInputs, [op.propertyId]: op.inputs };
+        const inputs = cleanForecastInputs(op.inputs);
+        if (typeof inputs === "string") return fail(inputs);
+        rec.forecastInputs = { ...rec.forecastInputs, [op.propertyId]: inputs };
         audit("Forecast settings changed", propertyById[op.propertyId].name);
         return { ok: true, rec };
       });
@@ -391,9 +410,52 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
       rec.dismissedAlerts = [...prev.dismissedAlerts, id].slice(-300);
       return { ok: true, rec };
     }
+    case "alert.state": {
+      if (!user) return fail("Sign in to continue.");
+      const id = typeof op.id === "string" ? op.id.trim() : "";
+      if (!id || id.length > 300) return fail("Choose an alert.");
+      if (!["open", "snoozed", "resolved"].includes(op.state)) return fail("Choose open, snoozed or resolved.");
+      const current = prev.alertStates[id];
+      if (op.state === "open" ? !current : current?.state === op.state && current.on === env.today) return { ok: true, rec: prev };
+      const next = { ...prev.alertStates };
+      delete next[id];
+      if (op.state !== "open") next[id] = { state: op.state, on: env.today };
+      // The newest 300 are kept; the oldest go first.
+      const ids = Object.keys(next);
+      for (const old of ids.slice(0, Math.max(0, ids.length - 300))) delete next[old];
+      rec.alertStates = next;
+      const label = typeof op.label === "string" ? op.label.replace(/\s+/g, " ").trim().slice(0, 160) : "";
+      audit(op.state === "resolved" ? "Alert resolved" : op.state === "snoozed" ? "Alert snoozed" : "Alert back in open alerts", label || id);
+      return { ok: true, rec };
+    }
     default:
       return fail("Unknown change.");
   }
+}
+
+/**
+ * Forecast inputs as a planner may save them for everyone planning at the hotel, or the reason they cannot be saved.
+ * The same ranges the forecast itself accepts (`forecastFor` in server/stock.ts).
+ */
+export function cleanForecastInputs(raw: unknown): ForecastInputs | string {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return "Nothing to save.";
+  const r = raw as Record<string, unknown>;
+  const within = (v: unknown, lo: number, hi: number): v is number => typeof v === "number" && Number.isFinite(v) && v >= lo && v <= hi;
+  if (!within(r.occupancy, 0, 1)) return "Occupancy must be between 0 and 100%.";
+  if (!within(r.reservations, 0, 100000)) return "Enter the booked covers as a number from 0 to 100,000.";
+  if (!within(r.eventAttendance, 0, 100000)) return "Enter the event guests as a number from 0 to 100,000.";
+  if (!within(r.safetyDays, 0, 14)) return "Safety stock must be between 0 and 14 days.";
+  const raws = r.stockOverride ?? {};
+  if (typeof raws !== "object" || Array.isArray(raws)) return "Check the stock on hand you entered.";
+  const entries = Object.entries(raws as Record<string, unknown>);
+  if (entries.length > 300) return "Too many stock on hand entries. Enter up to 300 items.";
+  const stockOverride: Record<string, number> = {};
+  for (const [id, v] of entries) {
+    if (!ingredientById[id]) return "Stock on hand names an item Tyll does not know.";
+    if (!within(v, 0, 1e6)) return `Stock on hand for ${ingredientById[id].name} must be zero or more.`;
+    stockOverride[id] = v;
+  }
+  return { occupancy: r.occupancy, reservations: Math.round(r.reservations), eventAttendance: Math.round(r.eventAttendance), safetyDays: r.safetyDays, stockOverride };
 }
 
 /** Late entries can go back up to seven days. */

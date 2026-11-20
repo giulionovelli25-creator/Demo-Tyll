@@ -1,25 +1,26 @@
 "use client";
 // What the whole shell needs to agree on: the month plan, Pour Control, and one list of everything that needs a decision.
-// Each alert says what happened, why it matters in money, and the one next step. Resolve and snooze are remembered per
-// person in this browser; a money case is only ever closed on its own page, with an outcome recorded.
+// Each alert says what happened, why it matters in money, and the one next step. Resolve and snooze are saved per person
+// on the demo server (the `alert.state` change in lib/domain/records.ts), with the role, and a snooze lasts until the next
+// business day; a money case is only ever closed on its own page, with an outcome recorded.
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import type { Rag } from "@/components/ui";
 import { MENU_ITEMS, ingredientById, outletById, propertyById, supplierById } from "./data/catalog";
 import { orderStage } from "./domain/order-stage";
 import { allowedProperties, can, canOpen } from "./domain/access";
 import { buildIssues, type Issue } from "./domain/issues";
+import { alertStateOf, type AlertStateName } from "./domain/records";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "./hooks";
 import { useMonthPlan, useRequests } from "./plan-hooks";
 import { useExpiring } from "./procurement-hooks";
 import type { PourOut } from "./server/pour";
 import { useEmptiesVersion } from "./empties-version";
 import type { MonthPlanOut } from "./server/purchasing";
-import { fmtDate, fxRate } from "./util";
+import { useDemo } from "./store";
+import { DEMO_TODAY, fmtDate, fxRate } from "./util";
 
 export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier" | "delivery" | "expiry";
-export type AlertState = "open" | "snoozed" | "resolved";
+export type AlertState = AlertStateName;
 
 export interface FeedAlert {
   id: string;
@@ -40,26 +41,12 @@ export interface FeedAlert {
   caseHref?: string;
 }
 
-interface Remembered {
-  byUser: Record<string, Record<string, Exclude<AlertState, "open">>>;
-  set(userId: string, alertId: string, state: AlertState): void;
+/** Before feature 8 resolve and snooze were kept in this browser under this key. They are dropped, not uploaded: they
+ * carried no person, role or time. */
+const OLD_KEY = "tyll-alerts-v1";
+if (typeof window !== "undefined") {
+  try { window.localStorage.removeItem(OLD_KEY); } catch { /* private window */ }
 }
-
-export const useAlertMemory = create<Remembered>()(
-  persist(
-    (set) => ({
-      byUser: {},
-      set: (userId, alertId, state) =>
-        set((s) => {
-          const mine = { ...s.byUser[userId] };
-          if (state === "open") delete mine[alertId];
-          else mine[alertId] = state;
-          return { byUser: { ...s.byUser, [userId]: mine } };
-        }),
-    }),
-    { name: "tyll-alerts-v1" },
-  ),
-);
 
 interface Feed {
   alerts: FeedAlert[];
@@ -85,7 +72,8 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
   const ctx = useCtx();
   const investigations = useInvestigations();
   const patterns = usePatterns();
-  const memory = useAlertMemory((s) => s.byUser[user.id]);
+  // The server sends each person only their own resolve and snooze.
+  const memory = useDemo((s) => s.alertStates);
   const pid = propertyId ?? allowedProperties(user)[0] ?? null;
   const planned = useMonthPlan(canOpen(user, "stock") && user.role !== "employee" ? pid : null);
   const plan = planned.data?.plan;
@@ -178,7 +166,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
     // Most urgent first, then the most money inside each level.
     const RANK = { red: 0, amber: 1, green: 2 } as const;
     out.sort((a, b) => RANK[a.rag as keyof typeof RANK] - RANK[b.rag as keyof typeof RANK] || Number(b.kind === "delivery") - Number(a.kind === "delivery") || (b.amount ?? -1) - (a.amount ?? -1));
-    const state = (a: FeedAlert): AlertState => memory?.[a.id] ?? "open";
+    const state = (a: FeedAlert): AlertState => alertStateOf(memory[a.id], DEMO_TODAY);
     return {
       alerts: out, open: out.filter((a) => state(a) === "open"), snoozed: out.filter((a) => state(a) === "snoozed"), resolved: out.filter((a) => state(a) === "resolved"),
       loading: planned.loading, error: planned.error, plan, pour, propertyId: pid,

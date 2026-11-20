@@ -15,20 +15,24 @@ import { defaultAuto, type AutoShape } from "../domain/auto-order";
 import { seedProcurement, type ProcurementShape } from "./procurement-seed";
 import type { BoughtUsedCheck, CashUp, Role, StockTake, WaiterCoaching } from "../types";
 import type { EmptyScan } from "../domain/empties";
-import { emptyRecords, type Records } from "../domain/records";
+import { emptyRecords, type AlertMark, type Records } from "../domain/records";
 import { workspaceFile, workspaceId } from "./workspace";
 
-/** Decisions and corrections saved on the server (overnight feature 8): the full set, with each person's closed notices. */
-export interface RecordsShape extends Omit<Records, "dismissedAlerts"> {
+/** Decisions and corrections saved on the server (overnight feature 8): the full set, with each person's closed notices
+ * and each person's resolved and snoozed alerts. */
+export interface RecordsShape extends Omit<Records, "dismissedAlerts" | "alertStates"> {
   dismissed: Record<string, string[]>;
+  /** By person, then by alert. Optional: a store saved before this was added has none. */
+  alertStatesBy?: Record<string, Record<string, AlertMark>>;
   /** Keys of changes already applied, so a change sent again after a dropped connection is saved once. */
   applied: string[];
 }
 
 export const emptyRecordsShape = (): RecordsShape => {
-  const { dismissedAlerts: _unused, ...rest } = emptyRecords();
+  const { dismissedAlerts: _unused, alertStates: _states, ...rest } = emptyRecords();
   void _unused;
-  return { ...rest, dismissed: {}, applied: [] };
+  void _states;
+  return { ...rest, dismissed: {}, alertStatesBy: {}, applied: [] };
 };
 
 export interface Shape {

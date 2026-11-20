@@ -28,6 +28,14 @@ describe("translation", () => {
     expect(t("it").translate("13 Oct")).toBe("13 ott");
     expect(t("de").translate("13 Oct.")).toBe("13. Okt.");
     expect(t("ar").translate("13 Oct")).toBe("13 أكتوبر");
+    // Arabic reads the 24 hour clock too, kept in reading order, with no English AM or PM.
+    expect(t("ar").translate("20 Nov, 9:41 PM")).toBe("20 نوفمبر, \u206621:41\u2069");
+    // A 24 hour time is one value: in Arabic it still reads 15:00, never 00:15.
+    const clock = new Translator("ar", { "Due today at {0}.": ["", "", "مستحق اليوم الساعة {0}."] }, { items: [], names: [] });
+    expect(clock.translate("Due today at 15:00.")).toBe("مستحق اليوم الساعة \u206615:00\u2069.");
+    // A time with seconds, as the till records an entry, is one value too.
+    const de = new Translator("de", { "At {0}": ["Um {0}", "", ""] }, { items: [], names: [] });
+    expect(de.translate("At 9:34:12 PM")).toBe("Um 21:34:12");
     expect(t("ar").translate("3,000 ml")).toBe("\u20663,000 ml\u2069");
   });
   it("translates sentence by sentence", () => {

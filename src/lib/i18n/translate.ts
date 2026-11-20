@@ -26,7 +26,8 @@ const DAY_NAME = {
 
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const DATE = `(?:(?:${DAYS.join("|")}) )?\\d{1,2} (?:${MONTHS.join("|")})(?: \\d{4})?\\b`;
-const TIME = "\\d{1,2}:\\d{2} (?:AM|PM)\\b";
+// "8:55 PM", "9:34:12 PM" or a 24 hour "15:00", lifted as one value so a right to left page never reads it as "00:15".
+const TIME = "(?<![\\d:])\\d{1,2}:\\d{2}(?::\\d{2})?(?: (?:AM|PM)\\b|(?![\\d:]))";
 const FIGURE = "\\d(?:[\\d,.]*\\d)?";
 const MONEY = `[−-]?€[−-]?${FIGURE}[kKmM]?`;
 const CODE = "\\b[A-Z]{2,8}-[A-Za-z0-9-]*\\d[A-Za-z0-9-]*\\b";
@@ -76,11 +77,14 @@ export class Translator {
       const month = MONTH_NAME[this.lang][MONTHS.indexOf(date[3])];
       return `${day}${date[2]}${this.lang === "de" ? "." : ""} ${month}${date[4] ?? ""}`;
     }
-    const time = /^(\d{1,2}):(\d{2}) (AM|PM)$/.exec(value);
-    if (time && this.lang !== "ar") {
+    // Times read on the 24 hour clock in every language but English, so no English AM or PM is left in Arabic either.
+    const time = /^(\d{1,2}):(\d{2}(?::\d{2})?) (AM|PM)$/.exec(value);
+    if (time) {
       const hour = (Number(time[1]) % 12) + (time[3] === "PM" ? 12 : 0);
-      return `${String(hour).padStart(2, "0")}:${time[2]}`;
+      const clock = `${String(hour).padStart(2, "0")}:${time[2]}`;
+      return this.lang === "ar" ? `\u2066${clock}\u2069` : clock;
     }
+    if (/^\d{1,2}:\d{2}(?::\d{2})?$/.test(value)) return this.lang === "ar" ? `\u2066${value}\u2069` : value;
     // Keeps "3,000 ml" and "8:55 PM" in reading order inside right to left text.
     return this.lang === "ar" && /\d/.test(value) ? `\u2066${value}\u2069` : value;
   }

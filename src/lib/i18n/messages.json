@@ -139,6 +139,11 @@
 "Un amico degli ospiti si è unito a loro per la colazione.",
 "انضم صديق للنزلاء إليهم على الإفطار."
 ],
+"A live version would read them from the point of sale and kitchen display.": [
+"Eine Live-Version würde sie aus der Kasse und dem Küchendisplay lesen.",
+"Una versione reale li leggerebbe dalla cassa e dallo schermo di cucina.",
+"النسخة الحقيقية ستقرؤها من نقطة البيع وشاشة المطبخ."
+],
 "A low figure is a prompt to coach, not proof of anything else.": [
 "Ein niedriger Wert ist ein Anlass zum Coaching, kein Beweis für etwas anderes.",
 "Un valore basso è uno spunto per il coaching, non la prova di altro.",
@@ -428,6 +433,21 @@
 "Austausch Klimaanlagenfilter (simulierter Verlauf)",
 "Sostituzione filtri aria condizionata (storico simulato)",
 "استبدال فلاتر التكييف (سجل محاكاة)"
+],
+"Alert back in open alerts": [
+"Warnung wieder offen",
+"Avviso di nuovo aperto",
+"أُعيد التنبيه إلى التنبيهات المفتوحة"
+],
+"Alert resolved": [
+"Warnung erledigt",
+"Avviso risolto",
+"تم حل التنبيه"
+],
+"Alert snoozed": [
+"Warnung zurückgestellt",
+"Avviso posticipato",
+"تم تأجيل التنبيه"
 ],
 "Alerts": [
 "Warnungen",
@@ -754,10 +774,10 @@
 "Arrivato",
 "وصل"
 ],
-"Arrives tomorrow at {0}:{1}.": [
-"Ankunft morgen um {0}:{1}.",
-"Arriva domani alle {0}:{1}.",
-"يصل غدًا الساعة {0}:{1}."
+"Arrives tomorrow at {0}.": [
+"Ankunft morgen um {0}.",
+"Arriva domani alle {0}.",
+"يصل غدًا الساعة {0}."
 ],
 "As ordered": [
 "Wie bestellt",
@@ -894,6 +914,11 @@
 "Al ritmo degli ultimi {0} giorni. Ogni parte è una stima e le ipotesi sono elencate. Dati simulati.",
 "بمعدل آخر {0} يومًا. كل جزء تقدير، والافتراضات مذكورة. بيانات محاكاة."
 ],
+"At {0}": [
+"Um {0}",
+"Alle {0}",
+"الساعة {0}"
+],
 "At {0}, a booking for {1} was seated at Table {2} at {3}, and Tyll found no bill for the table, nor an unmatched bill for a party of that size nearby.": [
 "Im {0} wurde eine Reservierung für {1} an Tisch {2} um {3} platziert, und Tyll fand keine Rechnung für den Tisch und auch keine nicht zugeordnete Rechnung für eine Gruppe dieser Größe in der Nähe.",
 "Da {0}, una prenotazione per {1} è stata accomodata al tavolo {2} alle {3}, e Tyll non ha trovato alcun conto per il tavolo, né un conto non abbinato per un gruppo di quelle dimensioni nelle vicinanze.",
@@ -913,11 +938,6 @@
 "Im {0} wurde eine Reservierung für {1} an Tisch {2} von {3} bis {4} platziert, und Tyll fand keine Rechnung für den Tisch und auch keine für eine Gruppe dieser Größe in der Nähe.",
 "Da {0}, una prenotazione per {1} è stata accomodata al tavolo {2} dalle {3} alle {4}, e Tyll non ha trovato alcun conto per il tavolo, né per un gruppo di quelle dimensioni nelle vicinanze.",
 "في {0}، أُجلس حجز لـ {1} على الطاولة {2} من {3} إلى {4}، ولم يجد Tyll فاتورة للطاولة ولا لمجموعة بهذا الحجم بالقرب منها."
-],
-"At {0}:{1}": [
-"Um {0}:{1}",
-"Alle {0}:{1}",
-"الساعة {0}:{1}"
 ],
 "Audit trail": [
 "Prüfprotokoll",
@@ -973,6 +993,11 @@
 "Zurück",
 "Indietro",
 "رجوع"
+],
+"Back in your open alerts.": [
+"Wieder bei Ihren offenen Warnungen.",
+"Di nuovo tra i tuoi avvisi aperti.",
+"عاد إلى تنبيهاتك المفتوحة."
 ],
 "Back to Alerts": [
 "Zurück zu Warnungen",
@@ -1933,6 +1958,11 @@
 "Ändert nur diesen Browser. Klicken Sie ruhig weiter, solange es offen ist.",
 "Cambia solo questo browser. Continua a navigare mentre è aperto.",
 "يغير هذا المتصفح فقط. واصل التنقل أثناء فتحه."
+],
+"Changing a status here is saved on the demo server and is not sent to any system.": [
+"Eine Statusänderung hier wird auf dem Demo-Server gespeichert und an kein System gesendet.",
+"Un cambio di stato qui è salvato sul server della demo e non viene inviato a nessun sistema.",
+"يُحفظ تغيير الحالة هنا على خادم العرض ولا يُرسل إلى أي نظام."
 ],
 "Charged": [
 "Berechnet",
@@ -3419,10 +3449,10 @@
 "Prodotti secchi, restano {0}, finisce tra {1} giorni",
 "مواد جافة، متبقٍ {0}، ينفد خلال {1} أيام"
 ],
-"Due today at {0}:{1}.": [
-"Heute um {0}:{1} fällig.",
-"Previsto oggi alle {0}:{1}.",
-"مستحق اليوم الساعة {0}:{1}."
+"Due today at {0}.": [
+"Heute um {0} fällig.",
+"Previsto oggi alle {0}.",
+"مستحق اليوم الساعة {0}."
 ],
 "Duplicated": [
 "Doppelt",
@@ -4134,10 +4164,10 @@
 "Concluso",
 "انتهت"
 ],
-"First entry at {0}:{1}, second at {2}:{3}.": [
-"Erste Eingabe um {0}:{1}, zweite um {2}:{3}.",
-"Primo inserimento alle {0}:{1}, secondo alle {2}:{3}.",
-"الإدخال الأول الساعة {0}:{1}، والثاني الساعة {2}:{3}."
+"First entry at {0}, second at {1}.": [
+"Erste Eingabe um {0}, zweite um {1}.",
+"Primo inserimento alle {0}, secondo alle {1}.",
+"الإدخال الأول الساعة {0}، والثاني الساعة {1}."
 ],
 "Fish and chips": [
 "Fish and Chips",
@@ -4349,15 +4379,15 @@
 "Riepiloghi liberi delle verifiche",
 "ملخصات تحقيق بنص حر"
 ],
-"Fresh fish delivery due {0}:{1} has not arrived": [
-"Fischlieferung, fällig um {0}:{1}, ist nicht angekommen",
-"La consegna di pesce fresco prevista alle {0}:{1} non è arrivata",
-"توريد السمك الطازج المستحق الساعة {0}:{1} لم يصل"
+"Fresh fish delivery due {0} has not arrived": [
+"Fischlieferung, fällig um {0}, ist nicht angekommen",
+"La consegna di pesce fresco prevista alle {0} non è arrivata",
+"توريد السمك الطازج المستحق الساعة {0} لم يصل"
 ],
-"Fresh fish delivery due {0}:{1} has not arrived.": [
-"Fischlieferung, fällig um {0}:{1}, ist nicht angekommen.",
-"La consegna di pesce fresco prevista alle {0}:{1} non è arrivata.",
-"توريد السمك الطازج المستحق الساعة {0}:{1} لم يصل."
+"Fresh fish delivery due {0} has not arrived.": [
+"Fischlieferung, fällig um {0}, ist nicht angekommen.",
+"La consegna di pesce fresco prevista alle {0} non è arrivata.",
+"توريد السمك الطازج المستحق الساعة {0} لم يصل."
 ],
 "Fresh herbs": [
 "Frische Kräuter",
@@ -5824,6 +5854,11 @@
 "Stato comande in tempo reale, pesi scarti di Winnow e Orbisk",
 "حالة التذاكر المباشرة وأوزان الهدر من Winnow وOrbisk"
 ],
+"Live tickets are simulated.": [
+"Die Live-Bons sind simuliert.",
+"I comandi in tempo reale sono simulati.",
+"التذاكر المباشرة محاكاة."
+],
 "Loading": [
 "Wird geladen",
 "Caricamento",
@@ -6183,6 +6218,11 @@
 "Als geprüft markieren",
 "Segna come controllato",
 "تعليم كمُتحقق منه"
+],
+"Marked as resolved.": [
+"Als erledigt markiert.",
+"Segnato come risolto.",
+"تم وضع علامة كمحلول."
 ],
 "Marked by {0}, {1}, when the gap was {2} cans.": [
 "Markiert von {0}, {1}, als die Lücke {2} Dosen betrug.",
@@ -7794,10 +7834,20 @@
 "Ordine {0}",
 "الطلب {0}"
 ],
+"Order {0} critical item today": [
+"{0} kritischen Artikel heute bestellen",
+"Ordina oggi {0} articolo critico",
+"اطلب {0} صنفًا حرجًا اليوم"
+],
 "Order {0} critical items today": [
 "{0} kritische Artikel heute bestellen",
 "Ordina oggi {0} articoli critici",
 "اطلب {0} أصناف حرجة اليوم"
+],
+"Order {0} low item soon": [
+"{0} niedrigen Artikel bald bestellen",
+"Ordina presto {0} articolo basso",
+"اطلب قريبًا {0} صنفًا منخفضًا"
 ],
 "Order {0} low items soon": [
 "{0} niedrige Artikel bald bestellen",
@@ -8984,6 +9034,11 @@
 "Rimosso dal conto dopo l'invio al bar",
 "حُذف من الفاتورة بعد إرساله إلى البار"
 ],
+"Reopen": [
+"Wieder öffnen",
+"Riapri",
+"إعادة فتح"
+],
 "Reopen closed cases": [
 "Geschlossene Fälle wieder öffnen",
 "Riapri casi chiusi",
@@ -9919,6 +9974,36 @@
 "Scansioni dal {0}",
 "مسح منذ {0}"
 ],
+"Scope: all": [
+"Bereich: alles",
+"Ambito: tutto",
+"النطاق: الكل"
+],
+"Scope: events": [
+"Bereich: Veranstaltungen",
+"Ambito: eventi",
+"النطاق: الفعاليات"
+],
+"Scope: guest": [
+"Bereich: Gäste",
+"Ambito: ospiti",
+"النطاق: الضيوف"
+],
+"Scope: purchasing": [
+"Bereich: Einkauf",
+"Ambito: acquisti",
+"النطاق: المشتريات"
+],
+"Scope: sales": [
+"Bereich: Verkauf",
+"Ambito: vendite",
+"النطاق: المبيعات"
+],
+"Scope: stock": [
+"Bereich: Bestand",
+"Ambito: scorte",
+"النطاق: المخزون"
+],
 "Sea bass fillet": [
 "Wolfsbarschfilet",
 "Filetto di branzino",
@@ -10633,6 +10718,11 @@
 "Zurückgestellt",
 "Posticipati",
 "مؤجلة"
+],
+"Snoozed until tomorrow.": [
+"Bis morgen zurückgestellt.",
+"Posticipato a domani.",
+"مؤجل حتى الغد."
 ],
 "Soda water": [
 "Sodawasser",
@@ -12289,10 +12379,10 @@
 "Oggi finora",
 "اليوم حتى الآن"
 ],
-"Today {0}:{1}": [
-"Heute {0}:{1}",
-"Oggi {0}:{1}",
-"اليوم {0}:{1}"
+"Today {0}": [
+"Heute {0}",
+"Oggi {0}",
+"اليوم {0}"
 ],
 "Today's log": [
 "Heutiges Protokoll",
@@ -12324,10 +12414,10 @@
 "Domani e prossimi {0} giorni",
 "غدًا والأيام الـ{0} القادمة"
 ],
-"Tomorrow {0}:{1}": [
-"Morgen {0}:{1}",
-"Domani {0}:{1}",
-"غدًا {0}:{1}"
+"Tomorrow {0}": [
+"Morgen {0}",
+"Domani {0}",
+"غدًا {0}"
 ],
 "Tonight": [
 "Heute Nacht",
@@ -14679,20 +14769,20 @@
 "{0} al prezzo della colazione.",
 "{0} بسعر الإفطار."
 ],
+"{0} at {1} and {2}, {3} for {4} guest, {5} on the second entry.": [
+"{0} um {1} und {2}, {3} für {4} Gast, {5} auf der zweiten Eingabe.",
+"{0} alle {1} e alle {2}, {3} per {4} ospite, {5} sul secondo inserimento.",
+"{0} الساعة {1} و{2}، {3} لعدد {4} ضيف، و{5} على الإدخال الثاني."
+],
+"{0} at {1} and {2}, {3} for {4} guests, {5} on the second entry.": [
+"{0} um {1} und {2}, {3} für {4} Gäste, {5} auf der zweiten Eingabe.",
+"{0} alle {1} e alle {2}, {3} per {4} ospiti, {5} sul secondo inserimento.",
+"{0} الساعة {1} و{2}، {3} لعدد {4} ضيوف، و{5} على الإدخال الثاني."
+],
 "{0} at {1} stands out against the rota. Chart and table inside.": [
 "{0} bei {1} fällt gegenüber dem Dienstplan auf. Diagramm und Tabelle im Inneren.",
 "{0} a {1} spicca rispetto ai turni. Grafico e tabella all'interno.",
 "{0} في {1} يبرز مقارنة بجدول الورديات. الرسم والجدول في الداخل."
-],
-"{0} at {1}:{2} and {3}:{4}, {5} for {6} guest, {7} on the second entry.": [
-"{0} um {1}:{2} und {3}:{4}, {5} für {6} Gast, {7} auf der zweiten Eingabe.",
-"{0} alle {1}:{2} e alle {3}:{4}, {5} per {6} ospite, {7} sul secondo inserimento.",
-"{0} الساعة {1}:{2} و{3}:{4}، {5} لعدد {6} ضيف، و{7} على الإدخال الثاني."
-],
-"{0} at {1}:{2} and {3}:{4}, {5} for {6} guests, {7} on the second entry.": [
-"{0} um {1}:{2} und {3}:{4}, {5} für {6} Gäste, {7} auf der zweiten Eingabe.",
-"{0} alle {1}:{2} e alle {3}:{4}, {5} per {6} ospiti, {7} sul secondo inserimento.",
-"{0} الساعة {1}:{2} و{3}:{4}، {5} لعدد {6} ضيوف، و{7} على الإدخال الثاني."
 ],
 "{0} available": [
 "{0} verfügbar",
@@ -15033,6 +15123,11 @@
 "{0} Frühstücke.",
 "{0} colazioni.",
 "{0} وجبات إفطار."
+],
+"{0} by {1}": [
+"{0} von {1}",
+"{0} da {1}",
+"{0} بواسطة {1}"
 ],
 "{0} cans": [
 "{0} Dosen",
@@ -15633,6 +15728,16 @@
 "{0} weniger als in den {1} Tagen davor, Schätzung",
 "{0} in meno rispetto ai {1} giorni precedenti, stima",
 "أقل بـ{0} من الـ{1} يومًا السابقة، تقدير"
+],
+"{0} line at {1}": [
+"{0} Position in {1}",
+"{0} riga a {1}",
+"{0} بند في {1}"
+],
+"{0} lines at {1}": [
+"{0} Positionen in {1}",
+"{0} righe a {1}",
+"{0} بنود في {1}"
 ],
 "{0} logged as waste or breakage.": [
 "{0} als Abfall oder Bruch erfasst.",
@@ -16354,15 +16459,50 @@
 "{0} da approvare",
 "{0} للموافقة"
 ],
+"{0} to cancelled": [
+"{0} auf storniert",
+"{0} a annullato",
+"{0} إلى ملغى"
+],
+"{0} to new": [
+"{0} auf neu",
+"{0} a nuovo",
+"{0} إلى جديد"
+],
 "{0} to order today": [
 "{0} heute zu bestellen",
 "{0} da ordinare oggi",
 "{0} للطلب اليوم"
 ],
+"{0} to preparing": [
+"{0} auf in Zubereitung",
+"{0} a in preparazione",
+"{0} إلى قيد التحضير"
+],
+"{0} to ready": [
+"{0} auf fertig",
+"{0} a pronto",
+"{0} إلى جاهز"
+],
+"{0} to sent": [
+"{0} auf gesendet",
+"{0} a inviato",
+"{0} إلى مُرسل"
+],
+"{0} to served": [
+"{0} auf serviert",
+"{0} a servito",
+"{0} إلى مُقدَّم"
+],
 "{0} to {1}": [
 "{0} bis {1}",
 "da {0} a {1}",
 "من {0} إلى {1}"
+],
+"{0} to {1} from {2}": [
+"{0} auf {1} ab {2}",
+"{0} a {1} dal {2}",
+"{0} إلى {1} اعتبارًا من {2}"
 ],
 "{0} to {1} in-house guests a night, {2} forecast covers, {3} event, last {4} weeks of usage. Confidence high.": [
 "{0} bis {1} Hausgäste pro Nacht, {2} prognostizierte Gedecke, {3} Veranstaltung, Verbrauch der letzten {4} Wochen. Hohe Sicherheit.",
@@ -16378,6 +16518,11 @@
 "{0} bis {1} Hausgäste pro Nacht, {2} prognostizierte Gedecke, {3} Veranstaltungen, Verbrauch der letzten {4} Wochen. Hohe Sicherheit.",
 "Da {0} a {1} ospiti in casa a notte, {2} coperti previsti, {3} eventi, uso delle ultime {4} settimane. Affidabilità alta.",
 "من {0} إلى {1} نزيلًا لكل ليلة، {2} أطباق متوقعة، {3} فعاليات، استخدام آخر {4} أسابيع. ثقة عالية."
+],
+"{0} to {1}, due {2}": [
+"{0} an {1}, fällig {2}",
+"{0} a {1}, entro il {2}",
+"{0} إلى {1}، الموعد {2}"
 ],
 "{0} to {1}, the whole hotel.": [
 "{0} bis {1}, das ganze Hotel.",
@@ -16549,10 +16694,10 @@
 "{0} è stato addebitato alla camera {1}, e la riga del folio per questo addebito è sulla camera {2}.",
 "حُمّل {0} على الغرفة {1}، وبند الحساب لهذه الرسوم موجود على الغرفة {2}."
 ],
-"{0} was due Today {1}:{2} and has not arrived.": [
-"{0} war heute um {1}:{2} fällig und ist nicht angekommen.",
-"{0} era previsto oggi alle {1}:{2} e non è arrivato.",
-"كان {0} مستحقًا اليوم الساعة {1}:{2} ولم يصل."
+"{0} was due Today {1} and has not arrived.": [
+"{0} war heute um {1} fällig und ist nicht angekommen.",
+"{0} era previsto oggi alle {1} e non è arrivato.",
+"كان {0} مستحقًا اليوم الساعة {1} ولم يصل."
 ],
 "{0} was entered twice within {1} seconds on a bill for {2} guest.": [
 "{0} wurde innerhalb von {1} Sekunden zweimal auf einer Rechnung für {2} Gast eingegeben.",
@@ -16648,6 +16793,36 @@
 "{0} · pro Einheit · in {1} Rezepten",
 "{0} · per unità · in {1} ricette",
 "{0} · للوحدة · في {1} وصفات"
+],
+"{0} × {1} (breakage) at {2}": [
+"{0} × {1} (Bruch) in {2}",
+"{0} × {1} (rottura) a {2}",
+"{0} × {1} (كسر) في {2}"
+],
+"{0} × {1} (damaged) at {2}": [
+"{0} × {1} (beschädigt) in {2}",
+"{0} × {1} (danneggiato) a {2}",
+"{0} × {1} (تالف) في {2}"
+],
+"{0} × {1} (expired) at {2}": [
+"{0} × {1} (abgelaufen) in {2}",
+"{0} × {1} (scaduto) a {2}",
+"{0} × {1} (منتهي الصلاحية) في {2}"
+],
+"{0} × {1} (other) at {2}": [
+"{0} × {1} (Sonstiges) in {2}",
+"{0} × {1} (altro) a {2}",
+"{0} × {1} (أخرى) في {2}"
+],
+"{0} × {1} (spoilage) at {2}": [
+"{0} × {1} (Verderb) in {2}",
+"{0} × {1} (deterioramento) a {2}",
+"{0} × {1} (تلف) في {2}"
+],
+"{0} × {1} (waste) at {2}": [
+"{0} × {1} (Abfall) in {2}",
+"{0} × {1} (spreco) a {2}",
+"{0} × {1} (هدر) في {2}"
 ],
 "{0} × {1} came off and it closed again at {2}, with no reason or approval recorded.": [
 "{0} × {1} wurden entfernt und sie wurde mit {2} erneut abgeschlossen, ohne erfassten Grund oder Freigabe.",
@@ -17209,6 +17384,26 @@
 "{0}: tutto il giorno a {1}",
 "{0}: طوال اليوم في {1}"
 ],
+"{0}: confirmed loss, {1}": [
+"{0}: bestätigter Verlust, {1}",
+"{0}: perdita confermata, {1}",
+"{0}: خسارة مؤكدة، {1}"
+],
+"{0}: counted {1}, expected {2}": [
+"{0}: gezählt {1}, erwartet {2}",
+"{0}: contati {1}, attesi {2}",
+"{0}: المعدود {1}، المتوقع {2}"
+],
+"{0}: counted {1}, expected {2}, waiting for a manager": [
+"{0}: gezählt {1}, erwartet {2}, wartet auf eine Führungskraft",
+"{0}: contati {1}, attesi {2}, in attesa di un responsabile",
+"{0}: المعدود {1}، المتوقع {2}، بانتظار المدير"
+],
+"{0}: legitimate correction": [
+"{0}: legitime Korrektur",
+"{0}: correzione legittima",
+"{0}: تصحيح مشروع"
+],
 "{0}: marked ready {1}": [
 "{0}: als fertig markiert {1}",
 "{0}: segnato pronto {1}",
@@ -17218,6 +17413,16 @@
 "{0}: keine Fertigmeldung (Bar hat kein Display)",
 "{0}: nessuna conferma (il bar non ha display)",
 "{0}: لا يوجد سجل إكمال (لا توجد شاشة في البار)"
+],
+"{0}: no finding": [
+"{0}: kein Befund",
+"{0}: nessun riscontro",
+"{0}: لا توجد نتيجة"
+],
+"{0}: revenue recovered, {1}": [
+"{0}: Umsatz zurückgewonnen, {1}",
+"{0}: ricavi recuperati, {1}",
+"{0}: إيرادات مستردة، {1}"
 ],
 "{0}: sales per day for the last {1} days against what the guests in house usually spend there.": [
 "{0}: Umsatz pro Tag in den letzten {1} Tagen gegen das, was die Gäste im Haus dort üblicherweise ausgeben.",

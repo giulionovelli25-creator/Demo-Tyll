@@ -13,7 +13,8 @@ import { snapshotFor } from "./snapshot";
 import { sharedCounts, sharedWaste } from "./stock-log";
 import { workspaceInfo, WORKSPACE_TTL_MS } from "./workspace";
 
-/** The permission each change needs, checked before the rules run. Closing a notice needs none: it is the person's own. */
+/** The permission each change needs, checked before the rules run. Closing a notice, or resolving or snoozing an alert,
+ * needs none: it is the person's own. */
 export const OP_PERMISSION: Record<RecordOp["kind"], Permission | null> = {
   "investigation.assign": "investigation.assign",
   "investigation.note": "investigation.note",
@@ -31,6 +32,7 @@ export const OP_PERMISSION: Record<RecordOp["kind"], Permission | null> = {
   "forecast.inputs": "forecast.approve",
   "flow.status": "flow.updateOrder",
   "alert.dismiss": null,
+  "alert.state": null,
 };
 
 const recordsOf = (s: Shape): RecordsShape => s.records ?? emptyRecordsShape();
@@ -78,11 +80,11 @@ export function countCheckOf(checkId: string): { outletId: string; ingredientId:
   return index.get(checkId);
 }
 
-/** The full saved records as the rules see them, with this person's own closed notices. */
+/** The full saved records as the rules see them, with this person's own closed notices and alerts. */
 const asRecords = (r: RecordsShape, user: User): Records => {
-  const { dismissed, applied: _applied, ...rest } = r;
+  const { dismissed, alertStatesBy, applied: _applied, ...rest } = r;
   void _applied;
-  return { ...rest, dismissedAlerts: dismissed[user.id] ?? [] };
+  return { ...rest, dismissedAlerts: dismissed[user.id] ?? [], alertStates: alertStatesBy?.[user.id] ?? {} };
 };
 
 /**
@@ -139,6 +141,8 @@ export function recordsView(user: User, r: RecordsShape): Records {
     forecastInputs: planner ? Object.fromEntries(Object.entries(r.forecastInputs).filter(([p]) => props.has(p))) : {},
     flowStatus: Object.fromEntries(Object.entries(r.flowStatus).filter(([id]) => outlets.has(liveOutlet.get(id) ?? ""))),
     dismissedAlerts: r.dismissed[user.id] ?? [],
+    // Resolve and snooze on Alerts are the person's own, like closed notices.
+    alertStates: r.alertStatesBy?.[user.id] ?? {},
     // About a case: whoever may see the case. Anything else: the person's own changes, or everyone's for the roles that
     // keep the audit trail (owner, general manager, financial controller).
     audit: history.filter((a) => (a.ref ? visible.has(a.ref) : auditAll || a.userId === user.id)).slice(0, 400),
@@ -178,9 +182,12 @@ export function applyRecord(user: User, body: Record<string, unknown>): ({ ok: t
   const result = applyRecordOp(asRecords(r, user), op, serverEnv(user, s));
   if (!result.ok) return { ok: false, status: result.forbidden ? 403 : 400, error: result.error };
   mutateStore((x) => {
-    const { dismissedAlerts, ...rest } = result.rec;
+    const { dismissedAlerts, alertStates, ...rest } = result.rec;
     const before = recordsOf(x);
-    x.records = { ...rest, dismissed: { ...before.dismissed, [user.id]: dismissedAlerts }, applied: key ? [...before.applied, key].slice(-500) : before.applied };
+    x.records = {
+      ...rest, dismissed: { ...before.dismissed, [user.id]: dismissedAlerts }, alertStatesBy: { ...before.alertStatesBy, [user.id]: alertStates },
+      applied: key ? [...before.applied, key].slice(-500) : before.applied,
+    };
   });
   return { ok: true, id: result.id, ...recordsFor(user) };
 }
