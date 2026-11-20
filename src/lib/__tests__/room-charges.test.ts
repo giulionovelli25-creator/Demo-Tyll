@@ -117,6 +117,13 @@ describe("room charge data and totals", () => {
     const why = explain(e, d, d.counts, []);
     expect(why.recommended[0]).toContain(`from room ${ROOM_STORY.folioRoom} to room ${ROOM_STORY.room}`);
     expect(why.facts.join(" ")).toContain(`Room ${ROOM_STORY.room} checked out`);
+    // The message agrees with the facts: the guest has left, so it asks for the card on file, not whether they left.
+    expect(why.message).toContain(`Room ${ROOM_STORY.room} has already checked out`);
+    expect(why.message).not.toContain("check whether");
+    const inHouse = { ...c, id: "RC-INHOUSE", checkoutMin: undefined };
+    const ds = { ...d, chargesById: new Map([...d.chargesById, [inHouse.id, inHouse]]) };
+    const stay = explain({ ...e, id: "EX-INHOUSE", chargeId: inHouse.id }, ds, d.counts, []);
+    expect(stay.message).toContain("check whether that guest has already checked out");
   });
 
   it("keeps every open room charge case in the public demo, so each listed difference can be reviewed", () => {
@@ -211,8 +218,14 @@ describe("room charge check on the server", () => {
       // The check reaches no further back than the cases the public demo keeps.
       const far = roomCheckFor(fnb, { from: DATA_START, to: DEMO_TODAY });
       expect(far.ok && far.from).toBe(demoRoomCheckFrom());
-      // Closed room cases have their own rule, so twelve other closed cases per hotel stay too.
-      expect(kept.filter((e) => !ROOM_TYPES.includes(e.type) && d0.seedInvestigations[e.id].status === "closed").length).toBe(12);
+      // Closed room cases have their own rule, so the twelve newest other closed cases per hotel stay too, plus a share of
+      // the other closed cases of the last 30 days, and nothing older.
+      const otherClosed = d0.exceptions.filter((e) => !ROOM_TYPES.includes(e.type) && d0.seedInvestigations[e.id].status === "closed");
+      const newest = [...otherClosed].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 12);
+      for (const e of newest) expect(keptIds.has(e.id)).toBe(true);
+      const keptClosed = otherClosed.filter((e) => keptIds.has(e.id));
+      expect(keptClosed.length).toBeGreaterThan(12);
+      for (const e of keptClosed) expect(newest.includes(e) || e.date >= demoRoomCheckFrom()).toBe(true);
     } finally {
       if (was === undefined) delete process.env.TYLL_PUBLIC_DEMO;
       else process.env.TYLL_PUBLIC_DEMO = was;
@@ -220,6 +233,28 @@ describe("room charge check on the server", () => {
     // Outside the public demo the check still reaches back to the start of the data.
     const full = roomCheckFor(fnb, { from: DATA_START, to: DEMO_TODAY });
     expect(full.ok && full.from).toBe(DATA_START);
+  });
+
+  it("keeps room charges a minority of the public demo's flagged bills, and the Overview's money lost near the story's figure", () => {
+    // The Overview's "Flagged bills" row: every case of the last 30 days that is not a stock count, open or closed.
+    const from = addDays(DEMO_TODAY, -29);
+    const bills = demoCases(d0.exceptions, d0.seedInvestigations).filter((e) => e.date >= from && !e.period);
+    const lost = bills.reduce((t, e) => t + e.exposure, 0);
+    const room = bills.filter((e) => ROOM_TYPES.includes(e.type)).reduce((t, e) => t + e.exposure, 0);
+    expect(room).toBeGreaterThan(0);
+    expect(room / lost).toBeLessThan(0.6);
+    // The other rows of money lost come to about EUR 9,400, so this keeps the headline near EUR 10,000 (CLAUDE.md).
+    expect(lost).toBeLessThan(1500);
+    // Room charge differences stay rare: under one charge in a hundred over the 30 days.
+    const charges = d0.roomCharges.filter((c) => c.date >= from);
+    expect(charges.filter((c) => classifyRoomCharge(c) !== "matched").length / charges.length).toBeLessThan(0.01);
+  });
+
+  it("simulates minibar, spa and laundry over the whole history, so the 30 day trend has no step", () => {
+    for (const source of ["minibar", "spa", "laundry"] as const) {
+      const days = new Set(d0.roomCharges.filter((c) => c.source === source).map((c) => c.date));
+      for (const date of eachDay({ from: addDays(DEMO_TODAY, -29), to: addDays(DEMO_TODAY, -1) })) expect(days.has(date)).toBe(true);
+    }
   });
 
   it("is reached from Flagged transactions in the sidebar", () => {

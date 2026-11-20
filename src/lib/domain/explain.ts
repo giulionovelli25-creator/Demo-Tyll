@@ -83,7 +83,11 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
         charge.checkoutMin !== undefined ? `Room ${charge.room} has checked out: ask the front office to charge the card on file, with the signed bill as support.` : `Post the charge to room ${charge.room} while the guest is still in house.`,
         "Record what was done here. The amount counts as recovered once it is on the right bill.",
       ];
-      base.message = `The ${money(charge.expected)} charge signed to room ${charge.room} at ${fmtTime(charge.min)} reached the guest bill of room ${charge.folioRoom}. Please move it to room ${charge.room} and check whether that guest has already checked out.`;
+      base.message = `The ${money(charge.expected)} charge signed to room ${charge.room} at ${fmtTime(charge.min)} reached the guest bill of room ${charge.folioRoom}. ${
+        charge.checkoutMin !== undefined
+          ? `Room ${charge.room} has already checked out, so please take it off room ${charge.folioRoom} and charge it to the card on file as a late charge.`
+          : `Please move it to room ${charge.room} and check whether that guest has already checked out.`
+      }`;
     } else if (e.type === "room_charge_after_checkout") {
       if (charge.checkoutMin !== undefined && charge.postedMin !== undefined) base.facts.push(`The guest checked out on ${folioTime(charge.date, charge.checkoutMin)}. The posting reached the bill on ${folioTime(charge.date, charge.postedMin)}.`);
       base.whatHappened = `A ${money(posted)} charge for room ${charge.room} reached the guest bill after the guest had checked out.`;

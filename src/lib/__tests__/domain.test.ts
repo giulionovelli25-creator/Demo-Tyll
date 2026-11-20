@@ -117,6 +117,17 @@ describe("financial aggregation", () => {
     expect(t.gpMargin).toBeLessThan(0.85);
   });
 
+  it("counts a bill once in flags per 1,000 orders, even with an order flag and a room charge flag", () => {
+    const base = data.exceptions.find((e) => e.orderId && !e.type.startsWith("room_charge") && e.date >= presetRange("week").from)!;
+    const room = { ...base, id: `${base.id}-RC`, type: "room_charge_missing" as const, chargeId: `RC-${base.orderId}` };
+    const minibar = { ...base, id: `${base.id}-MB`, type: "room_charge_missing" as const, orderId: undefined, outletId: undefined, chargeId: "RC-MB" };
+    const before = computeTotals(ctx(), sel()).adjustments;
+    const both = computeTotals(ctx({ data: { ...data, exceptions: [...data.exceptions, room, minibar] }, investigations: { [room.id]: { status: "new", notes: [], confirmedLoss: 0, recovered: 0 }, [minibar.id]: { status: "new", notes: [], confirmedLoss: 0, recovered: 0 } } }), sel());
+    // The same order flagged twice is still one flagged order; a minibar charge has no order to count.
+    expect(both.adjustments).toBe(before);
+    expect(both.flaggedCases).toBe(computeTotals(ctx(), sel()).flaggedCases + 2);
+  });
+
   it("adds outlets up to the group, in one currency", () => {
     const c = ctx();
     const group = computeTotals(c, sel());

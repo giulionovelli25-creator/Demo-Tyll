@@ -6284,6 +6284,11 @@
 "Camera {0} partita {1}, {2}",
 "غادرت الغرفة {0} {1}، {2}"
 ],
+"Room {0} has already checked out, so please take it off room {1} and charge it to the card on file as a late charge.": [
+"Zimmer {0} ist bereits abgereist. Bitte die Buchung von Zimmer {1} entfernen und als Nachbelastung auf die hinterlegte Karte buchen.",
+"La camera {0} ha già fatto il check-out: toglierlo dalla camera {1} e addebitarlo sulla carta registrata come addebito tardivo.",
+"غادرت الغرفة {0} بالفعل، لذا يرجى إزالتها من الغرفة {1} وتحصيلها من البطاقة المسجلة كرسوم متأخرة."
+],
 "Room {0} has checked out: ask the front office to charge the card on file, with the signed bill as support.": [
 "Zimmer {0} ist abgereist: den Empfang bitten, die hinterlegte Karte zu belasten, mit der unterschriebenen Rechnung als Beleg.",
 "La camera {0} ha fatto il check-out: chiedere al ricevimento di addebitare la carta registrata, con il conto firmato come prova.",

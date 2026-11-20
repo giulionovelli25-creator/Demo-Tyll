@@ -260,6 +260,19 @@ function buildOrders(): Order[] {
   return orders;
 }
 
+/**
+ * How often a room charge fails to match the guest bill. An interfaced till and PMS lose very few postings, so these stay
+ * small: about one charge in two hundred, and room charges a minority of the flagged bills (pinned by a test).
+ */
+export const ROOM_RATES = {
+  missing: { outlet: 0.0008, minibar: 0.003, spa: 0.002, laundry: 0.002 },
+  duplicate: 0.0004,
+  amount: 0.0015,
+  /** A room number keyed one key off at an outlet till. */
+  wrongRoom: 0.0008,
+  afterCheckout: { minibar: 0.008, breakfast: 0.0015 },
+} as const;
+
 /** A room number one slip of the keyboard away: the last two digits swapped, or the last digit one off. */
 function neighbourRoom(room: string, r: Rng): string {
   const floor = room.slice(0, -2);
@@ -282,13 +295,13 @@ function withFolio(c: RoomCharge): RoomCharge {
   const clean = c.posted.length === 1 && c.posted[0] === c.expected;
   if (!clean) return { ...c, postedMin, checkoutMin };
   // A room number keyed by hand at an outlet till, one key off.
-  if (c.source === "restaurant" && r.chance(0.0025)) return { ...c, postedMin, checkoutMin, folioRoom: neighbourRoom(c.room, r) };
-  if (c.source === "minibar" && c.min < 13 * 60 && r.chance(0.07)) {
+  if (c.source === "restaurant" && r.chance(ROOM_RATES.wrongRoom)) return { ...c, postedMin, checkoutMin, folioRoom: neighbourRoom(c.room, r) };
+  if (c.source === "minibar" && c.min < 13 * 60 && r.chance(ROOM_RATES.afterCheckout.minibar)) {
     // Housekeeping found the minibar used when servicing a departure room, after the guest had gone. Rooms are serviced
     // late morning, and guests leave between 7 AM and noon, so only charges recorded before 1 PM can arrive this way.
     // Charges start at 8 AM, so check-out is always at least 15 minutes before the posting.
     checkoutMin = Math.min(12 * 60, Math.max(7 * 60, c.min - r.int(15, 150)));
-  } else if ((c.source === "restaurant" || c.source === "room_service") && c.min < 11 * 60 && r.chance(0.006)) {
+  } else if ((c.source === "restaurant" || c.source === "room_service") && c.min < 11 * 60 && r.chance(ROOM_RATES.afterCheckout.breakfast)) {
     // A breakfast posting held in the interface queue while the guest checked out.
     postedMin = c.min + r.int(75, 200);
     checkoutMin = c.min + r.int(10, postedMin - c.min - 5);
@@ -298,10 +311,11 @@ function withFolio(c: RoomCharge): RoomCharge {
 
 function buildRoomCharges(orders: Order[]): RoomCharge[] {
   const out: RoomCharge[] = [];
+  // The interface between the tills and the PMS rarely fails (ROOM_RATES).
   const posted = (expected: number, r: Rng, missRate: number): number[] => {
     if (r.chance(missRate)) return [];
-    if (r.chance(0.0025)) return [expected, expected];
-    if (r.chance(0.0035)) return [round2(expected * r.pick([0.5, 0.75, 0.9, 1.1]))];
+    if (r.chance(ROOM_RATES.duplicate)) return [expected, expected];
+    if (r.chance(ROOM_RATES.amount)) return [round2(expected * r.pick([0.5, 0.75, 0.9, 1.1]))];
     return [expected];
   };
   for (const o of orders) {
@@ -313,12 +327,12 @@ function buildRoomCharges(orders: Order[]): RoomCharge[] {
     out.push({
       id: `RC-${o.id}`, propertyId: outlet.propertyId, outletId: o.outletId, date: o.date, min: o.closeMin, room: o.room!,
       source: outlet.kind === "In-room dining" ? "room_service" : "restaurant", description: `${outlet.name} check ${o.id}`,
-      orderId: o.id, expected: t.net, posted: posted(t.net, r, 0.006),
+      orderId: o.id, expected: t.net, posted: posted(t.net, r, ROOM_RATES.missing.outlet),
     });
   }
-  // Minibar, spa and laundry postings for the last three weeks.
+  // Minibar, spa and laundry postings over the whole history, so every period and its trend compares like with like.
   for (const p of PROPERTIES) {
-    for (const date of eachDay({ from: addDays(DEMO_TODAY, -20), to: DEMO_TODAY })) {
+    for (const date of eachDay({ from: DATA_START, to: DEMO_TODAY })) {
       const r = rng(`svc|${p.id}|${date}`);
       const mk = (source: RoomCharge["source"], n: number, lo: number, hi: number, label: string, miss: number) => {
         for (let i = 1; i <= n; i++) {
@@ -332,9 +346,9 @@ function buildRoomCharges(orders: Order[]): RoomCharge[] {
           });
         }
       };
-      mk("minibar", r.int(16, 26), 5, 35, "Minibar consumption recorded by housekeeping", 0.016);
-      mk("spa", r.int(5, 10), 70, 240, "Spa treatment", 0.006);
-      mk("laundry", r.int(4, 9), 12, 65, "Laundry and pressing", 0.008);
+      mk("minibar", r.int(16, 26), 5, 35, "Minibar consumption recorded by housekeeping", ROOM_RATES.missing.minibar);
+      mk("spa", r.int(5, 10), 70, 240, "Spa treatment", ROOM_RATES.missing.spa);
+      mk("laundry", r.int(4, 9), 12, 65, "Laundry and pressing", ROOM_RATES.missing.laundry);
     }
   }
   return out.map(withFolio);

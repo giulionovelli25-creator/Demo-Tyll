@@ -173,13 +173,18 @@ export function computeTotals(ctx: Ctx, sel: Sel): Totals {
   }
 
   let potentialLoss = 0, confirmedLoss = 0, recovered = 0, openCases = 0, flaggedCases = 0, adjustments = 0;
+  // Flagged orders are counted once each, so a bill with a discount flag and a room charge flag is one flagged order.
+  const flaggedOrders = new Set<string>();
   for (const e of ctx.data.exceptions) {
     if (e.date < sel.range.from || e.date > sel.range.to || !exceptionInSel(e, sel)) continue;
     const st = ctx.investigations[e.id] ?? ctx.data.seedInvestigations[e.id];
     const rate = fxRate(propertyById[e.propertyId].currency, sel.currency);
     flaggedCases += 1;
     // Room charge differences count when they belong to an outlet bill; minibar, spa and laundry have no order to count against.
-    if (!e.type.startsWith("room_charge") || e.orderId) adjustments += 1;
+    if (e.orderId) {
+      if (!flaggedOrders.has(e.orderId)) adjustments += 1;
+      flaggedOrders.add(e.orderId);
+    } else if (!e.type.startsWith("room_charge")) adjustments += 1;
     if (st.status === "closed") {
       confirmedLoss += st.confirmedLoss * rate;
       recovered += st.recovered * rate;

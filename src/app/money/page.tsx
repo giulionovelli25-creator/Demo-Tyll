@@ -22,7 +22,7 @@ import { POLICY, TYPE_LABEL, detectOrderException } from "@/lib/domain/detect";
 import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/hooks";
-import { STATUS_LABEL } from "@/lib/labels";
+import { SOURCE_LABEL, STATUS_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
 import type { ExceptionType, Order } from "@/lib/types";
 import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
@@ -269,7 +269,11 @@ function Mistakes() {
                 {[...inPeriod].sort((a, b) => Number(a.status === "closed") - Number(b.status === "closed") || toDisplay(b.propertyId, b.exposure) - toDisplay(a.propertyId, a.exposure)).slice(0, 8).map((i) => (
                   <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
                     <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}{i.basis === "estimate" ? ", estimate until a stock take confirms it" : i.basis === "confirmed" ? ", confirmed by a stock take" : ""}</span>{i.comparedWith && <span className="mt-0.5 line-clamp-2 block max-w-[460px] text-xs text-graphite">{i.comparedWith}</span>}</Td>
-                    <Td>{i.outletId ? outletLabel(i.outletId) : "None"}</Td>
+                    <Td>{i.outletId ? outletLabel(i.outletId) : (() => {
+                      // Minibar, spa and laundry belong to the hotel, not an outlet: name the source, as the room charge check does.
+                      const charge = i.chargeId ? ctx.data.chargesById.get(i.chargeId) : undefined;
+                      return <span className="text-steel">{charge ? SOURCE_LABEL[charge.source] : propertyById[i.propertyId].name}</span>;
+                    })()}</Td>
                     <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
                     <Td align="right">{money(toDisplay(i.propertyId, i.exposure))}</Td>
                     <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
