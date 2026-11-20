@@ -13,6 +13,8 @@ Branch `feature/overnight-checks`, started from `feature/visit-tracking` (1fdbe6
 
 - **Screenshots without Playwright:** Playwright is not installed and downloading its browser is not allowed here, so `scripts/screenshot.mjs` drives the installed Chrome through its debugging protocol. Same result: full-page PNGs at 1440 and 375 wide, in any role or language.
 
+- **Screenshots in Arabic (feature 1):** `scripts/screenshot.mjs` captured beyond the viewport, which shifted right to left pages sideways (the background wave reaches past the left edge), so every Arabic shot looked clipped. It now sizes the viewport to the page and captures that, and prints `missing` (untranslated text from `window.__tyllMissing`) for any language other than English.
+
 - **Learn the demo first (feature 0):** this summary was put together from five read-only passes over the code (pages, flags, data, access, UI). Line numbers are as of commit aae77a3 and will drift.
 
 ## What the demo is made of
@@ -85,7 +87,7 @@ Branch `feature/overnight-checks`, started from `feature/visit-tracking` (1fdbe6
 | # | Feature | Status | Notes |
 |---|---|---|---|
 | 0 | Learn the demo | done | Summary above, under "What the demo is made of" |
-| 1 | Room charge check | to do | |
+| 1 | Room charge check | DONE | `/money?tab=rooms` (F&B Director u-fnb, also gm, fc, owner, restaurant manager for own outlets; worked example opens with `&open=example`). Story: last night's Mercado dinner for 3, signed to room 1412, posted to room 1421; 1412 checked out this morning. Case `EX-RC-MER-<yesterday MMDD>-299`. Screenshots `overnight-screenshots/01-room-charges-*.png`. |
 | 2 | Bought against sold, per item | to do | |
 | 3 | Drinks per guest by waiter | to do | |
 | 4 | Empty bottle scan | to do | |
@@ -94,3 +96,29 @@ Branch `feature/overnight-checks`, started from `feature/visit-tracking` (1fdbe6
 | 7 | Hotel guests against outlet charges | to do | |
 | 8 | Save everything to the server | to do | |
 | 9 | First real POS and PMS adapters | to do | |
+
+## Feature 1: Room charge check (done)
+
+**Where:** Revenue and reconciliation > Flagged transactions > "Room charge check" row (`/money?tab=rooms`, now in the flags item's `also`, so the sidebar lights Flagged transactions). Roles: owner, gm, controller, fnb_director, restaurant_manager (own outlets only, no hotel wide minibar, spa, laundry). Chef, purchasing, staff and departments are sent to their home page by the proxy, and the API refuses them (403).
+
+**What it does:** PageHeader question "Did every room charge reach the guest's bill?"; period toggle; SummaryBar (charges checked, posted correctly %, not matched with money involved, open to check = open room flags, same as the Money Back List) with a 30 day StripTrend (value not matched per day, plus count and checked lines in the Open view); a closed "Worked example" Section like the Coke one; "Why charges did not match" BarList by reason; "What Tyll checks" for room charges; "Charges to check" (open first, largest first, top 5, then "Show all N charges"; each row ends in Review or View on its case; phones get one card per charge); a closed "By source" Section with the per source table and the counted once note.
+
+**Rules (src/lib/domain/detect.ts):** `classifyRoomCharge` checks in a fixed order, the first that applies wins, so one charge raises one flag: missing, wrong room (`folioRoom` differs), after check-out (`postedMin > checkoutMin`, only when both are known), posted twice, different amount (beyond `POLICY.roomChargeTolerance`). `detectRoomChargeException` builds the flag from it. New flag types `room_charge_wrong_room` and `room_charge_after_checkout` (in `ROOM_TYPES`, `TYPE_LABEL`, explain.ts branches, ChargeEvidence shows the folio room, posting time and check-out). Totals and charts come from `src/lib/domain/room-charges.ts` (summary, by day, by source), which reuses the same rule, so the check and the flags agree to the cent.
+
+**Data (src/lib/data/generate.ts):** `RoomCharge` gained `folioRoom`, `postedMin` and `checkoutMin` (the PMS side), drawn by `withFolio` from its own random stream so earlier postings are unchanged. Wrong room: about 1 in 400 outlet till charges (one key off). After check-out: about 3% of minibar charges (found when servicing a departure room) and a few breakfast postings held in the interface queue. Story order `MER-<yesterday>-299` (`roomStoryOrder`, mezze, lamb chops, risotto, fondant, sparkling water, no Coke, wagyu or wine so the stock stories are untouched).
+
+**Server and API:** `src/lib/server/room-charges.ts` `roomCheckFor(user, {from, to, outlets, whole})` and `GET /api/money/rooms` behind `guard({ module: "money", permission: "roomcharge.view" })`. New permission `roomcharge.view` in the matrix; the snapshot now sends room charges (room numbers, check-out times) only to roles with it.
+
+**Decisions and why:**
+- Extended the existing `/money?tab=rooms` sub page and `detectRoomChargeException` rather than building a second system; the page sits beside "Cash on hand against cash sales" because both are reconciliation checks reached from Flagged transactions. No new menu item. The Reports link to room charges was removed, because CLAUDE.md says Reports lists only records with no place in the sidebar and the page now has one.
+- No new user input: the actions are the existing case actions (review, assign, record the outcome), so nothing new needed saving. Investigation decisions are still browser held; feature 8 moves them to the server.
+- Server computed check (like the cash check) so the guest data and the scope rules are enforced on the server; the flags still come from the snapshot, and both read the same rule.
+- Room charge flags now count everywhere a flag counts: Flagged by type, Flagged orders, New this week, and Flags per 1,000 orders when they belong to an outlet bill (`orderId`); minibar, spa and laundry have no order to count against. Before, room types were left out of these lists, so the open count and the by type list did not add up. "Flagged by type" now shows the five largest with "Show all N types".
+- Seeds: room charge differences are closed after the night audit (any case from before today), except the story, which survived it because nothing failed. Closing notes match the kind (moved to the right room, charged to the card on file as a late charge).
+- Public demo (`demoCases`): keeps every open room charge case (the check lists each one, so each needs a case to review) and the story, then up to three other large open cases while the hotel stays within twelve open (the existing test caps it at 12). On 20 Nov: 12 open, 5 of them room charges, EUR 309 of EUR 572.
+
+**Checks:** tsc clean; eslint 0 errors (2 known warnings); vitest 27 files, 270 tests passed (14 new in `src/lib/__tests__/room-charges.test.ts`: rules and must not flag cases, order of checks, reconciliation of check against flags and by day and by source, story, demo keep rule, night audit seeds, server permission and scope, outlet selector, sidebar); build passed on the second run as expected.
+
+**Known, not part of this feature:** several older screens still have English text in Arabic (sidebar "Flagged transactions", "Predict", the case page's "Manage this case" panel, the cash page). The flags page lead still says "Voids, refunds, discounts and items removed from bills"; it could mention room charges.
+
+**Next:** feature 2, Bought against sold, per item.

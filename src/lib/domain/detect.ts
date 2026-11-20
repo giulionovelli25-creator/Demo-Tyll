@@ -2,7 +2,7 @@
 // Every rule reads recorded facts only. Nothing here decides intent or blame.
 import { itemById, outletById, propertyById } from "../data/catalog";
 import type { Exception, ExceptionType, Order, RoomCharge } from "../types";
-import { addDays, fmtMoney, fmtTime, round2 } from "../util";
+import { addDays, fmtDate, fmtMoney, fmtTime, round2 } from "../util";
 import { lineValue, orderTotals } from "./orders";
 
 /** Thresholds a hotel would agree with Tyll during onboarding. */
@@ -28,12 +28,14 @@ export const TYPE_LABEL: Record<ExceptionType, string> = {
   room_charge_missing: "Room charge missing",
   room_charge_duplicate: "Room charge duplicated",
   room_charge_incorrect: "Room charge amount differs",
+  room_charge_wrong_room: "Room charge on the wrong room",
+  room_charge_after_checkout: "Room charge after check-out",
   stock_shortfall: "Stock shortfall",
   usage_variance: "Usage above sales",
 };
 
 export const REMOVAL_TYPES: ExceptionType[] = ["removed_after_dispatch", "prepared_not_charged", "bill_mismatch"];
-export const ROOM_TYPES: ExceptionType[] = ["room_charge_missing", "room_charge_duplicate", "room_charge_incorrect"];
+export const ROOM_TYPES: ExceptionType[] = ["room_charge_missing", "room_charge_duplicate", "room_charge_incorrect", "room_charge_wrong_room", "room_charge_after_checkout"];
 
 const names = (o: Order, pred: (i: number) => boolean) =>
   o.lines
@@ -126,21 +128,52 @@ export function detectOrderException(o: Order): Exception | null {
   return null;
 }
 
+/** How a charge to a room compares with the guest folio in the PMS. Checked in this order; the first that applies wins. */
+export type RoomChargeStatus = "matched" | "missing" | "wrong_room" | "after_checkout" | "duplicate" | "wrong_amount";
+
+export function classifyRoomCharge(c: RoomCharge): RoomChargeStatus {
+  if (c.posted.length === 0) return "missing";
+  if (c.folioRoom !== undefined && c.folioRoom !== c.room) return "wrong_room";
+  // Only when both times are known: a folio with no check-out time is still open.
+  if (c.checkoutMin !== undefined && c.postedMin !== undefined && c.postedMin > c.checkoutMin) return "after_checkout";
+  if (c.posted.length > 1) return "duplicate";
+  if (Math.abs(round2(c.posted[0] - c.expected)) > POLICY.roomChargeTolerance) return "wrong_amount";
+  return "matched";
+}
+
+export const ROOM_STATUS_TYPE: Record<Exclude<RoomChargeStatus, "matched">, ExceptionType> = {
+  missing: "room_charge_missing",
+  wrong_room: "room_charge_wrong_room",
+  after_checkout: "room_charge_after_checkout",
+  duplicate: "room_charge_duplicate",
+  wrong_amount: "room_charge_incorrect",
+};
+
+/** A time on the folio, given in minutes from the start of the charge date: "19 Nov, 9:05 PM". */
+export const folioTime = (date: string, min: number) => `${fmtDate(addDays(date, Math.floor(min / 1440)))}, ${fmtTime(min)}`;
+
 export function detectRoomChargeException(c: RoomCharge): Exception | null {
-  const base = { id: `EX-${c.id}`, propertyId: c.propertyId, outletId: c.outletId, date: c.date, min: c.min, chargeId: c.id, orderId: c.orderId };
+  const status = classifyRoomCharge(c);
+  if (status === "matched") return null;
+  const base = { id: `EX-${c.id}`, propertyId: c.propertyId, outletId: c.outletId, date: c.date, min: c.min, chargeId: c.id, orderId: c.orderId, type: ROOM_STATUS_TYPE[status] };
   const what = c.source === "restaurant" || c.source === "room_service" ? "charge" : `${c.source} charge`;
   const money = (n: number) => fmtMoney(n, propertyById[c.propertyId].currency, { decimals: true });
-  if (c.posted.length === 0) {
-    return { ...base, type: "room_charge_missing", exposure: c.expected, headline: `Room ${c.room}: ${what} has not reached the guest bill`, comparedWith: `Compared with the guest folio in the PMS: the till charged ${money(c.expected)} to room ${c.room}; the folio has no matching posting.` };
+  const total = round2(c.posted.reduce((s, x) => s + x, 0));
+  const ref = c.orderId ? `check ${c.orderId}` : "this charge";
+  switch (status) {
+    case "missing":
+      return { ...base, exposure: c.expected, headline: `Room ${c.room}: ${what} has not reached the guest bill`, comparedWith: `Compared with the guest folio in the PMS: the till charged ${money(c.expected)} to room ${c.room}; the folio has no matching posting.` };
+    case "wrong_room":
+      return { ...base, exposure: c.expected, headline: `Room ${c.room}: ${what} posted to room ${c.folioRoom}`, comparedWith: `Compared with the guest folio in the PMS: ${money(c.expected)} was charged to room ${c.room}, and the folio line for ${ref} is on room ${c.folioRoom}.` };
+    case "after_checkout":
+      return { ...base, exposure: total, headline: `Room ${c.room}: ${what} reached the guest bill after check-out`, comparedWith: `Compared with the guest folio in the PMS: the guest checked out on ${folioTime(c.date, c.checkoutMin!)}, and the ${money(total)} posting arrived on ${folioTime(c.date, c.postedMin!)}, after the bill was settled.` };
+    case "duplicate":
+      return { ...base, exposure: round2(c.posted.slice(1).reduce((s, x) => s + x, 0)), headline: `Room ${c.room}: ${what} posted ${c.posted.length} times`, comparedWith: `Compared with the guest folio in the PMS: one charge of ${money(c.expected)} on the till, ${c.posted.length} postings on the folio.` };
+    case "wrong_amount": {
+      const diff = round2(c.posted[0] - c.expected);
+      return { ...base, exposure: Math.abs(diff), headline: `Room ${c.room}: guest bill shows ${diff > 0 ? "more" : "less"} than the ${what}`, comparedWith: `Compared with the guest folio in the PMS: ${money(c.expected)} on the till, ${money(c.posted[0])} on the folio. Differences up to ${money(POLICY.roomChargeTolerance)} are ignored.` };
+    }
   }
-  if (c.posted.length > 1) {
-    return { ...base, type: "room_charge_duplicate", exposure: round2(c.posted.slice(1).reduce((s, x) => s + x, 0)), headline: `Room ${c.room}: ${what} posted ${c.posted.length} times`, comparedWith: `Compared with the guest folio in the PMS: one charge of ${money(c.expected)} on the till, ${c.posted.length} postings on the folio.` };
-  }
-  const diff = round2(c.posted[0] - c.expected);
-  if (Math.abs(diff) > POLICY.roomChargeTolerance) {
-    return { ...base, type: "room_charge_incorrect", exposure: Math.abs(diff), headline: `Room ${c.room}: guest bill shows ${diff > 0 ? "more" : "less"} than the ${what}`, comparedWith: `Compared with the guest folio in the PMS: ${money(c.expected)} on the till, ${money(c.posted[0])} on the folio. Differences up to ${money(POLICY.roomChargeTolerance)} are ignored.` };
-  }
-  return null;
 }
 
 export function detectExceptions(orders: readonly Order[], charges: readonly RoomCharge[]): Exception[] {

@@ -4,7 +4,7 @@ import { ingredientById, itemById, outletById, propertyById, staffById } from ".
 import type { Dataset } from "../data/generate";
 import type { CountRecord, Exception, Order, RoomCharge } from "../types";
 import { addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "../util";
-import { POLICY, REMOVAL_TYPES, type Pattern } from "./detect";
+import { POLICY, REMOVAL_TYPES, folioTime, type Pattern } from "./detect";
 import { countVariance, countVarianceValue } from "./inventory";
 import { orderTotals } from "./orders";
 
@@ -73,7 +73,30 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
       charge.posted.length === 0 ? "No matching line exists on the guest bill in the PMS." : `The guest bill shows ${charge.posted.length} matching line${charge.posted.length > 1 ? "s" : ""} totalling ${money(posted)}.`,
       "Sales are counted once, at the outlet. A room posting moves the amount to the guest bill and does not add revenue.",
     ];
-    if (e.type === "room_charge_missing") {
+    if (e.type === "room_charge_wrong_room") {
+      base.facts.splice(1, 1, `The guest bill of room ${charge.room} has no matching line. The folio line for this charge is on room ${charge.folioRoom}.`);
+      if (charge.checkoutMin !== undefined) base.facts.push(`Room ${charge.room} checked out on ${folioTime(charge.date, charge.checkoutMin)}.`);
+      base.whatHappened = `A ${money(charge.expected)} charge for room ${charge.room} reached the guest bill of room ${charge.folioRoom}.`;
+      base.possibleCauses = ["The room number was keyed by hand and two digits were swapped or one key was off.", "The guest gave a different room number, or moved rooms during the stay.", "The bill was signed in a hurry and the room number was hard to read."];
+      base.recommended = [
+        `Move the posting from room ${charge.folioRoom} to room ${charge.room} before room ${charge.folioRoom} checks out, so that guest is not billed for it.`,
+        charge.checkoutMin !== undefined ? `Room ${charge.room} has checked out: ask the front office to charge the card on file, with the signed bill as support.` : `Post the charge to room ${charge.room} while the guest is still in house.`,
+        "Record what was done here. The amount counts as recovered once it is on the right bill.",
+      ];
+      base.message = `The ${money(charge.expected)} charge signed to room ${charge.room} at ${fmtTime(charge.min)} reached the guest bill of room ${charge.folioRoom}. Please move it to room ${charge.room} and check whether that guest has already checked out.`;
+    } else if (e.type === "room_charge_after_checkout") {
+      if (charge.checkoutMin !== undefined && charge.postedMin !== undefined) base.facts.push(`The guest checked out on ${folioTime(charge.date, charge.checkoutMin)}. The posting reached the bill on ${folioTime(charge.date, charge.postedMin)}.`);
+      base.whatHappened = `A ${money(posted)} charge for room ${charge.room} reached the guest bill after the guest had checked out.`;
+      base.possibleCauses = charge.source === "minibar"
+        ? ["Housekeeping found the minibar used while servicing the room after departure.", "The minibar was not checked before the guest settled the bill."]
+        : ["The posting waited in the interface queue between the till and the PMS.", "The guest settled the bill before the outlet closed the check."];
+      base.recommended = [
+        "Ask the front office to charge the card on file as a late charge, if the hotel's terms allow it.",
+        "If the card cannot be charged, close this case as a loss so it is counted once.",
+        charge.source === "minibar" ? "Check minibars in departure rooms before the guest reaches the front desk." : "Check the interface queue in the morning, before the busiest check-out hour.",
+      ];
+      base.message = `A ${money(posted)} charge for room ${charge.room} reached the bill after the guest checked out. Please post it to the card on file as a late charge, or tell me if it cannot be collected.`;
+    } else if (e.type === "room_charge_missing") {
       base.whatHappened = `A ${money(charge.expected)} charge for room ${charge.room} was recorded but is not on the guest bill.`;
       base.possibleCauses = ["The interface between the POS and the PMS dropped the posting.", "The room number was entered incorrectly and the posting was rejected.", "The guest had already checked out when the charge was sent."];
       base.recommended = ["Check whether the guest is still in house.", "If so, post the charge to the room and note it here as recovered.", "If the guest has left, decide with the front office whether to bill the card on file."];

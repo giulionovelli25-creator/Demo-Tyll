@@ -36,7 +36,7 @@ export interface Dataset {
   prepRatios?: Record<string, number>;
 }
 
-import { HERO_EXCEPTION_ID, HERO_ORDER_ID } from "./constants";
+import { HERO_EXCEPTION_ID, HERO_ORDER_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID } from "./constants";
 import { SCENARIOS, buildOutletStock, latestPeriods, type OutletStock } from "./outlet-stock";
 import { headlineFor, needsCase, periodVariance } from "../domain/variance";
 import { lossLevel } from "../domain/story";
@@ -218,6 +218,26 @@ function heroOrder(): Order {
   };
 }
 
+/** The room charge worked example: a dinner for three at Mercado last night, signed to room 1412. */
+function roomStoryOrder(): Order {
+  const t = (h: number, m: number) => h * 60 + m;
+  const date = rel(-1);
+  const line = (itemId: string, qty: number, entered: number, prep?: number): OrderLine => ({
+    itemId, qty, unitPrice: menuPriceAt(itemId, "lis-terrace", date), state: "kept", enteredMin: entered, sentMin: entered + 1, completedMin: prep === undefined ? undefined : entered + 1 + prep,
+  });
+  return {
+    id: ROOM_STORY_ORDER_ID, outletId: "lis-terrace", date, openMin: t(19, 48), closeMin: t(21, 4), covers: 3,
+    staffId: "MER-S3", table: "Table 22", discountPct: 0, payment: "room", room: ROOM_STORY.room,
+    lines: [
+      line("mezze", 1, t(19, 52), 9),
+      line("sparkling", 2, t(19, 52)),
+      line("lambchops", 2, t(20, 5), 19),
+      line("risotto", 1, t(20, 5), 17),
+      line("fondant", 2, t(20, 41), 12),
+    ],
+  };
+}
+
 function buildOrders(): Order[] {
   const orders: Order[] = [];
   const days = eachDay({ from: DATA_START, to: DEMO_TODAY });
@@ -236,8 +256,42 @@ function buildOrders(): Order[] {
       }
     }
   }
-  orders.push(heroOrder());
+  orders.push(heroOrder(), roomStoryOrder());
   return orders;
+}
+
+/** A room number one slip of the keyboard away: the last two digits swapped, or the last digit one off. */
+function neighbourRoom(room: string, r: Rng): string {
+  const floor = room.slice(0, -2);
+  const swapped = `${room.at(-1)}${room.at(-2)}`;
+  if (swapped !== room.slice(-2) && Number(swapped) >= 1 && Number(swapped) <= 28) return `${floor}${swapped}`;
+  const n = Number(room.slice(-2));
+  return `${floor}${String(n >= 28 ? n - 1 : n <= 1 ? n + 1 : n + (r.chance(0.5) ? 1 : -1)).padStart(2, "0")}`;
+}
+
+/**
+ * The PMS side of a charge: when the posting reached the folio, the room it landed on and, for guests who have left,
+ * when they checked out. A separate random stream, so the postings drawn before are unchanged.
+ */
+function withFolio(c: RoomCharge): RoomCharge {
+  const r = rng(`folio|${c.id}`);
+  let postedMin = c.min + r.int(0, 2);
+  // About one guest in four leaves the morning after the charge. Tonight's guests have not left yet.
+  let checkoutMin = c.date < DEMO_TODAY && r.chance(0.25) ? 24 * 60 + r.int(7 * 60, 11 * 60 + 45) : undefined;
+  if (c.orderId === ROOM_STORY_ORDER_ID) return { ...c, posted: [c.expected], folioRoom: ROOM_STORY.folioRoom, postedMin: c.min + 1, checkoutMin: ROOM_STORY.checkoutMin };
+  const clean = c.posted.length === 1 && c.posted[0] === c.expected;
+  if (!clean) return { ...c, postedMin, checkoutMin };
+  // A room number keyed by hand at an outlet till, one key off.
+  if (c.source === "restaurant" && r.chance(0.0025)) return { ...c, postedMin, checkoutMin, folioRoom: neighbourRoom(c.room, r) };
+  if (c.source === "minibar" && r.chance(0.03)) {
+    // Housekeeping found the minibar used when servicing a departure room, after the guest had gone.
+    checkoutMin = Math.max(6 * 60, c.min - r.int(15, 150));
+  } else if ((c.source === "restaurant" || c.source === "room_service") && c.min < 11 * 60 && r.chance(0.006)) {
+    // A breakfast posting held in the interface queue while the guest checked out.
+    postedMin = c.min + r.int(75, 200);
+    checkoutMin = c.min + r.int(10, postedMin - c.min - 5);
+  }
+  return { ...c, postedMin, checkoutMin };
 }
 
 function buildRoomCharges(orders: Order[]): RoomCharge[] {
@@ -281,7 +335,7 @@ function buildRoomCharges(orders: Order[]): RoomCharge[] {
       mk("laundry", r.int(4, 9), 12, 65, "Laundry and pressing", 0.008);
     }
   }
-  return out;
+  return out.map(withFolio);
 }
 
 function seedInvestigation(e: Exception): InvestigationState {
@@ -300,7 +354,9 @@ function seedInvestigation(e: Exception): InvestigationState {
     const text = {
       legitimate: "Checked with the team on shift. The correction was valid and the approval was added afterwards.",
       confirmed_loss: "The item was served and could not be charged. Recorded as a loss and discussed at the shift briefing.",
-      recovered: roomCharge ? "Posting corrected on the guest bill before check-out." : "Guest was still in house. The item was added back and paid.",
+      recovered: e.type === "room_charge_wrong_room" ? "Moved to the right room on the guest folio, and the other guest's bill corrected."
+        : e.type === "room_charge_after_checkout" ? "Charged to the card on file as a late charge."
+        : roomCharge ? "Posting corrected on the guest bill before check-out." : "Guest was still in house. The item was added back and paid.",
       inconclusive: "No further records available. Closed without a finding.",
     }[outcome];
     return {
@@ -310,8 +366,11 @@ function seedInvestigation(e: Exception): InvestigationState {
       closedAt, closedBy: by, notes: [{ at: closedAt, by, text }],
     };
   };
-  if (e.id === HERO_EXCEPTION_ID) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
+  if (e.id === HERO_EXCEPTION_ID || e.id === ROOM_STORY_EXCEPTION_ID) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
   if (age > 6) return closed();
+  // The front office settles posting differences at the night audit, so only today's are still open. The worked example
+  // survived it: nothing failed, the posting simply sat on another guest's folio.
+  if (roomCharge && age >= 1) return closed();
   const roll = r.next();
   if (age >= 2 && roll < 0.24) return closed();
   if (age >= 1 && roll < 0.38) {

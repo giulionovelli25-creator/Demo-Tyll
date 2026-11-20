@@ -187,6 +187,12 @@ export interface RoomCharge {
   expected: number;
   /** Amounts actually posted to the guest bill in the PMS. */
   posted: number[];
+  /** The room whose folio the posting landed on, when the PMS put it on a different room from the one charged. */
+  folioRoom?: string;
+  /** When the posting reached the folio, in minutes from the start of `date` (past 1440 means the next day). */
+  postedMin?: number;
+  /** When the guest of `room` checked out, in minutes from the start of `date`. Absent while the guest is still in house. */
+  checkoutMin?: number;
 }
 
 // ---- Exceptions and investigations -----------------------------------------
@@ -202,6 +208,8 @@ export type ExceptionType =
   | "room_charge_missing"
   | "room_charge_duplicate"
   | "room_charge_incorrect"
+  | "room_charge_wrong_room"
+  | "room_charge_after_checkout"
   | "stock_shortfall"
   | "usage_variance";
 

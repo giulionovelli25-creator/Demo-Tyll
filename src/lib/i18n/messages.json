@@ -24,6 +24,11 @@
 ". Costo {0}. Consumo fino al {1}: {2}.",
 ". التكلفة {0}. الاستخدام حتى {1}: {2}."
 ],
+"A charge to a room with no matching line on the guest bill.": [
+"Eine Zimmerbelastung ohne passende Zeile auf der Gästerechnung.",
+"Un addebito in camera senza riga corrispondente sul conto dell'ospite.",
+"رسوم على غرفة دون بند مطابق في فاتورة النزيل."
+],
 "A difference can have several explanations, such as complimentary drinks, waste not logged or a late delivery.": [
 "Eine Differenz kann mehrere Erklärungen haben, etwa Gratisgetränke, nicht erfasster Abfall oder eine späte Lieferung.",
 "Una differenza può avere varie spiegazioni, come bevande omaggio, scarti non registrati o una consegna in ritardo.",
@@ -33,6 +38,16 @@
 "Eine Differenz kann mehrere Erklärungen haben, etwa Gratisgetränke, nicht erfasster Abfall oder eine späte Lieferung. Vor einem Schluss prüfen.",
 "Una differenza può avere varie spiegazioni, come bevande omaggio, scarti non registrati o una consegna in ritardo. Verifica prima di concludere.",
 "قد تكون للفرق تفسيرات عدة، مثل مشروبات مجانية أو هدر غير مسجل أو توريد متأخر. تحقق قبل الاستنتاج."
+],
+"A folio line for a different amount, beyond {0} of rounding.": [
+"Eine Foliozeile mit anderem Betrag, über {0} Rundung hinaus.",
+"Una riga del folio con importo diverso, oltre {0} di arrotondamento.",
+"بند في الحساب بمبلغ مختلف يتجاوز {0} من التقريب."
+],
+"A folio line on a different room from the one the bill was signed to.": [
+"Eine Foliozeile auf einem anderen Zimmer als dem, auf das die Rechnung unterschrieben wurde.",
+"Una riga del folio su una camera diversa da quella su cui è stato firmato il conto.",
+"بند في حساب غرفة غير الغرفة التي وُقعت عليها الفاتورة."
 ],
 "A managed database with backups in place of the local file store and browser storage.": [
 "Eine verwaltete Datenbank mit Backups statt lokaler Dateien und Browserspeicher.",
@@ -44,6 +59,11 @@
 "Un responsabile approva il riepilogo prima di ogni pagamento.",
 "يوافق مدير على الملخص قبل أي دفع."
 ],
+"A posting that reached the bill after the guest had checked out.": [
+"Eine Buchung, die nach dem Check-out des Gastes auf der Rechnung ankam.",
+"Un addebito arrivato sul conto dopo il check-out dell'ospite.",
+"ترحيل وصل إلى الفاتورة بعد مغادرة النزيل."
+],
 "A preview of a planned feature. You can try the calculation here, but nothing on this tab is saved or sent to payroll.": [
 "Vorschau auf eine geplante Funktion. Sie können die Berechnung testen, aber hier wird nichts gespeichert oder an die Lohnabrechnung gesendet.",
 "Anteprima di una funzione prevista. Puoi provare il calcolo, ma nulla viene salvato o inviato alle paghe.",
@@ -54,10 +74,30 @@
 "Un ammanco è merce uscita senza vendita, scarto registrato o trasferimento. Indica che qualcosa non è spiegato, non cosa sia successo.",
 "النقص هو مخزون خرج دون بيع أو تسجيل هدر أو تحويل. يعني أن شيئًا غير مفسر، ولا يبين ما حدث."
 ],
+"A worked example of what Tyll looks for. The bill below is in last night's records.": [
+"Ein Beispiel dafür, worauf Tyll achtet. Die Rechnung unten steht in den Daten von gestern Abend.",
+"Un esempio di ciò che Tyll cerca. Il conto qui sotto è nei dati di ieri sera.",
+"مثال تطبيقي على ما يبحث عنه Tyll. الفاتورة أدناه موجودة في سجلات الليلة الماضية."
+],
 "A worked example of what Tyll looks for. The order below is in tonight's records.": [
 "Ein Beispiel dafür, wonach Tyll sucht. Die Bestellung unten steht in den heutigen Daten.",
 "Un esempio di ciò che cerca Tyll. L'ordine qui sotto è nei dati di stasera.",
 "مثال على ما يبحث عنه Tyll. الطلب أدناه ضمن سجلات الليلة."
+],
+"A {0} charge for room {1} reached the bill after the guest checked out.": [
+"Eine Belastung über {0} für Zimmer {1} kam nach dem Check-out auf die Rechnung.",
+"Un addebito di {0} per la camera {1} è arrivato sul conto dopo il check-out.",
+"وصلت رسوم بقيمة {0} للغرفة {1} إلى الفاتورة بعد مغادرة النزيل."
+],
+"A {0} charge for room {1} reached the guest bill after the guest had checked out.": [
+"Eine Belastung über {0} für Zimmer {1} kam nach dem Check-out des Gastes auf die Rechnung.",
+"Un addebito di {0} per la camera {1} è arrivato sul conto dopo il check-out dell'ospite.",
+"وصلت رسوم بقيمة {0} للغرفة {1} إلى الفاتورة بعد مغادرة النزيل."
+],
+"A {0} charge for room {1} reached the guest bill of room {2}.": [
+"Eine Belastung über {0} für Zimmer {1} kam auf die Gästerechnung von Zimmer {2}.",
+"Un addebito di {0} per la camera {1} è arrivato sul conto della camera {2}.",
+"وصلت رسوم بقيمة {0} للغرفة {1} إلى فاتورة الغرفة {2}."
 ],
 "About {0} less profit in this period.": [
 "Etwa {0} weniger Gewinn in diesem Zeitraum.",
@@ -93,6 +133,11 @@
 "Heute handeln",
 "Da gestire oggi",
 "تصرف اليوم"
+],
+"Action": [
+"Aktion",
+"Azione",
+"الإجراء"
 ],
 "Actions": [
 "Aktionen",
@@ -148,6 +193,11 @@
 "Korrekturen",
 "Rettifiche",
 "التعديلات"
+],
+"After check-out": [
+"Nach Check-out",
+"Dopo il check-out",
+"بعد المغادرة"
 ],
 "Agreed price": [
 "Vereinbarter Preis",
@@ -413,6 +463,11 @@
 "Wie bestellt",
 "Come ordinato",
 "كما طُلب"
+],
+"Ask the front office to charge the card on file as a late charge, if the hotel's terms allow it.": [
+"Den Empfang bitten, die hinterlegte Karte als Nachbelastung zu belasten, wenn die Bedingungen des Hotels es erlauben.",
+"Chiedere al ricevimento di addebitare la carta registrata come addebito tardivo, se le condizioni dell'hotel lo consentono.",
+"اطلب من الاستقبال تحصيل المبلغ من البطاقة المسجلة كرسوم متأخرة، إن سمحت شروط الفندق."
 ],
 "Ask whether stock was lent to another outlet or to banqueting.": [
 "Fragen, ob Bestand an ein anderes Outlet oder das Bankett verliehen wurde.",
@@ -1024,6 +1079,16 @@
 "Addebitato",
 "محتسب"
 ],
+"Charged to room {0}": [
+"Auf Zimmer {0} belastet",
+"Addebitato alla camera {0}",
+"محمّلة على الغرفة {0}"
+],
+"Charged to the card on file as a late charge.": [
+"Als Nachbelastung auf die hinterlegte Karte gebucht.",
+"Addebitato sulla carta registrata come addebito tardivo.",
+"حُصّلت من البطاقة المسجلة كرسوم متأخرة."
+],
 "Charges": [
 "Belastungen",
 "Addebiti",
@@ -1034,10 +1099,20 @@
 "Addebiti verificati",
 "الرسوم المفحوصة"
 ],
+"Charges not matched": [
+"Nicht abgeglichene Belastungen",
+"Addebiti non corrispondenti",
+"رسوم غير مطابقة"
+],
 "Charges posted to rooms": [
 "Auf Zimmer gebuchte Belastungen",
 "Addebiti registrati sulle camere",
 "الرسوم المرحلة إلى الغرف"
+],
+"Charges to check": [
+"Zu prüfende Belastungen",
+"Addebiti da verificare",
+"رسوم للتحقق"
 ],
 "Charges to guest rooms": [
 "Belastungen auf Gästezimmer",
@@ -1064,6 +1139,11 @@
 "Controlla consegne",
 "تحقق من التوريدات"
 ],
+"Check minibars in departure rooms before the guest reaches the front desk.": [
+"Minibars in Abreisezimmern prüfen, bevor der Gast den Empfang erreicht.",
+"Controllare i minibar delle camere in partenza prima che l'ospite arrivi al ricevimento.",
+"افحص الميني بار في غرف المغادرة قبل وصول النزيل إلى الاستقبال."
+],
 "Check pouring at {0}": [
 "Ausschank in {0} prüfen",
 "Controlla il servizio a {0}",
@@ -1084,6 +1164,11 @@
 "Controlla le scorte",
 "تحقق من المخزون"
 ],
+"Check the interface queue in the morning, before the busiest check-out hour.": [
+"Die Schnittstelle morgens prüfen, vor der stärksten Check-out-Stunde.",
+"Controllare la coda dell'interfaccia al mattino, prima dell'ora di punta dei check-out.",
+"افحص قائمة الربط صباحًا قبل ساعة الذروة للمغادرة."
+],
 "Check the largest gap": [
 "Größte Lücke prüfen",
 "Controlla lo scarto maggiore",
@@ -1103,6 +1188,11 @@
 "{0} Lieferantenrechnungen mit den Lieferungen abgleichen",
 "Confronta {0} fatture fornitore con quanto consegnato",
 "طابق {0} فواتير موردين مع ما تم تسليمه"
+],
+"Checked": [
+"Geprüft",
+"Verificato",
+"تمت المراجعة"
 ],
 "Checking the counts.": [
 "Zählungen werden geprüft.",
@@ -1293,6 +1383,11 @@
 "Verglichen mit",
 "Confrontato con",
 "مقارنةً بـ"
+],
+"Compared with the guest folio in the PMS:": [
+"Verglichen mit dem Gästefolio im PMS:",
+"Confrontato con il folio dell'ospite nel PMS:",
+"مقارنة بحساب النزيل في نظام إدارة الفندق:"
 ],
 "Complete order history": [
 "Vollständiger Bestellverlauf",
@@ -1794,6 +1889,11 @@
 "Soglie di rilevamento",
 "حدود الكشف"
 ],
+"Did every room charge reach the guest's bill?": [
+"Ist jede Zimmerbelastung auf der Gästerechnung angekommen?",
+"Ogni addebito in camera è arrivato sul conto dell'ospite?",
+"هل وصلت كل رسوم الغرف إلى فاتورة النزيل؟"
+],
 "Did we get, and pay for, what we ordered?": [
 "Haben wir bekommen und bezahlt, was wir bestellt haben?",
 "Abbiamo ricevuto e pagato ciò che abbiamo ordinato?",
@@ -1813,6 +1913,16 @@
 "Zu prüfende Differenz",
 "Differenza da verificare",
 "فرق للتحقق"
+],
+"Differences up to {0} are ignored.": [
+"Abweichungen bis {0} werden ignoriert.",
+"Le differenze fino a {0} sono ignorate.",
+"تُتجاهل الفروق حتى {0}."
+],
+"Different amount": [
+"Anderer Betrag",
+"Importo diverso",
+"مبلغ مختلف"
 ],
 "Dinner": [
 "Abendessen",
@@ -1948,6 +2058,21 @@
 "Doppelt",
 "Duplicato",
 "مكرر"
+],
+"Each bill signed to a room against the guest folio: missing, a different amount, the wrong room or after check-out.": [
+"Jede auf ein Zimmer unterschriebene Rechnung gegen das Gästefolio: fehlend, anderer Betrag, falsches Zimmer oder nach Check-out.",
+"Ogni conto firmato su una camera confrontato con il folio: mancante, importo diverso, camera sbagliata o dopo il check-out.",
+"كل فاتورة موقعة على غرفة مقابل حساب النزيل: مفقودة، أو بمبلغ مختلف، أو على الغرفة الخطأ، أو بعد المغادرة."
+],
+"Each bill signed to a room, and each minibar, spa and laundry charge, matched with the guest folio in the PMS. A difference is a prompt to check, not proof. Simulated data.": [
+"Jede auf ein Zimmer unterschriebene Rechnung und jede Minibar-, Spa- und Wäschebelastung, abgeglichen mit dem Gästefolio im PMS. Eine Abweichung ist ein Anlass zur Prüfung, kein Beweis. Simulierte Daten.",
+"Ogni conto firmato su una camera, e ogni addebito di minibar, spa e lavanderia, confrontato con il folio dell'ospite nel PMS. Una differenza invita a verificare, non è una prova. Dati simulati.",
+"كل فاتورة موقعة على غرفة، وكل رسوم الميني بار والسبا والغسيل، تُطابق مع حساب النزيل في نظام إدارة الفندق. الفرق دعوة للتحقق وليس دليلًا. بيانات محاكاة."
+],
+"Each charge is matched to the folio line with the same check number. A difference is a prompt to check the folio, not proof of anyone's mistake.": [
+"Jede Belastung wird mit der Foliozeile mit derselben Rechnungsnummer abgeglichen. Eine Abweichung ist ein Anlass, das Folio zu prüfen, kein Beweis für einen Fehler von irgendjemandem.",
+"Ogni addebito è confrontato con la riga del folio con lo stesso numero di conto. Una differenza invita a verificare il folio, non prova l'errore di nessuno.",
+"تُطابق كل رسوم مع بند حساب النزيل الذي يحمل رقم الفاتورة نفسه. الفرق دعوة لمراجعة الحساب، وليس دليلًا على خطأ أي شخص."
 ],
 "Each charge recorded at an outlet or by housekeeping is matched to the line on the guest bill in the property management system.": [
 "Jede Belastung aus Outlet oder Housekeeping wird mit der Position auf der Gästerechnung im Hotelsystem abgeglichen.",
@@ -2168,6 +2293,21 @@
 "Jeder Fall, offen und geschlossen",
 "Ogni caso, aperto e chiuso",
 "كل حالة، مفتوحة ومغلقة"
+],
+"Every charge in this period reached the right bill": [
+"Jede Belastung in diesem Zeitraum ist auf der richtigen Rechnung",
+"Ogni addebito del periodo è sul conto giusto",
+"وصلت كل رسوم هذه الفترة إلى الفاتورة الصحيحة"
+],
+"Every charge reached the right bill": [
+"Jede Belastung ist auf der richtigen Rechnung",
+"Ogni addebito è sul conto giusto",
+"وصلت كل الرسوم إلى الفاتورة الصحيحة"
+],
+"Every charge to a room, matched or not.": [
+"Jede Zimmerbelastung, abgeglichen oder nicht.",
+"Ogni addebito in camera, corrispondente o no.",
+"كل رسوم على غرفة، مطابقة أو لا."
 ],
 "Every count and its review": [
 "Jede Zählung und ihre Prüfung",
@@ -2724,10 +2864,25 @@
 "Rifornimento kit di cortesia (storico simulato)",
 "إعادة تزويد مستلزمات الضيوف (سجل محاكاة)"
 ],
+"Guest bill in the PMS": [
+"Gästerechnung im PMS",
+"Conto dell'ospite nel PMS",
+"فاتورة النزيل في نظام إدارة الفندق"
+],
+"Guest bill posting": [
+"Buchung auf der Gästerechnung",
+"Addebito sul conto dell'ospite",
+"الترحيل في فاتورة النزيل"
+],
 "Guest bill postings, occupancy, arrivals, room status": [
 "Buchungen auf Gästerechnungen, Auslastung, Anreisen, Zimmerstatus",
 "Registrazioni sui conti, occupazione, arrivi, stato camere",
 "ترحيلات فواتير الضيوف والإشغال والوصول وحالة الغرف"
+],
+"Guest folios, room numbers and check-out times are simulated, as is the PMS they come from. Minibar, spa and laundry postings cover the last {0} days.": [
+"Gästefolios, Zimmernummern und Check-out-Zeiten sind simuliert, ebenso das PMS, aus dem sie stammen. Minibar-, Spa- und Wäschebuchungen umfassen die letzten {0} Tage.",
+"Folio degli ospiti, numeri di camera e orari di check-out sono simulati, come il PMS da cui provengono. Gli addebiti di minibar, spa e lavanderia coprono gli ultimi {0} giorni.",
+"حسابات النزلاء وأرقام الغرف وأوقات المغادرة محاكاة، وكذلك نظام إدارة الفندق الذي تأتي منه. تغطي ترحيلات الميني بار والسبا والغسيل آخر {0} يومًا."
 ],
 "Guest orders a burger and a Coke": [
 "Gast bestellt Burger und Cola",
@@ -2884,6 +3039,11 @@
 "Housekeeping",
 "التلشبونةر الفندقي"
 ],
+"Housekeeping found the minibar used while servicing the room after departure.": [
+"Das Housekeeping fand die Minibar benutzt, als es das Zimmer nach der Abreise reinigte.",
+"Il housekeeping ha trovato il minibar usato pulendo la camera dopo la partenza.",
+"وجد قسم التدبير الفندقي الميني بار مستخدمًا عند تنظيف الغرفة بعد المغادرة."
+],
 "Housekeeping manager": [
 "Hausdamenleitung",
 "Responsabile housekeeping",
@@ -2893,6 +3053,11 @@
 "So prognostiziert Tyll",
 "Come prevede Tyll",
 "كيف يتوقع Tyll"
+],
+"How many charges did not match the guest bill each day.": [
+"Wie viele Belastungen pro Tag nicht zur Gästerechnung passten.",
+"Quanti addebiti al giorno non corrispondevano al conto dell'ospite.",
+"عدد الرسوم التي لم تطابق فاتورة النزيل كل يوم."
 ],
 "How many glasses each bottle really gave, and which drinks sales do not explain.": [
 "Wie viele Gläser jede Flasche wirklich ergab und welche Getränke Verkäufe nicht erklären.",
@@ -2953,6 +3118,11 @@
 "Wenn sich nichts ändert",
 "Se nulla cambia",
 "إذا لم يتغير شيء"
+],
+"If the card cannot be charged, close this case as a loss so it is counted once.": [
+"Wenn die Karte nicht belastet werden kann, diesen Fall als Verlust schließen, damit er einmal gezählt wird.",
+"Se la carta non può essere addebitata, chiudere il caso come perdita così è contato una volta.",
+"إن تعذر التحصيل من البطاقة، أغلق هذه الحالة كخسارة حتى تُحتسب مرة واحدة."
 ],
 "In review": [
 "In Prüfung",
@@ -3134,6 +3304,16 @@
 "Problema",
 "المشكلة"
 ],
+"It does not conclude why.": [
+"Es schließt nicht auf den Grund.",
+"Non ne deduce il motivo.",
+"ولا يستنتج السبب."
+],
+"It lands on the bill of room {0}": [
+"Sie landet auf der Rechnung von Zimmer {0}",
+"Finisce sul conto della camera {0}",
+"تصل إلى فاتورة الغرفة {0}"
+],
 "Item": [
 "Artikel",
 "Articolo",
@@ -3313,6 +3493,16 @@
 "Zuletzt berechnet",
 "Ultimo fatturato",
 "آخر سعر مفوتر"
+],
+"Last night at {0}. How one difference is found, step by step.": [
+"Gestern Abend im {0}. Wie eine Abweichung gefunden wird, Schritt für Schritt.",
+"Ieri sera al {0}. Come si trova una differenza, passo dopo passo.",
+"الليلة الماضية في {0}. كيف يُكتشف فرق واحد، خطوة بخطوة."
+],
+"Last night at {0}: a dinner on another guest's bill": [
+"Gestern Abend im {0}: ein Abendessen auf der Rechnung eines anderen Gastes",
+"Ieri sera al {0}: una cena sul conto di un altro ospite",
+"الليلة الماضية في {0}: عشاء على فاتورة نزيل آخر"
 ],
 "Last purchase price": [
 "Letzter Einkaufspreis",
@@ -3804,6 +3994,11 @@
 "Minibar",
 "الميني بار"
 ],
+"Minibar, spa and laundry charges belong to the whole hotel. Choose all outlets to see them.": [
+"Minibar-, Spa- und Wäschebelastungen gehören zum ganzen Hotel. Wählen Sie alle Outlets, um sie zu sehen.",
+"Gli addebiti di minibar, spa e lavanderia riguardano tutto l'hotel. Scegli tutti i punti vendita per vederli.",
+"رسوم الميني بار والسبا والغسيل تخص الفندق كله. اختر كل المنافذ لرؤيتها."
+],
 "Minibar, spa and laundry postings are simulated for the last {0} days. Room-damage charge verification is planned and not part of this demo.": [
 "Minibar-, Spa- und Wäschebuchungen sind für die letzten {0} Tage simuliert. Die Prüfung von Zimmerschäden ist geplant und nicht Teil dieser Demo.",
 "Le registrazioni di minibar, spa e lavanderia sono simulate per gli ultimi {0} giorni. La verifica dei danni in camera è prevista e non fa parte della demo.",
@@ -3833,6 +4028,11 @@
 "Fehlende Getränke",
 "Bevande mancanti",
 "المشروبات المفقودة"
+],
+"Missing from the guest bill": [
+"Fehlt auf der Gästerechnung",
+"Mancante sul conto dell'ospite",
+"غير موجودة في فاتورة النزيل"
 ],
 "Missing on {0}": [
 "Fehlend am {0}",
@@ -3893,6 +4093,11 @@
 "Verlorenes Geld, letzte {0} Tage",
 "Denaro perso, ultimi {0} giorni",
 "المال المفقود، آخر {0} يومًا"
+],
+"Money on charges that did not match the guest bill, by the day the charge was made.": [
+"Betrag der Belastungen, die nicht zur Gästerechnung passten, nach dem Tag der Belastung.",
+"Importo degli addebiti che non corrispondevano al conto dell'ospite, per giorno dell'addebito.",
+"قيمة الرسوم التي لم تطابق فاتورة النزيل، حسب يوم تسجيل الرسوم."
 ],
 "Money records": [
 "Finanzdaten",
@@ -3983,6 +4188,16 @@
 "Am meisten weggeworfen",
 "Più scartati",
 "الأكثر هدرًا"
+],
+"Move the posting from room {0} to room {1} before room {2} checks out, so that guest is not billed for it.": [
+"Die Buchung von Zimmer {0} auf Zimmer {1} verschieben, bevor Zimmer {2} abreist, damit dieser Gast sie nicht bezahlt.",
+"Spostare l'addebito dalla camera {0} alla camera {1} prima del check-out della camera {2}, così quell'ospite non lo paga.",
+"انقل الترحيل من الغرفة {0} إلى الغرفة {1} قبل مغادرة الغرفة {2}، حتى لا يُحاسب ذلك النزيل عليه."
+],
+"Moved to the right room on the guest folio, and the other guest's bill corrected.": [
+"Auf das richtige Zimmer im Gästefolio verschoben und die Rechnung des anderen Gastes korrigiert.",
+"Spostato sulla camera giusta nel folio, e corretto il conto dell'altro ospite.",
+"نُقلت إلى الغرفة الصحيحة في حساب النزيل، وصُححت فاتورة النزيل الآخر."
 ],
 "Moves walk-ins only. Booked guests are not counted again.": [
 "Ändert nur Laufkundschaft. Gebuchte Gäste werden nicht erneut gezählt.",
@@ -4149,6 +4364,11 @@
 "Nessuna riga con questo articolo è stata rimossa dopo l'invio.",
 "لم يُحذف أي بند يستخدم هذا الصنف بعد إرساله."
 ],
+"No matching line found.": [
+"Keine passende Zeile gefunden.",
+"Nessuna riga corrispondente trovata.",
+"لم يُعثر على بند مطابق."
+],
 "No open orders": [
 "Keine offenen Bestellungen",
 "Nessun ordine aperto",
@@ -4178,6 +4398,11 @@
 "Keine Anfragen in dieser Liste.",
 "Nessuna richiesta in questo elenco.",
 "لا توجد طلبات في هذه القائمة."
+],
+"No room charges in this selection": [
+"Keine Zimmerbelastungen in dieser Auswahl",
+"Nessun addebito in camera in questa selezione",
+"لا رسوم غرف في هذا الاختيار"
 ],
 "No transfers in or out are recorded for this outlet in this period.": [
 "Für dieses Outlet sind im Zeitraum keine Umlagerungen erfasst.",
@@ -4243,6 +4468,16 @@
 "Nicht geprüft",
 "Non verificato",
 "لم يُحقق فيه"
+],
+"Not matched": [
+"Nicht abgeglichen",
+"Non corrispondenti",
+"غير مطابقة"
+],
+"Not matched per day, {0} days": [
+"Nicht abgeglichen pro Tag, {0} Tage",
+"Non corrispondenti al giorno, {0} giorni",
+"غير المطابقة يوميًا، {0} يومًا"
 ],
 "Not sent": [
 "Nicht gesendet",
@@ -4479,6 +4714,11 @@
 "Apri Denaro perso al giorno, ultimi {0} giorni, più grande, con più linee da confrontare",
 "افتح المال المفقود يوميًا، آخر {0} يومًا، بحجم أكبر مع خطوط أكثر للمقارنة"
 ],
+"Open Not matched per day, {0} days larger, with more lines to compare": [
+"Nicht abgeglichen pro Tag, {0} Tage größer öffnen, mit weiteren Linien zum Vergleich",
+"Apri Non corrispondenti al giorno, {0} giorni in grande, con altre linee da confrontare",
+"افتح غير المطابقة يوميًا، {0} يومًا بحجم أكبر مع خطوط أخرى للمقارنة"
+],
 "Open Overview": [
 "Übersicht öffnen",
 "Apri Panoramica",
@@ -4534,6 +4774,11 @@
 "Apri bozza {0}",
 "افتح المسودة {0}"
 ],
+"Open first, largest amount first. Checked ones follow.": [
+"Offene zuerst, größter Betrag zuerst. Geprüfte folgen.",
+"Prima le aperte, prima l'importo più alto. Seguono quelle verificate.",
+"المفتوحة أولًا، والأكبر مبلغًا أولًا. ثم التي رُوجعت."
+],
 "Open flags": [
 "Offene Hinweise",
 "Segnalazioni aperte",
@@ -4573,6 +4818,11 @@
 "Prüfung öffnen",
 "Apri la verifica",
 "افتح التحقيق"
+],
+"Open to check": [
+"Offen zur Prüfung",
+"Da verificare",
+"مفتوحة للتحقق"
 ],
 "Open {0}": [
 "{0} öffnen",
@@ -5004,6 +5254,16 @@
 "Previsto. Flow usa comande simulate.",
 "مخطط له. يستخدم Flow تذاكر مباشرة محاكاة."
 ],
+"Please move it to room {0} and check whether that guest has already checked out.": [
+"Bitte auf Zimmer {0} verschieben und prüfen, ob dieser Gast schon abgereist ist.",
+"Spostarlo sulla camera {0} e verificare se quell'ospite ha già fatto il check-out.",
+"يرجى نقلها إلى الغرفة {0} والتحقق مما إذا كان ذلك النزيل قد غادر."
+],
+"Please post it to the card on file as a late charge, or tell me if it cannot be collected.": [
+"Bitte als Nachbelastung auf die hinterlegte Karte buchen oder mir sagen, wenn es nicht einziehbar ist.",
+"Addebitarlo sulla carta registrata come addebito tardivo, o dirmi se non è recuperabile.",
+"يرجى ترحيله على البطاقة المسجلة كرسوم متأخرة، أو أخبرني إن تعذر تحصيله."
+],
 "Plumbing parts (simulated history)": [
 "Sanitärteile (simulierter Verlauf)",
 "Ricambi idraulici (storico simulato)",
@@ -5039,15 +5299,60 @@
 "Possibilità da verificare, ciascuna con ciò che mostrano i dati. Nessuna è accertata finché un responsabile non la conferma.",
 "احتمالات للتحقق، مع ما تظهره السجلات لكل منها. لا يثبت أي منها حتى يتحقق منه مدير."
 ],
+"Post the charge to room {0} while the guest is still in house.": [
+"Die Belastung auf Zimmer {0} buchen, solange der Gast noch im Haus ist.",
+"Addebitare alla camera {0} finché l'ospite è ancora in hotel.",
+"رحّل الرسوم إلى الغرفة {0} ما دام النزيل مقيمًا."
+],
 "Posted": [
 "Gebucht",
 "Registrato",
 "مرحّل"
 ],
+"Posted after check-out": [
+"Nach dem Check-out gebucht",
+"Registrato dopo il check-out",
+"رُحّلت بعد المغادرة"
+],
+"Posted correctly": [
+"Korrekt gebucht",
+"Registrati correttamente",
+"مرحّلة بشكل صحيح"
+],
 "Posted labor cost, overheads, accounting profit": [
 "Gebuchte Personalkosten, Gemeinkosten, Buchgewinn",
 "Costo del lavoro registrato, spese generali, profitto contabile",
 "تكلفة العمالة المرحلة والنفقات العامة والربح المحاسبي"
+],
+"Posted to the wrong room": [
+"Auf das falsche Zimmer gebucht",
+"Addebitato alla camera sbagliata",
+"رُحّلت إلى الغرفة الخطأ"
+],
+"Posted twice": [
+"Doppelt gebucht",
+"Registrato due volte",
+"رُحّلت مرتين"
+],
+"Posted {0}, {1}": [
+"Gebucht {0}, {1}",
+"Registrato {0}, {1}",
+"رُحّل {0}، {1}"
+],
+"Posting corrected on the guest bill before check-out.": [
+"Buchung auf der Gästerechnung vor dem Check-out korrigiert.",
+"Addebito corretto sul conto prima del check-out.",
+"صُحح الترحيل في فاتورة النزيل قبل المغادرة."
+],
+"Posting to the guest bill": [
+"Buchung auf die Gästerechnung",
+"Addebito sul conto dell'ospite",
+"الترحيل إلى فاتورة النزيل"
+],
+"Posting {0}": [
+"Buchung {0}",
+"Registrazione {0}",
+"ترحيل {0}"
 ],
 "Postings flagged": [
 "Markierte Buchungen",
@@ -5444,10 +5749,20 @@
 "Registra la causa verificata e l'eventuale azione correttiva, poi risolvi il caso.",
 "سجل السبب المؤكد وأي إجراء تصحيحي، ثم أغلق الحالة."
 ],
+"Record what was done here. The amount counts as recovered once it is on the right bill.": [
+"Hier festhalten, was getan wurde. Der Betrag gilt als zurückgeholt, sobald er auf der richtigen Rechnung steht.",
+"Registrare qui cosa è stato fatto. L'importo conta come recuperato quando è sul conto giusto.",
+"سجّل هنا ما تم. يُحتسب المبلغ مستردًا عندما يصبح على الفاتورة الصحيحة."
+],
 "Recorded": [
 "Erfasst",
 "Registrato",
 "المسجل"
+],
+"Recorded at the source": [
+"An der Quelle erfasst",
+"Registrato all'origine",
+"مسجل في المصدر"
 ],
 "Recorded expense": [
 "Erfasste Ausgabe",
@@ -5729,6 +6044,11 @@
 "I ricavi sono contati una volta.",
 "تُحتسب الإيرادات مرة واحدة."
 ],
+"Revenue is counted once. Restaurant and room service charges are already inside outlet sales; posting them to a room moves them to the guest bill, and settling the bill at check-out clears it. Neither step adds revenue.": [
+"Umsatz wird einmal gezählt. Restaurant- und Zimmerservicebelastungen sind schon im Outlet-Umsatz enthalten; die Buchung auf ein Zimmer verschiebt sie auf die Gästerechnung, und die Bezahlung beim Check-out gleicht sie aus. Keiner der Schritte erhöht den Umsatz.",
+"I ricavi si contano una volta. Gli addebiti di ristorante e servizio in camera sono già nelle vendite del punto vendita; addebitarli in camera li sposta sul conto dell'ospite, e saldare il conto al check-out lo chiude. Nessuno dei due passaggi aggiunge ricavi.",
+"تُحتسب الإيرادات مرة واحدة. رسوم المطعم وخدمة الغرف داخلة أصلًا في مبيعات المنفذ؛ ترحيلها إلى غرفة ينقلها إلى فاتورة النزيل، وتسديد الفاتورة عند المغادرة يقفلها. لا تضيف أي خطوة منهما إيرادًا."
+],
 "Revenue recovered": [
 "Umsatz zurückgewonnen",
 "Ricavi recuperati",
@@ -5759,6 +6079,11 @@
 "Ricavi, costi diretti e contributo stimato.",
 "الإيرادات والتكاليف المباشرة والمساهمة التقديرية."
 ],
+"Review": [
+"Prüfen",
+"Verifica",
+"مراجعة"
+],
 "Review case": [
 "Fall prüfen",
 "Rivedi caso",
@@ -5783,6 +6108,11 @@
 "{0} Hinweise prüfen",
 "Rivedi {0} segnalazioni",
 "راجع {0} إشارات"
+],
+"Review {0} open": [
+"{0} offene prüfen",
+"Verifica {0} aperte",
+"مراجعة {0} مفتوحة"
 ],
 "Roasted tomato soup": [
 "Geröstete Tomatensuppe",
@@ -5809,6 +6139,16 @@
 "Lattuga romana",
 "خس روماني"
 ],
+"Room charge after check-out": [
+"Zimmerbelastung nach Check-out",
+"Addebito in camera dopo il check-out",
+"رسوم غرفة بعد المغادرة"
+],
+"Room charge after check-out · {0}": [
+"Zimmerbelastung nach Check-out · {0}",
+"Addebito in camera dopo il check-out · {0}",
+"رسوم غرفة بعد المغادرة · {0}"
+],
 "Room charge amount differs": [
 "Betrag der Zimmerbelastung weicht ab",
 "Importo addebito camera diverso",
@@ -5823,6 +6163,11 @@
 "Prüfung von Zimmerbelastungen und Rechnungen",
 "Controllo addebiti in camera e conti",
 "مراجعة رسوم الغرف والفواتير"
+],
+"Room charge check": [
+"Zimmerbelastungen prüfen",
+"Verifica addebiti in camera",
+"مراجعة رسوم الغرف"
 ],
 "Room charge duplicated": [
 "Zimmerbelastung doppelt",
@@ -5839,6 +6184,16 @@
 "Addebito camera mancante",
 "رسوم الغرفة مفقودة"
 ],
+"Room charge on the wrong room": [
+"Zimmerbelastung auf falschem Zimmer",
+"Addebito sulla camera sbagliata",
+"رسوم على الغرفة الخطأ"
+],
+"Room charge on the wrong room · {0}": [
+"Zimmerbelastung auf falschem Zimmer · {0}",
+"Addebito sulla camera sbagliata · {0}",
+"رسوم على الغرفة الخطأ · {0}"
+],
 "Room charge tolerance": [
 "Toleranz Zimmerbelastung",
 "Tolleranza addebito camera",
@@ -5848,6 +6203,11 @@
 "Zimmerbelastungen",
 "Addebiti in camera",
 "رسوم الغرف"
+],
+"Room charges missing from the guest bill, posted twice, for a different amount, to the wrong room or after check-out.": [
+"Zimmerbelastungen, die auf der Gästerechnung fehlen, doppelt, mit anderem Betrag, auf das falsche Zimmer oder nach dem Check-out gebucht sind.",
+"Addebiti in camera mancanti sul conto, registrati due volte, con importo diverso, sulla camera sbagliata o dopo il check-out.",
+"رسوم غرف مفقودة من فاتورة النزيل، أو مرحّلة مرتين، أو بمبلغ مختلف، أو على الغرفة الخطأ، أو بعد المغادرة."
 ],
 "Room readiness, guest requests and luggage.": [
 "Zimmerstatus, Gästewünsche und Gepäck.",
@@ -5864,15 +6224,90 @@
 "Camera {0}",
 "غرفة {0}"
 ],
+"Room {0} checked out on {1}, {2}.": [
+"Zimmer {0} reiste am {1}, {2} ab.",
+"La camera {0} ha fatto il check-out il {1}, {2}.",
+"غادرت الغرفة {0} في {1}، {2}."
+],
+"Room {0} checked out {1}, {2}": [
+"Zimmer {0} abgereist {1}, {2}",
+"Camera {0} partita {1}, {2}",
+"غادرت الغرفة {0} {1}، {2}"
+],
+"Room {0} has checked out: ask the front office to charge the card on file, with the signed bill as support.": [
+"Zimmer {0} ist abgereist: den Empfang bitten, die hinterlegte Karte zu belasten, mit der unterschriebenen Rechnung als Beleg.",
+"La camera {0} ha fatto il check-out: chiedere al ricevimento di addebitare la carta registrata, con il conto firmato come prova.",
+"غادرت الغرفة {0}: اطلب من الاستقبال تحصيل المبلغ من البطاقة المسجلة، مع الفاتورة الموقعة كمستند."
+],
+"Room {0}: charge has not reached the guest bill": [
+"Zimmer {0}: Belastung ist nicht auf der Gästerechnung",
+"Camera {0}: l'addebito non è arrivato sul conto dell'ospite",
+"الغرفة {0}: لم تصل الرسوم إلى فاتورة النزيل"
+],
+"Room {0}: charge posted to room {1}": [
+"Zimmer {0}: Belastung auf Zimmer {1} gebucht",
+"Camera {0}: addebito registrato sulla camera {1}",
+"الغرفة {0}: رُحّلت الرسوم إلى الغرفة {1}"
+],
 "Room {0}: charge posted {1} times": [
 "Zimmer {0}: Belastung {1}-mal gebucht",
 "Camera {0}: addebito registrato {1} volte",
 "غرفة {0}: رُحلت الرسوم {1} مرات"
 ],
+"Room {0}: charge reached the guest bill after check-out": [
+"Zimmer {0}: Belastung kam nach dem Check-out auf die Gästerechnung",
+"Camera {0}: addebito arrivato sul conto dopo il check-out",
+"الغرفة {0}: وصلت الرسوم إلى فاتورة النزيل بعد المغادرة"
+],
 "Room {0}: guest bill shows less than the charge": [
 "Zimmer {0}: Gästerechnung zeigt weniger als die Belastung",
 "Camera {0}: il conto mostra meno dell'addebito",
 "غرفة {0}: تظهر الفاتورة مبلغًا أقل من الرسوم"
+],
+"Room {0}: guest bill shows less than the laundry charge": [
+"Zimmer {0}: Gästerechnung zeigt weniger als die Wäschebelastung",
+"Camera {0}: il conto mostra meno dell'addebito lavanderia",
+"الغرفة {0}: تظهر الفاتورة مبلغًا أقل من رسوم الغسيل"
+],
+"Room {0}: guest bill shows less than the minibar charge": [
+"Zimmer {0}: Gästerechnung zeigt weniger als die Minibarbelastung",
+"Camera {0}: il conto mostra meno dell'addebito minibar",
+"الغرفة {0}: تظهر الفاتورة مبلغًا أقل من رسوم الميني بار"
+],
+"Room {0}: guest bill shows less than the spa charge": [
+"Zimmer {0}: Gästerechnung zeigt weniger als die Spabelastung",
+"Camera {0}: il conto mostra meno dell'addebito spa",
+"الغرفة {0}: تظهر الفاتورة مبلغًا أقل من رسوم السبا"
+],
+"Room {0}: guest bill shows more than the charge": [
+"Zimmer {0}: Gästerechnung zeigt mehr als die Belastung",
+"Camera {0}: il conto mostra più dell'addebito",
+"الغرفة {0}: تظهر الفاتورة مبلغًا أكبر من الرسوم"
+],
+"Room {0}: guest bill shows more than the laundry charge": [
+"Zimmer {0}: Gästerechnung zeigt mehr als die Wäschebelastung",
+"Camera {0}: il conto mostra più dell'addebito lavanderia",
+"الغرفة {0}: تظهر الفاتورة مبلغًا أكبر من رسوم الغسيل"
+],
+"Room {0}: guest bill shows more than the minibar charge": [
+"Zimmer {0}: Gästerechnung zeigt mehr als die Minibarbelastung",
+"Camera {0}: il conto mostra più dell'addebito minibar",
+"الغرفة {0}: تظهر الفاتورة مبلغًا أكبر من رسوم الميني بار"
+],
+"Room {0}: guest bill shows more than the spa charge": [
+"Zimmer {0}: Gästerechnung zeigt mehr als die Spabelastung",
+"Camera {0}: il conto mostra più dell'addebito spa",
+"الغرفة {0}: تظهر الفاتورة مبلغًا أكبر من رسوم السبا"
+],
+"Room {0}: laundry charge has not reached the guest bill": [
+"Zimmer {0}: Wäschebelastung ist nicht auf der Gästerechnung",
+"Camera {0}: l'addebito lavanderia non è arrivato sul conto",
+"الغرفة {0}: لم تصل رسوم الغسيل إلى فاتورة النزيل"
+],
+"Room {0}: laundry charge posted {1} times": [
+"Zimmer {0}: Wäschebelastung {1}-mal gebucht",
+"Camera {0}: addebito lavanderia registrato {1} volte",
+"الغرفة {0}: رُحّلت رسوم الغسيل {1} مرات"
 ],
 "Room {0}: minibar charge has not reached the guest bill": [
 "Zimmer {0}: Minibar-Posten fehlt auf der Gästerechnung",
@@ -5883,6 +6318,26 @@
 "Zimmer {0}: Minibar-Posten fehlt auf der Gästerechnung, {1} gefährdet.",
 "Camera {0}: l'addebito del minibar non è sul conto dell'ospite, {1} a rischio.",
 "الغرفة {0}: رسوم الميني بار لم تصل إلى فاتورة النزيل، {1} معرضة للخطر."
+],
+"Room {0}: minibar charge posted {1} times": [
+"Zimmer {0}: Minibarbelastung {1}-mal gebucht",
+"Camera {0}: addebito minibar registrato {1} volte",
+"الغرفة {0}: رُحّلت رسوم الميني بار {1} مرات"
+],
+"Room {0}: minibar charge reached the guest bill after check-out": [
+"Zimmer {0}: Minibarbelastung kam nach dem Check-out auf die Gästerechnung",
+"Camera {0}: addebito minibar arrivato sul conto dopo il check-out",
+"الغرفة {0}: وصلت رسوم الميني بار إلى فاتورة النزيل بعد المغادرة"
+],
+"Room {0}: spa charge has not reached the guest bill": [
+"Zimmer {0}: Spabelastung ist nicht auf der Gästerechnung",
+"Camera {0}: l'addebito spa non è arrivato sul conto",
+"الغرفة {0}: لم تصل رسوم السبا إلى فاتورة النزيل"
+],
+"Room {0}: spa charge posted {1} times": [
+"Zimmer {0}: Spabelastung {1}-mal gebucht",
+"Camera {0}: addebito spa registrato {1} volte",
+"الغرفة {0}: رُحّلت رسوم السبا {1} مرات"
 ],
 "Rooms and Guest Experience": [
 "Zimmer und Gästeerlebnis",
@@ -5959,6 +6414,11 @@
 "Vendite e rendimento",
 "المبيعات والأداء"
 ],
+"Sales are counted once, at the outlet. A room posting moves the amount to the guest bill and does not add revenue.": [
+"Umsatz wird einmal gezählt, im Outlet. Eine Zimmerbuchung verschiebt den Betrag auf die Gästerechnung und erhöht den Umsatz nicht.",
+"Le vendite si contano una volta, nel punto vendita. Un addebito in camera sposta l'importo sul conto dell'ospite e non aggiunge ricavi.",
+"تُحتسب المبيعات مرة واحدة في المنفذ. ترحيل الغرفة ينقل المبلغ إلى فاتورة النزيل ولا يضيف إيرادًا."
+],
 "Sales recorded in the POS": [
 "Im POS erfasste Verkäufe",
 "Vendite registrate nel POS",
@@ -5983,6 +6443,11 @@
 "Wie in den {0} Tagen davor",
 "Come nei {0} giorni precedenti",
 "مثل الـ{0} يومًا السابقة"
+],
+"Same check, same amount, a different room": [
+"Gleiche Rechnung, gleicher Betrag, anderes Zimmer",
+"Stesso conto, stesso importo, camera diversa",
+"الفاتورة نفسها والمبلغ نفسه وغرفة مختلفة"
 ],
 "Same weekdays moved about {0}": [
 "Gleiche Wochentage schwankten um etwa {0}",
@@ -6219,6 +6684,11 @@
 "Inviato in preparazione, poi rimosso o annullato",
 "أُرسل للتحضير ثم حُذف أو أُلغي"
 ],
+"Sent to the guest bill in the PMS": [
+"An die Gästerechnung im PMS gesendet",
+"Inviato al conto dell'ospite nel PMS",
+"أُرسلت إلى فاتورة النزيل في نظام إدارة الفندق"
+],
 "Sent to the supplier": [
 "An den Lieferanten gesendet",
 "Inviato al fornitore",
@@ -6304,6 +6774,11 @@
 "Dovrebbe essere sui conti",
 "يفترض ظهورها في الفواتير"
 ],
+"Should be on the guest bill": [
+"Sollte auf der Gästerechnung stehen",
+"Dovrebbe essere sul conto dell'ospite",
+"يفترض أن يكون في فاتورة النزيل"
+],
 "Should be posted": [
 "Sollte gebucht sein",
 "Da registrare",
@@ -6359,6 +6834,11 @@
 "Mostra tutti i {0} avvisi",
 "عرض جميع التنبيهات ({0})"
 ],
+"Show all {0} charges": [
+"Alle {0} Belastungen zeigen",
+"Mostra tutti i {0} addebiti",
+"عرض كل الرسوم ({0})"
+],
 "Show all {0} deliveries": [
 "Alle {0} Lieferungen anzeigen",
 "Mostra tutte le {0} consegne",
@@ -6374,6 +6854,11 @@
 "Mostra tutti i {0} articoli consigliati",
 "عرض جميع الأصناف الموصى بها ({0})"
 ],
+"Show all {0} types": [
+"Alle {0} Arten zeigen",
+"Mostra tutti i {0} tipi",
+"عرض كل الأنواع ({0})"
+],
 "Show items": [
 "Artikel anzeigen",
 "Mostra articoli",
@@ -6383,6 +6868,11 @@
 "Weniger anzeigen",
 "Mostra meno",
 "عرض أقل"
+],
+"Show the five largest": [
+"Die fünf größten zeigen",
+"Mostra i cinque più alti",
+"عرض الخمسة الأكبر"
 ],
 "Show this hotel": [
 "Dieses Hotel anzeigen",
@@ -7014,15 +7504,50 @@
 "L'app prende il colore del punto vendita scelto",
 "يأخذ التطبيق لون المنفذ الذي تختاره"
 ],
+"The bill is settled without the dinner": [
+"Die Rechnung wird ohne das Abendessen bezahlt",
+"Il conto viene saldato senza la cena",
+"تُسدد الفاتورة دون العشاء"
+],
+"The bill was signed in a hurry and the room number was hard to read.": [
+"Die Rechnung wurde in Eile unterschrieben und die Zimmernummer war schwer lesbar.",
+"Il conto è stato firmato in fretta e il numero di camera era difficile da leggere.",
+"وُقعت الفاتورة على عجل وكان رقم الغرفة صعب القراءة."
+],
+"The case shows both sides and what to check: move the charge before room {0} checks out, and collect it from room {1}’s card on file.": [
+"Der Fall zeigt beide Seiten und was zu prüfen ist: die Belastung verschieben, bevor Zimmer {0} abreist, und sie über die hinterlegte Karte von Zimmer {1} einziehen.",
+"Il caso mostra entrambe le parti e cosa verificare: spostare l'addebito prima del check-out della camera {0}, e incassarlo dalla carta registrata della camera {1}.",
+"تعرض الحالة الجانبين وما يجب التحقق منه: نقل الرسوم قبل مغادرة الغرفة {0}، وتحصيلها من البطاقة المسجلة للغرفة {1}."
+],
 "The complete record of each order: created, items entered, tickets sent, changes, final bill and payment.": [
 "Der vollständige Verlauf jeder Bestellung: Anlage, Artikel, gesendete Bons, Änderungen, Endrechnung und Zahlung.",
 "La storia completa di ogni ordine: creazione, articoli, comande, modifiche, conto finale e pagamento.",
 "السجل الكامل لكل طلب: الإنشاء والأصناف والتذاكر المرسلة والتغييرات والفاتورة النهائية والدفع."
 ],
+"The guest bill of room {0} has no matching line. The folio line for this charge is on room {1}.": [
+"Die Gästerechnung von Zimmer {0} hat keine passende Zeile. Die Foliozeile für diese Belastung steht auf Zimmer {1}.",
+"Il conto della camera {0} non ha una riga corrispondente. La riga del folio per questo addebito è sulla camera {1}.",
+"لا يوجد بند مطابق في فاتورة الغرفة {0}. بند الحساب لهذه الرسوم موجود على الغرفة {1}."
+],
+"The guest checked out on {0}, {1}. The posting reached the bill on {2}, {3}.": [
+"Der Gast reiste am {0}, {1} ab. Die Buchung kam am {2}, {3} auf die Rechnung.",
+"L'ospite ha fatto il check-out il {0}, {1}. L'addebito è arrivato sul conto il {2}, {3}.",
+"غادر النزيل في {0}، {1}. وصل الترحيل إلى الفاتورة في {2}، {3}."
+],
+"The guest gave a different room number, or moved rooms during the stay.": [
+"Der Gast nannte eine andere Zimmernummer oder wechselte während des Aufenthalts das Zimmer.",
+"L'ospite ha dato un altro numero di camera, o ha cambiato camera durante il soggiorno.",
+"ذكر النزيل رقم غرفة مختلفًا، أو انتقل إلى غرفة أخرى أثناء الإقامة."
+],
 "The guest pays for the burger only": [
 "Der Gast zahlt nur den Burger",
 "L'ospite paga solo l'hamburger",
 "يدفع الضيف ثمن البرغر فقط"
+],
+"The guest settled the bill before the outlet closed the check.": [
+"Der Gast bezahlte die Rechnung, bevor das Outlet die Rechnung abschloss.",
+"L'ospite ha saldato il conto prima che il punto vendita chiudesse lo scontrino.",
+"سدد النزيل الفاتورة قبل أن يغلق المنفذ الحساب."
 ],
 "The individual orders behind the figures above. Choose one to see its full history.": [
 "Die einzelnen Bestellungen hinter den Zahlen oben. Wählen Sie eine für den vollen Verlauf.",
@@ -7039,15 +7564,40 @@
 "Gli ultimi {0} giorni allo stesso ritmo per {1} mesi. Stima.",
 "آخر {0} يومًا بالمعدل نفسه لمدة {1} شهرًا. تقدير."
 ],
+"The minibar was not checked before the guest settled the bill.": [
+"Die Minibar wurde nicht geprüft, bevor der Gast die Rechnung bezahlte.",
+"Il minibar non è stato controllato prima che l'ospite saldasse il conto.",
+"لم يُفحص الميني بار قبل أن يسدد النزيل الفاتورة."
+],
+"The outlet's charge compared with what the property management system holds.": [
+"Die Belastung des Outlets verglichen mit dem, was das PMS enthält.",
+"L'addebito del punto vendita confrontato con quanto registrato nel PMS.",
+"رسوم المنفذ مقارنة بما يحتفظ به نظام إدارة الفندق."
+],
+"The posting waited in the interface queue between the till and the PMS.": [
+"Die Buchung wartete in der Schnittstelle zwischen Kasse und PMS.",
+"L'addebito è rimasto in coda nell'interfaccia tra cassa e PMS.",
+"انتظر الترحيل في قائمة الربط بين الكاشير ونظام إدارة الفندق."
+],
 "The records make this unlikely": [
 "Laut Daten unwahrscheinlich",
 "I dati lo rendono improbabile",
 "تجعل السجلات هذا غير مرجح"
 ],
+"The room number was keyed by hand and two digits were swapped or one key was off.": [
+"Die Zimmernummer wurde von Hand eingegeben und zwei Ziffern wurden vertauscht oder eine Taste verfehlt.",
+"Il numero di camera è stato digitato a mano e due cifre sono state invertite o un tasto era sbagliato.",
+"أُدخل رقم الغرفة يدويًا فتبادلت خانتان أو أُخطئ في مفتاح."
+],
 "The rules behind Finance's flags. A hotel agrees these during onboarding. They are fixed in this demo.": [
 "Die Regeln hinter den Finanzhinweisen. Ein Hotel vereinbart sie beim Onboarding. In dieser Demo sind sie fest.",
 "Le regole dietro le segnalazioni finanziarie. L'hotel le concorda all'avvio. In questa demo sono fisse.",
 "القواعد وراء إشارات المالية. يتفق عليها الفندق عند البدء، وهي ثابتة في هذه النسخة."
+],
+"The same charge posted more than once.": [
+"Dieselbe Belastung mehr als einmal gebucht.",
+"Lo stesso addebito registrato più di una volta.",
+"الرسوم نفسها مرحّلة أكثر من مرة."
 ],
 "The same weekdays have moved about {0} over the last {1} weeks, and {2} of guests are already booked. Within {3} is high, within {4} is medium.": [
 "Dieselben Wochentage schwankten in den letzten {0} Wochen um etwa {1}, und {2} der Gäste sind bereits gebucht. Innerhalb {3} ist hoch, innerhalb {4} ist mittel.",
@@ -7073,6 +7623,16 @@
 "Die Bestandsprognose konnte nicht geladen werden. Die anderen Zahlen sind aktuell.",
 "Non è stato possibile caricare la previsione. Gli altri dati sono aggiornati.",
 "تعذر تحميل توقع المخزون. الأرقام الأخرى ما زالت محدثة."
+],
+"The till sends the charge to the guest folio": [
+"Die Kasse sendet die Belastung an das Gästefolio",
+"La cassa invia l'addebito al folio dell'ospite",
+"يرسل نظام الكاشير الرسوم إلى حساب النزيل"
+],
+"The {0} charge signed to room {1} at {2} reached the guest bill of room {3}.": [
+"Die Belastung über {0}, um {1} auf Zimmer {2} unterschrieben, kam auf die Gästerechnung von Zimmer {3}.",
+"L'addebito di {0} firmato sulla camera {1} alle {2} è arrivato sul conto della camera {3}.",
+"وصلت رسوم بقيمة {0} موقعة على الغرفة {1} عند {2} إلى فاتورة الغرفة {3}."
 ],
 "The {0} of restaurant and room-service sales charged to rooms in this period is already inside net sales at the outlet. Posting it to a room moves it to the guest bill, and settlement at check-out clears that bill. Neither step adds revenue, so Tyll never adds room postings or check-out payments on top of outlet sales.": [
 "Die {0} an Restaurant- und Zimmerservice-Umsätzen, die in diesem Zeitraum auf Zimmer gebucht wurden, sind bereits im Nettoumsatz des Outlets enthalten. Die Buchung verschiebt sie auf die Gästerechnung, das Check-out begleicht sie. Keiner der Schritte erhöht den Umsatz, daher addiert Tyll sie nie zusätzlich.",
@@ -7108,6 +7668,11 @@
 "Diesen Monat",
 "Questo mese",
 "هذا الشهر"
+],
+"This morning, room {0} checks out": [
+"Heute Morgen reist Zimmer {0} ab",
+"Stamattina la camera {0} fa il check-out",
+"هذا الصباح تغادر الغرفة {0}"
 ],
 "This part of stock covers the month.": [
 "Dieser Bestandsbereich reicht für den Monat.",
@@ -7264,6 +7829,11 @@
 "Profitto lordo totale",
 "إجمالي الربح الكلي"
 ],
+"Total posted": [
+"Gebucht gesamt",
+"Totale registrato",
+"إجمالي المرحَّل"
+],
 "Total recorded:": [
 "Gesamt erfasst:",
 "Totale registrato:",
@@ -7394,6 +7964,16 @@
 "Tyll segnala che la Coca-Cola è stata rimossa dopo l'invio della comanda al bar. Non ne deduce il motivo. La verifica mostra le prove e cosa controllare.",
 "يشير Tyll إلى حذف الكوكاكولا بعد وصول تذكرتها إلى البار. ولا يستنتج السبب. ويعرض التحقيق الأدلة وما يجب التحقق منه."
 ],
+"Tyll flags that the bill was signed to room {0} and posted to room {1}.": [
+"Tyll meldet, dass die Rechnung auf Zimmer {0} unterschrieben und auf Zimmer {1} gebucht wurde.",
+"Tyll segnala che il conto è stato firmato sulla camera {0} e addebitato alla camera {1}.",
+"يشير Tyll إلى أن الفاتورة وُقعت على الغرفة {0} ورُحّلت إلى الغرفة {1}."
+],
+"Tyll flags that the bill was signed to room {0} and posted to room {1}. It does not conclude why. The case shows both sides and what to check: move the charge before room {2} checks out, and collect it from room {3}’s card on file.": [
+"Tyll meldet, dass die Rechnung auf Zimmer {0} unterschrieben und auf Zimmer {1} gebucht wurde. Es schließt nicht auf den Grund. Der Fall zeigt beide Seiten und was zu prüfen ist: die Belastung verschieben, bevor Zimmer {2} abreist, und sie über die hinterlegte Karte von Zimmer {3} einziehen.",
+"Tyll segnala che il conto è stato firmato sulla camera {0} e addebitato alla camera {1}. Non ne deduce il motivo. Il caso mostra entrambe le parti e cosa verificare: spostare l'addebito prima del check-out della camera {2}, e incassarlo dalla carta registrata della camera {3}.",
+"يشير Tyll إلى أن الفاتورة وُقعت على الغرفة {0} ورُحّلت إلى الغرفة {1}. ولا يستنتج السبب. تعرض الحالة الجانبين وما يجب التحقق منه: نقل الرسوم قبل مغادرة الغرفة {2}، وتحصيلها من البطاقة المسجلة للغرفة {3}."
+],
 "Tyll home": [
 "Tyll Startseite",
 "Home di Tyll",
@@ -7408,6 +7988,11 @@
 "Tyll sucht nach {0} oder mehr Fällen unter einem Login, die mindestens {1} der Entfernungen eines Outlets ausmachen.",
 "Tyll cerca {0} o più casi con un accesso che rappresentino almeno {1} delle rimozioni di un punto vendita.",
 "يبحث Tyll عن {0} حالات أو أكثر ضمن دخول واحد تمثل {1} على الأقل من عمليات الحذف في المنفذ."
+],
+"Tyll matches the check number on the folio": [
+"Tyll gleicht die Rechnungsnummer im Folio ab",
+"Tyll confronta il numero del conto nel folio",
+"يطابق Tyll رقم الفاتورة في حساب النزيل"
 ],
 "Tyll reads from the hotel's existing systems and changes nothing in them. This is what stands behind each figure in the demo.": [
 "Tyll liest aus den bestehenden Hotelsystemen und ändert dort nichts. Das steht hinter jeder Zahl in der Demo.",
@@ -7619,6 +8204,11 @@
 "Valore delle scorte prioritarie mancanti a ogni conteggio settimanale.",
 "قيمة المخزون ذي الأولوية المفقود في كل جرد أسبوعي."
 ],
+"Value of room charges that did not match the guest bill, per day for the last {0} days. {1} of {2} charges did not match in the selected period.": [
+"Wert der Zimmerbelastungen, die nicht zur Gästerechnung passten, pro Tag in den letzten {0} Tagen. {1} von {2} Belastungen passten im gewählten Zeitraum nicht.",
+"Valore degli addebiti in camera non corrispondenti al conto, al giorno negli ultimi {0} giorni. {1} di {2} addebiti non corrispondevano nel periodo scelto.",
+"قيمة رسوم الغرف التي لم تطابق فاتورة النزيل يوميًا خلال آخر {0} يومًا. {1} من {2} رسوم لم تطابق في الفترة المختارة."
+],
 "Vanilla ice cream": [
 "Vanilleeis",
 "Gelato alla vaniglia",
@@ -7633,6 +8223,11 @@
 "Abweichung nach Artikel",
 "Scostamento per articolo",
 "الفرق حسب الصنف"
+],
+"View": [
+"Ansehen",
+"Vedi",
+"عرض"
 ],
 "View the demo as": [
 "Demo ansehen als",
@@ -7994,6 +8589,11 @@
 "Quando",
 "متى"
 ],
+"Where": [
+"Wo",
+"Dove",
+"المكان"
+],
 "Where and when": [
 "Wo und wann",
 "Dove e quando",
@@ -8063,6 +8663,11 @@
 "Grund",
 "Motivo",
 "السبب"
+],
+"Why charges did not match": [
+"Warum Belastungen nicht passten",
+"Perché gli addebiti non corrispondevano",
+"لماذا لم تتطابق الرسوم"
 ],
 "Why recount?": [
 "Warum nachzählen?",
@@ -8144,6 +8749,11 @@
 "Nel budget eventi.",
 "ضمن ميزانية الفعاليات."
 ],
+"Worked example: a dinner posted to the wrong room": [
+"Beispiel: ein Abendessen auf dem falschen Zimmer gebucht",
+"Esempio: una cena addebitata alla camera sbagliata",
+"مثال تطبيقي: عشاء رُحّل إلى الغرفة الخطأ"
+],
 "Working out order quantities, chasing deliveries": [
 "Bestellmengen ermitteln, Lieferungen nachverfolgen",
 "Calcolo delle quantità da ordinare, sollecito consegne",
@@ -8183,6 +8793,11 @@
 "Falscher Betrag",
 "Importo errato",
 "مبلغ خاطئ"
+],
+"Wrong room": [
+"Falsches Zimmer",
+"Camera sbagliata",
+"غرفة خطأ"
 ],
 "Wrong since": [
 "Falsch seit",
@@ -8298,6 +8913,11 @@
 "Flaschen",
 "bottiglie",
 "زجاجات"
+],
+"by the day of the charge": [
+"nach Tag der Belastung",
+"per giorno dell'addebito",
+"حسب يوم الرسوم"
 ],
 "choose dates": [
 "Daten wählen",
@@ -8504,6 +9124,11 @@
 "sul conto",
 "في الفاتورة"
 ],
+"one charge of {0} on the till, {1} postings on the folio.": [
+"eine Belastung über {0} an der Kasse, {1} Buchungen im Folio.",
+"un addebito di {0} alla cassa, {1} registrazioni nel folio.",
+"رسوم واحدة بقيمة {0} في الكاشير، {1} ترحيلات في الحساب."
+],
 "over invoiced": [
 "zu viel berechnet",
 "fatturato in eccesso",
@@ -8578,6 +9203,26 @@
 "Supervisor",
 "supervisore",
 "مشرف"
+],
+"the folio has no matching posting.": [
+"das Folio hat keine passende Buchung.",
+"il folio non ha un addebito corrispondente.",
+"لا يحتوي الحساب على ترحيل مطابق."
+],
+"the guest checked out on {0}, {1}, and the {2} posting arrived on {3}, {4}, after the bill was settled.": [
+"der Gast reiste am {0}, {1} ab, und die Buchung über {2} kam am {3}, {4} an, nachdem die Rechnung bezahlt war.",
+"l'ospite ha fatto il check-out il {0}, {1}, e l'addebito di {2} è arrivato il {3}, {4}, dopo il saldo del conto.",
+"غادر النزيل في {0}، {1}، ووصل ترحيل {2} في {3}، {4}، بعد تسديد الفاتورة."
+],
+"the guest folio in the PMS:": [
+"dem Gästefolio im PMS:",
+"il folio dell'ospite nel PMS:",
+"حساب النزيل في نظام إدارة الفندق:"
+],
+"the till charged {0} to room {1}": [
+"die Kasse belastete {0} auf Zimmer {1}",
+"la cassa ha addebitato {0} alla camera {1}",
+"حمّل نظام الكاشير {0} على الغرفة {1}"
 ],
 "to order": [
 "zu bestellen",
@@ -8729,6 +9374,36 @@
 "{0} casi",
 "{0} حالات"
 ],
+"{0} charge": [
+"{0} Belastung",
+"{0} addebito",
+"{0} رسم"
+],
+"{0} charged to rooms": [
+"{0} auf Zimmer belastet",
+"{0} addebitati in camera",
+"{0} محملة على الغرف"
+],
+"{0} charges": [
+"{0} Belastungen",
+"{0} addebiti",
+"{0} رسوم"
+],
+"{0} charges from outlet tills, room service, minibar, spa and laundry. {1} of it is outlet sales, counted once.": [
+"{0} Belastungen aus Outlet-Kassen, Zimmerservice, Minibar, Spa und Wäscherei. {1} davon sind Outlet-Umsätze, einmal gezählt.",
+"{0} addebiti da casse dei punti vendita, servizio in camera, minibar, spa e lavanderia. {1} sono vendite dei punti vendita, contate una volta.",
+"{0} رسوم من نقاط البيع وخدمة الغرف والميني بار والسبا والغسيل. منها {1} مبيعات منافذ، تُحتسب مرة واحدة."
+],
+"{0} check {1}": [
+"{0} Rechnung {1}",
+"{0} conto {1}",
+"{0} الفاتورة {1}"
+],
+"{0} check {1}: {2} for room {3}, recorded at {4}.": [
+"{0} Rechnung {1}: {2} für Zimmer {3}, erfasst um {4}.",
+"{0} conto {1}: {2} per la camera {3}, registrato alle {4}.",
+"{0} الفاتورة {1}: {2} للغرفة {3}، سُجلت عند {4}."
+],
 "{0} coming": [
 "{0} unterwegs",
 "{0} in arrivo",
@@ -8864,6 +9539,11 @@
 "{0} ospiti",
 "{0} ضيفًا"
 ],
+"{0} guests sign their dinner bill to room {1}": [
+"{0} Gäste unterschreiben ihre Rechnung auf Zimmer {1}",
+"{0} ospiti firmano il conto della cena sulla camera {1}",
+"{0} نزلاء يوقعون فاتورة العشاء على الغرفة {1}"
+],
 "{0} h": [
 "{0} Std.",
 "{0} h",
@@ -8893,6 +9573,11 @@
 "{0} Zutaten fehlen für diesen Plan.",
 "{0} ingredienti mancano per questo piano.",
 "تنقص {0} مكونات لهذه الخطة."
+],
+"{0} involved": [
+"{0} betroffen",
+"{0} coinvolti",
+"{0} معنية"
 ],
 "{0} item": [
 "{0} Artikel",
@@ -9044,6 +9729,11 @@
 "{0} di quanto perso. {1} all'anno a questo ritmo.",
 "{0} من الخسارة. {1} سنويًا بهذا المعدل."
 ],
+"{0} of {1} charges": [
+"{0} von {1} Belastungen",
+"{0} di {1} addebiti",
+"{0} من {1} رسوم"
+],
 "{0} of {1} digits entered": [
 "{0} von {1} Ziffern eingegeben",
 "{0} di {1} cifre inserite",
@@ -9054,6 +9744,11 @@
 "{0} di {1} ordini",
 "{0} من {1} طلب"
 ],
+"{0} on the till, {1} on the folio.": [
+"{0} an der Kasse, {1} im Folio.",
+"{0} alla cassa, {1} nel folio.",
+"{0} في الكاشير، {1} في الحساب."
+],
 "{0} on the way": [
 "{0} unterwegs",
 "{0} in arrivo",
@@ -9063,6 +9758,16 @@
 "{0} offen",
 "{0} aperti",
 "{0} مفتوحة"
+],
+"{0} open flag, until checked": [
+"{0} offener Hinweis, bis geprüft",
+"{0} segnalazione aperta, fino alla verifica",
+"{0} تنبيه مفتوح حتى التحقق"
+],
+"{0} open flags, until checked": [
+"{0} offene Hinweise, bis geprüft",
+"{0} segnalazioni aperte, fino alla verifica",
+"{0} تنبيهات مفتوحة حتى التحقق"
 ],
 "{0} outlets, {1} to {2}. {3} leads with {4}.": [
 "{0} Outlets, {1} bis {2}. {3} führt mit {4}.",
@@ -9244,6 +9949,11 @@
 "Dal {0} al {1}. Solo cibo. Le rotture sono in Inventario.",
 "من {0} إلى {1}. الأطعمة فقط. الكسر ضمن العهدة."
 ],
+"{0} to {1}. Value involved. Choose a reason to see its cases.": [
+"{0} bis {1}. Betroffener Wert. Wählen Sie einen Grund, um seine Fälle zu sehen.",
+"Da {0} a {1}. Valore coinvolto. Scegli un motivo per vederne i casi.",
+"من {0} إلى {1}. القيمة المعنية. اختر سببًا لرؤية حالاته."
+],
 "{0} transactions, {1} to {2}. Filter by day and search.": [
 "{0} Transaktionen, {1} bis {2}. Nach Tag filtern und suchen.",
 "{0} transazioni, dal {1} al {2}. Filtra per giorno e cerca.",
@@ -9298,6 +10008,16 @@
 "{0} warten auf Freigabe, {1} unterwegs, {2} insgesamt",
 "{0} in attesa di approvazione, {1} in arrivo, {2} in totale",
 "{0} بانتظار الموافقة، {1} في الطريق، {2} إجمالًا"
+],
+"{0} was charged to room {1}, and the folio line for check {2} is on room {3}.": [
+"{0} wurde auf Zimmer {1} belastet, und die Foliozeile für Rechnung {2} steht auf Zimmer {3}.",
+"{0} è stato addebitato alla camera {1}, e la riga del folio per il conto {2} è sulla camera {3}.",
+"حُمّل {0} على الغرفة {1}، وبند الحساب للفاتورة {2} موجود على الغرفة {3}."
+],
+"{0} was charged to room {1}, and the folio line for this charge is on room {2}.": [
+"{0} wurde auf Zimmer {1} belastet, und die Foliozeile für diese Belastung steht auf Zimmer {2}.",
+"{0} è stato addebitato alla camera {1}, e la riga del folio per questo addebito è sulla camera {2}.",
+"حُمّل {0} على الغرفة {1}، وبند الحساب لهذه الرسوم موجود على الغرفة {2}."
 ],
 "{0} was due Today {1}:{2} and has not arrived.": [
 "{0} war heute um {1}:{2} fällig und ist nicht angekommen.",
@@ -9473,6 +10193,11 @@
 "{0}, Mittwoch, Spätschicht:",
 "{0}, mercoledì, turno di notte:",
 "{0}، الأربعاء، الوردية المتأخرة:"
+],
+"{0}, check {1}": [
+"{0}, Rechnung {1}",
+"{0}, conto {1}",
+"{0}، الفاتورة {1}"
 ],
 "{0}, close": [
 "{0}, Schluss",

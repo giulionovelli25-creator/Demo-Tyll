@@ -178,7 +178,8 @@ export function computeTotals(ctx: Ctx, sel: Sel): Totals {
     const st = ctx.investigations[e.id] ?? ctx.data.seedInvestigations[e.id];
     const rate = fxRate(propertyById[e.propertyId].currency, sel.currency);
     flaggedCases += 1;
-    if (!e.type.startsWith("room_charge")) adjustments += 1;
+    // Room charge differences count when they belong to an outlet bill; minibar, spa and laundry have no order to count against.
+    if (!e.type.startsWith("room_charge") || e.orderId) adjustments += 1;
     if (st.status === "closed") {
       confirmedLoss += st.confirmedLoss * rate;
       recovered += st.recovered * rate;

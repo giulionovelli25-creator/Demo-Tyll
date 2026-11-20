@@ -3,7 +3,7 @@
 import { outletById, storeOwner } from "../data/catalog";
 import { demoCases } from "../data/demo-cases";
 import { getDataset, type Dataset } from "../data/generate";
-import { allowedOutlets, allowedProperties, hasWholeProperty } from "../domain/access";
+import { allowedOutlets, allowedProperties, can, hasWholeProperty } from "../domain/access";
 import { detectOrderException } from "../domain/detect";
 import { historicalPrepRatio } from "../domain/operations";
 import { orderTotals } from "../domain/orders";
@@ -37,7 +37,8 @@ export function snapshotFor(user: User): Snapshot {
   const snap: Snapshot = {
     dayItems: procurement ? [] : byOutlet(d.dayItems).map((r) => (staff ? { ...r, gross: 0, comps: 0, discounts: 0, refunds: 0 } : r)),
     dayOutlets: staff || procurement ? [] : byOutlet(d.dayOutlets),
-    roomCharges: staff || procurement ? [] : d.roomCharges.filter((c) => (c.outletId ? outlets.has(c.outletId) : whole.has(c.propertyId))),
+    // Room numbers and check-out times are guest data: only roles that work the room charge check receive them.
+    roomCharges: staff || procurement || !can(user, "roomcharge.view") ? [] : d.roomCharges.filter((c) => (c.outletId ? outlets.has(c.outletId) : whole.has(c.propertyId))),
     exceptions,
     seedInvestigations,
     wasteLogs: byOutlet(d.wasteLogs),

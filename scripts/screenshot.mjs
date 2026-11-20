@@ -55,11 +55,16 @@ try {
   const h = await evaluate("Math.min(document.documentElement.scrollHeight, 12000)");
   await send("Emulation.setDeviceMetricsOverride", { width, height: Math.max(phone ? 812 : 900, h || 0), deviceScaleFactor: phone ? 2 : 1, mobile: phone });
   await sleep(600);
-  const shot = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true });
+  // The viewport is already the page's full height. Capturing beyond it shifts right to left pages sideways (the background
+  // wave reaches past the left edge), so capture the viewport itself.
+  const fullHeight = Math.max(phone ? 812 : 900, h || 0);
+  const shot = await send("Page.captureScreenshot", { format: "png", clip: { x: 0, y: 0, width, height: fullHeight, scale: 1 } });
   fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true });
   fs.writeFileSync(out, Buffer.from(shot.result.data, "base64"));
   const errors = await evaluate("document.body.innerText.match(/could not load|something went wrong/i)?.[0] ?? ''");
-  console.log(JSON.stringify({ out, width, role, lang, roleSwitch: switched, url: await evaluate("location.pathname+location.search"), pageHeight: h, errorText: errors }));
+  // Text with no translation yet, so a screenshot in another language also lists what is still in English.
+  const missing = lang === "en" ? [] : await evaluate("[...(window.__tyllMissing ?? [])]");
+  console.log(JSON.stringify({ out, width, role, lang, roleSwitch: switched, url: await evaluate("location.pathname+location.search"), pageHeight: h, errorText: errors, missing }));
   ws.close();
 } finally {
   chrome.kill();

@@ -105,7 +105,6 @@ export default function ReportsPage() {
     ] },
     { title: "Money records", links: [
       { m: "investigations", href: "/investigations", title: "Money Back List", summary: "Every flagged case, open and closed" },
-      { m: "money", href: "/money?tab=rooms", title: "Room charges", summary: "Charges posted to rooms" },
       { m: "money", href: "/money?tab=tips", title: "Tips", summary: "By outlet. Preview" },
     ] },
     { title: "Performance", links: [

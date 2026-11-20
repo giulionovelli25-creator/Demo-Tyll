@@ -60,7 +60,7 @@ Prepared 19 November 2026 from the Tyll demo (branch `feature/purchasing-stock-c
 |---|---|---|
 | Flags for voids, refunds, comps and discounts without a reason or above a limit | Working and tested | Each flag says what it was compared against. |
 | Items removed from a bill after they were sent to the kitchen or bar | Working and tested | |
-| Room charges missing, doubled or different on the guest folio | Working and tested | Simulated PMS. |
+| Room charges missing, doubled, different, on the wrong room or posted after check-out on the guest folio | Working and tested | Simulated PMS. Room charge check at /money?tab=rooms. |
 | Cash on hand against cash sales, per outlet and shift | Working and tested | Flagged above €10 or 1%. Past counts are simulated; new ones are entered in Tyll. |
 | Stock losses marked as estimates until a stock take confirms them | Working and tested | |
 | Card payments | Not checked | Reconciled by the payment provider. |

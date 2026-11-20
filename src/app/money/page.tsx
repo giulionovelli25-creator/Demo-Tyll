@@ -13,22 +13,27 @@ import type { ChartPoint } from "@/components/home/chart";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
 import { CashUps } from "@/components/money/cash";
-import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, Stat, SummaryBar, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
+import { RoomChargeCheck } from "@/components/money/room-charges";
+import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, SummaryBar, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
 import { canSeeOutlet } from "@/lib/domain/access";
-import { POLICY, ROOM_TYPES, TYPE_LABEL, detectOrderException } from "@/lib/domain/detect";
+import { POLICY, TYPE_LABEL, detectOrderException } from "@/lib/domain/detect";
 import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/hooks";
-import { SOURCE_LABEL, STATUS_LABEL } from "@/lib/labels";
+import { STATUS_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
-import type { ChargeSource, ExceptionType, Order } from "@/lib/types";
+import type { ExceptionType, Order } from "@/lib/types";
 import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
 
 type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips" | "cash";
 
-const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charges", tips: "Tips (preview)", cash: "Cash on hand against cash sales" };
+const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charge check", tips: "Tips (preview)", cash: "Cash on hand against cash sales" };
+const SUB_QUESTION: Partial<Record<Tab, [question: string, lead: string]>> = {
+  cash: ["Does the cash in the drawer match the cash the till took?", "Per outlet and shift. Simulated data."],
+  rooms: ["Did every room charge reach the guest's bill?", "Each bill signed to a room, and each minibar, spa and laundry charge, matched with the guest folio in the PMS. A difference is a prompt to check, not proof. Simulated data."],
+};
 const RevenueProfitChart = dynamic(() => import("@/components/home/chart").then((m) => m.RevenueProfitChart), { ssr: false, loading: () => <div className="h-[264px] animate-pulse rounded-[var(--radius-control)] bg-mist" /> });
 
 /** The period for the detail below it. The top of the page always shows today, 7 days and 30 days. */
@@ -70,7 +75,7 @@ export default function MoneyPage() {
   const inSel = useMemo(() => investigations.filter((i) => exceptionInSel(i, sel)), [investigations, sel]);
   const valueOf = (i: (typeof inSel)[number]) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency);
   const flagDaily = byDay(inSel, (i) => i.date, valueOf);
-  const newFlags = weekSums(inSel.filter((i) => !ROOM_TYPES.includes(i.type)), (i) => i.date, () => 1);
+  const newFlags = weekSums(inSel, (i) => i.date, () => 1);
   const pastDeadline = inSel.filter((i) => i.status !== "closed" && i.deadline && i.deadline < DEMO_TODAY).length;
   const weekOutlets = useMemo(() => totalsByOutlet(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
   const best = [...weekOutlets].sort((x, y) => y.now.net - x.now.net)[0];
@@ -84,10 +89,10 @@ export default function MoneyPage() {
   if (sub) {
     return (
       <div className="space-y-6">
-        <PageHeader title={sub} question={tab === "cash" ? "Does the cash in the drawer match the cash the till took?" : undefined} lead={tab === "cash" ? "Per outlet and shift. Simulated data." : undefined} />
+        <PageHeader title={sub} question={tab ? SUB_QUESTION[tab]?.[0] : undefined} lead={tab ? SUB_QUESTION[tab]?.[1] : undefined} />
         {tab === "cash" && <CashUps propertyId={propertyId ?? "lis"} />}
         {tab === "orders" && <><Period /><Orders /></>}
-        {tab === "rooms" && <RoomCharges />}
+        {tab === "rooms" && <><Period /><RoomChargeCheck /></>}
         {tab === "tips" && <Tips />}
       </div>
     );
@@ -135,6 +140,7 @@ export default function MoneyPage() {
             <Mistakes />
           </Section>
           <SectionLink href="/money?tab=cash" title="Cash on hand against cash sales" summary="Each outlet's drawer at the end of the shift against the bills paid in cash. Card payments are reconciled by the payment provider." />
+          <SectionLink href="/money?tab=rooms" title="Room charge check" summary="Each bill signed to a room against the guest folio: missing, a different amount, the wrong room or after check-out." />
         </>
       ) : (
         <>
@@ -158,7 +164,7 @@ function Mistakes() {
   const ctx = useCtx();
   const all = useInvestigations();
   const patterns = usePatterns().filter((p) => sel.outletIds.includes(p.outletId));
-  const inPeriod = useMemo(() => all.filter((i) => !ROOM_TYPES.includes(i.type) && i.date >= sel.range.from && i.date <= sel.range.to && exceptionInSel(i, sel)), [all, sel]);
+  const inPeriod = useMemo(() => all.filter((i) => i.date >= sel.range.from && i.date <= sel.range.to && exceptionInSel(i, sel)), [all, sel]);
   const rows = useMemo(() => totalsByOutlet(ctx, sel), [ctx, sel]);
   const toDisplay = (pid: string, n: number) => n * fxRate(propertyById[pid].currency, currency);
   const byType = useMemo(() => {
@@ -170,6 +176,8 @@ function Mistakes() {
     return [...m].map(([type, v]) => ({ type, ...v })).sort((a, b) => b.value - a.value);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inPeriod, currency]);
+  // Room charge types joined the list, so it shows the five largest first, like every other list.
+  const [allTypes, setAllTypes] = useState(false);
   const hero = all.find((i) => i.id === HERO_EXCEPTION_ID);
   const steps = [
     ["8:42 PM", "Guest orders a burger and a Coke", ""],
@@ -203,7 +211,10 @@ function Mistakes() {
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <Panel title="Flagged by type" description="Value involved in the period. Choose a type to see its cases.">
           {byType.length === 0 ? <EmptyState title="Nothing flagged in this period" /> : (
-            <BarList format={(n) => money(n)} rows={byType.map((t) => ({ key: t.type, label: TYPE_LABEL[t.type], sub: `${t.n} case${t.n === 1 ? "" : "s"}`, value: t.value, onClick: () => router.push(`/investigations?type=${t.type}&status=all`) }))} />
+            <>
+              <BarList format={(n) => money(n)} rows={(allTypes ? byType : byType.slice(0, 5)).map((t) => ({ key: t.type, label: TYPE_LABEL[t.type], sub: `${t.n} case${t.n === 1 ? "" : "s"}`, value: t.value, onClick: () => router.push(`/investigations?type=${t.type}&status=all`) }))} />
+              {byType.length > 5 && <button type="button" onClick={() => setAllTypes((v) => !v)} className={cn(textLink, "mt-3")}>{allTypes ? "Show the five largest" : `Show all ${byType.length} types`}</button>}
+            </>
           )}
         </Panel>
         <Panel title="Flags per 1,000 orders, by outlet" description="So busy and quiet outlets compare fairly.">
@@ -217,6 +228,7 @@ function Mistakes() {
             <li>Complimentary items above {POLICY.compMaxValue} per order, or with no reason.</li>
             <li>Refunds above {Math.round(POLICY.refundMaxShare * 100)}% of a bill, late, or unexplained.</li>
             <li>Whole orders cancelled after they were sent to the kitchen or bar.</li>
+            <li>Room charges missing from the guest bill, posted twice, for a different amount, to the wrong room or after check-out.</li>
           </ul>
         </Panel>
       </div>
@@ -345,94 +357,6 @@ function Orders() {
         </>
       )}
     </Panel>
-  );
-}
-
-function RoomCharges() {
-  const router = useRouter();
-  const { sel, money, currency } = useView();
-  const ctx = useCtx();
-  const all = useInvestigations();
-  const charges = useMemo(
-    () => ctx.data.roomCharges.filter((c) => c.date >= sel.range.from && c.date <= sel.range.to && (c.outletId ? sel.outletIds.includes(c.outletId) : sel.wholeProperties.includes(c.propertyId))),
-    [ctx.data.roomCharges, sel],
-  );
-  const rate = (pid: string) => fxRate(propertyById[pid].currency, currency);
-  const bySource = (Object.keys(SOURCE_LABEL) as ChargeSource[]).map((source) => {
-    const list = charges.filter((c) => c.source === source);
-    return {
-      source, n: list.length,
-      expected: sum(list, (c) => c.expected * rate(c.propertyId)),
-      posted: sum(list, (c) => sum(c.posted, (x) => x) * rate(c.propertyId)),
-      missing: list.filter((c) => c.posted.length === 0).length,
-      duplicate: list.filter((c) => c.posted.length > 1).length,
-      incorrect: list.filter((c) => c.posted.length === 1 && Math.abs(c.posted[0] - c.expected) > POLICY.roomChargeTolerance).length,
-    };
-  }).filter((s) => s.n > 0);
-  const flagged = all.filter((i) => ROOM_TYPES.includes(i.type) && i.date >= sel.range.from && i.date <= sel.range.to && exceptionInSel(i, sel));
-  const expected = sum(bySource, (s) => s.expected);
-  const posted = sum(bySource, (s) => s.posted);
-  const outletSales = sum(bySource.filter((s) => s.source === "restaurant" || s.source === "room_service"), (s) => s.expected);
-  return (
-    <div className="space-y-6">
-      <Panel title="Charges to guest rooms" description="Each charge recorded at an outlet or by housekeeping is matched to the line on the guest bill in the property management system.">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-6 lg:grid-cols-4">
-          <Stat label="Charges checked" value={fmtNum(charges.length)} />
-          <Stat label="Should be on guest bills" value={money(expected)} />
-          <Stat label="Actually posted" value={money(posted)} sub={`${money(posted - expected)} difference`} />
-          <Stat label="Postings flagged" tone={flagged.length ? "warn" : undefined} value={flagged.length} sub={`${flagged.filter((f) => f.status !== "closed").length} still open`} onClick={() => router.push("/investigations?type=room&status=all")} />
-        </div>
-        <div className="mt-6 rounded-2xl bg-mist px-5 py-4 text-sm text-graphite">
-          <p className="text-ink">Revenue is counted once.</p>
-          <p className="mt-1 max-w-[95ch]">The {money(outletSales)} of restaurant and room-service sales charged to rooms in this period is already inside net sales at the outlet. Posting it to a room moves it to the guest bill, and settlement at check-out clears that bill. Neither step adds revenue, so Tyll never adds room postings or check-out payments on top of outlet sales.</p>
-        </div>
-      </Panel>
-
-      <Panel title="By source" flush>
-        {bySource.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No room charges in this selection">Minibar, spa and laundry charges belong to the whole property. Choose a property with all outlets to see them.</EmptyState></div> : (
-          <TableWrap>
-            <table className="w-full min-w-[760px] text-sm">
-              <thead><tr><Th>Source</Th><Th align="right">Charges</Th><Th align="right">Should be posted</Th><Th align="right">Posted</Th><Th align="right">Missing</Th><Th align="right">Duplicated</Th><Th align="right">Wrong amount</Th></tr></thead>
-              <tbody>
-                {bySource.map((s) => (
-                  <tr key={s.source} className={rowClass}>
-                    <Td className="text-ink">{SOURCE_LABEL[s.source]}</Td>
-                    <Td align="right">{fmtNum(s.n)}</Td>
-                    <Td align="right">{money(s.expected)}</Td>
-                    <Td align="right">{money(s.posted)}</Td>
-                    <Td align="right" className={cn(s.missing > 0 && "text-warn")}>{s.missing}</Td>
-                    <Td align="right" className={cn(s.duplicate > 0 && "text-warn")}>{s.duplicate}</Td>
-                    <Td align="right" className={cn(s.incorrect > 0 && "text-warn")}>{s.incorrect}</Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </TableWrap>
-        )}
-        <Note className="px-6 py-4">Minibar, spa and laundry postings are simulated for the last 21 days. Room-damage charge verification is planned and not part of this demo.</Note>
-      </Panel>
-
-      <Panel title="Flagged postings" flush>
-        {flagged.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Every charge in this period reached the right bill" /></div> : (
-          <TableWrap>
-            <table className="w-full min-w-[760px] text-sm">
-              <thead><tr><Th>What Tyll found</Th><Th>Hotel</Th><Th>When</Th><Th align="right">Value involved</Th><Th>Status</Th></tr></thead>
-              <tbody>
-                {flagged.slice(0, 12).map((i) => (
-                  <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
-                    <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}</span></Td>
-                    <Td>{propertyById[i.propertyId].name}</Td>
-                    <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
-                    <Td align="right">{money(i.exposure * rate(i.propertyId))}</Td>
-                    <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </TableWrap>
-        )}
-      </Panel>
-    </div>
   );
 }
 

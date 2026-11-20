@@ -59,7 +59,7 @@ export const SECTIONS: NavSection[] = [
     id: "revenue", title: "Revenue and reconciliation", icon: Banknote, tone: "violet",
     items: [
       { id: "revenue", label: "Revenue", href: "/money", icon: Banknote, also: ["/money?tab=outlets"] },
-      { id: "flags", label: "Flagged transactions", short: "Flags", href: "/money?tab=flags", icon: Flag, also: ["/money?tab=mistakes", "/money?tab=cash"] },
+      { id: "flags", label: "Flagged transactions", short: "Flags", href: "/money?tab=flags", icon: Flag, also: ["/money?tab=mistakes", "/money?tab=cash", "/money?tab=rooms"] },
       { id: "reports", label: "Reports", href: "/reports", icon: FileText },
     ],
   },
@@ -88,7 +88,7 @@ export function activeItem(pathname: string, tab: string | null): NavItem | null
     const exact = addresses.find((x) => x.path === pathname && x.tab === tab);
     if (exact) return exact.i;
   }
-  // Pages found inside another page: All transactions, room charges, the Money Back List, the menu, the count.
+  // Pages found inside another page: All transactions, the Money Back List, the menu, the count.
   const SUB: Record<string, string> = { "/investigations": "flags", "/menu": "revenue", "/performance": "revenue", "/finance": "deliveries", "/count": "stock" };
   const root = `/${pathname.split("/")[1]}`;
   if (SUB[root]) return ALL_ITEMS.find((i) => i.id === SUB[root]) ?? null;

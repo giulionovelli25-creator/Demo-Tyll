@@ -2,6 +2,7 @@
 import { RecordFields, Timeline, type TimelineItem } from "@/components/timeline";
 import { Badge, cn } from "@/components/ui";
 import { itemById, outletById, propertyById, staffById } from "@/lib/data/catalog";
+import { classifyRoomCharge, folioTime } from "@/lib/domain/detect";
 import { lineValue, orderTimeline, orderTotals } from "@/lib/domain/orders";
 import type { Order, RoomCharge } from "@/lib/types";
 import { fmtMoney, fmtTime } from "@/lib/util";
@@ -118,6 +119,9 @@ export function Tickets({ order }: { order: Order }) {
 export function ChargeEvidence({ charge }: { charge: RoomCharge }) {
   const currency = propertyById[charge.propertyId].currency;
   const money = (n: number) => fmtMoney(n, currency, { decimals: n % 1 !== 0 });
+  const status = classifyRoomCharge(charge);
+  const wrongRoom = status === "wrong_room";
+  const late = status === "after_checkout";
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="rounded-2xl border border-line p-4">
@@ -128,6 +132,13 @@ export function ChargeEvidence({ charge }: { charge: RoomCharge }) {
       </div>
       <div className="rounded-2xl border border-line p-4">
         <p className="text-[13px] text-steel">Guest bill in the PMS</p>
+        {charge.posted.length > 0 && (
+          <p className="mt-2 text-xs text-steel">
+            <span className={cn("block", wrongRoom && "font-medium text-warn")}>Room {charge.folioRoom ?? charge.room}</span>
+            {charge.postedMin !== undefined && <span className="block">Posted {folioTime(charge.date, charge.postedMin)}</span>}
+          </p>
+        )}
+        {charge.checkoutMin !== undefined && <p className={cn("text-xs", late ? "font-medium text-warn" : "text-steel")}>Room {charge.room} checked out {folioTime(charge.date, charge.checkoutMin)}</p>}
         {charge.posted.length === 0 ? (
           <p className="mt-2 py-2 text-sm text-warn">No matching line found.</p>
         ) : (
