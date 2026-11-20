@@ -12,7 +12,7 @@ import { useAlertFeed } from "@/lib/alert-feed";
 import { outletById, propertyById } from "@/lib/data/catalog";
 import { compare, computeTotals, exceptionInSel } from "@/lib/domain/metrics";
 import { topAlerts } from "@/lib/domain/top-alerts";
-import { inBillsLedger } from "@/lib/domain/detect";
+import { inBillsLedger, isEstimateFlag } from "@/lib/domain/detect";
 import { can, type ModuleId } from "@/lib/domain/access";
 import { useAutoOrder } from "@/lib/plan-hooks";
 import { useCtx, useInvestigations, useView } from "@/lib/hooks";
@@ -110,11 +110,12 @@ function LedgerBars({ rows, lost, saved, money, before }: { rows: LeakRow[]; los
                 {r.saved > 0 && <span className="block h-2 rounded-full bg-pos" style={{ width: width(r.saved) }} />}
               </span>
               <span className={cn("mt-1 block text-xs", r.saved > 0 ? "text-pos" : "text-graphite")}>{savedLine(r, money, before)}</span>
+              {!!r.estimate && <span className="mt-0.5 block text-xs text-graphite">{money(r.estimate, { compact: true })} of it estimates on open cases</span>}
             </Link>
           </li>
         ))}
       </ul>
-      <Note>Saved is money recovered on closed cases, credits from suppliers, and any loss that ran below the daily pace of the 30 days before, which is an estimate.</Note>
+      <Note>Saved is money recovered on closed cases, credits from suppliers, and any loss that ran below the daily pace of the 30 days before, which is an estimate. Drinks not billed are an estimate, and open flags count at their value until checked.</Note>
     </div>
   );
 }
@@ -177,11 +178,12 @@ export function Home() {
       { id: "waste", label: "Food and drinks thrown away", lost: wasteOf(false, (d) => d >= from), saved: paceSaving(wasteOf(false, lastMonth), beforeDays, wasteOf(false, fullDay), nowDays), how: "pace", href: "/waste" },
       { id: "broken", label: "Glass and china broken", lost: wasteOf(true, (d) => d >= from), saved: paceSaving(wasteOf(true, lastMonth), beforeDays, wasteOf(true, fullDay), nowDays), how: "pace", href: "/waste" },
       { id: "drinks", label: "Drinks poured, not billed", lost: pour ? (pour.wine.totals.month.gapValue + pour.spirits.totals.month.gapValue) * pourRate : 0, saved: paceSaving(drinksBefore, beforeDays, pour ? (pour.wine.recentFull.gapValue + pour.spirits.recentFull.gapValue) * pourRate : 0, nowDays), how: "pace", href: "/drinks" },
-      { id: "bills", label: "Flagged bills", lost: sum(bills, flagValue), saved: recoveredOf(bills), how: "recovered", href: "/money?tab=flags" },
+      // Open cases valued at an estimate (a seated table with no bill, a cheaper item rung up) count at that value until they close, and the row says how much.
+      { id: "bills", label: "Flagged bills", lost: sum(bills, flagValue), saved: recoveredOf(bills), how: "recovered", href: "/money?tab=flags", estimate: sum(bills.filter((i) => i.status !== "closed" && isEstimateFlag(i)), flagValue) },
       { id: "invoices", label: "Supplier invoice differences", lost: checks.value, saved: checks.credited, how: "credit", href: "/stock?tab=suppliers" },
       { id: "counts", label: "Stock missing at counts", lost: unexplained?.value ?? 0, saved: recoveredOf(counts), how: "recovered", href: "/stock?tab=where" },
     ];
-    return { from, before, ...lostAndSaved(rows.map((r) => ({ ...r, lost: Math.round(r.lost), saved: Math.round(r.saved) }))) };
+    return { from, before, ...lostAndSaved(rows.map((r) => ({ ...r, lost: Math.round(r.lost), saved: Math.round(r.saved), ...(r.estimate ? { estimate: Math.round(r.estimate) } : {}) }))) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wasteRows, investigations, sel, pour, pourRate, pourDaily, checks.value, checks.credited, unexplained]);
   const purchases30 = useMemo(() => sum(ctx.data.deliveries.filter((d) => d.status === "delivered" && d.date >= ledger.from), (d) => sum(d.lines, (l) => l.invoiced * l.invoicePrice)), [ctx.data.deliveries, ledger.from]);
@@ -220,7 +222,7 @@ export function Home() {
         <section aria-label="Money lost and saved, last 30 days" className="min-w-0 rounded-panel border border-line bg-paper shadow-panel lg:col-span-2">
           <div className="grid grid-cols-2 gap-2 px-3 pb-3 pt-4 sm:gap-4 sm:px-4 sm:pt-5">
             {([
-              { id: "lost" as const, label: "Money lost, last 30 days", value: money(ledger.lost), tone: "text-ink", note: `Since ${fmtDate(ledger.from)}, six kinds of loss` },
+              { id: "lost" as const, label: "Money lost, last 30 days", value: money(ledger.lost), tone: "text-ink", note: `Since ${fmtDate(ledger.from)}, six kinds of loss, some of them estimates` },
               { id: "saved" as const, label: "Money saved, last 30 days", value: money(ledger.saved), tone: "text-pos", note: `${fmtPct(ledger.share)} of what was lost` },
             ]).map((b, i) => (
               <button key={b.id} type="button" onClick={() => setBreakdown(b.id)} aria-haspopup="dialog"

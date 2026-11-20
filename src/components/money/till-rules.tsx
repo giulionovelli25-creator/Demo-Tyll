@@ -28,7 +28,7 @@ const SEEN_WORDS: Partial<Record<ExceptionType, [one: string, many: string]>> = 
   bill_reopened: ["bill reopened", "bills reopened"],
   price_override: ["bill with a price set at the till", "bills with a price set at the till"],
   duplicate_ring: ["bill with a repeat entry", "bills with a repeat entry"],
-  cheaper_item_rung: ["bottle week checked", "bottle weeks checked"],
+  cheaper_item_rung: ["weekly bottle check", "weekly bottle checks"],
 };
 
 export function TillRuleCheck() {
@@ -76,7 +76,7 @@ export function TillRuleCheck() {
             format={(n) => money(n)}
             note="by the day it happened"
             explain="Money on bills that met a till rule, by the day the bill was rung. The weekly bottle check counts on the morning it runs."
-            series={[{ id: "count", label: "Bills flagged", axis: "count", goodWhen: "down", format: (n) => fmtNum(n), points: data.days.map((d) => ({ date: d.date, value: d.flagged })), explain: "How many bills or bottle weeks met a till rule each day." }]}
+            series={[{ id: "count", label: "Bills flagged", axis: "count", goodWhen: "down", format: (n) => fmtNum(n), points: data.days.map((d) => ({ date: d.date, value: d.flagged })), explain: "How many bills or weekly bottle checks met a till rule each day." }]}
             summary={`Value of bills that met a till rule, per day for the last 30 days. ${data.rows.length} in the selected period.`}
           />
         }

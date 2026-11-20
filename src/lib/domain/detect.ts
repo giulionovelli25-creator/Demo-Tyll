@@ -125,6 +125,14 @@ export const GUEST_CHARGE_TYPES: ExceptionType[] = ["duplicate_ring"];
 export const chargedToGuest = (e: { type: ExceptionType }) => GUEST_CHARGE_TYPES.includes(e.type);
 
 /**
+ * Flags whose value is an estimate, not a recorded transaction: bought against used (a count confirms it), a cheaper item
+ * rung up (from bottles issued) and a seated table with no bill (at the spend per guest). Tiles that add up open flags say
+ * how much of the total these make up, from this one list.
+ */
+export const ESTIMATE_TYPES: ExceptionType[] = ["bought_not_used", "cheaper_item_rung", "seated_no_bill"];
+export const isEstimateFlag = (e: { type: ExceptionType }) => ESTIMATE_TYPES.includes(e.type);
+
+/**
  * The Overview's "Flagged bills" row of money lost and saved: bill cases only. Count cases (`period`) are the stock missing
  * at counts, so bills and counts never count the same money twice; bought against used gaps are estimates a count
  * confirms; and entries charged to the guest in error are the guest's money (see GUEST_CHARGE_TYPES).

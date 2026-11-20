@@ -73,7 +73,7 @@ export function paceSaving(before: number, beforeDays: number, now: number, nowD
   return Math.round((before / beforeDays) * nowDays - now);
 }
 
-export interface LeakRow { id: string; label: string; lost: number; saved: number; how: "pace" | "recovered" | "credit"; href: string }
+export interface LeakRow { id: string; label: string; lost: number; saved: number; how: "pace" | "recovered" | "credit"; href: string; /** The part of lost that is an estimate on cases still open. */ estimate?: number }
 
 /** Every kind of loss Tyll measures, added up once. A row's saving counts only when it is above zero. */
 export function lostAndSaved(rows: readonly LeakRow[]) {

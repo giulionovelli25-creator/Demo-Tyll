@@ -8,6 +8,10 @@ import { DATA_SOURCES, type ConnectionState } from "@/lib/adapters";
 import { ROLE_LABEL, USERS, outletById, propertyById } from "@/lib/data/catalog";
 import { allowedOutlets, allowedProperties, can, canOpen, type ModuleId, type Permission } from "@/lib/domain/access";
 import { POLICY } from "@/lib/domain/detect";
+import { BOUGHT_USED_RULES } from "@/lib/domain/bought-used";
+import { COVER_RULES } from "@/lib/domain/covers";
+import { MIX_RULES } from "@/lib/domain/till-rules";
+import { WAITER_RULES } from "@/lib/domain/waiters";
 import { useApi, useUser } from "@/lib/hooks";
 import { NotificationSettings } from "@/components/shell/notification-settings";
 import { VisitConsentSetting } from "@/components/shell/visit-consent";
@@ -16,12 +20,26 @@ import type { Role } from "@/lib/types";
 
 const ROLES: Role[] = ["owner", "gm", "controller", "fnb_director", "restaurant_manager", "event_manager", "purchasing", "chef", "front_office", "housekeeping_manager", "concierge", "bell_captain", "employee"];
 const MODULE_ROWS: [ModuleId, string][] = [["overview", "Overview"], ["money", "Revenue"], ["stock", "Stock"], ["forecast", "Predictions"], ["flow", "Flow"], ["rooms", "Rooms"], ["investigations", "Investigations"], ["reports", "Reports"]];
-const PERMISSION_ROWS: [Permission, string][] = [
-  ["investigation.assign", "Assign investigations"], ["investigation.close", "Record an outcome and close"], ["investigation.reopen", "Reopen closed cases"],
-  ["stock.logWaste", "Log waste"], ["stock.count", "Record stock counts"], ["stock.editPrices", "Change ingredient prices"],
-  ["forecast.approve", "Approve purchase suggestions"], ["flow.updateOrder", "Change order status"], ["rooms.manage", "Manage rooms and housekeeping"],
-  ["reports.export", "Export reports"], ["settings.audit", "See the audit trail"],
-];
+/**
+ * Every permission in the matrix, with the row it shows as in Roles and permissions, or null for steps that belong to a
+ * workflow of their own (purchasing approvals, housekeeping, sales). A Record, so a new permission does not build until
+ * it is given a row or left out on purpose, and the table cannot drift from PERMISSIONS in access.ts.
+ */
+const PERMISSION_LABEL: Record<Permission, string | null> = {
+  "investigation.assign": "Assign investigations", "investigation.note": null, "investigation.close": "Record an outcome and close", "investigation.reopen": "Reopen closed cases",
+  "stock.logWaste": "Log waste", "stock.logEmpty": "Log empty bottles", "stock.count": "Record stock counts", "stock.editPrices": "Change ingredient prices",
+  "stock.boughtUsed": "See bought against used and mark it checked", "stock.review": null,
+  "forecast.approve": "Approve purchase suggestions", "flow.updateOrder": "Change order status", "rooms.manage": "Manage rooms and housekeeping",
+  "roomcharge.view": "See the room charge check", "till.view": "See the till rule check", "covers.view": "See booked against billed covers",
+  "guests.view": "See hotel guests against outlet charges", "waiters.view": "See drinks per guest by waiter", "waiters.coach": "Record coaching",
+  "adapters.view": "See the POS and PMS adapters on sample data",
+  "reports.export": "Export reports", "settings.audit": "See the audit trail", "settings.reset": null,
+  "purchase.create": null, "purchase.review": null, "purchase.approveFinance": null, "purchase.approveFnb": null, "purchase.approveManager": null, "purchase.receive": null,
+  "prep.plan": null, "prep.complete": null, "events.plan": null, "staff.request": null, "staff.lend": null, "rooms.view": null, "hk.manage": null, "hk.clean": null,
+  "fo.desk": null, "concierge": null, "bell.dispatch": null, "bell.task": null, "gc.respond": null, "finance.view": null, "finance.review": null,
+  "sales.work": null, "sales.approve": null, "sales.view": null,
+};
+const PERMISSION_ROWS = (Object.entries(PERMISSION_LABEL) as [Permission, string | null][]).filter((r): r is [Permission, string] => r[1] !== null);
 const STATE: Record<ConnectionState, { label: string; tone: "neutral" | "warn" | "ink" | "accent" }> = { simulated: { label: "Simulated", tone: "ink" }, adapter_built: { label: "Adapter built, not yet connected to a live account", tone: "accent" }, not_connected: { label: "Not connected", tone: "warn" }, planned: { label: "Planned", tone: "neutral" } };
 
 const Mark = ({ on }: { on: boolean }) => (on ? <Check size={16} className="mx-auto text-pos" aria-label="Yes" /> : <Minus size={16} className="mx-auto text-fog" aria-label="No" />);
@@ -88,8 +106,8 @@ export default function SettingsPage() {
             </thead>
             <tbody>
               <tr className={rowClass}><Td className="text-steel">Sees</Td>{ROLES.map((r) => <Td key={r} className="text-center text-xs text-graphite">{sample(r).propertyIds === "all" ? "Both hotels" : sample(r).outletIds === "all" ? "Lisbon, all outlets" : "Mercado"}</Td>)}</tr>
-              {MODULE_ROWS.map(([m, label]) => <tr key={m} className={rowClass}><Td>Open {label}</Td>{ROLES.map((r) => <Td key={r}><Mark on={canOpen(sample(r), m)} /></Td>)}</tr>)}
-              {PERMISSION_ROWS.map(([p, label]) => <tr key={p} className={rowClass}><Td>{label}</Td>{ROLES.map((r) => <Td key={r}><Mark on={can(sample(r), p)} /></Td>)}</tr>)}
+              {MODULE_ROWS.map(([m, label]) => <tr key={m} className={rowClass}><Td className="min-w-[210px]">Open {label}</Td>{ROLES.map((r) => <Td key={r}><Mark on={canOpen(sample(r), m)} /></Td>)}</tr>)}
+              {PERMISSION_ROWS.map(([p, label]) => <tr key={p} className={rowClass}><Td className="min-w-[210px]">{label}</Td>{ROLES.map((r) => <Td key={r}><Mark on={can(sample(r), p)} /></Td>)}</tr>)}
             </tbody>
           </table>
         </TableWrap>
@@ -106,6 +124,14 @@ export default function SettingsPage() {
           <div><dt className="text-[13px] text-steel">Pattern window</dt><dd className="num text-lg">{POLICY.patternWindowDays} days</dd></div>
           <div><dt className="text-[13px] text-steel">Pattern, minimum cases</dt><dd className="num text-lg">{POLICY.patternMinCases}</dd></div>
           <div><dt className="text-[13px] text-steel">Pattern, minimum share</dt><dd className="num text-lg">{Math.round(POLICY.patternMinShare * 100)}%</dd></div>
+          <div><dt className="text-[13px] text-steel">Same item rung twice within</dt><dd className="num text-lg">{POLICY.duplicateSeconds} s</dd></div>
+          <div><dt className="text-[13px] text-steel">Unusual quantity of one item</dt><dd className="num text-lg">{POLICY.quantityMin}</dd></div>
+          <div><dt className="text-[13px] text-steel">Price set by hand, below the menu</dt><dd className="num text-lg">{Math.round(POLICY.priceBelowShare * 100)}%</dd></div>
+          <div><dt className="text-[13px] text-steel">Premium bottles beyond billed</dt><dd className="num text-lg">{Math.round(MIX_RULES.minShare * 100)}%</dd></div>
+          <div><dt className="text-[13px] text-steel">Party left before ordering, within</dt><dd className="num text-lg">{COVER_RULES.leftEarly} min</dd></div>
+          <div><dt className="text-[13px] text-steel">Bought beyond the last delivery</dt><dd className="num text-lg">{BOUGHT_USED_RULES.minValue}</dd></div>
+          <div><dt className="text-[13px] text-steel">Bought gap, share of use</dt><dd className="num text-lg">{Math.round(BOUGHT_USED_RULES.minShare * 100)}%</dd></div>
+          <div><dt className="text-[13px] text-steel">Drinks per guest below colleagues</dt><dd className="num text-lg">{Math.round(WAITER_RULES.below * 100)}%</dd></div>
         </dl>
       </Panel>
 

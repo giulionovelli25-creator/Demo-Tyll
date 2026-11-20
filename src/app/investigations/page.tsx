@@ -8,7 +8,7 @@ import { StripTrend } from "@/components/charts";
 import { byDay, versus, weekSums } from "@/lib/domain/trends";
 import { outletById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
-import { ROOM_TYPES, TILL_TYPES, TYPE_LABEL, datedFlags } from "@/lib/domain/detect";
+import { ROOM_TYPES, TILL_TYPES, TYPE_LABEL, datedFlags, isEstimateFlag } from "@/lib/domain/detect";
 import { exceptionInSel } from "@/lib/domain/metrics";
 import { assignablePeople, personName, useInvestigations, useView } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
@@ -66,6 +66,9 @@ export default function MoneyBackListPage() {
   const open = inScope.filter((i) => i.status !== "closed");
   const closed = inScope.filter((i) => i.status === "closed");
   const overdue = open.filter((i) => caseIsPastDeadline(i)).length;
+  const potential = sum(open, (i) => toDisplay(i, i.exposure));
+  // The part of the potential losses that is an estimate, from the same rule as the flags page.
+  const estimated = sum(open.filter(isEstimateFlag), (i) => toDisplay(i, i.exposure));
   // Cases with a day of their own, the same set as the flags page's chart and New this week, so the two agree.
   const dated = datedFlags(inScope);
   const perDay = byDay(dated, (i) => i.date, () => 1);
@@ -108,7 +111,7 @@ export default function MoneyBackListPage() {
       <SummaryBar
         items={[
           { label: "Open cases", value: open.length, tone: open.length ? "warn" : "pos", compare: versus(opened.now, opened.before, "down", "last week"), onClick: () => focus(() => { setStatus("open"); setOutcome("all"); setInPeriod("any"); }) },
-          { label: "Past deadline", value: overdue, tone: overdue ? "warn" : "pos", compare: { text: `Potential losses ${money(sum(open, (i) => toDisplay(i, i.exposure)))}, until checked`, good: null }, onClick: () => focus(() => { setStatus("open"); setInPeriod("any"); toggleDeadline(); }) },
+          { label: "Past deadline", value: overdue, tone: overdue ? "warn" : "pos", compare: { text: estimated > 0 ? `Potential losses ${money(potential)}, until checked. ${money(estimated)} of it estimates` : `Potential losses ${money(potential)}, until checked`, good: null }, onClick: () => focus(() => { setStatus("open"); setInPeriod("any"); toggleDeadline(); }) },
           { label: "Confirmed losses", value: money(sum(closed, (i) => toDisplay(i, i.confirmedLoss))), tone: "money", compare: { text: `All time. ${closed.filter((i) => i.outcome === "legitimate").length} of ${closed.length} closed were legitimate`, good: null }, onClick: () => focus(() => { setStatus("closed"); setOutcome("confirmed_loss"); setInPeriod("any"); }) },
           { label: "Recovered", value: money(sum(closed, (i) => toDisplay(i, i.recovered))), tone: "pos", compare: { text: "All time", good: null }, onClick: () => focus(() => { setStatus("closed"); setOutcome("recovered"); setInPeriod("any"); }) },
         ]}
@@ -174,16 +177,16 @@ export default function MoneyBackListPage() {
                     const late = caseIsPastDeadline(i);
                     return (
                       <tr key={i.id} className={cn(rowClass, "cursor-pointer", picked.includes(i.id) && "bg-cloud")} onClick={() => router.push(`/investigations/${i.id}`)}>
-                        {mayAssign && <Td className="w-10">{i.status !== "closed" && <input type="checkbox" aria-label={`Select ${i.headline}`} className="accent-[var(--color-accent)]" checked={picked.includes(i.id)} onClick={(e) => e.stopPropagation()} onChange={() => togglePick(i.id)} />}</Td>}
+                        {mayAssign && <Td className="w-10">{i.status !== "closed" && <input type="checkbox" aria-labelledby={`case-${i.id}`} className="accent-[var(--color-accent)]" checked={picked.includes(i.id)} onClick={(e) => e.stopPropagation()} onChange={() => togglePick(i.id)} />}</Td>}
                         <Td className="max-w-[360px]">
-                          <button type="button" className="text-start text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/investigations/${i.id}`); }}>{i.headline}</button>
+                          <button type="button" id={`case-${i.id}`} className="text-start text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`/investigations/${i.id}`); }}>{i.headline}</button>
                           <span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]} · {i.id.replace("EX-", "")}</span>
                         </Td>
                         <Td>{i.outletId ? outletLabel(i.outletId) : <span className="text-steel">{propertyById[i.propertyId].name}</span>}</Td>
                         <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}{i.type === "stock_shortfall" ? ", count" : i.type === "bought_not_used" ? ", 30 day check" : i.type === "cheaper_item_rung" ? ", weekly check" : `, ${fmtTime(i.min)}`}</Td>
                         <Td className={cn(!i.assigneeId && "text-steel")}>{personName(i.assigneeId)}</Td>
                         <Td className={cn("num whitespace-nowrap", late ? "text-neg" : "text-graphite")}>{i.deadline ? fmtDate(i.deadline) : <span className="text-fog">not set</span>}{late && <span className="block text-xs">overdue</span>}</Td>
-                        <Td align="right">{money(toDisplay(i, i.exposure))}{(i.type === "bought_not_used" || i.type === "cheaper_item_rung" || i.type === "seated_no_bill") && <span className="block text-xs text-steel">estimate</span>}</Td>
+                        <Td align="right">{money(toDisplay(i, i.exposure))}{isEstimateFlag(i) && <span className="block text-xs text-steel">estimate</span>}</Td>
                         <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
                         <Td>
                           {i.outcome ? (

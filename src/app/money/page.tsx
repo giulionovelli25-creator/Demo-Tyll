@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { BarList, StripTrend } from "@/components/charts";
 import { byDay, versus, weekSums } from "@/lib/domain/trends";
 import { useDailyTotals } from "@/lib/strip-data";
@@ -23,7 +23,7 @@ import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/d
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
 import { can, canSeeOutlet } from "@/lib/domain/access";
 import { BOUGHT_USED_RULES } from "@/lib/domain/bought-used";
-import { POLICY, TYPE_LABEL, datedFlags, detectOrderException } from "@/lib/domain/detect";
+import { POLICY, ROOM_TYPES, TYPE_LABEL, datedFlags, detectOrderException, isEstimateFlag } from "@/lib/domain/detect";
 import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/hooks";
@@ -71,6 +71,8 @@ export default function MoneyPage() {
   const outlets = useMemo(() => [...totalsByOutlet(ctx, sel)].sort((a, b) => b.now.net - a.now.net), [ctx, sel]);
   const flags = useMemo(() => investigations.filter((i) => i.status !== "closed" && exceptionInSel(i, sel)), [investigations, sel]);
   const flagValue = sum(flags, (i) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency));
+  // The part of it that is an estimate (bought against used, cheaper item rung up, seated table with no bill), said beside the total.
+  const flagEstimate = sum(flags.filter(isEstimateFlag), (i) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency));
   const rate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
   const pourWeek = pour ? (pour.wine.totals.week.gapValue + pour.spirits.totals.week.gapValue) * rate : 0;
   const onFlags = tab === "flags" || tab === "mistakes" || tab === "pour";
@@ -120,7 +122,7 @@ export default function MoneyPage() {
         <SummaryBar
           items={[
             { label: "Open flags", value: flags.length, tone: flags.length ? "warn" : "pos", compare: { text: `${pastDeadline} past their deadline`, good: pastDeadline ? false : true }, href: "/investigations?status=open" },
-            { label: "Value at risk", value: money(flagValue, { compact: true }), tone: "money", compare: { text: "Open flags, until checked", good: null }, href: "/investigations?status=open" },
+            { label: "Value at risk", value: money(flagValue, { compact: true }), tone: "money", compare: { text: flagEstimate > 0 ? `Open flags, until checked. ${money(flagEstimate, { compact: true })} of it estimates` : "Open flags, until checked", good: null }, href: "/investigations?status=open" },
             { label: "New this week", value: newFlags.now, compare: versus(newFlags.now, newFlags.before, "down"), href: "/investigations?status=all" },
             { label: "Recovered", value: money(sum(inSel.filter((i) => i.status === "closed"), (i) => i.recovered * fxRate(propertyById[i.propertyId].currency, sel.currency)), { compact: true }), tone: "pos", compare: { text: "All time, as on the Money Back List", good: null }, href: "/investigations?status=closed" },
           ]}
@@ -143,7 +145,7 @@ export default function MoneyPage() {
             { label: "Revenue, 7 days", value: money(weekC.now.net, { compact: true }), compare: versus(weekC.now.net, weekC.before.net, "up", "the week before"), href: "/money?tab=orders" },
             { label: "Operating contribution, 7 days", value: money(weekC.now.operatingProfit ?? weekC.now.grossProfit, { compact: true }), compare: versus(weekC.now.operatingProfit ?? weekC.now.grossProfit, weekC.before.operatingProfit ?? weekC.before.grossProfit, "up", "the week before"), href: "/reports" },
             { label: "Guests, 7 days", value: fmtNum(weekC.now.covers), compare: versus(weekC.now.covers, weekC.before.covers, "up", "the week before"), href: "/money?tab=orders" },
-            { label: "At risk, flags and drinks", value: money(flagValue + pourWeek, { compact: true }), tone: "money", compare: { text: "Flags and drinks, this week", good: null }, href: "/money?tab=flags" },
+            { label: "At risk, flags and drinks", value: money(flagValue + pourWeek, { compact: true }), tone: "money", compare: { text: "Flags and drinks this week, includes estimates", good: null }, href: "/money?tab=flags" },
           ]}
           trend={<StripTrend goodWhen="up" title="Revenue per day, last 30 days" points={revenueDaily} format={(n) => money(n)} summary={`Net revenue per day. Last 7 days ${money(weekC.now.net)}.`} note={currency} explain="Net sales each day. Switch on guests and the average bill to see whether a change came from more people or bigger bills." series={revenueSeries} />}
           action={<Link href="/money?tab=orders" className={linkButton("primary")}>See transactions</Link>}
@@ -197,7 +199,36 @@ function Mistakes() {
   }, [inPeriod, currency]);
   // Room charge types joined the list, so it shows the five largest first, like every other list.
   const [allTypes, setAllTypes] = useState(false);
+  const [allRules, setAllRules] = useState(false);
+  // Each rule with the flag types it raises. The rules that flagged the most in the period come first; five show, the rest behind "Show all".
+  const rules: { id: string; types: ExceptionType[]; text: ReactNode }[] = [
+    { id: "removed", types: ["removed_after_dispatch"], text: <>Items removed after their ticket went to the kitchen or bar, without an approval.</> },
+    { id: "prepared", types: ["prepared_not_charged", "bill_mismatch"], text: <>Items the kitchen marked ready that are not on the final bill.</> },
+    { id: "discount", types: ["unusual_discount"], text: <>Discounts above {POLICY.discountMaxPct}%, or with no reason or approval.</> },
+    { id: "comp", types: ["excessive_comp"], text: <>Complimentary items above {POLICY.compMaxValue} per order, or with no reason.</> },
+    { id: "refund", types: ["unusual_refund"], text: <>Refunds above {Math.round(POLICY.refundMaxShare * 100)}% of a bill, late, or unexplained.</> },
+    { id: "void", types: ["unexplained_void"], text: <>Whole orders cancelled after they were sent to the kitchen or bar.</> },
+    { id: "room", types: ROOM_TYPES, text: <>Room charges missing from the guest bill, posted more than once, for a different amount, to the wrong room or after check-out.</> },
+    { id: "reopened", types: ["bill_reopened"], text: <>Bills reopened after payment and closed lower, with no manager&rsquo;s approval.</> },
+    { id: "cheaper", types: ["cheaper_item_rung"], text: <>Premium bottles going out faster than they are billed while the cheaper serve is billed, such as house wine for the reserve red or singles for doubles. An estimate.</> },
+    { id: "price", types: ["price_override"], text: <>Open items, the misc button and prices changed by hand, more than {Math.round(POLICY.priceBelowShare * 100)}% below the menu price, with no approval.</> },
+    { id: "duplicate", types: ["duplicate_ring"], text: <>The same item rung twice within {POLICY.duplicateSeconds} seconds, or {POLICY.quantityMin} or more of one item at more than {POLICY.quantityPerGuest} a guest.</> },
+    { id: "seated", types: ["seated_no_bill"], text: <>Tables the host marked seated from a booking with no bill at that table, nor for the same party nearby. Valued at the outlet&rsquo;s spend per guest, an estimate.</> },
+    { id: "breakfast", types: ["breakfast_not_charged"], text: <>Rooms ticked in at breakfast whose guests the room rate does not cover, with no breakfast charged to the room or paid at the table. Guests whose rate includes breakfast are never flagged.</> },
+    { id: "bought", types: ["bought_not_used"], text: <>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use, and {money(BOUGHT_USED_RULES.minValue)} beyond the last delivery, which is the amount at risk. An estimate until a count.</> },
+  ];
+  const ruleValue = (r: (typeof rules)[number]) => sum(byType.filter((t) => r.types.includes(t.type)), (t) => t.value);
+  const rulesShown = [...rules].sort((a, b) => ruleValue(b) - ruleValue(a));
   const hero = all.find((i) => i.id === HERO_EXCEPTION_ID);
+  const flagged = [...inPeriod].sort((a, b) => Number(a.status === "closed") - Number(b.status === "closed") || toDisplay(b.propertyId, b.exposure) - toDisplay(a.propertyId, a.exposure)).slice(0, 8);
+  // Two text nodes, as before, so each half keeps its translation.
+  const typeLine = (i: (typeof inPeriod)[number]) => <>{TYPE_LABEL[i.type]}{i.type === "cheaper_item_rung" ? ", an estimate from bottles issued" : i.type === "seated_no_bill" ? ", an estimate at the spend per guest" : i.basis === "estimate" ? ", estimate until a stock take confirms it" : i.basis === "confirmed" ? ", confirmed by a stock take" : ""}</>;
+  // Minibar, spa and laundry belong to the hotel, not an outlet: name the source, as the room charge check does.
+  const whereOf = (i: (typeof inPeriod)[number]) => {
+    if (i.outletId) return outletLabel(i.outletId);
+    const charge = i.chargeId ? ctx.data.chargesById.get(i.chargeId) : undefined;
+    return charge ? SOURCE_LABEL[charge.source] : propertyById[i.propertyId].name;
+  };
   const steps = [
     ["8:42 PM", "Guest orders a burger and a Coke", ""],
     ["8:43 PM", "Both items are sent for preparation", "Kitchen and bar tickets print"],
@@ -239,23 +270,11 @@ function Mistakes() {
         <Panel title="Flags per 1,000 orders, by outlet" description="So busy and quiet outlets compare fairly.">
           <BarList format={(n) => n.toFixed(1)} rows={[...rows].sort((a, b) => adjustmentRate(b.now) - adjustmentRate(a.now)).map((r) => ({ key: r.outletId, outletId: r.outletId, label: outletLabel(r.outletId), sub: `${r.now.adjustments} of ${fmtNum(r.now.orders)} orders`, value: adjustmentRate(r.now) }))} />
         </Panel>
-        <Panel title="What Tyll checks" description="Rules agreed with the hotel. A flag means a rule was met, nothing more.">
+        <Panel title="What Tyll checks" description="Rules agreed with the hotel, those with the most flagged in this period first. A flag means a rule was met, nothing more.">
           <ul className="space-y-3 text-sm text-graphite">
-            <li>Items removed after their ticket went to the kitchen or bar, without an approval.</li>
-            <li>Items the kitchen marked ready that are not on the final bill.</li>
-            <li>Discounts above {POLICY.discountMaxPct}%, or with no reason or approval.</li>
-            <li>Complimentary items above {POLICY.compMaxValue} per order, or with no reason.</li>
-            <li>Refunds above {Math.round(POLICY.refundMaxShare * 100)}% of a bill, late, or unexplained.</li>
-            <li>Whole orders cancelled after they were sent to the kitchen or bar.</li>
-            <li>Room charges missing from the guest bill, posted more than once, for a different amount, to the wrong room or after check-out.</li>
-            <li>Bills reopened after payment and closed lower, with no manager&rsquo;s approval.</li>
-            <li>Premium bottles going out faster than they are billed while the cheaper serve is billed, such as house wine for the reserve red or singles for doubles. An estimate.</li>
-            <li>Open items, the misc button and prices changed by hand, more than {Math.round(POLICY.priceBelowShare * 100)}% below the menu price, with no approval.</li>
-            <li>The same item rung twice within {POLICY.duplicateSeconds} seconds, or {POLICY.quantityMin} or more of one item at more than {POLICY.quantityPerGuest} a guest.</li>
-            <li>Tables the host marked seated from a booking with no bill at that table, nor for the same party nearby. Valued at the outlet&rsquo;s spend per guest, an estimate.</li>
-            <li>Rooms ticked in at breakfast whose guests the room rate does not cover, with no breakfast charged to the room or paid at the table. Guests whose rate includes breakfast are never flagged.</li>
-            <li>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use, and {money(BOUGHT_USED_RULES.minValue)} beyond the last delivery, which is the amount at risk. An estimate until a count.</li>
+            {(allRules ? rulesShown : rulesShown.slice(0, 5)).map((r) => <li key={r.id}>{r.text}</li>)}
           </ul>
+          <button type="button" onClick={() => setAllRules((v) => !v)} className={cn(textLink, "mt-3")}>{allRules ? "Show the first five rules" : `Show all ${rules.length} rules`}</button>
         </Panel>
       </div>
 
@@ -288,18 +307,34 @@ function Mistakes() {
 
       <Panel title="Flagged orders" description="Open flags first, largest amount first. Closed ones follow." action={<Link href="/investigations" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} /></Link>} flush>
         {inPeriod.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No flagged orders in this period" /></div> : (
-          <TableWrap>
+          <>
+          {/* Phones get one card per flag: the headline, type and amount, with the comparison held to two lines, so nothing is cut off at the edge. */}
+          <ul className="divide-y divide-hair border-t border-hair sm:hidden">
+            {flagged.map((i) => (
+              <li key={i.id}>
+                <Link prefetch={false} href={`/investigations/${i.id}`} className="block px-5 py-4 transition-colors duration-150 hover:bg-cloud">
+                  <span className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 text-sm text-ink">{i.headline}</span>
+                    <span className="num shrink-0 text-sm font-medium text-ink">{money(toDisplay(i.propertyId, i.exposure))}</span>
+                  </span>
+                  <span className="mt-0.5 block text-xs text-steel">{typeLine(i)}</span>
+                  {i.comparedWith && <span className="mt-0.5 line-clamp-2 text-xs text-graphite">{i.comparedWith}</span>}
+                  <span className="mt-2 flex items-center justify-between gap-3">
+                    <span className="min-w-0 truncate text-xs text-graphite">{whereOf(i)}, {fmtDate(i.date)}</span>
+                    <Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <TableWrap className="hidden sm:block">
             <table className="w-full min-w-[820px] text-sm">
               <thead><tr><Th>What Tyll found</Th><Th>Outlet</Th><Th>When</Th><Th align="right">Value involved</Th><Th>Status</Th></tr></thead>
               <tbody>
-                {[...inPeriod].sort((a, b) => Number(a.status === "closed") - Number(b.status === "closed") || toDisplay(b.propertyId, b.exposure) - toDisplay(a.propertyId, a.exposure)).slice(0, 8).map((i) => (
+                {flagged.map((i) => (
                   <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
-                    <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}{i.type === "cheaper_item_rung" ? ", an estimate from bottles issued" : i.type === "seated_no_bill" ? ", an estimate at the spend per guest" : i.basis === "estimate" ? ", estimate until a stock take confirms it" : i.basis === "confirmed" ? ", confirmed by a stock take" : ""}</span>{i.comparedWith && <span className="mt-0.5 line-clamp-2 block max-w-[460px] text-xs text-graphite">{i.comparedWith}</span>}</Td>
-                    <Td>{i.outletId ? outletLabel(i.outletId) : (() => {
-                      // Minibar, spa and laundry belong to the hotel, not an outlet: name the source, as the room charge check does.
-                      const charge = i.chargeId ? ctx.data.chargesById.get(i.chargeId) : undefined;
-                      return <span className="text-steel">{charge ? SOURCE_LABEL[charge.source] : propertyById[i.propertyId].name}</span>;
-                    })()}</Td>
+                    <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{typeLine(i)}</span>{i.comparedWith && <span className="mt-0.5 line-clamp-2 max-w-[460px] text-xs text-graphite">{i.comparedWith}</span>}</Td>
+                    <Td>{i.outletId ? whereOf(i) : <span className="text-steel">{whereOf(i)}</span>}</Td>
                     <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
                     <Td align="right">{money(toDisplay(i.propertyId, i.exposure))}</Td>
                     <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
@@ -308,6 +343,7 @@ function Mistakes() {
               </tbody>
             </table>
           </TableWrap>
+          </>
         )}
       </Panel>
     </div>

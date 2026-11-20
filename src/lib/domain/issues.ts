@@ -3,7 +3,7 @@ import { caseIsPastDeadline } from "@/lib/domain/deadline";
 import { itemById, outletById, propertyById, supplierById } from "../data/catalog";
 import type { Investigation } from "../types";
 import { DEMO_TODAY, diffDays, fmtPct, fxRate } from "../util";
-import { REMOVAL_TYPES, type Pattern } from "./detect";
+import { REMOVAL_TYPES, isEstimateFlag, type Pattern } from "./detect";
 import { deliveryOvercharge } from "./inventory";
 import { exceptionInSel, itemPerformance, totalsByOutlet, type Compared, type Ctx, type OutletRow, type Sel } from "./metrics";
 
@@ -64,7 +64,7 @@ export function buildIssues(
     const priority: Priority = impact >= ISSUE_RULES.highImpact * aed || (patterned && i.status === "new") || overdue || freshStock ? "high" : impact >= ISSUE_RULES.mediumImpact * aed || i.type === "usage_variance" ? "medium" : "low";
     out.push({
       id: i.id, kind: "investigation", title: i.headline, location: where(i.outletId, i.propertyId), outletId: i.outletId, impact, priority,
-      ...(i.type === "bought_not_used" ? { estimate: true } : i.type === "cheaper_item_rung" ? { estimate: true, estimateFrom: "bottles" as const } : i.type === "seated_no_bill" ? { estimate: true, estimateFrom: "spend" as const } : {}),
+      ...(!isEstimateFlag(i) ? {} : i.type === "cheaper_item_rung" ? { estimate: true, estimateFrom: "bottles" as const } : i.type === "seated_no_bill" ? { estimate: true, estimateFrom: "spend" as const } : { estimate: true }),
       assignee: i.assigneeId, status: overdue ? "Overdue" : { new: "New", assigned: "Assigned", in_review: "In review", closed: "Closed" }[i.status],
       href: `/investigations/${i.id}`,
     });
