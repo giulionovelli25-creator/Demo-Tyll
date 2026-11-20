@@ -108,6 +108,8 @@ export interface RequestDetail {
   currency: import("./types").Currency;
   supplier: import("./types").SupplierAccount | null;
   costCentres: string[];
+  /** Public demo: an order waiting for someone else can be approved as that person, to show the chain in one screen. */
+  demoShortcut?: boolean;
   /** Whether fully approved orders go to the supplier on their own (Settings, Purchasing). */
   autoSend: boolean;
   match: (import("./domain/procurement").ThreeWay & { invoices: { id: string; supplierRef: string; status: string; date: string }[] }) | null;

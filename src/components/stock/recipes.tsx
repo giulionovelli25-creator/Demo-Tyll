@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { Delta, Note, Panel, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
+import { Delta, Note, Panel, Skeleton, TableWrap, Tabs, Td, Th, cn, rowClass } from "@/components/ui";
+import { useRouter, useSearchParams } from "next/navigation";
 import { MENU_ITEMS, ingredientById } from "@/lib/data/catalog";
 import { basePriceAt, ingredientCostAt, itemCostAt, recipeBreakdown } from "@/lib/domain/pricing";
 import { useCtx } from "@/lib/hooks";
@@ -12,8 +13,13 @@ import { IngredientPrices, useIngredientPrices } from "./ingredient-prices";
 
 const aed = (n: number) => fmtMoney(n, "EUR", { decimals: true });
 
+const VIEWS = ["recipes", "new", "prices", "modifiers"] as const;
+type View = (typeof VIEWS)[number];
+
 export function Recipes() {
   const ctx = useCtx();
+  const params = useSearchParams();
+  const router = useRouter();
   const [open, setOpen] = useState<string | null>("burger");
   const { menu } = useMenu();
   const recipes = MENU_ITEMS.filter((m) => m.recipe && !menu?.archived[m.id]);
@@ -23,11 +29,28 @@ export function Recipes() {
   const prices = useIngredientPrices();
   const unit = (g: string) => ctx.overrides.find((o) => o.id === g)?.value ?? prices?.prices.find((p) => p.ingredientId === g)?.wac ?? ingredientCostAt(g, DEMO_TODAY, ctx.overrides);
 
+  // One part at a time: the recipes, the new dishes from the till, ingredient prices and modifiers. The address keeps the
+  // part (&view=), so the chef's alert opens straight on the new dishes.
+  const asked = params.get("view");
+  const [picked, setPicked] = useState<View | null>(null);
+  const waiting = menu?.newDishes.filter((d) => d.status === "needs_recipe").length ?? 0;
+  const view: View = picked ?? (VIEWS.includes(asked as View) ? (asked as View) : "recipes");
+  const choose = (v: View) => { setPicked(v); const q = new URLSearchParams(params.toString()); q.set("view", v); router.replace(`/stock?${q.toString()}`, { scroll: false }); };
+
   return (
     <div className="space-y-5">
-    {menu && <MenuSyncLine menu={menu} />}
-    {menu && <NewDishes menu={menu} />}
-    <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.25fr_1fr]">
+    {menu && <MenuSyncLine menu={menu} onNewDishes={() => choose("new")} />}
+    <Tabs value={view} onChange={choose} tabs={[
+      { value: "recipes", label: "Recipes" },
+      { value: "new", label: "New dishes", ...(waiting ? { count: waiting } : {}) },
+      { value: "prices", label: "Ingredient prices" },
+      { value: "modifiers", label: "Modifiers" },
+    ]} />
+    {view === "new" && (menu ? <NewDishes menu={menu} /> : <Skeleton className="h-48 w-full" />)}
+    {view === "prices" && <IngredientPrices />}
+    {view === "modifiers" && (menu ? <Modifiers menu={menu} /> : <Skeleton className="h-48 w-full" />)}
+    {view === "recipes" && (
+    <div>
       <Panel title="Recipes for the top 20 items" description="Cost per portion at today's ingredient prices, valued at weighted average cost from supplier invoices, against the selling price. Choose a recipe to see what goes into it." flush>
         <TableWrap>
           <table className="w-full min-w-[640px] text-sm">
@@ -78,10 +101,8 @@ export function Recipes() {
         </TableWrap>
         <Note className="px-6 py-4">Shown in the group price list (euros). Each outlet applies its own price level and each property its own cost level, which Menu performance on the Overview takes into account. The other six menu items use a standard cost until their recipes are built.</Note>
       </Panel>
-
-      <IngredientPrices />
     </div>
-    {menu && <Modifiers menu={menu} />}
+    )}
     </div>
   );
 }

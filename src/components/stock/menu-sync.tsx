@@ -28,7 +28,7 @@ export function useMenu() {
 }
 
 /** "Menu synced from Simphony at 06:00: 2 new dishes, 1 price change, 1 dish removed", with what each change was. */
-export function MenuSyncLine({ menu }: { menu: MenuOut }) {
+export function MenuSyncLine({ menu, onNewDishes }: { menu: MenuOut; onNewDishes?: () => void }) {
   if (!menu.sync) return null;
   const c = menu.changes;
   const waiting = menu.newDishes.filter((d) => d.status === "needs_recipe").length;
@@ -38,7 +38,7 @@ export function MenuSyncLine({ menu }: { menu: MenuOut }) {
         <div className="min-w-0">
           <p className="text-[15px] font-medium text-ink">{menu.sync.label}</p>
           <ul className="mt-1 space-y-0.5 text-[13px] text-graphite">
-            {c.addedNames.length > 0 && <li>New: {c.addedNames.join(", ")}.{waiting > 0 && <> <a href="#new-dishes" className="font-medium text-accent-ink underline-offset-4 hover:underline">{waiting === 1 ? "1 needs a recipe" : `${waiting} need a recipe`}</a></>}</li>}
+            {c.addedNames.length > 0 && <li>New: {c.addedNames.join(", ")}.{waiting > 0 && <> <button type="button" onClick={onNewDishes} className="font-medium text-accent-ink underline-offset-4 hover:underline">{waiting === 1 ? "1 needs a recipe" : `${waiting} need a recipe`}</button></>}</li>}
             {c.priceChanged.map((p) => <li key={p.itemId}>{p.name}: price {eur(p.from)} to {eur(p.to)}. Margins below use the new price.</li>)}
             {c.removed.map((r) => <li key={r.itemId}>{r.name}: no longer on the till, archived.</li>)}
           </ul>

@@ -33,9 +33,9 @@ export function WhatsNew({ open, onClose }: { open: boolean; onClose: () => void
 export const GUIDED_PATH = [
   { href: "/forecast", userId: "u-fnb", title: "Predictions", text: "What to order before it runs out, worked out by Tyll's own model from sales, bookings, events and hotel occupancy, with the reasoning beside every quantity. No AI chooses a quantity. Deliveries likely to come too late show here too." },
   { href: "/stock", userId: "u-chef", title: "Critical stock, then Order now", text: "What runs out before a later order could arrive. Items already on this morning's order say On order; for a low item, press Order now: the suggested quantity from the usual supplier, sent for approval." },
-  { href: "/forecast?tab=approvals", userId: "u-buy", title: "Approval, sending and the supplier's answer", text: "Approve an order as purchasing; the controller and the F&B director sign their steps. Once fully approved it goes to the supplier on its own, by email or its ordering system. Douro Cellars' system times out once and a retry is safe; Mercearia Lusa answers with less chocolate, for you to accept." },
+  { href: "/forecast?tab=approvals", userId: "u-buy", title: "Approval, sending and the supplier's answer", text: "Open an order waiting for approval and approve it as purchasing; \"Approve as\" signs the next steps as the controller and the F&B director, in the demo only. Once fully approved it goes to the supplier on its own. Douro Cellars' system times out once and a retry is safe; Mercearia Lusa answers with less chocolate, for you to accept." },
   { href: "/stock?tab=takes", userId: "u-fnb", title: "Stock count review", text: "This morning's stock take waits for you: expected against counted, the difference in units and euros, a likely reason for each, large ones highlighted. Approve it, or send it back." },
-  { href: "/stock?tab=recipes", userId: "u-chef", title: "Menu from Simphony", text: "Synced at 06:00: two new dishes, a price change and a dish taken off. Check the suggested recipe for a new dish and confirm it. Until then it carries a standard cost." },
+  { href: "/stock?tab=recipes&view=new", userId: "u-chef", title: "Menu from Simphony", text: "Synced at 06:00: two new dishes, a price change and a dish taken off. Check the suggested recipe for a new dish and confirm it. Until then it carries a standard cost." },
   { href: "/stock?tab=expiry", userId: "u-chef", title: "Tonight's special", text: "Sea bass from a cancelled lunch expires tomorrow. Make it tonight's special, move it to another outlet, or log it as waste: the restaurant manager is told." },
 ] as const;
 
@@ -46,8 +46,11 @@ const read = (): string | null => { try { return localStorage.getItem(KEY); } ca
 const write = (s: PathState) => { try { if (s === null) localStorage.removeItem(KEY); else localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* private window */ } listeners.forEach((l) => l()); };
 const parse = (raw: string | null): PathState => { try { return raw ? JSON.parse(raw) : null; } catch { return null; } };
 
-/** Starts (or restarts) the guided path from its first stop. */
-export function startGuidedPath() {
+/** Starts (or restarts) the guided path from its first stop. From the Overview's offer it starts on a fresh copy of the
+ * demo, so every story is where it starts: the orders and the stock take waiting, the new dishes and the sea bass still to
+ * decide. From Help it keeps what the visitor has done. */
+export async function startGuidedPath(fresh = false) {
+  if (fresh) await api("/api/demo/reset", { method: "POST", body: { scope: "all", confirm: true } }).catch(() => undefined);
   return openStep(0);
 }
 
@@ -79,9 +82,9 @@ export function GuidedPath({ offer = false }: { offer?: boolean }) {
     return (
       <div className="no-print mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-paper px-4 py-3">
         <Compass size={18} strokeWidth={1.6} className="shrink-0 text-graphite" aria-hidden />
-        <p className="min-w-[200px] flex-1 text-sm text-graphite"><span className="text-ink">New here?</span> Follow a {GUIDED_PATH.length} step guided path through what Tyll does today.</p>
+        <p className="min-w-[200px] flex-1 text-sm text-graphite"><span className="text-ink">New here?</span> Follow a {GUIDED_PATH.length} step guided path through what Tyll does today. It starts from a fresh copy of the demo.</p>
         <span className="flex items-center gap-1">
-          <Button size="sm" variant="primary" onClick={() => go(0)}>Start guided path</Button>
+          <Button size="sm" variant="primary" onClick={() => void startGuidedPath(true)}>Start guided path</Button>
           <button type="button" onClick={close} aria-label="Close the guided path offer" className="rounded-full p-2 text-steel hover:bg-mist hover:text-ink"><X size={16} /></button>
         </span>
       </div>

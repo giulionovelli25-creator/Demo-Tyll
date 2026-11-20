@@ -54,29 +54,16 @@ Polish went down because the screens touched now show their older English leftov
 
 ## The guided path, and a 10 minute presentation
 
-The guided path (Overview, "Start guided path") has five steps, each opening as the right person.
+"Start guided path" on the Overview starts from a fresh copy of the demo, so every story is where it begins, and opens each step as the right person. Six steps:
 
-1. **Critical stock, then Order now** (Head Chef, 2 min). On Stock levels:
-   - Cheddar and flour are critical but already on this morning's automatic order.
-   - Wagyu beef mince is low: press **Order now**, read "23 kg from Carnes Ribeiro & Filhos, sent for approval", and open the order.
-2. **Approval, sending, the supplier's answer** (Purchasing, then Controller and F&B Director, 3 min).
-   - **Douro Cellars:** approve its order as Purchasing, then as the Controller. It is sent on its own, the supplier's system times out, and **Retry** shows "already had this order, not sent a second time".
-   - **Mercearia Lusa:** do the same for the automatic order, with the F&B Director signing last. Mercearia Lusa proposes 18 kg of chocolate instead of 27 kg: **Accept**.
-3. **Stock count review** (F&B Director, 2 min). This morning's stock take:
-   - Lamb rack, vodka and house wine are marked Large, each with a likely reason.
-   - Approve it with a note.
-4. **Menu from Simphony** (Head Chef, 2 min).
-   - The 06:00 sync line.
-   - Sea bass with lemon butter, suggested from Grilled salmon: confirm it.
-   - The modifiers panel.
-5. **Tonight's special** (Head Chef, 1 min). Sea bass from the cancelled lunch: **Make it tonight's special** (5.8 kg at Mercado). The restaurant manager is told.
+1. **Predictions** (F&B Director, 2 min). What to order to month end, worked out by Tyll's own model from sales, bookings, events and occupancy, with the reasoning beside each quantity and the deliveries likely to come too late (Wagyu, tomorrow). No AI chooses a quantity.
+2. **Critical stock, then Order now** (Head Chef, 1 min). Cheddar and flour are critical but already on this morning's order; Wagyu beef mince is low: **Order now**, 23 kg from Carnes Ribeiro & Filhos, sent for approval.
+3. **Approval, sending, the supplier's answer** (Purchasing, 3 min). Open Douro Cellars' order and approve it; **Approve as Priya Raman (demo)** signs accounting. It is sent on its own, the supplier's system times out, **Retry** shows it was not sent twice. On the automatic Mercearia Lusa order, approve and press "Approve as" twice; Mercearia Lusa proposes 18 kg of chocolate instead of 27 kg: **Accept**. No switching person.
+4. **Stock count review** (F&B Director, 2 min). Lamb rack, vodka and house wine marked Large, each with a likely reason; approve with a note.
+5. **Menu from Simphony** (Head Chef, 1 min). Opens on New dishes: Sea bass with lemon butter, suggested from Grilled salmon; confirm it.
+6. **Tonight's special** (Head Chef, 1 min). Sea bass from the cancelled lunch: **Make it tonight's special**; the restaurant manager is told.
 
-The other stories stay one tap from the Overview and Alerts:
-- late Wagyu delivery;
-- drinks not billed;
-- supplier invoices to query;
-- flagged bills;
-- Meal with no drink.
+The other money stories (drinks not billed, supplier invoices, flagged bills, Meal with no drink) stay one tap from the Overview and Alerts.
 
 ## What Radisson asked for in the call, and where it is
 

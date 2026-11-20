@@ -618,3 +618,36 @@ describe("Meal with no drink", () => {
     expect(MND.mealsWithNoDrink(userById["u-buy"]).ok).toBe(false);
   });
 });
+
+describe("Demo shortcut: approve as the next person", () => {
+  it("only in the public demo", () => {
+    const id = orderFor("u-chef", "salmon", 20);
+    expect(P.demoApproveNext(userById["u-chef"], id, false).ok).toBe(false);
+  });
+  it("signs each step as the person who holds it, with their rules, and says it was the shortcut", () => {
+    const id = orderFor("u-chef", "salmon", 200);
+    let r = P.demoApproveNext(userById["u-chef"], id, true);
+    if (!r.ok) throw new Error(r.error);
+    expect(r.as).toBe("u-buy");
+    expect(r.request.status).toBe("accounting");
+    expect(r.request.history.at(-1)).toMatchObject({ by: "u-buy", action: "Purchasing review approved", comment: `Demo shortcut, pressed by ${userById["u-chef"].name}.` });
+    r = P.demoApproveNext(userById["u-chef"], id, true);
+    if (!r.ok) throw new Error(r.error);
+    expect(r.as).toBe("u-fc");
+    while (["fnb", "manager"].includes(loadStore().requests.find((x) => x.id === id)!.status)) {
+      const n = P.demoApproveNext(userById["u-chef"], id, true);
+      if (!n.ok) throw new Error(n.error);
+    }
+    expect(loadStore().requests.find((x) => x.id === id)!.status).toBe("approved");
+    expect(P.demoApproveNext(userById["u-chef"], id, true).ok).toBe(false);
+  });
+  it("never lets the person who raised an order approve it through the shortcut: the general manager signs for the F&B director", () => {
+    const id = orderFor("u-fnb", "salmon", 200);
+    P.demoApproveNext(userById["u-chef"], id, true);
+    P.demoApproveNext(userById["u-chef"], id, true);
+    expect(loadStore().requests.find((x) => x.id === id)!.status).toBe("fnb");
+    const r = P.demoApproveNext(userById["u-chef"], id, true);
+    if (!r.ok) throw new Error(r.error);
+    expect(r.as).toBe("u-gm");
+  });
+});

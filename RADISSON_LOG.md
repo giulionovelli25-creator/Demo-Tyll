@@ -152,7 +152,7 @@ Five steps in `components/shell/early-access.tsx`: critical stock and Order now 
 | Role switching | 24 of 24 checks |
 | Speed | 10 pages: ready in 117 to 229 ms, 9 to 12 calls, 0 duplicates |
 | Arabic | 13 new and nearby screens opened in Arabic; 195 untranslated lines found, the sentences translated; supplier contact names, email addresses and codes stay as written |
-| Screenshots | 46 in `radisson-screenshots/` (1440 and 375 wide; Purchasing, F&B Director, Head Chef; pages a role cannot open are left out) |
+| Screenshots | 60 in `radisson-screenshots/` (1440 and 375 wide; Purchasing, F&B Director, Head Chef; pages a role cannot open are left out) |
 | Flows run by hand | Order now (chef), approvals with a timed-out push and safe retry, supplier change accepted, recipe confirmed, tonight's special, stock take review |
 
 ## Scores after
@@ -180,3 +180,12 @@ The simplify pass had folded To order, Automatic ordering and Predictions into o
 - **Names:** "Ordering" is "Predictions" again in Settings, the tour, the order detail and supplier reliability.
 - **Tests:** the three menu tests the simplify pass changed are back to what they said before it (the six Purchasing items, the right item lit for To order, Automatic ordering and Predictions, and the visit path).
 - **Arabic:** To order, Par levels and Automatic ordering translated (they were English on the live demo as well).
+
+## Visual and presenting pass (20 November 2026)
+- **Overview:** one even row of five cards: one button each, at the same height; Order now takes the Stock levels card's button when there is something to order (the whole card still opens Stock levels); numbers sized to fit five across.
+- **Recipes and costs:** the sync line on top, then tabs: Recipes, New dishes (with the count waiting), Ingredient prices, Modifiers. The address keeps the tab (`&view=new`), so the chef's alert and the guided path open on New dishes.
+- **Phone:** Expiring soon's batches and the stock take's Variance by item are cards on a phone, with their actions, instead of tables that scroll sideways.
+- **Order screen:** Sending to the supplier now comes straight after the items, before receiving.
+- **Stock take:** values under €10 show cents, so a small difference never reads "−€0".
+- **Demo shortcut:** in the public demo only, an order waiting for someone else shows "Approve as Priya Raman, financial controller (demo)". It signs that step as the person who holds it, under that person's rules (nobody approves their own order; the general manager signs for an F&B director who raised it), and the history says "Demo shortcut, pressed by ..." (`demoApproveNext`, 3 tests).
+- **Guided path:** the Overview's "Start guided path" starts from a fresh copy of the demo (Help and tour keeps what was done); step 3 uses the shortcut, so no switching person.

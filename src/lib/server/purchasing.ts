@@ -859,6 +859,32 @@ type Decision = "approve" | "changes" | "reject";
  * name keeps the rule, so they may approve it like anyone else; they still sign one step only. */
 const raisedBy = (r: PurchaseRequest, user: User) => r.createdBy === user.id && !r.auto;
 
+/** The person a demo shortcut approves as, for each step: the public demo's purchasing manager, financial controller,
+ * F&B director and general manager. */
+const DEMO_SIGNERS: Record<string, string[]> = { purchasing: ["u-buy"], accounting: ["u-fc"], fnb: ["u-fnb", "u-gm"], manager: ["u-gm"] };
+
+/**
+ * Public demo only: approve the step an order waits at as the person who holds that step, so the whole chain can be shown
+ * without switching person. The step's own rules still run for that person (their permission, nobody approves their own
+ * order, one step per person), and the history says it was the demo shortcut and who pressed it.
+ */
+export function demoApproveNext(user: User, id: string, enabled: boolean): Result<{ request: PurchaseRequest; as: string }> {
+  if (!enabled) return fail(403, "The demo shortcut is only in the public demo.");
+  const r = loadStore().requests.find((x) => x.id === id);
+  if (!r || !canSee(user, r)) return fail(404, "This request is not available.");
+  const step = r.status;
+  const candidates = DEMO_SIGNERS[step];
+  if (!candidates) return fail(409, "This order is not waiting for an approval.");
+  let last: Result<{ request: PurchaseRequest }> = fail(409, "Nobody in the demo can sign this step.");
+  for (const signerId of candidates) {
+    const signer = userById[signerId];
+    if (!signer || signer.id === user.id) continue;
+    last = actOnRequest(signer, id, { action: step, decision: "approve", comment: `Demo shortcut, pressed by ${user.name}.` });
+    if (last.ok) return { ok: true, request: last.request, as: signer.id };
+  }
+  return last.ok ? fail(409, "Nobody in the demo can sign this step.") : last;
+}
+
 /** Every step of the workflow. Each checks the role, the stage and the user's access to the hotel. */
 export function actOnRequest(user: User, id: string, body: Record<string, unknown>): Result<{ request: PurchaseRequest }> {
   const r = loadStore().requests.find((x) => x.id === id);

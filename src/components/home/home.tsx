@@ -5,7 +5,7 @@ import { awaitingDelivery } from "@/lib/domain/procurement";
 import { useAutoOrder, useRequests } from "@/lib/plan-hooks";
 import { featureOn } from "@/lib/features";
 import Link from "next/link";
-import { OrderNowButton } from "@/components/stock/order-now";
+import { OrderNowButton, orderable } from "@/components/stock/order-now";
 import { ArrowRight, ChevronRight, Sunrise } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { MODULE_ICON, MODULE_TONE } from "@/components/theme";
@@ -64,15 +64,22 @@ function Card({ module, title, number, tone, line, cta, href, picture, loading, 
           <div className="space-y-2 pt-2" aria-hidden><Skeleton className="h-8 w-2/3" /><Skeleton className="h-4 w-full" /></div>
         ) : (
           <>
-            <p className={cn("num mt-0.5 whitespace-nowrap text-[24px] font-medium leading-tight tracking-[-0.02em] sm:mt-1.5 sm:text-[28px]", tone ? TONE[tone] : "text-ink")}>{number}</p>
-            <p className="text-[13px] leading-snug text-graphite sm:mt-1 sm:min-h-[2.5em]">{line}</p>
+            <p className={cn("num mt-0.5 whitespace-nowrap text-[24px] font-medium leading-tight tracking-[-0.02em] sm:mt-1.5 sm:text-[28px] xl:text-[25px]", tone ? TONE[tone] : "text-ink")}>{number}</p>
+            <p className="text-[13px] leading-snug text-graphite sm:mt-1 sm:min-h-[3.9em]">{line}</p>
             {picture && <div className="mt-2 hidden sm:block">{picture}</div>}
           </>
         )}
       </div>
-      {/* The whole card opens the page, and the button says where it goes. */}
-      <Link href={href} className={cn(linkButton("secondary"), "shrink-0 px-3 text-[13px] after:absolute after:inset-0 after:rounded-panel after:content-[''] sm:mt-3 sm:w-full sm:px-4 sm:text-sm")}>{cta} <ArrowRight size={15} className="hidden sm:block" aria-hidden /></Link>
-      {action && <div className="relative z-10 shrink-0 sm:mt-2 [&>button]:w-full">{action}</div>}
+      {/* The whole card opens the page, and the button says where it goes. A card with an action of its own (Order now)
+          shows that action in the button's place, so every card has one button at the same height. */}
+      {action ? (
+        <>
+          <Link href={href} aria-label={`${title}: ${cta}`} className="absolute inset-0 rounded-panel focus-visible:outline-2" />
+          <div className="relative z-10 shrink-0 sm:mt-3 [&>button]:w-full [&>button]:sm:h-10">{action}</div>
+        </>
+      ) : (
+        <Link href={href} className={cn(linkButton("secondary"), "shrink-0 px-3 text-[13px] after:absolute after:inset-0 after:rounded-panel after:content-[''] sm:mt-3 sm:w-full sm:px-4 sm:text-sm")}>{cta} <ArrowRight size={15} className="hidden sm:block" aria-hidden /></Link>
+      )}
     </section>
   );
 }
@@ -295,7 +302,7 @@ export function Home() {
           module="stock" title="Stock levels" picture={<Split parts={[{ n: critical.length, className: "bg-neg" }, { n: low.length, className: "bg-warn" }, { n: items.length - critical.length - low.length, className: "bg-pos" }]} />} number={critical.length ? `${critical.length} critical` : "Nothing urgent"} tone={critical.length ? "neg" : "pos"} loading={!plan && loading}
           line={critical.length ? `${critical.length === 1 ? "Runs" : "Run"} out before a later order could arrive${critical.every((i) => i.nextQty === 0 && i.incoming > 0) ? ", already on order" : ""}. ${low.length} more low.` : `${low.length} low and ${items.length - low.length} fine.`}
           cta="Check stock" href="/stock"
-          action={plan ? <OrderNowButton items={[...critical, ...low]} propertyId={plan.propertyId} variant="primary" size="md" /> : undefined}
+          action={plan && can(user, "purchase.create") && orderable([...critical, ...low]).length ? <OrderNowButton items={[...critical, ...low]} propertyId={plan.propertyId} variant="primary" size="md" /> : undefined}
         />
         <Card
           module="drinks" title="Drinks not billed" picture={<Bars values={pourDaily.slice(-7).map((d) => d.value)} />} number={money(lostWeek.drinks, { compact: true })}

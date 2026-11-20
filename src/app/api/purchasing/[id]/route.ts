@@ -1,7 +1,8 @@
 import type { NextRequest } from "next/server";
 import { APPROVAL_POLICY, approvalSteps, quotesFor } from "@/lib/data/purchasing-rules";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
-import { actOnRequest, budgetFor, canSee, requestTotal, requestsFor } from "@/lib/server/purchasing";
+import { actOnRequest, budgetFor, canSee, demoApproveNext, requestTotal, requestsFor } from "@/lib/server/purchasing";
+import { publicDemo } from "@/lib/server/auth";
 import { closePurchaseOrder, decideSupplierChange, draftCredit, matchFor, recordPhoneOrder, sendApproved, sendCredit, sendPurchaseOrder, settingsOf, supplierAccount, updatePurchaseOrder } from "@/lib/server/procurement";
 import { orderTotals, poStatus } from "@/lib/domain/procurement";
 import { propertyById } from "@/lib/data/catalog";
@@ -27,6 +28,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     steps: approvalSteps(r.propertyId, total),
     policy: APPROVAL_POLICY[r.propertyId],
     budget: budgetFor(r),
+    demoShortcut: publicDemo(),
     quotes: Object.fromEntries(r.lines.map((l) => [l.ingredientId, quotesFor(l.ingredientId, r.propertyId, DEMO_TODAY)])),
     poStatus: poStatus(r),
     totals: orderTotals(r.lines),
@@ -56,7 +58,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (po) return po.ok ? json({ request: po.request }) : json({ error: po.error }, po.status);
   if (body.action === "credit") { const c = draftCredit(g.user, id); return c.ok ? json({ credit: c.credit }) : json({ error: c.error }, c.status); }
   if (body.action === "credit_send") { const c = sendCredit(g.user, id, String(body.creditId ?? "")); return c.ok ? json({ credit: c.credit }) : json({ error: c.error }, c.status); }
-  const r = actOnRequest(g.user, id, body);
+  const r = body.action === "demo-approve" ? demoApproveNext(g.user, id, publicDemo()) : actOnRequest(g.user, id, body);
   if (!r.ok) return json({ error: r.error }, r.status);
   // The last approval sends the order straight away, by the supplier's channel.
   // The last approval sends the order straight away, by the supplier's channel; the answer shows how that went.

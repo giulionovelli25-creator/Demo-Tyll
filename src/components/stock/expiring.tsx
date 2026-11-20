@@ -39,7 +39,23 @@ export function Expiring({ propertyId }: { propertyId: string }) {
           />
           <Panel title="Batches by use-by date" description="The first expiring batch of each item is the one to use first." action={<Segmented label="Within" size="sm" value={days} onChange={setDays} options={[{ value: "1", label: "1 day" }, { value: "2", label: "2 days" }, { value: "3", label: "3 days" }, { value: "7", label: "7 days" }]} />} flush>
             {data.rows.length === 0 ? <div className="p-6"><EmptyState title="Nothing expires in this window">Every batch on the shelf keeps longer.</EmptyState></div> : (
-              <TableWrap>
+              <>
+              {/* On a phone each batch is a card; the table is for wider screens. */}
+              <ul className="divide-y divide-hair md:hidden">
+                {data.rows.map((r) => (
+                  <li key={`m-${r.ingredientId}|${r.batch}|${r.expiry}`} className={cn("px-4 py-3", r.daysLeft < 0 && "bg-neg-soft/40")}>
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="text-[15px] font-medium text-ink">{r.name}</span>
+                      <Badge tone={KIND[r.action.kind].tone}>{KIND[r.action.kind].label}</Badge>
+                    </div>
+                    <p className="mt-0.5 text-[13px] text-graphite"><span className={cn(r.daysLeft < 0 ? "font-medium text-neg" : r.daysLeft <= 1 ? "font-medium text-warn" : "text-ink")}>{when(r.daysLeft)}</span>, {fmtNum(r.left, r.left % 1 ? 1 : 0)} {r.unit}, {money(r.value)}</p>
+                    <p className="text-xs text-steel">Batch <span className="num">{r.batch}</span>. {r.useBy === "label" ? "From the label" : `Received plus ${r.shelfLifeDays} days shelf life`}</p>
+                    <p className="mt-1 text-[13px] text-graphite">{r.action.text}</p>
+                    <ExpiryActions r={r} propertyId={propertyId} />
+                  </li>
+                ))}
+              </ul>
+              <TableWrap className="hidden md:block">
                 <table className="w-full min-w-[920px] text-table">
                   <thead><tr><Th>Item</Th><Th>Batch</Th><Th>Use by</Th><Th align="right">Left</Th><Th align="right">Value</Th><Th>Suggested</Th></tr></thead>
                   <tbody>
@@ -56,6 +72,7 @@ export function Expiring({ propertyId }: { propertyId: string }) {
                   </tbody>
                 </table>
               </TableWrap>
+              </>
             )}
             <Note className="px-6 py-4">Batches come from deliveries: the use-by date recorded on receiving, or the item&rsquo;s shelf life from the delivery day. Stock is used first expiring, first out, so the batches still on the shelf are the ones that expire last. Suggestions follow fixed rules: normal use first, then a transfer to the outlet that uses it most, then a special, then the staff meal. Values at the hotel&rsquo;s valuation method. Simulated data.{data.noBatchItems ? ` ${data.noBatchItems} fresh ${data.noBatchItems === 1 ? "item has" : "items have"} more on the shelf than the recorded batches: check those by hand.` : ""}</Note>
           </Panel>

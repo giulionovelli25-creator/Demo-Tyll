@@ -200,7 +200,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
       out.push({
         id: `menu-${menu.sync.at}`, kind: "menu", rag: "amber", what: `${newDishes.length} new ${newDishes.length === 1 ? "dish needs a recipe" : "dishes need a recipe"}`,
         why: `${newDishes.map((d) => d.name).join(" and ")} came from Simphony at ${menu.sync.at.slice(11, 16)}. Until the recipe is confirmed, ${newDishes.length === 1 ? "it is" : "they are"} costed at a standard cost.`,
-        where: outletById["lis-terrace"].name, outletId: "lis-terrace", amount: null, amountWord: "", next: { label: "Confirm recipes", href: "/stock?tab=recipes#new-dishes" },
+        where: outletById["lis-terrace"].name, outletId: "lis-terrace", amount: null, amountWord: "", next: { label: "Confirm recipes", href: "/stock?tab=recipes&view=new" },
       });
     }
     // Most urgent first, then the most money inside each level.

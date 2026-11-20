@@ -19,6 +19,9 @@ import { type Queue, inQueue, openingQueue } from "@/lib/domain/order-queues";
 import { CHANNEL_LABEL, SEND_LABEL, sendKey, sendState } from "@/lib/domain/dispatch";
 import { MATCH_FLAG, PO_STATUS, orderTotals, outstanding, packsText, poStatus } from "@/lib/domain/procurement";
 
+/** Who the demo shortcut approves as, for each step (the public demo's people). */
+const SIGNER: Partial<Record<RequestStatus, string>> = { purchasing: "Nadia Rahman, purchasing", accounting: "Priya Raman, financial controller", fnb: "Marco Bellini, F&B director", manager: "the general manager" };
+
 export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "warn" | "pos" | "neg" | "ink" }> = {
   draft: { label: "Draft", tone: "neutral" },
   purchasing: { label: "Waiting for purchasing", tone: "warn" },
@@ -455,7 +458,12 @@ function RequestView({ id, base }: { id: string; base: string }) {
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => router.push(base)}><ArrowLeft size={15} /> All requests</Button>
       </div>
-      {step ? <NextStep step={step} /> : waitingFor && <p role="status" className="rounded-panel border border-line bg-cloud px-5 py-3 text-sm text-graphite"><span className="font-medium text-ink">{waitingFor}.</span> Nothing is needed from you now; you will be notified of the decision.</p>}
+      {step ? <NextStep step={step} /> : waitingFor && (
+        <div role="status" className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-line bg-cloud px-5 py-3 text-sm text-graphite">
+          <p><span className="font-medium text-ink">{waitingFor}.</span> Nothing is needed from you now; you will be notified of the decision.</p>
+          {data.demoShortcut && <Button size="sm" disabled={busy} onClick={() => void run(`/api/purchasing/${r.id}`, { action: "demo-approve" }, `Approved as ${SIGNER[r.status] ?? "the next person"} (demo shortcut).`)}>Approve as {SIGNER[r.status] ?? "the next person"} (demo)</Button>}
+        </div>
+      )}
       <Panel
         title={<span className="flex flex-wrap items-center gap-3"><span className="num">{r.id}</span><OrderBadge r={r} />{r.poNumber && <Badge>{r.poNumber}</Badge>}{r.auto && <Badge tone="accent">Automatic</Badge>}</span>}
         description={`${where(r)}, ${propertyById[r.propertyId].name}. ${r.deliveryDate ? `Delivery ${fmtDate(r.deliveryDate, true)}` : `For ${fmtDate(r.period.from, true)}${r.period.to !== r.period.from ? ` to ${fmtDate(r.period.to, true)}` : ""}`}. ${r.auto ? `Created by automatic ordering on ${personName(r.createdBy)}'s rules.` : `Raised by ${personName(r.createdBy)}.`}`}
@@ -547,6 +555,8 @@ function RequestView({ id, base }: { id: string; base: string }) {
         })()}
       </Panel>
 
+      {/* Sending comes before receiving: how and when the order reached the supplier, and the supplier's answer. */}
+      <div id="order-send" className="scroll-mt-24 empty:hidden"><SendPanel d={data} user={user} run={run} busy={busy} /></div>
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1fr_1fr]">
         {(reviewing || author || mayReceive) && (
           <div id="order-action" className="scroll-mt-24"><Panel title={author ? "Your request" : mayReceive ? "Record the delivery" : stage === "purchasing" ? "Purchasing review" : stage === "accounting" ? "Accounting review" : stage === "fnb" ? `${data.policy.fnbLabel} approval` : `${data.policy.managerLabel} approval`}>
@@ -597,7 +607,6 @@ function RequestView({ id, base }: { id: string; base: string }) {
           </Panel></div>
         )}
 
-        <div id="order-send" className="scroll-mt-24 empty:hidden"><SendPanel d={data} user={user} run={run} busy={busy} /></div>
         {showMoney && <div id="order-match" className="scroll-mt-24 empty:hidden xl:col-span-2"><MatchPanel d={data} user={user} run={run} busy={busy} /></div>}
         <Receipts r={r} />
         {showMoney && (can(user, "purchase.review") || can(user, "purchase.approveFinance") || can(user, "purchase.approveFnb") || can(user, "purchase.approveManager")) && (

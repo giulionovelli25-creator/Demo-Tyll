@@ -77,7 +77,7 @@ export async function ensureMenuSync(): Promise<MenuSyncShape | undefined> {
     x.menuSync = next;
     const waiting = next.newDishes.filter((d) => d.status === "needs_recipe");
     if (waiting.length) {
-      notify(x, { to: peopleWith("prep.plan", "lis", (u) => u.role === "chef" || u.role === "fnb_director"), type: "menu-new-dish", ref: `menu-${DEMO_TODAY}`, propertyId: "lis", title: `${waiting.length} new ${waiting.length === 1 ? "dish needs a recipe" : "dishes need a recipe"}`, body: `${waiting.map((d) => d.name).join(" and ")} came from Simphony at ${SIMPHONY_SYNC_TIME}. Until the recipe is confirmed, ${waiting.length === 1 ? "it is" : "they are"} costed at a standard cost.`, href: "/stock?tab=recipes#new-dishes" });
+      notify(x, { to: peopleWith("prep.plan", "lis", (u) => u.role === "chef" || u.role === "fnb_director"), type: "menu-new-dish", ref: `menu-${DEMO_TODAY}`, propertyId: "lis", title: `${waiting.length} new ${waiting.length === 1 ? "dish needs a recipe" : "dishes need a recipe"}`, body: `${waiting.map((d) => d.name).join(" and ")} came from Simphony at ${SIMPHONY_SYNC_TIME}. Until the recipe is confirmed, ${waiting.length === 1 ? "it is" : "they are"} costed at a standard cost.`, href: "/stock?tab=recipes&view=new" });
     }
     return next;
   });

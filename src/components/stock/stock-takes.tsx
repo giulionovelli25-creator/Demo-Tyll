@@ -18,6 +18,8 @@ const STATUS: Record<StockTakeView["status"], { label: string; tone: "neutral" |
   counting: { label: "Counting", tone: "ink" }, submitted: { label: "Waiting for approval", tone: "warn" }, approved: { label: "Approved, stock adjusted", tone: "pos" }, rejected: { label: "Rejected, stock unchanged", tone: "neg" },
 };
 const signed = (n: number, money: (n: number) => string) => (n > 0 ? `+${money(n)}` : n < 0 ? money(n) : money(0));
+/** A line's value: whole euros, with cents under €10 so a small difference never reads as "−€0". */
+const lineValue = (n: number, currency: string) => { const m = (x: number) => fmtMoney(x, currency as "EUR", Math.abs(n) < 10 ? { decimals: true } : undefined); return n > 0 ? `+${m(n)}` : m(n); };
 
 function StartDrawer({ propertyId, onClose }: { propertyId: string; onClose: () => void }) {
   const router = useRouter();
@@ -104,12 +106,26 @@ function Detail({ id }: { id: string }) {
       </Panel>
       <Panel title="Variance by item" action={<Segmented label="Show" size="sm" value={only} onChange={setOnly} options={[{ value: "diff", label: "Differences" }, { value: "all", label: "Every counted item" }]} />} flush>
         {lines.length === 0 ? <div className="p-6"><EmptyState title="No differences">Every counted item matches the system figure.</EmptyState></div> : (
-          <TableWrap>
+          <>
+          <ul className="divide-y divide-hair md:hidden">
+            {lines.map((l) => { const g = ingredientById[l.ingredientId]; const rv = t.review[l.ingredientId]; return (
+              <li key={`m-${l.ingredientId}`} className={cn("px-4 py-3", rv?.large && "bg-warn-soft/50")}>
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-[15px] font-medium text-ink">{g.name}{rv?.large && <Badge tone="warn" className="ms-2 !py-0">Large</Badge>}</span>
+                  <span className={cn("num shrink-0 font-medium", l.value < 0 ? "text-neg" : "text-ink")}>{lineValue(l.value, t.currency)}</span>
+                </div>
+                <p className="num mt-0.5 text-[13px] text-graphite">Expected {fmtQty(l.system, g.unit)}, counted {fmtQty(l.counted ?? 0, g.unit)}, {l.diff > 0 ? "+" : l.diff < 0 ? "−" : ""}{fmtQty(Math.abs(l.diff), g.unit)}</p>
+                {rv?.reason && <p className="mt-1 text-[13px] text-graphite">{rv.reason}</p>}
+              </li>
+            ); })}
+          </ul>
+          <TableWrap className="hidden md:block">
             <table className="w-full min-w-[1000px] text-table">
               <thead><tr><Th>Item</Th><Th align="right">Expected</Th><Th align="right">Counted</Th><Th align="right">Difference</Th><Th align="right">Value</Th><Th>Likely reason, to check</Th><Th>Counted by</Th></tr></thead>
-              <tbody>{lines.map((l) => { const g = ingredientById[l.ingredientId]; const ln = t.lines.find((x) => x.ingredientId === l.ingredientId)!; const rv = t.review[l.ingredientId]; return <tr key={l.ingredientId} className={cn(rowClass, rv?.large && "bg-warn-soft/50")}><Td><span className="text-ink">{g.name}</span>{rv?.large && <Badge tone="warn" className="ms-2 !py-0">Large</Badge>}<span className="block text-xs text-steel">{l.group}</span></Td><Td align="right">{fmtQty(l.system, g.unit)}</Td><Td align="right">{fmtQty(l.counted ?? 0, g.unit)}</Td><Td align="right" className={l.diff < 0 ? "text-neg" : undefined}>{l.diff > 0 ? "+" : l.diff < 0 ? "−" : ""}{fmtQty(Math.abs(l.diff), g.unit)}</Td><Td align="right" className={cn("font-medium", l.value < 0 ? "text-neg" : "text-ink")}>{signed(l.value, money)}</Td><Td className="max-w-[300px] text-[13px] text-graphite">{rv?.reason}</Td><Td className="text-xs text-steel">{ln.by ? personName(ln.by) : ""}{ln.method === "scan" ? ", scanned" : ""}</Td></tr>; })}</tbody>
+              <tbody>{lines.map((l) => { const g = ingredientById[l.ingredientId]; const ln = t.lines.find((x) => x.ingredientId === l.ingredientId)!; const rv = t.review[l.ingredientId]; return <tr key={l.ingredientId} className={cn(rowClass, rv?.large && "bg-warn-soft/50")}><Td><span className="text-ink">{g.name}</span>{rv?.large && <Badge tone="warn" className="ms-2 !py-0">Large</Badge>}<span className="block text-xs text-steel">{l.group}</span></Td><Td align="right">{fmtQty(l.system, g.unit)}</Td><Td align="right">{fmtQty(l.counted ?? 0, g.unit)}</Td><Td align="right" className={l.diff < 0 ? "text-neg" : undefined}>{l.diff > 0 ? "+" : l.diff < 0 ? "−" : ""}{fmtQty(Math.abs(l.diff), g.unit)}</Td><Td align="right" className={cn("font-medium", l.value < 0 ? "text-neg" : "text-ink")}>{lineValue(l.value, t.currency)}</Td><Td className="max-w-[300px] text-[13px] text-graphite">{rv?.reason}</Td><Td className="text-xs text-steel">{ln.by ? personName(ln.by) : ""}{ln.method === "scan" ? ", scanned" : ""}</Td></tr>; })}</tbody>
             </table>
           </TableWrap>
+          </>
         )}
         <Note className="px-6 py-4">A difference is something to check: a delivery not recorded, waste not logged, a recipe that does not match, or stock that left the store. It is not proof of how it happened.</Note>
       </Panel>

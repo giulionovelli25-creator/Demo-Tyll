@@ -54,6 +54,11 @@
 "1 ha bisogno di una ricetta",
 "1 بحاجة إلى وصفة"
 ],
+"2 need a recipe": [
+"2 brauchen ein Rezept",
+"2 hanno bisogno di una ricetta",
+"2 بحاجة إلى وصفة"
+],
 ": doubles the spirit ({0}, {1}, {2})": [
 ": verdoppelt die Spirituose ({0}, {1}, {2})",
 ": raddoppia il distillato ({0}, {1}, {2})",
@@ -939,6 +944,16 @@
 "Approva e rettifica le scorte",
 "الموافقة وتعديل المخزون"
 ],
+"Approve as {0} (demo)": [
+"Freigeben als {0} (Demo)",
+"Approva come {0} (demo)",
+"وافق بصفة {0} (عرض تجريبي)"
+],
+"Approve as {0}, {1} (demo)": [
+"Freigeben als {0}, {1} (Demo)",
+"Approva come {0}, {1} (demo)",
+"وافق بصفة {0}، {1} (عرض تجريبي)"
+],
 "Approve distribution": [
 "Verteilung freigeben",
 "Approva distribuzione",
@@ -958,6 +973,16 @@
 "Freigegeben und gesendet",
 "Approvato e inviato",
 "تمت الموافقة والإرسال"
+],
+"Approved as {0} (demo shortcut).": [
+"Freigegeben als {0} (Demo-Abkürzung).",
+"Approvato come {0} (scorciatoia demo).",
+"تمت الموافقة بصفة {0} (اختصار العرض التجريبي)."
+],
+"Approved as {0}, {1} (demo shortcut).": [
+"Freigegeben als {0}, {1} (Demo-Abkürzung).",
+"Approvato come {0}, {1} (scorciatoia demo).",
+"تمت الموافقة بصفة {0}، {1} (اختصار العرض التجريبي)."
 ],
 "Approved by": [
 "Freigegeben von",
@@ -3839,6 +3864,11 @@
 "Storico demo, prima di Tyll",
 "سجل تجريبي، قبل Tyll"
 ],
+"Demo shortcut, pressed by {0}.": [
+"Demo-Abkürzung, ausgelöst von {0}.",
+"Scorciatoia demo, premuta da {0}.",
+"اختصار العرض التجريبي، ضغطه {0}."
+],
 "Department": [
 "Abteilung",
 "Reparto",
@@ -4929,6 +4959,11 @@
 "Previsto e reale",
 "المتوقع مقابل الفعلي"
 ],
+"Expected {0}, counted {1}, {2}": [
+"Erwartet {0}, gezählt {1}, {2}",
+"Previsto {0}, contato {1}, {2}",
+"المتوقع {0}، المعدود {1}، {2}"
+],
 "Expected, change it only if it differs": [
 "Soll, nur bei Abweichung ändern",
 "Previsto, cambialo solo se diverso",
@@ -5228,6 +5263,11 @@
 "Folgen Sie einem geführten Rundgang in {0} Schritten durch das, was Tyll heute kann.",
 "Segui un percorso guidato in {0} passi per scoprire cosa fa Tyll oggi.",
 "اتبع جولة إرشادية من {0} خطوات لما يقدمه Tyll اليوم."
+],
+"Follow a {0} step guided path through what Tyll does today. It starts from a fresh copy of the demo.": [
+"Folgen Sie einer geführten Tour in {0} Schritten durch das, was Tyll heute kann. Sie beginnt mit einer frischen Kopie der Demo.",
+"Segui un percorso guidato in {0} passi su cosa fa Tyll oggi. Parte da una copia nuova della demo.",
+"اتبع مسارًا موجّهًا من {0} خطوات عبر ما يفعله Tyll اليوم. يبدأ من نسخة جديدة من العرض."
 ],
 "Following up": [
 "Verfolgt von",
@@ -6563,6 +6603,11 @@
 "Sie landet auf der Rechnung von Zimmer {0}",
 "Finisce sul conto della camera {0}",
 "تصل إلى فاتورة الغرفة {0}"
+],
+"It starts from a fresh copy of the demo.": [
+"Sie beginnt mit einer frischen Kopie der Demo.",
+"Parte da una copia nuova della demo.",
+"يبدأ من نسخة جديدة من العرض."
 ],
 "It was already matched to another booking:": [
 "Sie war bereits einer anderen Reservierung zugeordnet:",
@@ -8839,6 +8884,11 @@
 "Nuovo",
 "جديد"
 ],
+"New dishes": [
+"Neue Gerichte",
+"Nuovi piatti",
+"أطباق جديدة"
+],
 "New dishes from Simphony": [
 "Neue Gerichte aus Simphony",
 "Nuovi piatti da Simphony",
@@ -10158,6 +10208,11 @@
 "Öffnen Sie einen Fall, um ihn von der Kasse bis zum Ergebnis zu verfolgen.",
 "Apra un caso per seguirlo dalla cassa all'esito.",
 "افتح حالة لتتابعها من الصندوق حتى النتيجة."
+],
+"Open an order waiting for approval and approve it as purchasing; \"Approve as\" signs the next steps as the controller and the F&B director, in the demo only. Once fully approved it goes to the supplier on its own. Douro Cellars' system times out once and a retry is safe; Mercearia Lusa answers with less chocolate, for you to accept.": [
+"Eine wartende Bestellung öffnen und als Einkauf freigeben; „Freigeben als\" zeichnet die nächsten Schritte als Controller und F&B-Direktor, nur in der Demo. Vollständig freigegeben geht sie von selbst an den Lieferanten. Das System von Douro Cellars antwortet einmal nicht und ein neuer Versuch ist sicher; Mercearia Lusa antwortet mit weniger Schokolade, zur Annahme.",
+"Apri un ordine in attesa e approvalo come ufficio acquisti; \"Approva come\" firma i passaggi successivi come controller e direttore F&B, solo nella demo. Approvato del tutto, va al fornitore da solo. Il sistema di Douro Cellars non risponde una volta e riprovare è sicuro; Mercearia Lusa risponde con meno cioccolato, da accettare.",
+"افتح طلبًا بانتظار الموافقة ووافق عليه بصفتك المشتريات؛ «وافق بصفة» يوقّع الخطوات التالية بصفة المراقب المالي ومدير الأغذية والمشروبات، في العرض التجريبي فقط. بعد اكتمال الموافقات يذهب إلى المورد تلقائيًا. لا يرد نظام Douro Cellars مرة وإعادة المحاولة آمنة؛ وترد Mercearia Lusa بكمية شوكولاتة أقل لتقبلها."
 ],
 "Open an outlet to see what makes up its costs, then its transactions and flagged items.": [
 "Öffnen Sie ein Outlet, um die Kosten, Transaktionen und markierten Posten zu sehen.",
@@ -11708,6 +11763,11 @@
 "Rezeptkosten, wie unten",
 "Costo della ricetta, come sotto",
 "تكلفة الوصفة، كما أدناه"
+],
+"Recipes": [
+"Rezepte",
+"Ricette",
+"الوصفات"
 ],
 "Recipes and costs": [
 "Rezepte und Kosten",
