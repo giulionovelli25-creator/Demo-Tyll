@@ -34,7 +34,7 @@ export default function StockRoute() {
   const employee = user.role === "employee";
   // Bought against used covers the whole hotel: only roles that see the whole of it, with the permission, get the tab.
   const valid: Tab[] = employee ? ["log", "counts"] : (["inventory", "where", "counts", "recipes", "suppliers", "expiry", "takes", "bought"] as Tab[])
-    .filter((t) => t !== "expiry" || featureOn("expiry"))
+    .filter((t) => t !== "expiry" || (featureOn("expiry") && (can(user, "stock.count") || can(user, "stock.review") || can(user, "purchase.create"))))
     .filter((t) => t !== "where" || canOpen(user, "investigations"))
     .filter((t) => t !== "bought" || (can(user, "stock.boughtUsed") && allowedProperties(user).some((p) => hasWholeProperty(user, p))));
   const [tab, setTab] = useSection<Tab>("/stock", valid, employee ? "log" : null);

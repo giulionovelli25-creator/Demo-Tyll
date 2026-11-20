@@ -39,7 +39,7 @@ export const SECTIONS: NavSection[] = [
     id: "stock", title: "Stock and waste", icon: Package, tone: "teal",
     items: [
       { id: "stock", label: "Stock levels", short: "Stock", href: "/stock", icon: Package },
-      ...(featureOn("expiry") ? [{ id: "expiry", label: "Expiring soon", short: "Expiry", href: "/stock?tab=expiry", icon: CalendarX }] : []),
+      ...(featureOn("expiry") ? [{ id: "expiry", label: "Expiring soon", short: "Expiry", href: "/stock?tab=expiry", icon: CalendarX, needs: ["stock.count", "stock.review", "purchase.create"] as Permission[] }] : []),
       { id: "waste", label: "Waste and breakage", short: "Waste", href: "/waste", icon: Trash2 },
       { id: "missing", label: "Stock takes and missing stock", short: "Counts", href: "/stock?tab=takes", icon: ClipboardCheck, also: ["/stock?tab=where", "/stock?tab=bought", "/stock?tab=counts"] },
       { id: "drinks", label: "Over pouring", short: "Pouring", href: "/drinks", icon: Wine },
