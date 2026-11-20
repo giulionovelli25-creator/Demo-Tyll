@@ -10,18 +10,19 @@ import { StockPage } from "@/components/stock/stock-page";
 import { Suppliers } from "@/components/stock/suppliers";
 import { WasteLogger } from "@/components/stock/waste-logger";
 import { WhereDidItGo } from "@/components/stock/where";
+import { BoughtUsed } from "@/components/stock/bought-used";
 import { useSection } from "@/components/module-hub";
 import { PageHeader, Segmented, Tabs } from "@/components/ui";
 import { propertyById } from "@/lib/data/catalog";
 import { PurchasingTabs } from "@/components/finance/purchasing-tabs";
 
-import { allowedProperties, canOpen } from "@/lib/domain/access";
+import { allowedProperties, can, canOpen, hasWholeProperty } from "@/lib/domain/access";
 import { useView } from "@/lib/hooks";
 
-type Tab = "inventory" | "where" | "counts" | "recipes" | "suppliers" | "log" | "expiry" | "takes";
+type Tab = "inventory" | "where" | "counts" | "recipes" | "suppliers" | "log" | "expiry" | "takes" | "bought";
 
-const QUESTION: Partial<Record<Tab, string>> = { expiry: "What expires in the next days, and what do we do with it?", takes: "What did each stock take find, and is it approved?", where: "What went missing between counts?", counts: "What did each count find?", suppliers: "Did we get, and pay for, what we ordered?", inventory: "What happened to each item?", recipes: "What does each dish cost to make?" };
-const LABEL: Record<Tab, string> = { expiry: "Expiring soon", takes: "Stock takes and missing stock", inventory: "Item history", where: "Stock takes and missing stock", counts: "Stock takes and missing stock", recipes: "Recipes and costs", suppliers: "Deliveries and invoices", log: "Log waste or breakage" };
+const QUESTION: Partial<Record<Tab, string>> = { expiry: "What expires in the next days, and what do we do with it?", takes: "What did each stock take find, and is it approved?", where: "What went missing between counts?", bought: "Are we buying more than we sell?", counts: "What did each count find?", suppliers: "Did we get, and pay for, what we ordered?", inventory: "What happened to each item?", recipes: "What does each dish cost to make?" };
+const LABEL: Record<Tab, string> = { expiry: "Expiring soon", takes: "Stock takes and missing stock", inventory: "Item history", where: "Stock takes and missing stock", counts: "Stock takes and missing stock", bought: "Stock takes and missing stock", recipes: "Recipes and costs", suppliers: "Deliveries and invoices", log: "Log waste or breakage" };
 
 /** Stock is one full page. The older detail screens stay reachable from the links at its foot, and by their old addresses. */
 export default function StockRoute() {
@@ -30,7 +31,10 @@ export default function StockRoute() {
   const router = useRouter();
   // The Stock page remembers its own tab, so Analysis here opens Analysis there.
   const employee = user.role === "employee";
-  const valid: Tab[] = employee ? ["log", "counts"] : (["inventory", "where", "counts", "recipes", "suppliers", "expiry", "takes"] as Tab[]).filter((t) => t !== "where" || canOpen(user, "investigations"));
+  // Bought against used covers the whole hotel: only roles that see the whole of it, with the permission, get the tab.
+  const valid: Tab[] = employee ? ["log", "counts"] : (["inventory", "where", "counts", "recipes", "suppliers", "expiry", "takes", "bought"] as Tab[])
+    .filter((t) => t !== "where" || canOpen(user, "investigations"))
+    .filter((t) => t !== "bought" || (can(user, "stock.boughtUsed") && allowedProperties(user).some((p) => hasWholeProperty(user, p))));
   const [tab, setTab] = useSection<Tab>("/stock", valid, employee ? "log" : null);
   const props = allowedProperties(user);
   const [picked, setPicked] = useState(props[0]);
@@ -45,7 +49,7 @@ export default function StockRoute() {
   if (tab === null) return <StockPage />;
   const label = LABEL[tab];
   // Header, then the numbers, then the parts of the page: the same order as every other page.
-  const countTabs = <Tabs value={tab} onChange={setTab} tabs={[{ value: "takes" as Tab, label: "Stock takes" }, ...(valid.includes("where") ? [{ value: "where" as Tab, label: "Missing stock" }] : []), { value: "counts" as Tab, label: "Count records" }]} />;
+  const countTabs = <Tabs value={tab} onChange={setTab} tabs={[{ value: "takes" as Tab, label: "Stock takes" }, ...(valid.includes("where") ? [{ value: "where" as Tab, label: "Missing stock" }] : []), ...(valid.includes("bought") ? [{ value: "bought" as Tab, label: "Bought against used" }] : []), { value: "counts" as Tab, label: "Count records" }]} />;
   return (
     <div className="space-y-6">
       <PageHeader
@@ -65,6 +69,7 @@ export default function StockRoute() {
       {tab === "counts" && <Counts propertyId={pid} />}
       {tab === "expiry" && <Expiring key={pid} propertyId={pid} />}
       {tab === "takes" && <StockTakes key={pid} propertyId={pid} tabs={countTabs} />}
+      {tab === "bought" && <BoughtUsed key={pid} propertyId={pid} tabs={countTabs} />}
       {tab === "recipes" && <Recipes />}
       {tab === "suppliers" && <Suppliers propertyId={pid} tabs={employee ? null : <PurchasingTabs here="deliveries" />} />}
     </div>

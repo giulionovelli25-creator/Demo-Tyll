@@ -18,6 +18,7 @@ import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, 
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
 import { canSeeOutlet } from "@/lib/domain/access";
+import { BOUGHT_USED_RULES } from "@/lib/domain/bought-used";
 import { POLICY, TYPE_LABEL, detectOrderException } from "@/lib/domain/detect";
 import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
@@ -229,6 +230,7 @@ function Mistakes() {
             <li>Refunds above {Math.round(POLICY.refundMaxShare * 100)}% of a bill, late, or unexplained.</li>
             <li>Whole orders cancelled after they were sent to the kitchen or bar.</li>
             <li>Room charges missing from the guest bill, posted more than once, for a different amount, to the wrong room or after check-out.</li>
+            <li>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use and {money(BOUGHT_USED_RULES.minValue)}. An estimate until a count.</li>
           </ul>
         </Panel>
       </div>

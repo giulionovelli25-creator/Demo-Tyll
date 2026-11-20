@@ -6,6 +6,10 @@ import type { CountRecord, Exception, Order, RoomCharge } from "../types";
 import { addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "../util";
 import { POLICY, REMOVAL_TYPES, folioTime, type Pattern } from "./detect";
 import { countVariance, countVarianceValue } from "./inventory";
+import { BOUGHT_USED_CAUSES, itemWords } from "./bought-used";
+import { qtyWords } from "./variance";
+
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 import { orderTotals } from "./orders";
 
 export interface StockEvidence {
@@ -116,6 +120,26 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
       base.recommended = ["Compare the outlet check with the guest bill line.", "Correct the posting and record the result here."];
       base.message = `The recorded charge is ${money(charge.expected)} but the guest bill shows ${money(posted)}. Please compare the two and correct the posting.`;
     }
+    return base;
+  }
+
+  if (e.type === "bought_not_used" && e.boughtUsed && e.ingredientId) {
+    const b = e.boughtUsed;
+    const q = (n: number) => qtyWords(n, e.ingredientId!);
+    const name = itemWords(e.ingredientId);
+    // A hotel wide check has no outlet, so "similar cases at this outlet" does not apply.
+    base.similarAtOutlet = 0;
+    base.whatHappened = `${cap(q(b.gap))} more ${name} came in than the till and the waste log account for, over the 30 days to ${fmtDate(b.to)}.`;
+    base.facts = [
+      `${cap(q(b.bought))} received from suppliers in ${b.deliveries} deliver${b.deliveries === 1 ? "y" : "ies"}${b.movedIn > 0 ? `, and ${q(b.movedIn)} moved in from another store` : ""}.`,
+      `${cap(q(b.sold))} used by the recipes of what was sold, including complimentary items.`,
+      `${cap(q(b.waste))} logged as waste or breakage${b.movedOut > 0 ? `, and ${q(b.movedOut)} moved out to another store` : ""}.`,
+      `That leaves ${q(b.gap)}, ${Math.round(b.share * 100)}% of what was used, worth about ${fmtMoney(Math.round(e.exposure), currency)} at the price paid.`,
+      `The last delivery brought ${q(b.lastDelivery)}. Tyll allows that much to still be on the shelf before it flags a gap.`,
+    ];
+    base.possibleCauses = BOUGHT_USED_CAUSES.map((c) => c.title);
+    base.recommended = [`Count ${name} in every store and bar.`, ...BOUGHT_USED_CAUSES.slice(1).map((c) => c.check)];
+    base.message = `Over the last 30 days the hotel received ${q(b.bought)} of ${name} and the records account for ${q(b.used)}. The difference of ${q(b.gap)} is an estimate until a count confirms it. Please count it, and check whether it goes into anything the till has no recipe for.`;
     return base;
   }
 

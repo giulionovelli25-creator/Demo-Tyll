@@ -14,3 +14,9 @@ export const ROOM_STORY_ORDER_ID = `MER-${mmdd(rel(-1))}-299`;
 export const ROOM_STORY_CHARGE_ID = `RC-${ROOM_STORY_ORDER_ID}`;
 export const ROOM_STORY_EXCEPTION_ID = `EX-${ROOM_STORY_CHARGE_ID}`;
 export const ROOM_STORY = { room: "1412", folioRoom: "1421", checkoutMin: 24 * 60 + 10 * 60 + 12 } as const;
+/**
+ * Bought against used: Coca-Cola for the whole hotel. For the three weeks before the last full count every drinks
+ * delivery brought two more cases than the bars needed, and sales did not follow. The check flags it every day.
+ */
+export const BOUGHT_STORY = { ingredientId: "coke", extraPerDelivery: 48, fromDay: -24 } as const;
+export const BOUGHT_STORY_EXCEPTION_ID = `EX-BU-LIS-COKE-${mmdd(DEMO_TODAY)}`;

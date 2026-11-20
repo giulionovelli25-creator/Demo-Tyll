@@ -32,6 +32,7 @@ export const TYPE_LABEL: Record<ExceptionType, string> = {
   room_charge_after_checkout: "Room charge after check-out",
   stock_shortfall: "Stock shortfall",
   usage_variance: "Usage above sales",
+  bought_not_used: "Bought more than used",
 };
 
 export const REMOVAL_TYPES: ExceptionType[] = ["removed_after_dispatch", "prepared_not_charged", "bill_mismatch"];

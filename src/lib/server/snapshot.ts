@@ -10,6 +10,7 @@ import { orderTotals } from "../domain/orders";
 import type { Order, User } from "../types";
 import { publicDemo } from "./auth";
 import { confirmedByStockTake } from "./stocktake";
+import { boughtUsedCases } from "./bought-used";
 import type { Exception } from "../types";
 
 /** The dataset as sent to the browser: no orders (fetched one by one) and no lookup maps. */
@@ -18,21 +19,29 @@ export type Snapshot = Omit<Dataset, "orders" | "ordersById" | "chargesById"> & 
 const cache = new Map<string, Snapshot>();
 
 export function snapshotFor(user: User): Snapshot {
-  const key = `${publicDemo()}|${user.role}|${JSON.stringify(user.propertyIds)}|${JSON.stringify(user.outletIds)}`;
-  const hit = cache.get(key);
-  if (hit) return withBasis(hit);
-  const d = getDataset();
-  const outlets = new Set(allowedOutlets(user));
   const props = new Set(allowedProperties(user));
   const whole = new Set([...props].filter((p) => hasWholeProperty(user, p)));
   // Staff and the head chef get quantities without money. Purchasing gets no sales at all: it needs stock, suppliers and prices.
   const staff = user.role === "employee" || user.role === "chef";
+  const flags = !staff && user.role !== "purchasing";
+  // Bought against used is worked out from today's server records (deliveries received in Tyll, shared waste, checks),
+  // so its flags are added on every call and their state is part of the cache key.
+  const bought = flags && can(user, "stock.boughtUsed") ? boughtUsedCases([...whole]) : { exceptions: [], seed: {} };
+  const signature = bought.exceptions.map((e) => `${e.id}:${e.exposure}:${bought.seed[e.id].status}`).join(",");
+  const key = `${publicDemo()}|${user.role}|${JSON.stringify(user.propertyIds)}|${JSON.stringify(user.outletIds)}|${signature}`;
+  const hit = cache.get(key);
+  if (hit) return withBasis(hit);
+  if (cache.size > 200) cache.clear();
+  const d = getDataset();
+  const outlets = new Set(allowedOutlets(user));
   // Purchasing and the hotel departments get no outlet sales.
   const procurement = user.role === "purchasing" || !!user.deptId;
   const byOutlet = <T extends { outletId: string }>(rows: T[]) => rows.filter((r) => outlets.has(r.outletId));
-  const cases = publicDemo() ? demoCases(d.exceptions, d.seedInvestigations) : d.exceptions;
-  const exceptions = staff || user.role === "purchasing" ? [] : cases.filter((e) => (e.outletId ? outlets.has(e.outletId) : whole.has(e.propertyId)));
-  const seedInvestigations = Object.fromEntries(exceptions.map((e) => [e.id, d.seedInvestigations[e.id]]));
+  const all = [...d.exceptions, ...bought.exceptions];
+  const seed = { ...d.seedInvestigations, ...bought.seed };
+  const cases = publicDemo() ? demoCases(all, seed) : all;
+  const exceptions = flags ? cases.filter((e) => (e.outletId ? outlets.has(e.outletId) : whole.has(e.propertyId))) : [];
+  const seedInvestigations = Object.fromEntries(exceptions.map((e) => [e.id, seed[e.id]]));
 
   const snap: Snapshot = {
     dayItems: procurement ? [] : byOutlet(d.dayItems).map((r) => (staff ? { ...r, gross: 0, comps: 0, discounts: 0, refunds: 0 } : r)),

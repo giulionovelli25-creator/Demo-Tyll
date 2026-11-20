@@ -36,7 +36,7 @@ export interface Dataset {
   prepRatios?: Record<string, number>;
 }
 
-import { HERO_EXCEPTION_ID, HERO_ORDER_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID } from "./constants";
+import { BOUGHT_STORY, HERO_EXCEPTION_ID, HERO_ORDER_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID } from "./constants";
 import { SCENARIOS, buildOutletStock, latestPeriods, type OutletStock } from "./outlet-stock";
 import { headlineFor, needsCase, periodVariance } from "../domain/variance";
 import { lossLevel } from "../domain/story";
@@ -526,6 +526,9 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
   const out: Delivery[] = [];
   for (const p of PROPERTIES) {
     const avg = avgDailyUsage(dayItems, p.id);
+    // What each item still needs, carried from one delivery to the next. A slow item is ordered in whole packs only when
+    // a pack is due, so over the month the hotel buys about what it uses instead of a pack every day.
+    const owed = new Map<string, number>();
     // Suppliers confirm the next day's delivery; anything later is still to be ordered.
     for (const date of eachDay({ from: addDays(DEMO_TODAY, -29), to: addDays(DEMO_TODAY, 1) })) {
       for (const supplierId of Object.keys(SUPPLIER_DAYS)) {
@@ -534,9 +537,13 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
         const future = date > DEMO_TODAY;
         // Carnes Ribeiro & Filhos could not confirm chicken for Lisbon tomorrow.
         const lines = INGREDIENTS.filter((g) => g.supplierId === supplierId && (avg.get(g.id) ?? 0) > 0 && !(p.id === "lis" && g.id === "chicken" && date === addDays(DEMO_TODAY, 1))).map((g) => {
-          const want = avg.get(g.id)! * SUPPLIER_COVER[supplierId] * r.between(0.94, 1.08);
+          // Before the last full count a slow item waits until a whole pack is due. From the count on, the store orders at
+          // least a pack of everything it uses, so the stock estimate since that count is what it always was.
+          const carried = date < LAST_FULL_COUNT;
+          const want = avg.get(g.id)! * SUPPLIER_COVER[supplierId] * r.between(0.94, 1.08) + (carried ? owed.get(g.id) ?? 0 : 0);
           const pack = orderPack(g);
-          const ordered = Math.max(pack, Math.round(want / pack) * pack);
+          const ordered = carried ? Math.max(0, Math.round(want / pack) * pack) : Math.max(pack, Math.round(want / pack) * pack);
+          if (carried) owed.set(g.id, want - ordered);
           const poPrice = round2(ingredientCostAt(g.id, date) * p.costFactor);
           let delivered = ordered;
           let invoicePrice = poPrice;
@@ -544,7 +551,7 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
           if (!future && r.chance(0.03)) invoicePrice = round2(poPrice * r.pick([1.03, 1.05, 1.08]));
           const invoiced = delivered < ordered && r.chance(0.6) ? ordered : delivered;
           return { ingredientId: g.id, ordered, delivered: future ? 0 : delivered, invoiced: future ? 0 : invoiced, poPrice, invoicePrice };
-        });
+        }).filter((l) => l.ordered > 0);
         if (lines.length === 0) continue;
         // The worked examples: yesterday's beef came 4 kg short but was invoiced in full, and two days ago
         // Mercearia Lusa invoiced €180 above what was delivered.
@@ -554,6 +561,11 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
           // The 30 kg of chicken for Thursday's conference came with the same delivery (issued today as T-7).
           const chicken = lines.find((l) => l.ingredientId === "chicken");
           if (chicken) for (const k of ["ordered", "delivered", "invoiced"] as const) chicken[k] += 30;
+        }
+        // Bought against used: two more cases of Coca-Cola on each drinks delivery in the three weeks before the last full count.
+        if (p.id === "lis" && date >= rel(BOUGHT_STORY.fromDay) && date < LAST_FULL_COUNT) {
+          const coke = lines.find((l) => l.ingredientId === BOUGHT_STORY.ingredientId);
+          if (coke) for (const k of ["ordered", "delivered", "invoiced"] as const) coke[k] += BOUGHT_STORY.extraPerDelivery;
         }
         if (p.id === "lis" && supplierId === "dry" && date <= addDays(DEMO_TODAY, -2) && date >= addDays(DEMO_TODAY, -4)) {
           const l = lines.find((x) => x.ingredientId === "parmesan") ?? lines[0];

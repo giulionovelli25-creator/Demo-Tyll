@@ -13,7 +13,7 @@ import { seedStage6, type FinanceShape, type SalesShape, type StockLogShape } fr
 import { DEMO_TODAY, addDays, diffDays } from "../util";
 import { defaultAuto, type AutoShape } from "../domain/auto-order";
 import { seedProcurement, type ProcurementShape } from "./procurement-seed";
-import type { CashUp, StockTake } from "../types";
+import type { BoughtUsedCheck, CashUp, StockTake } from "../types";
 
 export interface Shape {
   version: 1;
@@ -47,6 +47,8 @@ export interface Shape {
   stockTakes?: StockTake[];
   /** Cash counted at the end of shifts, entered in Tyll. */
   cashUps?: CashUp[];
+  /** Bought against used: items a manager marked checked, with what they found. */
+  boughtUsedChecks?: BoughtUsedCheck[];
   /** The business date the records were last moved to, and the shape of the demo data they were built for. */
   businessDate?: string;
   dataVersion?: number;
@@ -63,7 +65,7 @@ function moveToToday(data: Shape): Shape {
   return { ...(JSON.parse(text) as Shape), businessDate: DEMO_TODAY };
 }
 
-const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), procurement: seedProcurement(), stockTakes: [], cashUps: [], businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
+const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), procurement: seedProcurement(), stockTakes: [], cashUps: [], boughtUsedChecks: [], businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? dataFile("purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;

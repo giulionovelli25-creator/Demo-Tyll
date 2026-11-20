@@ -130,11 +130,11 @@ export function qtyWords(qty: number, ingredientId: string): string {
   if (g.unit === "each") {
     const n = Math.round(a * 10) / 10;
     const noun = ingredientId === "coke" ? (n === 1 ? "can" : "cans") : n === 1 ? "unit" : "units";
-    return `${n % 1 === 0 ? n : n.toFixed(1)} ${noun}`;
+    return `${n % 1 === 0 ? n.toLocaleString("en-US") : n.toFixed(1)} ${noun}`;
   }
   if (isWine(ingredientId)) return `${Math.round(a * 1000).toLocaleString("en-US")} ml`;
   if (g.unit === "kg") return a < 1 ? `${Math.round(a * 1000)} g` : `${(Math.round(a * 100) / 100).toLocaleString("en-US")} kg`;
-  return a < 1 ? `${Math.round(a * 1000)} ml` : `${(Math.round(a * 100) / 100).toLocaleString("en-US")} l`;
+  return a < 1 ? `${Math.round(a * 1000)} ml` : `${(Math.round(a * 100) / 100).toLocaleString("en-US")} L`;
 }
 
 export const bottles = (litres: number) => Math.round((litres / BOTTLE_L) * 10) / 10;

@@ -181,10 +181,11 @@ export function computeTotals(ctx: Ctx, sel: Sel): Totals {
     const rate = fxRate(propertyById[e.propertyId].currency, sel.currency);
     flaggedCases += 1;
     // Room charge differences count when they belong to an outlet bill; minibar, spa and laundry have no order to count against.
+    // Bought against used compares a month of deliveries for the whole hotel with its sales: no order either.
     if (e.orderId) {
       if (!flaggedOrders.has(e.orderId)) adjustments += 1;
       flaggedOrders.add(e.orderId);
-    } else if (!e.type.startsWith("room_charge")) adjustments += 1;
+    } else if (!e.type.startsWith("room_charge") && e.type !== "bought_not_used") adjustments += 1;
     if (st.status === "closed") {
       confirmedLoss += st.confirmedLoss * rate;
       recovered += st.recovered * rate;

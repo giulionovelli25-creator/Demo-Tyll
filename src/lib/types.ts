@@ -211,7 +211,8 @@ export type ExceptionType =
   | "room_charge_wrong_room"
   | "room_charge_after_checkout"
   | "stock_shortfall"
-  | "usage_variance";
+  | "usage_variance"
+  | "bought_not_used";
 
 export interface Exception {
   id: string;
@@ -235,6 +236,45 @@ export interface Exception {
   comparedWith?: string;
   /** Stock based losses are estimates until a stock take confirms them. */
   basis?: "estimate" | "confirmed";
+  /** For bought against used: the figures of the 30 day check that raised the flag. */
+  boughtUsed?: BoughtUsedEvidence;
+}
+
+/** What a manager found when they checked a bought against used gap. */
+export type BoughtUsedOutcome = "on_shelf" | "no_recipe" | "not_found";
+
+/** A bought against used gap marked checked, saved on the demo server with who did it. */
+export interface BoughtUsedCheck {
+  id: string;
+  propertyId: string;
+  ingredientId: string;
+  /** The check date it answers. */
+  date: string;
+  outcome: BoughtUsedOutcome;
+  note?: string;
+  by: string;
+  role: Role;
+  at: string;
+  /** The gap when it was checked, in the item's unit and in money. */
+  gap: number;
+  gapValue: number;
+}
+
+/** What a bought against used flag was raised on, in the item's own unit. */
+export interface BoughtUsedEvidence {
+  from: string;
+  to: string;
+  bought: number;
+  deliveries: number;
+  lastDelivery: number;
+  sold: number;
+  waste: number;
+  movedIn: number;
+  movedOut: number;
+  used: number;
+  gap: number;
+  unitCost: number;
+  share: number;
 }
 
 export type InvestigationStatus = "new" | "assigned" | "in_review" | "closed";

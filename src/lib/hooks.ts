@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "./api";
 import { STAFF, USERS, outletById, staffById, userById } from "./data/catalog";
-import { getDataset, rememberOrders } from "./data/dataset";
+import { getDataset, rememberOrders, useDataVersion } from "./data/dataset";
 import { allowedOutlets, allowedProperties, clampScope, hasWholeProperty, scopeCurrency, scopeOutlets } from "./domain/access";
 import { detectPatterns } from "./domain/detect";
 import type { StockInputs } from "./domain/inventory";
@@ -30,7 +30,9 @@ export function useCtx(): Ctx {
   const recipes = useDemo((s) => s.recipeChanges);
   const corrections = useDemo((s) => s.wasteCorrections);
   const shared = useShared();
+  const dataVersion = useDataVersion((s) => s.v);
   return useMemo(() => {
+    void dataVersion;
     const base = getDataset();
     // Stock cases opened in this session join the flagged transactions everywhere cases are listed.
     const data = stockCases.length ? { ...base, exceptions: [...base.exceptions, ...stockCases] } : base;
@@ -38,7 +40,7 @@ export function useCtx(): Ctx {
     const session = correctedWaste([...wasteLogs, ...shared.waste], [...corrections, ...shared.corrections]);
     const accepted = shared.counts.filter((c) => c.status === "accepted").map((c) => ({ id: c.id, propertyId: c.propertyId, ingredientId: c.ingredientId, date: c.date, kind: "spot" as const, expected: c.expected, counted: c.counted, by: c.by, seq: c.seq, allocation: c.allocation }));
     return { data, waste: [...data.wasteLogs, ...session], counts: [...data.counts, ...accepted, ...counts], overrides, investigations, adjust: { recounts, recipes, waste: session } };
-  }, [wasteLogs, counts, overrides, investigations, stockCases, recounts, recipes, corrections, shared]);
+  }, [wasteLogs, counts, overrides, investigations, stockCases, recounts, recipes, corrections, shared, dataVersion]);
 }
 
 export function useStockInputs(): StockInputs {

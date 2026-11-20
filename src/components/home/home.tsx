@@ -165,8 +165,10 @@ export function Home() {
     const wasteOf = (broken: boolean, when: (d: string) => boolean) => sum(wasteRows.filter((e) => e.broken === broken && when(e.w.date)), (e) => e.cost);
     const monthCases = investigations.filter((i) => exceptionInSel(i, sel) && i.date >= from);
     const recoveredOf = (cases: typeof monthCases) => sum(cases.filter((i) => i.status === "closed"), (i) => i.recovered * fxRate(propertyById[i.propertyId].currency, sel.currency));
-    // Count cases are the stock missing at counts, so bills and counts never count the same money twice.
-    const bills = monthCases.filter((i) => !i.period);
+    // Count cases are the stock missing at counts, so bills and counts never count the same money twice. Bought against
+    // used gaps are estimates a count confirms, and the stock a count finds missing is already in its own row, so they
+    // are not added as money lost.
+    const bills = monthCases.filter((i) => !i.period && i.type !== "bought_not_used");
     const counts = monthCases.filter((i) => i.period);
     const drinksBefore = pour ? (pour.wine.lastMonth.gapValue + pour.spirits.lastMonth.gapValue) * pourRate : 0;
     const rows: LeakRow[] = [
