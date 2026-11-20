@@ -3975,7 +3975,7 @@
 "المشروبات لكل ضيف دون الزملاء"
 ],
 "Drinks per guest by waiter": [
-"Getränke pro Gast nach Servicekraft",
+"Getränke pro Gast je Servicekraft",
 "Bevande per ospite per cameriere",
 "المشروبات لكل ضيف حسب النادل"
 ],
@@ -4599,6 +4599,11 @@
 "Ogni tavolo fatturato",
 "كل الطاولات مفوترة"
 ],
+"Every table for two or more had a drink": [
+"Jeder Tisch ab zwei Personen hatte ein Getränk",
+"Ogni tavolo da due o più ha preso da bere",
+"كل طاولة لشخصين أو أكثر طلبت مشروبًا"
+],
 "Every transaction Tyll has flagged, who is responsible for it, and what came of it. Shared by owners, finance and outlet managers.": [
 "Jede von Tyll markierte Transaktion, wer zuständig ist und was daraus wurde. Geteilt von Eigentümern, Finanzen und Outlet-Leitungen.",
 "Ogni transazione segnalata da Tyll, chi ne è responsabile e com'è finita. Condivisa da proprietari, finanza e responsabili.",
@@ -5025,9 +5030,9 @@
 "المتابِع"
 ],
 "Food": [
-"Speisen",
+"Essen",
 "Cibo",
-"الأطعمة"
+"الطعام"
 ],
 "Food & beverage stores": [
 "F&B-Lager",
@@ -5043,6 +5048,16 @@
 "Weggeworfene Speisen und Getränke",
 "Cibo e bevande buttati",
 "طعام ومشروبات تم التخلص منها"
+],
+"Food billed": [
+"Berechnetes Essen",
+"Cibo fatturato",
+"الطعام المفوتر"
+],
+"Food bills for 2 or more guests with no drink billed, {0} to {1}. A chance to offer a drink, not a loss: most are guests who did not want one.": [
+"Essensrechnungen für 2 oder mehr Gäste ohne berechnetes Getränk, {0} bis {1}. Eine Gelegenheit, ein Getränk anzubieten, kein Verlust: meist wollten die Gäste keines.",
+"Conti di cibo per 2 o più ospiti senza bevande, dal {0} al {1}. Un'occasione per offrire da bere, non una perdita: per lo più gli ospiti non ne volevano.",
+"فواتير طعام لضيفين أو أكثر دون مشروب، من {0} إلى {1}. فرصة لعرض مشروب، وليست خسارة: معظمهم ضيوف لم يرغبوا في مشروب."
 ],
 "Food waste is up {0} on the previous period": [
 "Speisenabfall {0} über dem Vorzeitraum",
@@ -7829,6 +7844,16 @@
 "Pasto",
 "الوجبة"
 ],
+"Meal with no drink": [
+"Essen ohne Getränk",
+"Pasto senza bevanda",
+"وجبة بدون مشروب"
+],
+"Meal with no drink:": [
+"Essen ohne Getränk:",
+"Pasto senza bevanda:",
+"وجبة بدون مشروب:"
+],
 "Measures billed, a double as two": [
 "Berechnete Maße, ein Doppelter als zwei",
 "Misure addebitate, un doppio come due",
@@ -9114,6 +9139,11 @@
 "Niente da controllare",
 "لا شيء للتحقق"
 ],
+"Nothing to follow up this week.": [
+"Diese Woche nichts nachzufassen.",
+"Niente da seguire questa settimana.",
+"لا شيء للمتابعة هذا الأسبوع."
+],
 "Nothing to order here": [
 "Hier nichts zu bestellen",
 "Niente da ordinare qui",
@@ -10149,6 +10179,11 @@
 "Punto vendita e servizio",
 "المنفذ والخدمة"
 ],
+"Outlet and table": [
+"Outlet und Tisch",
+"Punto vendita e tavolo",
+"المنفذ والطاولة"
+],
 "Outlet comparison": [
 "Outlet-Vergleich",
 "Confronto punti vendita",
@@ -10543,6 +10578,11 @@
 "Möglichkeiten zum Prüfen. Keine davon ist erwiesen.",
 "Possibilità da verificare. Nessuna è accertata.",
 "احتمالات للتحقق. لم يثبت أي منها."
+],
+"Possible drink sale": [
+"Möglicher Getränkeumsatz",
+"Possibile vendita di bevande",
+"بيع مشروب محتمل"
 ],
 "Post the charge to room {0} while the guest is still in house.": [
 "Die Belastung auf Zimmer {0} buchen, solange der Gast noch im Haus ist.",
@@ -15979,6 +16019,11 @@
 "Si aggiorna al variare delle porzioni. Il disponibile è ciò che questa cucina può usare dopo la quota di magazzino degli altri, più le consegne in arrivo.",
 "يتحدث مع تغيير الحصص. المتاح هو ما يمكن لهذا المطبخ استخدامه بعد حصة المنافذ الأخرى من المخزن، زائد التوريدات المستحقة."
 ],
+"Upsell opportunity": [
+"Chance für Zusatzverkauf",
+"Opportunità di vendita",
+"فرصة بيع إضافي"
+],
 "Usage above sales": [
 "Verbrauch über Verkauf",
 "Consumo oltre le vendite",
@@ -17503,6 +17548,11 @@
 "markierte Artikel, eine Schätzung",
 "articoli segnalati, una stima",
 "الأصناف المُعلَّمة، تقدير"
+],
+"food bills for 2 or more guests with no drink billed. A chance to offer a drink, not a loss, and never by waiter name.": [
+"Essensrechnungen für 2 oder mehr Gäste ohne berechnetes Getränk. Eine Gelegenheit, ein Getränk anzubieten, kein Verlust, und nie mit dem Namen der Servicekraft.",
+"conti di cibo per 2 o più ospiti senza bevande. Un'occasione per offrire da bere, non una perdita, e mai con il nome del cameriere.",
+"فواتير طعام لضيفين أو أكثر دون أي مشروب. فرصة لعرض مشروب، وليست خسارة، ودون ذكر اسم النادل أبدًا."
 ],
 "for tomorrow": [
 "für morgen",
@@ -19214,6 +19264,11 @@
 "{0} al posto di {1}.",
 "{0} بدلًا من {1}."
 ],
+"{0} in the last 7 days, about {1} possible": [
+"{0} in den letzten 7 Tagen, etwa {1} möglich",
+"{0} negli ultimi 7 giorni, circa {1} possibili",
+"{0} في آخر 7 أيام، نحو {1} ممكنة"
+],
 "{0} in the sample": [
 "{0} im Beispiel",
 "{0} nell'esempio",
@@ -19898,6 +19953,11 @@
 "{0} von {1} Ziffern eingegeben",
 "{0} di {1} cifre inserite",
 "تم إدخال {0} من {1} أرقام"
+],
+"{0} of {1} food tables for two or more had no drink, about {2} of drink sales possible (an estimate: guests at that outlet and shift usually spend this on drinks). No waiter is named here.": [
+"{0} von {1} Essenstischen ab zwei Personen hatten kein Getränk, etwa {2} möglicher Getränkeumsatz (eine Schätzung: so viel geben Gäste in diesem Outlet und dieser Schicht meist für Getränke aus). Hier wird keine Servicekraft genannt.",
+"{0} su {1} tavoli con cibo da due o più non hanno preso bevande, circa {2} di vendite possibili (una stima: è quanto gli ospiti di quel punto vendita e turno spendono di solito in bevande). Qui non si nomina nessun cameriere.",
+"{0} من {1} طاولات طعام لشخصين أو أكثر بلا مشروب، نحو {2} من مبيعات المشروبات المحتملة (تقدير: ما ينفقه الضيوف عادة على المشروبات في ذلك المنفذ والوردية). لا يُذكر اسم أي نادل هنا."
 ],
 "{0} of {1} guests": [
 "{0} von {1} Gästen",

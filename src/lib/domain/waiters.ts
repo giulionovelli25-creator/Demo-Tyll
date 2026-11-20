@@ -43,6 +43,11 @@ export interface BillFacts {
   foodItems: string[];
 }
 
+/** "Meal with no drink": a food bill for two or more guests with no drink billed. An upsell opportunity, never a loss:
+ * most are guests who did not want a drink. One guest eating alone is left out. */
+export const MEAL_NO_DRINK = { name: "Meal with no drink", minGuests: 2, days: 7 } as const;
+export const mealWithNoDrink = (f: BillFacts) => f.noDrink && f.guests >= MEAL_NO_DRINK.minGuests;
+
 /** What one bill tells about drinks, or null when it is not compared (voided, or a banquet bill). */
 export function billFacts(o: Order): BillFacts | null {
   if (o.voided || !waiterOutlet(o.outletId)) return null;

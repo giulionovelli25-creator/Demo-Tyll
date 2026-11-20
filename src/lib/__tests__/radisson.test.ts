@@ -592,3 +592,29 @@ describe("Stock count variance review before approval", () => {
     expect(ok.take.countIds!.length).toBe(t.lines.filter((l) => l.counted !== null).length);
   });
 });
+
+const MND = await import("../server/meal-no-drink");
+const WD = await import("../domain/waiters");
+
+describe("Meal with no drink", () => {
+  it("flags food bills for two or more guests with no drink, never one guest alone or a breakfast buffet", () => {
+    const base = { orderId: "x", outletId: "lis-terrace", date: TODAY, shift: "day" as const, staffId: "MER-S1", table: "4", openMin: 780, drinks: 0, drinkValue: 0, foodValue: 40, food: true, noDrink: true, foodItems: ["burger"] };
+    expect(WD.mealWithNoDrink({ ...base, guests: 2 })).toBe(true);
+    expect(WD.mealWithNoDrink({ ...base, guests: 1 })).toBe(false);
+    expect(WD.mealWithNoDrink({ ...base, guests: 3, noDrink: false, drinks: 1 })).toBe(false);
+    expect(WD.MEAL_NO_DRINK.name).toBe("Meal with no drink");
+  });
+  it("lists the last 7 days' cases as possible drink sales, valued at what guests there usually spend, with no waiter named", () => {
+    const r = MND.mealsWithNoDrink(userById["u-fnb"]);
+    if (!r.ok) throw new Error(r.error);
+    expect(r.cases.length).toBeGreaterThanOrEqual(3);
+    expect(r.cases.every((c) => c.guests >= 2 && c.possible > 0)).toBe(true);
+    expect(r.total).toBeCloseTo(r.cases.reduce((t, c) => t + c.possible, 0), 1);
+    for (const c of r.cases) expect(Object.keys(c)).not.toContain("staffId");
+    expect(JSON.stringify(r)).not.toMatch(/MER-S\d|AZU-S\d|IRD-S\d/);
+  });
+  it("is for managers who see Revenue checks; the chef and purchasing are refused", () => {
+    expect(MND.mealsWithNoDrink(userById["u-chef"]).ok).toBe(false);
+    expect(MND.mealsWithNoDrink(userById["u-buy"]).ok).toBe(false);
+  });
+});

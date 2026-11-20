@@ -126,3 +126,12 @@ The 15 s and 502/503 seen on the hosted demo cannot be reproduced locally. The l
 - **Seeded:** `ensureStockTakeStory` plants a partial stock take of the main store (walk in fridge, dry store, cellar, bar store), counted this morning by the storekeeper and purchasing and submitted; planted differences: lamb rack −1.8 kg, salmon −1.2 kg, vodka −1.5 L, house wine −2.25 L, cheddar +0.6 kg, flour −0.2 kg. The F&B director, the general manager and the head chef get a bell notice. Purchasing counted it, so purchasing cannot approve it. Demo reset of stock clears it so it is planted again.
 - **Tests:** 4 more (waiting take with six differences, reasons and large flags, the rules, counters cannot approve and approval moves stock).
 - **Checked in the browser:** as the F&B Director, ST-LIS-0001: lamb rack −€99, vodka −€67 and house wine −€60 marked Large with their reasons; salmon −€39 "Fresh item".
+
+### 8. Meal with no drink (done)
+- **Reused:** the overnight work's bill facts (`billFacts`, `noDrink` in `lib/domain/waiters.ts`: food billed, no drink, breakfast buffet excluded because it includes coffee and juice) and the outlet's drink spend per guest.
+- **Rule:** `MEAL_NO_DRINK` and `mealWithNoDrink`: a food bill for **2 or more guests** with no drink billed. One guest eating alone is left out.
+- **What Tyll checks:** the rule is listed, pinned second after room charges (both asked for by the hotel), with "N in the last 7 days, about €X possible", linking to a new panel on Flagged transactions.
+- **Panel "Meal with no drink":** badge "Upsell opportunity"; the last 7 days' tables: when, outlet and table, guests, food billed, food value, possible drink sale. The possible sale is what guests at that outlet and shift usually spend on drinks (an estimate). Not a flag, not money lost, and not counted in Value at risk.
+- **Privacy:** no waiter or till login is named or sent (tested: no staff id in the answer); coaching by person stays on Drinks per guest by waiter, for the managers allowed to see names. Roles without Revenue checks (chef, purchasing) are refused on the server.
+- **Cases:** the simulated sales already hold about one such table a day at Mercado; the 7 day window shows them. Planting extra bills would have moved every revenue figure the earlier work reconciled, so none were added.
+- **Tests:** 3 more.

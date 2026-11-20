@@ -18,6 +18,7 @@ import { RoomChargeCheck } from "@/components/money/room-charges";
 import { TillRuleCheck } from "@/components/money/till-rules";
 import { DrinksByWaiter } from "@/components/money/waiters";
 import { CaseList } from "@/components/money/case-list";
+import { MealNoDrink, useMealNoDrink } from "@/components/money/meal-no-drink";
 import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, SummaryBar, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
@@ -156,6 +157,7 @@ export default function MoneyPage() {
           <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="What Tyll checks, by type and outlet" summary={`Rules for voids, refunds, removed items, till rules and room charges, with a worked example. ${flags.length} ${flags.length === 1 ? "flag" : "flags"} open.`}>
             <Mistakes />
           </Section>
+          <div id="meal-no-drink" className="scroll-mt-24"><MealNoDrink /></div>
           {can(user, "till.view") && <SectionLink href="/money?tab=till" title="Till rule check" summary="Bills reopened after payment, cheaper items rung up, open items and prices set by hand, and items rung twice." />}
           <SectionLink href="/money?tab=cash" title="Cash on hand against cash sales" summary="Each outlet's drawer at the end of the shift against the bills paid in cash. Card payments are reconciled by the payment provider." />
           <SectionLink href="/money?tab=rooms" title="Room charge check" summary="Each bill signed to a room against the guest folio: missing, a different amount, the wrong room or after check-out." />
@@ -200,6 +202,7 @@ function Mistakes() {
   // Room charge types joined the list, so it shows the five largest first, like every other list.
   const [allTypes, setAllTypes] = useState(false);
   const [allRules, setAllRules] = useState(false);
+  const noDrink = useMealNoDrink();
   // Each rule with the flag types it raises. The rules that flagged the most in the period come first; five show, the rest behind "Show all".
   const rules: { id: string; types: ExceptionType[]; text: ReactNode }[] = [
     { id: "removed", types: ["removed_after_dispatch"], text: <>Items removed after their ticket went to the kitchen or bar, without an approval.</> },
@@ -215,11 +218,14 @@ function Mistakes() {
     { id: "duplicate", types: ["duplicate_ring"], text: <>The same item rung twice within {POLICY.duplicateSeconds} seconds, or {POLICY.quantityMin} or more of one item at more than {POLICY.quantityPerGuest} a guest.</> },
     { id: "seated", types: ["seated_no_bill"], text: <>Tables the host marked seated from a booking with no bill at that table, nor for the same party nearby. Valued at the outlet&rsquo;s spend per guest, an estimate.</> },
     { id: "breakfast", types: ["breakfast_not_charged"], text: <>Rooms ticked in at breakfast whose guests the room rate does not cover, with no breakfast charged to the room or paid at the table. Guests whose rate includes breakfast are never flagged.</> },
+    { id: "nodrink", types: [], text: <><span className="font-medium text-ink">Meal with no drink:</span> food bills for 2 or more guests with no drink billed. A chance to offer a drink, not a loss, and never by waiter name.{noDrink ? <> <a href="#meal-no-drink" className={textLink}>{noDrink.tables} in the last 7 days, about {money(noDrink.total)} possible</a></> : null}</> },
     { id: "bought", types: ["bought_not_used"], text: <>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use, and {money(BOUGHT_USED_RULES.minValue)} beyond the last delivery, which is the amount at risk. An estimate until a count.</> },
   ];
   const ruleValue = (r: (typeof rules)[number]) => sum(byType.filter((t) => r.types.includes(t.type)), (t) => t.value);
   // Room charges are always among the rules shown first: they are the check hotels ask about most.
-  const rulesShown = [...rules].sort((a, b) => Number(b.id === "room") - Number(a.id === "room") || ruleValue(b) - ruleValue(a));
+  // Room charges first, then Meal with no drink (the hotel asked for both), then the rules that flagged the most.
+  const pinned = (r: (typeof rules)[number]) => (r.id === "room" ? 2 : r.id === "nodrink" ? 1 : 0);
+  const rulesShown = [...rules].sort((a, b) => pinned(b) - pinned(a) || ruleValue(b) - ruleValue(a));
   const hero = all.find((i) => i.id === HERO_EXCEPTION_ID);
   const steps = [
     ["8:42 PM", "Guest orders a burger and a Coke", ""],
