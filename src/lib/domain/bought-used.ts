@@ -232,7 +232,8 @@ export function boughtUsedExceptions(rows: readonly BoughtUsedRow[]): Exception[
     ingredientId: r.ingredientId,
     // What is at risk is the part beyond what the last delivery could leave on the shelf, not the whole gap.
     exposure: r.excessValue,
-    headline: `${itemWords(r.ingredientId)}: ${boughtQty(r.gap, r.ingredientId)} more bought than used in 30 days`,
+    // The quantity the money is worth comes last, so the headline and the amount beside it agree.
+    headline: `${itemWords(r.ingredientId)}: ${boughtQty(r.gap, r.ingredientId)} more bought than used in 30 days, ${boughtQty(r.excess, r.ingredientId)} beyond the last delivery`,
     comparedWith: `Compared with sales and waste: ${boughtQty(r.bought, r.ingredientId)} received from suppliers against ${boughtQty(r.used, r.ingredientId)} used by the recipes of what was sold, logged waste and transfers, over the 30 days to ${fmtDate(r.to)}.`,
     basis: "estimate" as const,
     boughtUsed: { from: r.from, to: r.to, bought: r.bought, deliveries: r.deliveries, lastDelivery: r.lastDelivery, lastDeliveryDate: r.lastDeliveryDate, sold: r.sold, waste: r.waste, movedIn: r.movedIn, movedOut: r.movedOut, used: r.used, gap: r.gap, excess: r.excess, unitCost: r.unitCost, share: r.share },

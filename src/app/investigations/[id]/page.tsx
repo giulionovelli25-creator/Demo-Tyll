@@ -12,7 +12,7 @@ import { can } from "@/lib/domain/access";
 import { TYPE_LABEL } from "@/lib/domain/detect";
 import { explain } from "@/lib/domain/explain";
 import { causesFor, periodVariance } from "@/lib/domain/variance";
-import { BoughtUsedSum } from "@/components/stock/bought-used";
+import { BoughtUsedSum, CountLine } from "@/components/stock/bought-used";
 import { BOUGHT_USED_CAUSES } from "@/lib/domain/bought-used";
 import { assignablePeople, personName, useCtx, useInvestigations, useOrder, usePatterns, useUser } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
@@ -173,7 +173,7 @@ export default function InvestigationPage() {
               </div>
             )}
             {stockCase && stockRecords}
-            {bought && <BoughtEvidence b={bought} money={(n) => fmtMoney(n, property.currency)} />}
+            {bought && <BoughtEvidence b={bought} money={(n) => fmtMoney(n, property.currency)} mayCount={can(user, "stock.count")} />}
             {charge && !order && <ChargeEvidence charge={charge} />}
             {charge && order && <div className="mt-6"><h3 className="mb-3 text-[15px]">Guest bill posting</h3><ChargeEvidence charge={charge} /></div>}
           </Panel>
@@ -354,10 +354,11 @@ export default function InvestigationPage() {
 }
 
 /** The 30 day figures behind a bought against used flag. */
-function BoughtEvidence({ b, money }: { b: BoughtUsedEvidence & { ingredientId: string }; money: (n: number) => string }) {
+function BoughtEvidence({ b, money, mayCount }: { b: BoughtUsedEvidence & { ingredientId: string }; money: (n: number) => string; mayCount: boolean }) {
   return (
     <div>
       <BoughtUsedSum r={b} money={money} />
+      <div className="mt-3"><CountLine ingredientId={b.ingredientId} c={b.lastCount} mayCount={mayCount} /></div>
       <Note className="mt-2 max-w-[80ch]">Stock still on the shelf is part of the gap until a count confirms it. A gap does not show what happened to the stock.</Note>
       <Link prefetch={false} href={`/stock?tab=bought&item=${b.ingredientId}`} className="mt-3 inline-block text-[13px] underline underline-offset-4">See this item in Bought against used</Link>
     </div>

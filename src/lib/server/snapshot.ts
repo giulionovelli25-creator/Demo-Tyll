@@ -27,7 +27,8 @@ export function snapshotFor(user: User): Snapshot {
   // Bought against used is worked out from today's server records (deliveries received in Tyll, shared waste, checks),
   // so its flags are added on every call and their state is part of the cache key.
   const bought = flags && can(user, "stock.boughtUsed") ? boughtUsedCases([...whole]) : { exceptions: [], seed: {} };
-  const signature = bought.exceptions.map((e) => `${e.id}:${e.exposure}:${bought.seed[e.id].status}`).join(",");
+  // The whole starting state (who closed it, the notes) and the count beside it are in the key, not only the status.
+  const signature = JSON.stringify(bought.exceptions.map((e) => [e.id, e.exposure, e.boughtUsed?.lastCount ?? null, bought.seed[e.id]]));
   const key = `${publicDemo()}|${user.role}|${JSON.stringify(user.propertyIds)}|${JSON.stringify(user.outletIds)}|${signature}`;
   const hit = cache.get(key);
   if (hit) return withBasis(hit);

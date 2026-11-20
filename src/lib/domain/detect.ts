@@ -38,6 +38,14 @@ export const TYPE_LABEL: Record<ExceptionType, string> = {
 export const REMOVAL_TYPES: ExceptionType[] = ["removed_after_dispatch", "prepared_not_charged", "bill_mismatch"];
 export const ROOM_TYPES: ExceptionType[] = ["room_charge_missing", "room_charge_duplicate", "room_charge_incorrect", "room_charge_wrong_room", "room_charge_after_checkout"];
 
+/**
+ * Flags raised on a day of their own. A 30 day bought against used check did not happen on a day and is raised again
+ * each day, so per day charts and "new this week" leave it out; it still counts in open flags and value at risk.
+ * Every page that counts flags by day uses this, so the flags page and the Money Back List agree.
+ */
+export const hasOwnDay = (e: { type: ExceptionType }) => e.type !== "bought_not_used";
+export const datedFlags = <T extends { type: ExceptionType }>(list: readonly T[]): T[] => list.filter(hasOwnDay);
+
 const names = (o: Order, pred: (i: number) => boolean) =>
   o.lines
     .filter((_, i) => pred(i))

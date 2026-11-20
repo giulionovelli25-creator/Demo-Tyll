@@ -29,6 +29,11 @@
 "Un addebito in camera senza riga corrispondente sul conto dell'ospite.",
 "رسوم على غرفة دون بند مطابق في فاتورة النزيل."
 ],
+"A check is confirmed by someone other than the person who made it.": [
+"Eine Prüfung bestätigt jemand anderes als die Person, die sie gemacht hat.",
+"Un controllo viene confermato da una persona diversa da chi lo ha fatto.",
+"يؤكد الفحص شخص غير الذي أجراه."
+],
 "A delivery recorded for more than arrived": [
 "Eine Lieferung, die mit mehr erfasst wurde, als ankam",
 "Una consegna registrata per più di quanto arrivato",
@@ -563,6 +568,11 @@
 "Zum bezahlten Preis, eine Schätzung. Graue Artikel liegen unter den Regeln und sind daher nicht markiert. Wählen Sie einen Artikel für seine Zahlen.",
 "Al prezzo pagato, una stima. Gli articoli in grigio sono sotto le regole, quindi non segnalati. Scegli un articolo per vederne i dati.",
 "بالسعر المدفوع، تقدير. الأصناف الرمادية دون القواعد، فهي غير مُعلَّمة. اختر صنفًا لعرض أرقامه."
+],
+"At the price paid, an estimate. Grey items are below the rules, so not flagged. The kind filter applies to this chart.": [
+"Zum bezahlten Preis, eine Schätzung. Graue Artikel liegen unter den Regeln und sind nicht markiert. Der Artfilter gilt für dieses Diagramm.",
+"Al prezzo pagato, una stima. Gli articoli grigi sono sotto le regole, quindi non segnalati. Il filtro per tipo vale per questo grafico.",
+"بالسعر المدفوع، تقدير. الأصناف الرمادية دون القواعد، فلا تُعلَّم. ينطبق مرشح النوع على هذا الرسم."
 ],
 "At the rate of the last {0} days. Every part is an estimate, and the assumptions are listed. Simulated data.": [
 "Im Tempo der letzten {0} Tage. Jeder Teil ist eine Schätzung, die Annahmen stehen unten. Simulierte Daten.",
@@ -1634,10 +1644,30 @@
 "Affidabilità",
 "الثقة"
 ],
+"Confirm": [
+"Bestätigen",
+"Conferma",
+"تأكيد"
+],
+"Confirm and close": [
+"Bestätigen und schließen",
+"Conferma e chiudi",
+"تأكيد وإغلاق"
+],
 "Confirm count": [
 "Zählung bestätigen",
 "Conferma conteggio",
 "أكد الجرد"
+],
+"Confirmed and closed by {0}.": [
+"Bestätigt und geschlossen von {0}.",
+"Confermato e chiuso da {0}.",
+"أكّده وأغلقه {0}."
+],
+"Confirmed and closed.": [
+"Bestätigt und geschlossen.",
+"Confermato e chiuso.",
+"تم التأكيد والإغلاق."
 ],
 "Confirmed event guests": [
 "Bestätigte Eventgäste",
@@ -1663,6 +1693,11 @@
 "Bestätigte Verluste, gesamt",
 "Perdite confermate, totale",
 "خسائر مؤكدة، الإجمالي"
+],
+"Confirmed. The flag is closed for everyone.": [
+"Bestätigt. Die Markierung ist für alle geschlossen.",
+"Confermato. La segnalazione è chiusa per tutti.",
+"تم التأكيد. أُغلق التنبيه للجميع."
 ],
 "Connections, access and change log": [
 "Verbindungen, Zugriff und Änderungsprotokoll",
@@ -1803,6 +1838,11 @@
 "Gezählt von",
 "Contato da",
 "جرده"
+],
+"Counted is recorded by someone who counts stock.": [
+"Gezählt wird von jemandem erfasst, der Bestand zählt.",
+"Contato viene registrato da chi conta le scorte.",
+"يسجّل \"تم الجرد\" شخص يجرد المخزون."
 ],
 "Counted on": [
 "Gezählt am",
@@ -2783,6 +2823,11 @@
 "Markierte Buchungen",
 "Transazioni segnalate",
 "المعاملات المُعلَّمة"
+],
+"Flagged transactions by the day they happened. The {0} day bought against used check has no day of its own, so it is left out here, as on the flags page. It is in the list below.": [
+"Markierte Vorgänge nach dem Tag, an dem sie geschahen. Die {0}-Tage-Prüfung Gekauft gegen verbraucht hat keinen eigenen Tag und fehlt daher hier, wie auf der Seite der Markierungen. Sie steht in der Liste unten.",
+"Transazioni segnalate per giorno in cui sono avvenute. Il controllo acquistato contro usato a {0} giorni non ha un giorno proprio, quindi qui è escluso, come nella pagina delle segnalazioni. È nell'elenco qui sotto.",
+"المعاملات المُعلَّمة حسب يوم حدوثها. فحص المشتريات مقابل الاستخدام لمدة {0} يومًا ليس له يوم خاص، لذا يُستبعد هنا كما في صفحة التنبيهات. وهو في القائمة أدناه."
 ],
 "Flagged when a bottle gives under {0} of what it should.": [
 "Markiert, wenn eine Flasche unter {0} des Solls ergibt.",
@@ -3779,6 +3824,26 @@
 "Ultimo conteggio {0} il {1}.",
 "آخر جرد {0} في {1}."
 ],
+"Last count, {0}: {1} L counted, {2} L on the books. Stock levels estimate about {3} L today.": [
+"Letzte Zählung, {0}: {1} L gezählt, {2} L laut Bestand. Der Lagerbestand schätzt heute etwa {3} L.",
+"Ultimo conteggio, {0}: {1} L contati, {2} L a libro. Le giacenze stimano oggi circa {3} L.",
+"آخر جرد، {0}: تم عدّ {1} لتر، والمسجل {2} لتر. تقدّر مستويات المخزون اليوم نحو {3} لتر."
+],
+"Last count, {0}: {1} cans counted, {2} cans on the books. Stock levels estimate about {3} cans today.": [
+"Letzte Zählung, {0}: {1} Dosen gezählt, {2} Dosen laut Bestand. Der Lagerbestand schätzt heute etwa {3} Dosen.",
+"Ultimo conteggio, {0}: {1} lattine contate, {2} lattine a libro. Le giacenze stimano oggi circa {3} lattine.",
+"آخر جرد، {0}: تم عدّ {1} علبة، والمسجل {2} علبة. تقدّر مستويات المخزون اليوم نحو {3} علبة."
+],
+"Last count, {0}: {1} counted, {2} on the books. Stock levels estimate about {3} today.": [
+"Letzte Zählung, {0}: {1} gezählt, {2} laut Bestand. Der Lagerbestand schätzt heute etwa {3}.",
+"Ultimo conteggio, {0}: {1} contati, {2} a libro. Le giacenze stimano oggi circa {3}.",
+"آخر جرد، {0}: تم عدّ {1}، والمسجل {2}. تقدّر مستويات المخزون اليوم نحو {3}."
+],
+"Last count, {0}: {1} units counted, {2} units on the books. Stock levels estimate about {3} units today.": [
+"Letzte Zählung, {0}: {1} Stück gezählt, {2} Stück laut Bestand. Der Lagerbestand schätzt heute etwa {3} Stück.",
+"Ultimo conteggio, {0}: {1} unità contate, {2} unità a libro. Le giacenze stimano oggi circa {3} unità.",
+"آخر جرد، {0}: تم عدّ {1} وحدة، والمسجل {2} وحدة. تقدّر مستويات المخزون اليوم نحو {3} وحدة."
+],
 "Last delivery, which may still be on the shelf": [
 "Letzte Lieferung, die noch im Regal liegen kann",
 "Ultima consegna, che può essere ancora sullo scaffale",
@@ -4724,6 +4789,11 @@
 "No",
 "لا"
 ],
+"No count of this item yet. A count confirms the gap.": [
+"Dieser Artikel wurde noch nicht gezählt. Eine Zählung bestätigt die Lücke.",
+"Questo articolo non è ancora stato contato. Un conteggio conferma la differenza.",
+"لم يُجرد هذا الصنف بعد. الجرد يؤكد الفرق."
+],
 "No credit recorded yet": [
 "Noch keine Gutschrift erfasst",
 "Nessun accredito registrato",
@@ -5124,6 +5194,11 @@
 "Una cosa richiede la tua attenzione oggi.",
 "أمر واحد يحتاج إليك اليوم."
 ],
+"Only a manager who may close flags can confirm a check.": [
+"Nur eine Führungskraft, die Markierungen schließen darf, kann eine Prüfung bestätigen.",
+"Solo un responsabile che può chiudere le segnalazioni può confermare un controllo.",
+"لا يؤكد الفحص إلا مدير يحق له إغلاق التنبيهات."
+],
 "Only deliveries with a difference": [
 "Nur Lieferungen mit Differenz",
 "Solo consegne con differenza",
@@ -5133,6 +5208,11 @@
 "Nur Bestellungen, deren Rechnung abweicht",
 "Solo ordini con conto diverso dall'ordine",
 "الطلبات التي تختلف فاتورتها عن الطلب فقط"
+],
+"Only someone who counts stock can record a count.": [
+"Nur wer Bestand zählt, kann eine Zählung erfassen.",
+"Solo chi conta le scorte può registrare un conteggio.",
+"لا يسجّل الجرد إلا من يجرد المخزون."
 ],
 "Only the delivered quantity is added to estimated stock. Deliveries and invoices are simulated. A live version would read them from the purchasing system.": [
 "Nur die gelieferte Menge wird zum geschätzten Bestand addiert. Lieferungen und Rechnungen sind simuliert. Eine echte Version läse sie aus dem Einkaufssystem.",
@@ -5243,6 +5323,16 @@
 "Offene Hinweise",
 "Segnalazioni aperte",
 "الإشارات المفتوحة"
+],
+"Open flags, beyond the last delivery, an estimate": [
+"Offene Markierungen, über die letzte Lieferung hinaus, eine Schätzung",
+"Segnalazioni aperte, oltre l'ultima consegna, una stima",
+"تنبيهات مفتوحة، بعد آخر توريد، تقدير"
+],
+"Open flags, of {0} flagged. An estimate": [
+"Offene Markierungen, von {0} markiert. Eine Schätzung",
+"Segnalazioni aperte, su {0} segnalati. Una stima",
+"تنبيهات مفتوحة، من أصل {0} مُعلَّمة. تقدير"
 ],
 "Open in Orders and history": [
 "In Bestellungen und Verlauf öffnen",
@@ -7019,10 +7109,20 @@
 "Il risparmio è il denaro recuperato nei casi chiusi, gli accrediti dei fornitori e ogni perdita sotto il ritmo giornaliero dei {0} giorni precedenti, che è una stima.",
 "الموفَّر هو المال المسترد في الحالات المغلقة، وأرصدة الموردين، وأي خسارة جاءت دون المعدل اليومي للـ{0} يومًا السابقة، وهذا تقدير."
 ],
+"Saved on the hotel’s records with your name. A manager confirms counted and no recipe before the flag closes; not found keeps it open.": [
+"Mit Ihrem Namen in den Unterlagen des Hotels gespeichert. Gezählt und ohne Rezeptur bestätigt eine Führungskraft, bevor die Markierung schließt; nicht gefunden lässt sie offen.",
+"Salvato nei registri dell'hotel con il tuo nome. Contato e senza ricetta vengono confermati da un responsabile prima che la segnalazione si chiuda; non trovato la lascia aperta.",
+"حُفظ في سجلات الفندق باسمك. يؤكد مدير خياري \"تم الجرد\" و\"بلا وصفة\" قبل إغلاق التنبيه، و\"لم يُعثر عليه\" يبقيه مفتوحًا."
+],
 "Saved on the hotel’s records with your name. Counted and no recipe close the flag; not found keeps it open.": [
 "Mit Ihrem Namen in den Hotelunterlagen gespeichert. Gezählt und kein Rezept schließen die Markierung; nicht gefunden lässt sie offen.",
 "Salvato nei registri dell'hotel con il tuo nome. Contato e senza ricetta chiudono la segnalazione; non trovato la lascia aperta.",
 "يُحفظ في سجلات الفندق باسمك. خيارا تم الجرد وبلا وصفة يغلقان العلامة؛ وغير موجود يبقيها مفتوحة."
+],
+"Saved on the hotel’s records with your name. No recipe closes the flag; not found keeps it open. Counted is recorded by someone who counts stock.": [
+"Mit Ihrem Namen in den Unterlagen des Hotels gespeichert. Ohne Rezeptur schließt die Markierung; nicht gefunden lässt sie offen. Gezählt wird von jemandem erfasst, der Bestand zählt.",
+"Salvato nei registri dell'hotel con il tuo nome. Senza ricetta chiude la segnalazione; non trovato la lascia aperta. Contato viene registrato da chi conta le scorte.",
+"حُفظ في سجلات الفندق باسمك. خيار \"بلا وصفة\" يغلق التنبيه، و\"لم يُعثر عليه\" يبقيه مفتوحًا. يسجّل \"تم الجرد\" شخص يجرد المخزون."
 ],
 "Saved to today's log straight away. Simulated data.": [
 "Sofort im heutigen Protokoll gespeichert. Simulierte Daten.",
@@ -7038,6 +7138,11 @@
 "Gespeichert. Die Markierung bleibt für einen genaueren Blick offen.",
 "Salvato. La segnalazione resta aperta per un controllo più attento.",
 "تم الحفظ. تبقى العلامة مفتوحة لنظرة أدق."
+],
+"Saved. The flag stays open until a manager confirms it.": [
+"Gespeichert. Die Markierung bleibt offen, bis eine Führungskraft sie bestätigt.",
+"Salvato. La segnalazione resta aperta finché un responsabile non la conferma.",
+"تم الحفظ. يبقى التنبيه مفتوحًا حتى يؤكده مدير."
 ],
 "Saving…": [
 "Wird gespeichert…",
@@ -8324,6 +8429,11 @@
 "Quest'area non rientra nel tuo ruolo",
 "هذا القسم خارج نطاق دورك"
 ],
+"This check does not wait for a manager.": [
+"Diese Prüfung wartet nicht auf eine Führungskraft.",
+"Questo controllo non attende un responsabile.",
+"هذا الفحص لا ينتظر مديرًا."
+],
 "This could not load.": [
 "Das konnte nicht geladen werden.",
 "Non è stato possibile caricare.",
@@ -8998,6 +9108,21 @@
 "Wagyu-Hackfleisch",
 "Macinato di manzo wagyu",
 "لحم واغيو مفروم"
+],
+"Waiting for a manager": [
+"Wartet auf eine Führungskraft",
+"In attesa di un responsabile",
+"بانتظار مدير"
+],
+"Waiting for a manager to confirm it on Bought against used before the flag closes.": [
+"Wartet auf die Bestätigung einer Führungskraft unter Gekauft gegen verbraucht, bevor die Markierung schließt.",
+"In attesa della conferma di un responsabile in Acquistato contro usato prima che la segnalazione si chiuda.",
+"بانتظار تأكيد مدير في المشتريات مقابل الاستخدام قبل إغلاق التنبيه."
+],
+"Waiting for a manager to confirm it. The flag stays open until then.": [
+"Wartet auf die Bestätigung einer Führungskraft. Die Markierung bleibt bis dahin offen.",
+"In attesa della conferma di un responsabile. La segnalazione resta aperta fino ad allora.",
+"بانتظار تأكيد مدير. يبقى التنبيه مفتوحًا حتى ذلك الحين."
 ],
 "Waiting for accounting ({0})": [
 "Warten auf Buchhaltung ({0})",
@@ -9758,6 +9883,11 @@
 "markiert",
 "segnalato",
 "مشار إليه"
+],
+"flagged by today, an estimate": [
+"bis heute markiert, eine Schätzung",
+"segnalati fino a oggi, una stima",
+"مُعلَّمة حتى اليوم، تقدير"
 ],
 "flagged items, an estimate": [
 "markierte Artikel, eine Schätzung",
@@ -11039,6 +11169,11 @@
 "{0} in attesa",
 "{0} في الانتظار"
 ],
+"{0} waiting for a manager": [
+"{0} warten auf eine Führungskraft",
+"{0} in attesa di un responsabile",
+"{0} بانتظار مدير"
+],
 "{0} waiting for approval, {1} on the way ({2} late), {3} draft.": [
 "{0} warten auf Freigabe, {1} unterwegs ({2} verspätet), {3} Entwurf.",
 "{0} in attesa di approvazione, {1} in arrivo ({2} in ritardo), {3} bozza.",
@@ -11394,6 +11529,16 @@
 "{0}: {1} L acquistati più di quanto usato in {2} giorni",
 "{0}: {1} لتر مشتراة أكثر من المستخدمة خلال {2} يومًا"
 ],
+"{0}: {1} L more bought than used in {2} days, {3} L beyond the last delivery": [
+"{0}: {1} L mehr gekauft als verbraucht in {2} Tagen, {3} L über die letzte Lieferung hinaus",
+"{0}: {1} L acquistati più di quanto usato in {2} giorni, {3} L oltre l'ultima consegna",
+"{0}: {1} لتر مشتراة أكثر من المستخدم خلال {2} يومًا، منها {3} لتر بعد آخر توريد"
+],
+"{0}: {1} L more bought than used, {2} L beyond the last delivery": [
+"{0}: {1} L mehr gekauft als verbraucht, {2} L über die letzte Lieferung hinaus",
+"{0}: {1} L acquistati più di quanto usato, {2} L oltre l'ultima consegna",
+"{0}: {1} لتر مشتراة أكثر من المستخدم، منها {2} لتر بعد آخر توريد"
+],
 "{0}: {1} cans more bought than used": [
 "{0}: {1} Dosen mehr gekauft als verbraucht",
 "{0}: {1} lattine acquistate più di quelle usate",
@@ -11403,6 +11548,16 @@
 "{0}: {1} Dosen mehr gekauft als verbraucht in {2} Tagen",
 "{0}: {1} lattine acquistate più di quelle usate in {2} giorni",
 "{0}: {1} علبة مشتراة أكثر من المستخدمة خلال {2} يومًا"
+],
+"{0}: {1} cans more bought than used in {2} days, {3} cans beyond the last delivery": [
+"{0}: {1} Dosen mehr gekauft als verbraucht in {2} Tagen, {3} Dosen über die letzte Lieferung hinaus",
+"{0}: {1} lattine acquistate più di quelle usate in {2} giorni, {3} lattine oltre l'ultima consegna",
+"{0}: {1} علبة مشتراة أكثر من المستخدم خلال {2} يومًا، منها {3} علبة بعد آخر توريد"
+],
+"{0}: {1} cans more bought than used, {2} cans beyond the last delivery": [
+"{0}: {1} Dosen mehr gekauft als verbraucht, {2} Dosen über die letzte Lieferung hinaus",
+"{0}: {1} lattine acquistate più di quelle usate, {2} lattine oltre l'ultima consegna",
+"{0}: {1} علبة مشتراة أكثر من المستخدم، منها {2} علبة بعد آخر توريد"
 ],
 "{0}: {1} more bought than used": [
 "{0}: {1} mehr gekauft als verbraucht",
@@ -11414,6 +11569,16 @@
 "{0}: {1} acquistati più di quanto usato in {2} giorni",
 "{0}: {1} مشتراة أكثر من المستخدمة خلال {2} يومًا"
 ],
+"{0}: {1} more bought than used in {2} days, {3} beyond the last delivery": [
+"{0}: {1} mehr gekauft als verbraucht in {2} Tagen, {3} über die letzte Lieferung hinaus",
+"{0}: {1} acquistati più di quanto usato in {2} giorni, {3} oltre l'ultima consegna",
+"{0}: {1} مشتراة أكثر من المستخدم خلال {2} يومًا، منها {3} بعد آخر توريد"
+],
+"{0}: {1} more bought than used, {2} beyond the last delivery": [
+"{0}: {1} mehr gekauft als verbraucht, {2} über die letzte Lieferung hinaus",
+"{0}: {1} acquistati più di quanto usato, {2} oltre l'ultima consegna",
+"{0}: {1} مشتراة أكثر من المستخدم، منها {2} بعد آخر توريد"
+],
 "{0}: {1} of {2} arrived.": [
 "{0}: {1} von {2} angekommen.",
 "{0}: arrivati {1} su {2}.",
@@ -11423,6 +11588,16 @@
 "{0}: {1} Stück mehr gekauft als verbraucht",
 "{0}: {1} unità acquistate più di quelle usate",
 "{0}: {1} وحدة مشتراة أكثر من المستخدمة"
+],
+"{0}: {1} units more bought than used in {2} days, {3} units beyond the last delivery": [
+"{0}: {1} Stück mehr gekauft als verbraucht in {2} Tagen, {3} Stück über die letzte Lieferung hinaus",
+"{0}: {1} unità acquistate più di quelle usate in {2} giorni, {3} unità oltre l'ultima consegna",
+"{0}: {1} وحدة مشتراة أكثر من المستخدم خلال {2} يومًا، منها {3} وحدة بعد آخر توريد"
+],
+"{0}: {1} units more bought than used, {2} units beyond the last delivery": [
+"{0}: {1} Stück mehr gekauft als verbraucht, {2} Stück über die letzte Lieferung hinaus",
+"{0}: {1} unità acquistate più di quelle usate, {2} unità oltre l'ultima consegna",
+"{0}: {1} وحدة مشتراة أكثر من المستخدم، منها {2} وحدة بعد آخر توريد"
 ],
 "{0}d": [
 "{0} T.",

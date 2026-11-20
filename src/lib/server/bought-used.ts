@@ -3,14 +3,15 @@
 // The flags it raises join the flags system through the snapshot, and the checks managers record are kept in the store.
 import { ingredientById, propertyById } from "../data/catalog";
 import { getDataset } from "../data/generate";
-import { can, hasWholeProperty } from "../domain/access";
+import { can, hasWholeProperty, roleCan } from "../domain/access";
 import { BOUGHT_USED_RULES, boughtAgainstUsed, boughtUsedExceptions, boughtUsedFlagId, boughtUsedPeriod, summarise, type BoughtUsedRow, type BoughtUsedSummary } from "../domain/bought-used";
+import { stockPosition } from "../domain/inventory";
 import { ingredientCostAt } from "../domain/pricing";
-import type { BoughtUsedCheck, BoughtUsedOutcome, Exception, InvestigationState, User } from "../types";
+import type { BoughtUsedCheck, BoughtUsedCount, BoughtUsedOutcome, CountRecord, Exception, InvestigationState, User } from "../types";
 import { DEMO_TODAY, eachDay, round2 } from "../util";
 import { audit } from "./auth";
 import { loadStore, mutateStore, nextNumber, receivedDeliveries, type Shape } from "./purchasing-store";
-import { sharedWaste } from "./stock-log";
+import { sharedCounts, sharedWaste } from "./stock-log";
 
 /** What a manager found, in the words shown on screen. The first two settle the gap; the last leaves the flag open. */
 export const OUTCOME_LABEL: Record<BoughtUsedOutcome, string> = {
@@ -19,6 +20,9 @@ export const OUTCOME_LABEL: Record<BoughtUsedOutcome, string> = {
   not_found: "Not found: needs a closer look",
 };
 const OUTCOMES = Object.keys(OUTCOME_LABEL) as BoughtUsedOutcome[];
+
+/** "Counted" records a count, so only people who count stock may choose it. The other two are open to everyone here. */
+const mayChoose = (user: User, outcome: BoughtUsedOutcome) => outcome !== "on_shelf" || can(user, "stock.count");
 
 /** The check for one hotel on the current business day, from every record the server holds. */
 export function checkRows(propertyId: string, s: Shape = loadStore()): BoughtUsedRow[] {
@@ -35,6 +39,31 @@ export function checkRows(propertyId: string, s: Shape = loadStore()): BoughtUse
   });
 }
 
+/**
+ * What the hotel's own count records say about each item: the latest count and the Stock levels estimate today (that
+ * count plus everything recorded since). Shown beside a gap, so the obvious question is answered where it is asked.
+ */
+export function countsNow(propertyId: string, s: Shape = loadStore()): Map<string, BoughtUsedCount> {
+  const d = getDataset();
+  const counts = [...d.counts, ...sharedCounts(s)];
+  const latest = new Map<string, CountRecord>();
+  for (const c of counts) {
+    if (c.propertyId !== propertyId) continue;
+    const cur = latest.get(c.ingredientId);
+    if (!cur || c.date > cur.date || (c.date === cur.date && c.seq > cur.seq)) latest.set(c.ingredientId, c);
+  }
+  const position = stockPosition(propertyId, {
+    dayItems: d.dayItems, counts, deliveries: [...d.deliveries, ...receivedDeliveries(propertyId)], transfers: d.transfers,
+    waste: [...d.wasteLogs, ...sharedWaste(s)], recipes: [],
+  });
+  const out = new Map<string, BoughtUsedCount>();
+  for (const p of position) {
+    const c = latest.get(p.ingredientId);
+    if (c) out.set(p.ingredientId, { date: c.date, counted: c.counted, expected: c.expected, onHand: Math.max(0, round2(p.estimated)) });
+  }
+  return out;
+}
+
 /** The latest check recorded for each item at a hotel. */
 function latestChecks(propertyId: string, s: Shape): Map<string, BoughtUsedCheck> {
   const out = new Map<string, BoughtUsedCheck>();
@@ -46,17 +75,33 @@ function latestChecks(propertyId: string, s: Shape): Map<string, BoughtUsedCheck
 export const settles = (c: Pick<BoughtUsedCheck, "outcome"> | null | undefined) => !!c && c.outcome !== "not_found";
 
 /**
+ * Does a check close the flag? Only an answer that settles the gap, made or confirmed by someone who may close flags.
+ * Purchasing may record what it found, but the flag about its own ordering stays open until a manager confirms it.
+ */
+export const closesFlag = (c: BoughtUsedCheck | null | undefined): boolean =>
+  !!c && settles(c) && (roleCan(c.role, "investigation.close") || (!!c.confirmedRole && roleCan(c.confirmedRole, "investigation.close")));
+
+/** A check that settles the gap, recorded by someone who may not close flags, not yet confirmed by a manager. */
+export const awaitsManager = (c: BoughtUsedCheck | null | undefined): boolean => settles(c) && !closesFlag(c);
+
+/**
  * Does an earlier check still answer today's gap? Only while the gap has grown by no more than one delivery since: more
  * than that is new stock nobody has looked at, so the flag starts again and the check is shown as history.
  */
 export const checkHolds = (c: BoughtUsedCheck, r: Pick<BoughtUsedRow, "gap" | "lastDelivery">) => r.gap <= c.gap + r.lastDelivery + 1e-9;
 
-/** The state a flag starts from: a check that settles the gap closes it, "not found" keeps it in review. */
+/**
+ * The state a flag starts from: a check that settles the gap, by someone who may close flags, closes it. A settling
+ * check from someone who may not waits in review for a manager; "not found" keeps it in review.
+ */
 export function stateFromCheck(c: BoughtUsedCheck | undefined): InvestigationState {
   if (!c) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
   const notes = [{ at: c.date, by: c.by, text: c.note ? `${OUTCOME_LABEL[c.outcome]}. ${c.note}` : `${OUTCOME_LABEL[c.outcome]}.` }];
   if (c.outcome === "not_found") return { status: "in_review", assigneeId: c.by, notes, confirmedLoss: 0, recovered: 0 };
-  return { status: "closed", outcome: "legitimate", closedAt: c.date, closedBy: c.by, assigneeId: c.by, verifiedCause: OUTCOME_LABEL[c.outcome], notes, confirmedLoss: 0, recovered: 0 };
+  if (!closesFlag(c)) return { status: "in_review", notes: [...notes, { at: c.date, by: c.by, text: "Waiting for a manager to confirm it on Bought against used before the flag closes." }], confirmedLoss: 0, recovered: 0 };
+  const closer = c.confirmedBy ?? c.by;
+  if (c.confirmedBy) notes.push({ at: c.date, by: c.confirmedBy, text: "Confirmed and closed." });
+  return { status: "closed", outcome: "legitimate", closedAt: c.date, closedBy: closer, assigneeId: closer, verifiedCause: OUTCOME_LABEL[c.outcome], notes, confirmedLoss: 0, recovered: 0 };
 }
 
 /** The flags today's check raises for these hotels, with their starting state. */
@@ -65,7 +110,9 @@ export function boughtUsedCases(propertyIds: readonly string[], s: Shape = loadS
   const seed: Record<string, InvestigationState> = {};
   for (const pid of propertyIds) {
     const checks = latestChecks(pid, s);
+    const counts = countsNow(pid, s);
     for (const e of boughtUsedExceptions(checkRows(pid, s))) {
+      e.boughtUsed = { ...e.boughtUsed!, lastCount: counts.get(e.ingredientId!) ?? null };
       exceptions.push(e);
       const c = checks.get(e.ingredientId!);
       seed[e.id] = stateFromCheck(c && checkHolds(c, e.boughtUsed!) ? c : undefined);
@@ -81,6 +128,10 @@ export interface BoughtUsedRowOut extends Omit<BoughtUsedRow, "byDay"> {
   check: BoughtUsedCheck | null;
   /** A check made when the gap was smaller by more than a delivery: history, no longer an answer. */
   earlierCheck: BoughtUsedCheck | null;
+  /** Where the check leaves the flag: closed, waiting for a manager to confirm, not found, or nothing yet. */
+  checkState: "closed" | "awaiting" | "not_found" | null;
+  /** The item's latest count and the Stock levels estimate today. */
+  lastCount: BoughtUsedCount | null;
 }
 
 export interface BoughtUsedView {
@@ -96,7 +147,12 @@ export interface BoughtUsedView {
    */
   trend: { date: string; value: number; top: number }[];
   topId: string | null;
+  /** The answers this user may record. */
   outcomes: { value: BoughtUsedOutcome; label: string }[];
+  /** Every answer's words, to show a check someone else recorded. */
+  labels: Record<BoughtUsedOutcome, string>;
+  /** Whether this user's settling check closes the flag, and whether they may confirm someone else's. */
+  mayClose: boolean;
 }
 
 type Result<T> = ({ ok: true } & T) | { ok: false; status: number; error: string };
@@ -110,6 +166,7 @@ export function boughtUsedFor(user: User, propertyId: unknown): Result<BoughtUse
   const s = loadStore();
   const rows = checkRows(propertyId, s);
   const checks = latestChecks(propertyId, s);
+  const counts = countsNow(propertyId, s);
   const { from, to } = boughtUsedPeriod();
   const flagged = rows.filter((r) => r.flagged);
   const top = flagged[0] ?? null;
@@ -129,19 +186,24 @@ export function boughtUsedFor(user: User, propertyId: unknown): Result<BoughtUse
     delete r.byDay;
     const c = checks.get(r.ingredientId);
     const holds = !!c && checkHolds(c, r);
+    const check = holds ? c! : null;
     return {
       ...r,
       flagId: r.flagged ? boughtUsedFlagId(propertyId, r.ingredientId, to) : null,
-      check: holds ? c! : null,
+      check,
       earlierCheck: c && !holds ? c : null,
+      checkState: !check ? null : closesFlag(check) ? "closed" : awaitsManager(check) ? "awaiting" : "not_found",
+      lastCount: counts.get(r.ingredientId) ?? null,
     };
   });
   return {
     ok: true, propertyId, from, to, rules: BOUGHT_USED_RULES, rows: out,
-    // Checked means settled: counted on the shelf or used with no recipe. "Not found" is still to check.
-    summary: { ...summarise(rows), checkedFlagged: out.filter((r) => r.flagged && settles(r.check)).length },
+    // Checked means the flag is closed by the check: settled, by or confirmed by a manager. "Not found" and a check
+    // waiting for a manager are not checked yet.
+    summary: { ...summarise(rows), checkedFlagged: out.filter((r) => r.flagged && r.checkState === "closed").length },
     trend, topId: top?.ingredientId ?? null,
-    outcomes: OUTCOMES.map((value) => ({ value, label: OUTCOME_LABEL[value] })),
+    outcomes: OUTCOMES.filter((o) => mayChoose(user, o)).map((value) => ({ value, label: OUTCOME_LABEL[value] })), labels: OUTCOME_LABEL,
+    mayClose: can(user, "investigation.close"),
   };
 }
 
@@ -152,6 +214,7 @@ export function markChecked(user: User, body: Record<string, unknown>): Result<{
   if (!mayUse(user, propertyId)) return { ok: false, status: 403, error: "This check covers the whole hotel. Your access does not." };
   if (typeof ingredientId !== "string" || !ingredientById[ingredientId]) return { ok: false, status: 400, error: "Choose an item." };
   if (!OUTCOMES.includes(outcome as BoughtUsedOutcome)) return { ok: false, status: 400, error: "Choose what you found." };
+  if (!mayChoose(user, outcome as BoughtUsedOutcome)) return { ok: false, status: 403, error: "Only someone who counts stock can record a count." };
   const note = typeof body.note === "string" ? body.note.trim().slice(0, 300) : "";
   const row = checkRows(propertyId).find((r) => r.ingredientId === ingredientId);
   if (!row || row.gap <= 0) return { ok: false, status: 400, error: "This item has no gap to check." };
@@ -165,6 +228,27 @@ export function markChecked(user: User, body: Record<string, unknown>): Result<{
     return c;
   });
   audit(user.id, "Bought against used checked", `${propertyId} ${ingredientId}: ${outcome}`, "");
+  return { ok: true, check };
+}
+
+/**
+ * A manager who may close flags confirms a check that someone who may not (purchasing) recorded, which closes the flag.
+ * Nobody confirms their own check.
+ */
+export function confirmCheck(user: User, body: Record<string, unknown>): Result<{ check: BoughtUsedCheck }> {
+  const { id } = body;
+  if (!can(user, "stock.boughtUsed") || !can(user, "investigation.close")) return { ok: false, status: 403, error: "Only a manager who may close flags can confirm a check." };
+  const found = (loadStore().boughtUsedChecks ?? []).find((c) => c.id === id);
+  if (!found) return { ok: false, status: 404, error: "This check was not found." };
+  if (!mayUse(user, found.propertyId)) return { ok: false, status: 403, error: "This check covers the whole hotel. Your access does not." };
+  if (!awaitsManager(found)) return { ok: false, status: 400, error: "This check does not wait for a manager." };
+  if (found.by === user.id) return { ok: false, status: 403, error: "A check is confirmed by someone other than the person who made it." };
+  const check = mutateStore((s) => {
+    const c: BoughtUsedCheck = { ...found, confirmedBy: user.id, confirmedRole: user.role, confirmedAt: new Date().toISOString() };
+    s.boughtUsedChecks = (s.boughtUsedChecks ?? []).map((x) => (x.id === found.id ? c : x));
+    return c;
+  });
+  audit(user.id, "Bought against used check confirmed", `${found.propertyId} ${found.ingredientId}: ${found.outcome}, checked by ${found.by}`, "");
   return { ok: true, check };
 }
 

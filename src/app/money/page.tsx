@@ -19,7 +19,7 @@ import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/d
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
 import { canSeeOutlet } from "@/lib/domain/access";
 import { BOUGHT_USED_RULES } from "@/lib/domain/bought-used";
-import { POLICY, TYPE_LABEL, detectOrderException } from "@/lib/domain/detect";
+import { POLICY, TYPE_LABEL, datedFlags, detectOrderException } from "@/lib/domain/detect";
 import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/hooks";
@@ -75,9 +75,8 @@ export default function MoneyPage() {
   ];
   const inSel = useMemo(() => investigations.filter((i) => exceptionInSel(i, sel)), [investigations, sel]);
   const valueOf = (i: (typeof inSel)[number]) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency);
-  // A 30 day bought against used check is raised again each day and did not happen on a day, so the per day chart and
-  // New this week count only flags with a day of their own. It still counts in Open flags and Value at risk.
-  const dated = inSel.filter((i) => i.type !== "bought_not_used");
+  // Per day chart and New this week count only flags with a day of their own, as the Money Back List does.
+  const dated = datedFlags(inSel);
   const flagDaily = byDay(dated, (i) => i.date, valueOf);
   const newFlags = weekSums(dated, (i) => i.date, () => 1);
   const pastDeadline = inSel.filter((i) => i.status !== "closed" && i.deadline && i.deadline < DEMO_TODAY).length;

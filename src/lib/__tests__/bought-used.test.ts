@@ -13,14 +13,15 @@ const { stockPosition } = await import("../domain/inventory");
 const { getDataset } = await import("../data/generate");
 const { demoCases } = await import("../data/demo-cases");
 const { BOUGHT_STORY, BOUGHT_STORY_EXCEPTION_ID } = await import("../data/constants");
-const { boughtUsedCases, boughtUsedFor, checkRows, clearCheck, markChecked, stateFromCheck } = await import("../server/bought-used");
+const { boughtUsedCases, boughtUsedFor, checkRows, clearCheck, confirmCheck, countsNow, markChecked, stateFromCheck } = await import("../server/bought-used");
 const { snapshotFor } = await import("../server/snapshot");
 const { resetDemo } = await import("../server/demo");
 const { loadStore } = await import("../server/purchasing-store");
 const { userById } = await import("../data/catalog");
 const { can } = await import("../domain/access");
 const { activeItem } = await import("../nav");
-const { TYPE_LABEL } = await import("../domain/detect");
+const { TYPE_LABEL, datedFlags } = await import("../domain/detect");
+const { weekSums } = await import("../domain/trends");
 const { explain } = await import("../domain/explain");
 const { computeTotals } = await import("../domain/metrics");
 const { NO_ADJUSTMENTS } = await import("../domain/variance");
@@ -240,7 +241,13 @@ describe("the flag", () => {
     expect(story.exposure).toBe(row.excessValue);
     expect(story.exposure).toBeCloseTo((row.gap - row.lastDelivery) * row.unitCost, 1);
     expect(story.boughtUsed!.gap).toBe(row.gap);
-    expect(story.headline).toMatch(/^Coca-Cola: [\d,]+ cans more bought than used in 30 days$/);
+    // The headline ends on the quantity the amount at risk values, so the two agree when someone does the sum.
+    const m = story.headline.match(/^Coca-Cola: ([\d,]+) cans more bought than used in 30 days, ([\d,]+) cans beyond the last delivery$/);
+    expect(m).not.toBeNull();
+    const [whole, beyond] = [Number(m![1].replace(/,/g, "")), Number(m![2].replace(/,/g, ""))];
+    expect(whole).toBe(Math.round(row.gap));
+    expect(beyond).toBe(Math.round(row.excess));
+    expect(beyond * row.unitCost).toBeCloseTo(story.exposure, 0);
     expect(story.comparedWith).toContain("received from suppliers");
   });
 
@@ -259,6 +266,18 @@ describe("the flag", () => {
     expect(shelf).toMatchObject({ status: "closed", outcome: "legitimate", confirmedLoss: 0, recovered: 0, closedBy: "u-fnb" });
     expect(stateFromCheck({ ...base, outcome: "no_recipe" }).status).toBe("closed");
     expect(stateFromCheck({ ...base, outcome: "not_found" }).status).toBe("in_review");
+  });
+
+  it("a settling check from someone who may not close flags waits in review until a manager confirms it", () => {
+    const buy = { id: "BUC-2", propertyId: "lis", ingredientId: "coke", date: DEMO_TODAY, by: "u-buy", role: "purchasing" as const, at: "", gap: 1, gapValue: 1 };
+    for (const outcome of ["on_shelf", "no_recipe"] as const) {
+      const st = stateFromCheck({ ...buy, outcome });
+      expect(st.status, outcome).toBe("in_review");
+      expect(st.outcome, outcome).toBeUndefined();
+      expect(st.closedBy, outcome).toBeUndefined();
+    }
+    const confirmed = stateFromCheck({ ...buy, outcome: "on_shelf", confirmedBy: "u-fnb", confirmedRole: "fnb_director" });
+    expect(confirmed).toMatchObject({ status: "closed", outcome: "legitimate", closedBy: "u-fnb" });
   });
 });
 
@@ -291,6 +310,25 @@ describe("totals reconcile", () => {
     // Choosing one outlet in the top bar leaves a hotel wide flag out, like minibar charges.
     const one = { ...sel, outletIds: ["lis-terrace"], wholeProperties: [] };
     expect(computeTotals(ctx(exceptions, seed), one).openCases).toBe(computeTotals(ctx([], {}), one).openCases);
+  });
+
+  it("the flags page and the Money Back List count the same flags this week, from one shared rule", () => {
+    const { exceptions } = boughtUsedCases(["lis"]);
+    const all = [...d.exceptions, ...exceptions];
+    const dated = datedFlags(all);
+    expect(dated.some((e) => e.type === "bought_not_used")).toBe(false);
+    expect(dated.length).toBe(all.length - exceptions.length);
+    const week = weekSums(dated, (e) => e.date, () => 1);
+    expect(week.now).toBe(weekSums(d.exceptions, (e) => e.date, () => 1).now);
+    // Both pages take their per day chart and New this week from the same helper, never a filter of their own.
+    const read = (f: string) => fs.readFileSync(path.join(process.cwd(), f), "utf8");
+    for (const f of ["src/app/money/page.tsx", "src/app/investigations/page.tsx"]) {
+      const src = read(f);
+      expect(src, f).toContain("datedFlags(");
+      expect(src, f).not.toContain('type !== "bought_not_used"');
+      expect(src, f).not.toMatch(/byDay\((inScope|inSel),/);
+      expect(src, f).not.toMatch(/weekSums\((inScope|inSel),/);
+    }
   });
 
   it("the public demo keeps every flag the check lists, and still shows at most twelve open", () => {
@@ -328,14 +366,15 @@ describe("who may see it, and checks saved on the server", () => {
     ];
     expect(bad.map((r) => (r.ok ? 200 : r.status))).toEqual([403, 400, 400, 400]);
 
-    const r = markChecked(U("u-buy"), { propertyId: "lis", ingredientId: "coke", outcome: "on_shelf", note: "18 cases in the bar store" });
+    const r = markChecked(U("u-fnb"), { propertyId: "lis", ingredientId: "coke", outcome: "on_shelf", note: "18 cases in the bar store" });
     if (!r.ok) throw new Error(r.error);
-    expect(r.check).toMatchObject({ by: "u-buy", role: "purchasing", outcome: "on_shelf", note: "18 cases in the bar store", date: DEMO_TODAY });
+    expect(r.check).toMatchObject({ by: "u-fnb", role: "fnb_director", outcome: "on_shelf", note: "18 cases in the bar store", date: DEMO_TODAY });
     expect(loadStore().boughtUsedChecks).toHaveLength(1);
     expect(snapshotFor(U("u-fnb")).seedInvestigations[BOUGHT_STORY_EXCEPTION_ID].status).toBe("closed");
     const view = boughtUsedFor(U("u-fnb"), "lis");
     if (!view.ok) throw new Error(view.error);
     expect(view.summary.checkedFlagged).toBe(1);
+    expect(view.rows.find((x) => x.ingredientId === "coke")!.checkState).toBe("closed");
 
     // A second check of the same item replaces the first.
     const again = markChecked(U("u-fnb"), { propertyId: "lis", ingredientId: "coke", outcome: "not_found" });
@@ -350,6 +389,75 @@ describe("who may see it, and checks saved on the server", () => {
     expect(clearCheck(U("u-chef"), { id: again.check.id }).ok).toBe(false);
     expect(clearCheck(U("u-fnb"), { id: again.check.id }).ok).toBe(true);
     expect(snapshotFor(U("u-fnb")).seedInvestigations[BOUGHT_STORY_EXCEPTION_ID].status).toBe("new");
+  });
+
+  it("a purchasing check does not close the flag about its own ordering: it waits for a manager, who confirms it", () => {
+    const r = markChecked(U("u-buy"), { propertyId: "lis", ingredientId: "coke", outcome: "on_shelf", note: "18 cases in the bar store" });
+    if (!r.ok) throw new Error(r.error);
+    expect(r.check).toMatchObject({ by: "u-buy", role: "purchasing", outcome: "on_shelf" });
+    const st = snapshotFor(U("u-fnb")).seedInvestigations[BOUGHT_STORY_EXCEPTION_ID];
+    expect(st.status).toBe("in_review");
+    expect(st.closedBy).toBeUndefined();
+    const waiting = boughtUsedFor(U("u-fnb"), "lis");
+    if (!waiting.ok) throw new Error(waiting.error);
+    expect(waiting.summary.checkedFlagged).toBe(0);
+    expect(waiting.rows.find((x) => x.ingredientId === "coke")!.checkState).toBe("awaiting");
+    // Still open, so it still counts in open flags and value at risk.
+    const { exceptions, seed } = boughtUsedCases(["lis"]);
+    expect(seed[BOUGHT_STORY_EXCEPTION_ID].status).not.toBe("closed");
+    expect(exceptions.some((e) => e.id === BOUGHT_STORY_EXCEPTION_ID)).toBe(true);
+
+    // Purchasing cannot confirm, nobody confirms their own check, and only a waiting check can be confirmed.
+    expect(confirmCheck(U("u-buy"), { id: r.check.id })).toMatchObject({ ok: false, status: 403 });
+    expect(confirmCheck(U("u-chef"), { id: r.check.id })).toMatchObject({ ok: false, status: 403 });
+    expect(confirmCheck(U("u-fnb"), { id: "BUC-NONE" })).toMatchObject({ ok: false, status: 404 });
+    const done = confirmCheck(U("u-fc"), { id: r.check.id });
+    if (!done.ok) throw new Error(done.error);
+    expect(done.check).toMatchObject({ by: "u-buy", confirmedBy: "u-fc", confirmedRole: "controller" });
+    expect(snapshotFor(U("u-fnb")).seedInvestigations[BOUGHT_STORY_EXCEPTION_ID]).toMatchObject({ status: "closed", closedBy: "u-fc" });
+    expect(confirmCheck(U("u-fnb"), { id: r.check.id })).toMatchObject({ ok: false, status: 400 });
+    expect(clearCheck(U("u-fnb"), { id: r.check.id }).ok).toBe(true);
+
+    // A manager's own check never waits, and cannot be confirmed by the same person.
+    const own = markChecked(U("u-fnb"), { propertyId: "lis", ingredientId: "coke", outcome: "no_recipe" });
+    if (!own.ok) throw new Error(own.error);
+    expect(confirmCheck(U("u-fnb"), { id: own.check.id }).ok).toBe(false);
+    expect(clearCheck(U("u-fnb"), { id: own.check.id }).ok).toBe(true);
+    // And the person who made a waiting check cannot confirm it, even with a role that may close: checked on the record.
+    const mine = markChecked(U("u-buy"), { propertyId: "lis", ingredientId: "coke", outcome: "no_recipe" });
+    if (!mine.ok) throw new Error(mine.error);
+    expect(confirmCheck({ ...U("u-fnb"), id: "u-buy" }, { id: mine.check.id })).toMatchObject({ ok: false, status: 403 });
+    expect(clearCheck(U("u-buy"), { id: mine.check.id }).ok).toBe(true);
+  });
+
+  it("only people who count stock may record a count; the controller may record the other answers", () => {
+    const fc = boughtUsedFor(U("u-fc"), "lis");
+    if (!fc.ok) throw new Error(fc.error);
+    expect(fc.outcomes.map((o) => o.value)).toEqual(["no_recipe", "not_found"]);
+    expect(fc.mayClose).toBe(true);
+    expect(markChecked(U("u-fc"), { propertyId: "lis", ingredientId: "coke", outcome: "on_shelf" })).toMatchObject({ ok: false, status: 403 });
+    const buy = boughtUsedFor(U("u-buy"), "lis");
+    if (!buy.ok) throw new Error(buy.error);
+    expect(buy.outcomes.map((o) => o.value)).toEqual(["on_shelf", "no_recipe", "not_found"]);
+    expect(buy.mayClose).toBe(false);
+    const r = markChecked(U("u-fc"), { propertyId: "lis", ingredientId: "coke", outcome: "no_recipe" });
+    if (!r.ok) throw new Error(r.error);
+    expect(snapshotFor(U("u-fnb")).seedInvestigations[BOUGHT_STORY_EXCEPTION_ID].status).toBe("closed");
+    expect(clearCheck(U("u-fc"), { id: r.check.id }).ok).toBe(true);
+  });
+
+  it("shows the item's latest count and the Stock levels estimate beside the gap, on the page and on the flag", () => {
+    const d = getDataset();
+    const latest = d.counts.filter((c) => c.propertyId === "lis" && c.ingredientId === "coke").sort((a, b) => a.date.localeCompare(b.date) || a.seq - b.seq).at(-1)!;
+    const c = countsNow("lis").get("coke")!;
+    expect(c).toMatchObject({ date: latest.date, counted: latest.counted, expected: latest.expected });
+    const est = stockPosition("lis", { counts: d.counts, deliveries: d.deliveries, dayItems: d.dayItems, waste: d.wasteLogs, transfers: d.transfers, recipes: [] }).find((r) => r.ingredientId === "coke")!;
+    expect(c.onHand).toBeCloseTo(est.estimated, 1);
+    const view = boughtUsedFor(U("u-fnb"), "lis");
+    if (!view.ok) throw new Error(view.error);
+    expect(view.rows.find((r) => r.ingredientId === "coke")!.lastCount).toEqual(c);
+    const flag = boughtUsedCases(["lis"]).exceptions.find((e) => e.id === BOUGHT_STORY_EXCEPTION_ID)!;
+    expect(flag.boughtUsed!.lastCount).toEqual(c);
   });
 
   it("lets an earlier check answer the flag only while the gap has grown by no more than a delivery", async () => {

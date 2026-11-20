@@ -123,6 +123,8 @@ export const MODULE_PATH: Record<ModuleId, string> = {
 export const modulesFor = (user: User): ModuleId[] => MODULES[user.role];
 export const canOpen = (user: User, module: ModuleId) => MODULES[user.role].includes(module);
 export const can = (user: User, permission: Permission) => PERMISSIONS[user.role].includes(permission);
+/** Whether a role holds a permission, for records that keep the role of the person who made them. */
+export const roleCan = (role: Role, permission: Permission) => PERMISSIONS[role].includes(permission);
 /** In the public demo, whether this role can do a module's main job. If not, opening it switches role, which needs a full page load. */
 export const demoRoleFits = (user: User, module: ModuleId) =>
   canOpen(user, module) && (module !== "finance" || can(user, "finance.review")) && (module !== "forecast" || can(user, "purchase.create"));

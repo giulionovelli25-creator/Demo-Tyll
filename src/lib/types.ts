@@ -258,6 +258,13 @@ export interface BoughtUsedCheck {
   /** The gap when it was checked, in the item's unit and in money. */
   gap: number;
   gapValue: number;
+  /**
+   * A manager who may close flags confirmed a check made by someone who may not (purchasing). Until then the flag stays
+   * open in review: the team that placed an order never closes the flag about it on its own.
+   */
+  confirmedBy?: string;
+  confirmedRole?: Role;
+  confirmedAt?: string;
 }
 
 /** What a bought against used flag was raised on, in the item's own unit. */
@@ -278,6 +285,17 @@ export interface BoughtUsedEvidence {
   excess?: number;
   unitCost: number;
   share: number;
+  /** The item's latest count at the hotel, from the count records, and the Stock levels estimate today. */
+  lastCount?: BoughtUsedCount | null;
+}
+
+/** What Tyll's own count records already say about an item on a bought against used check. */
+export interface BoughtUsedCount {
+  date: string;
+  counted: number;
+  expected: number;
+  /** Stock levels' estimate today: the latest count plus everything recorded since. */
+  onHand: number;
 }
 
 export type InvestigationStatus = "new" | "assigned" | "in_review" | "closed";

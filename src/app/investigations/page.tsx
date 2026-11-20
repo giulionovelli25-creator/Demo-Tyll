@@ -8,7 +8,7 @@ import { StripTrend } from "@/components/charts";
 import { byDay, versus, weekSums } from "@/lib/domain/trends";
 import { outletById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
-import { ROOM_TYPES, TYPE_LABEL } from "@/lib/domain/detect";
+import { ROOM_TYPES, TYPE_LABEL, datedFlags } from "@/lib/domain/detect";
 import { exceptionInSel } from "@/lib/domain/metrics";
 import { assignablePeople, personName, useInvestigations, useView } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
@@ -66,8 +66,10 @@ export default function MoneyBackListPage() {
   const open = inScope.filter((i) => i.status !== "closed");
   const closed = inScope.filter((i) => i.status === "closed");
   const overdue = open.filter((i) => caseIsPastDeadline(i)).length;
-  const perDay = byDay(inScope, (i) => i.date, () => 1);
-  const opened = weekSums(inScope, (i) => i.date, () => 1);
+  // Cases with a day of their own, the same set as the flags page's chart and New this week, so the two agree.
+  const dated = datedFlags(inScope);
+  const perDay = byDay(dated, (i) => i.date, () => 1);
+  const opened = weekSums(dated, (i) => i.date, () => 1);
   const focus = (apply: () => void) => { apply(); setShown(PAGE); requestAnimationFrame(() => document.getElementById("case-list")?.scrollIntoView({ block: "start", behavior: "smooth" })); };
   const toggleDeadline = () => { if (sort.key !== "deadline" || sort.dir !== "asc") toggle("deadline", "asc"); };
   const assignees = [...new Set(inScope.map((i) => i.assigneeId).filter(Boolean))] as string[];
@@ -110,7 +112,7 @@ export default function MoneyBackListPage() {
           { label: "Confirmed losses", value: money(sum(closed, (i) => toDisplay(i, i.confirmedLoss))), tone: "money", compare: { text: `All time. ${closed.filter((i) => i.outcome === "legitimate").length} of ${closed.length} closed were legitimate`, good: null }, onClick: () => focus(() => { setStatus("closed"); setOutcome("confirmed_loss"); setInPeriod("any"); }) },
           { label: "Recovered", value: money(sum(closed, (i) => toDisplay(i, i.recovered))), tone: "pos", compare: { text: "All time", good: null }, onClick: () => focus(() => { setStatus("closed"); setOutcome("recovered"); setInPeriod("any"); }) },
         ]}
-        trend={<StripTrend goodWhen="down" explain="Flagged transactions by the day they happened." series={[{ id: "value", label: "Value involved", axis: "money", format: (n) => money(n), points: byDay(inScope, (i) => i.date, (i) => toDisplay(i, i.exposure)), goodWhen: "down" as const, explain: "Money at stake in those cases." }]} title="Cases opened per day, last 30 days" points={perDay} format={(n) => `${n} ${n === 1 ? "case" : "cases"}`} summary={`Flagged transactions per day by the day they happened. ${opened.now} this week.`} note="by the day it happened" />}
+        trend={<StripTrend goodWhen="down" explain="Flagged transactions by the day they happened. The 30 day bought against used check has no day of its own, so it is left out here, as on the flags page. It is in the list below." series={[{ id: "value", label: "Value involved", axis: "money", format: (n) => money(n), points: byDay(dated, (i) => i.date, (i) => toDisplay(i, i.exposure)), goodWhen: "down" as const, explain: "Money at stake in those cases." }]} title="Cases opened per day, last 30 days" points={perDay} format={(n) => `${n} ${n === 1 ? "case" : "cases"}`} summary={`Flagged transactions per day by the day they happened. ${opened.now} this week.`} note="by the day it happened" />}
       />
 
       <div id="case-list" className="scroll-mt-24" />
