@@ -3,7 +3,7 @@
 // Public demo (TYLL_PUBLIC_DEMO=on): no sign-in and no entry page. A first visit opens as a role that may see the address.
 // After that the role only changes when the visitor picks another one; a page the role cannot open leads to its home page. /welcome only shows if the demo cannot start.
 import { NextResponse, type NextRequest } from "next/server";
-import { canOpen, demoRoleFits, homePath, moduleOfPath } from "./lib/domain/access";
+import { canOpen, canOpenPath, demoRoleFits, homePath, moduleOfPath } from "./lib/domain/access";
 import { SESSION_COOKIE, demoRoleFor, publicDemo, resolveSession, startDemoSession } from "./lib/server/auth";
 import { freshenPublicDemo } from "./lib/server/demo";
 import { sessionCookie } from "./lib/server/guard";
@@ -34,9 +34,9 @@ function route(req: NextRequest): NextResponse {
     if (pathname === "/login" || (pathname === "/welcome" && view)) return NextResponse.redirect(new URL(view ? homePath(view.user) : "/", req.url));
     const mod = moduleOfPath(pathname);
     // A live module needs a role that can do its main job: reconcile invoices, or plan what to buy.
-    const fits = (u: Parameters<typeof canOpen>[0]) => demoRoleFits(u, mod);
+    const fits = (u: Parameters<typeof canOpen>[0]) => demoRoleFits(u, mod) && canOpenPath(u, pathname);
     // Never switch role behind the visitor's back: a signed-in role keeps its role, and is sent home from pages it cannot open.
-    if (view) return canOpen(view.user, mod) ? NextResponse.next() : NextResponse.redirect(new URL(homePath(view.user), req.url));
+    if (view) return canOpenPath(view.user, pathname) ? NextResponse.next() : NextResponse.redirect(new URL(homePath(view.user), req.url));
     // Deliveries and invoices sits under Purchasing, so a first visit opens it as purchasing, who sees the prices.
     const preferred = pathname === "/stock" && req.nextUrl.searchParams.get("tab") === "suppliers" ? "u-buy" : PREFERRED[mod ?? ""] ?? "u-fnb";
     const userId = demoRoleFor(fits, preferred);
@@ -58,7 +58,7 @@ function route(req: NextRequest): NextResponse {
     if (pathname !== "/") to.searchParams.set("next", pathname + search);
     return NextResponse.redirect(to);
   }
-  if (!canOpen(view.user, moduleOfPath(pathname))) {
+  if (!canOpenPath(view.user, pathname)) {
     return NextResponse.redirect(new URL(homePath(view.user), req.url));
   }
   return NextResponse.next();

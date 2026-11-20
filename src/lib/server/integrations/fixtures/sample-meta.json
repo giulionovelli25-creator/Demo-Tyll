@@ -1,0 +1,58 @@
+{
+ "businessDate": "2026-11-18",
+ "timeZone": "Europe/Lisbon",
+ "enterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+ "posServiceIds": [
+  "d3012224-7989-4dd5-a41a-e28a6bf02c80"
+ ],
+ "lightspeed": {
+  "lis-terrace": {
+   "businessLocationId": 45454565682201,
+   "code": "MER"
+  },
+  "lis-ird": {
+   "businessLocationId": 45454565682204,
+   "code": "IRD",
+   "roomService": true
+  }
+ },
+ "items": {
+  "1001": "burger",
+  "1002": "club",
+  "1003": "caesar",
+  "1004": "salmon",
+  "1005": "tenderloin",
+  "1006": "lobster",
+  "1009": "lambchops",
+  "1010": "risotto",
+  "1012": "fishchips",
+  "1013": "fondant",
+  "1014": "cheesecake",
+  "1020": "breakfast",
+  "2001": "coke",
+  "2002": "oj",
+  "2003": "cappuccino",
+  "2006": "wine",
+  "2007": "still",
+  "2009": "beer"
+ },
+ "staff": {
+  "14671": "MER-S1",
+  "14672": "MER-S2",
+  "14673": "MER-S3",
+  "14677": "MER-S7",
+  "14691": "IRD-S1",
+  "14692": "IRD-S2"
+ },
+ "roomPaymentCodes": [
+  "IKPMS"
+ ],
+ "cashPaymentCodes": [
+  "CASH"
+ ],
+ "expect": {
+  "rooms": 250,
+  "inHouse": 203,
+  "guests": 324
+ }
+}

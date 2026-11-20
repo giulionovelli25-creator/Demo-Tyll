@@ -84,7 +84,9 @@ export type Permission =
   /** See booked against billed covers: each table seated from the reservation book against the bills at that table. */
   | "covers.view"
   /** See hotel guests against outlet charges: the breakfast list against each room's rate and charges, and outlet sales against occupancy. */
-  | "guests.view";
+  | "guests.view"
+  /** See the POS and PMS adapters run on sample responses: bills, room numbers and amounts from the sample. */
+  | "adapters.view";
 
 const MODULES: Record<Role, ModuleId[]> = {
   owner: ["overview", "money", "drinks", "stock", "waste", "forecast", "alerts", "events", "flow", "rooms", "investigations", "reports", "finance", "more", "settings"],
@@ -109,10 +111,10 @@ const MODULES: Record<Role, ModuleId[]> = {
 };
 
 const PERMISSIONS: Record<Role, Permission[]> = {
-  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "finance.view", "sales.view", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach", "stock.logEmpty", "till.view", "covers.view", "guests.view"],
-  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "hk.manage", "fo.desk", "concierge", "bell.dispatch", "gc.respond", "finance.view", "sales.view", "sales.approve", "stock.review", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach", "stock.logEmpty", "till.view", "covers.view", "guests.view"],
-  controller: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.editPrices", "reports.export", "settings.reset", "settings.audit", "purchase.approveFinance", "finance.view", "finance.review", "roomcharge.view", "stock.boughtUsed", "waiters.view", "till.view", "covers.view", "guests.view"],
-  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "purchase.approveFnb", "prep.plan", "events.plan", "staff.request", "staff.lend", "gc.respond", "stock.review", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach", "stock.logEmpty", "till.view", "covers.view", "guests.view"],
+  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "finance.view", "sales.view", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach", "stock.logEmpty", "till.view", "covers.view", "guests.view", "adapters.view"],
+  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "hk.manage", "fo.desk", "concierge", "bell.dispatch", "gc.respond", "finance.view", "sales.view", "sales.approve", "stock.review", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach", "stock.logEmpty", "till.view", "covers.view", "guests.view", "adapters.view"],
+  controller: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.editPrices", "reports.export", "settings.reset", "settings.audit", "purchase.approveFinance", "finance.view", "finance.review", "roomcharge.view", "stock.boughtUsed", "waiters.view", "till.view", "covers.view", "guests.view", "adapters.view"],
+  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "purchase.approveFnb", "prep.plan", "events.plan", "staff.request", "staff.lend", "gc.respond", "stock.review", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach", "stock.logEmpty", "till.view", "covers.view", "guests.view", "adapters.view"],
   restaurant_manager: ["investigation.assign", "investigation.note", "investigation.close", "stock.logWaste", "stock.count", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "staff.lend", "gc.respond", "stock.review", "roomcharge.view", "waiters.view", "waiters.coach", "stock.logEmpty", "till.view", "covers.view", "guests.view"],
   front_office: ["settings.reset", "rooms.view", "fo.desk", "concierge", "staff.request", "staff.lend"],
   housekeeping_manager: ["settings.reset", "rooms.view", "hk.manage", "staff.request", "staff.lend", "purchase.create"],
@@ -143,6 +145,13 @@ export const roleCan = (role: Role, permission: Permission) => PERMISSIONS[role]
 export const demoRoleFits = (user: User, module: ModuleId) =>
   canOpen(user, module) && (module !== "finance" || can(user, "finance.review")) && (module !== "forecast" || can(user, "purchase.create"));
 export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/stock" : user.role === "chef" ? "/stock" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : user.role === "controller" ? "/finance?tab=invoices" : "/");
+
+/** Pages inside a module that also need a permission. A role without it is sent to its home page, like a module it cannot open. */
+const PAGE_PERMISSION: [path: string, permission: Permission][] = [["/settings/adapters", "adapters.view"]];
+
+/** Whether a role may open a page: its module, and the permission a page inside the module asks for. */
+export const canOpenPath = (user: User, path: string) =>
+  canOpen(user, moduleOfPath(path)) && PAGE_PERMISSION.every(([p, perm]) => !(path === p || path.startsWith(`${p}/`)) || can(user, perm));
 
 /** Which module a URL path belongs to, for route guarding. */
 export function moduleOfPath(path: string): ModuleId {

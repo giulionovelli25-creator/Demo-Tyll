@@ -1,9 +1,10 @@
 "use client";
 import { PurchasingSettings } from "@/components/purchasing/purchasing-settings";
 import { Check, Minus } from "lucide-react";
-import { Badge, Note, PageHeader, Panel, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
+import { Badge, Note, PageHeader, Panel, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { DemoDataPanel, SavedChanges } from "@/components/shell/saved-changes";
-import { DATA_SOURCES } from "@/lib/adapters";
+import Link from "next/link";
+import { DATA_SOURCES, type ConnectionState } from "@/lib/adapters";
 import { ROLE_LABEL, USERS, outletById, propertyById } from "@/lib/data/catalog";
 import { allowedOutlets, allowedProperties, can, canOpen, type ModuleId, type Permission } from "@/lib/domain/access";
 import { POLICY } from "@/lib/domain/detect";
@@ -21,13 +22,14 @@ const PERMISSION_ROWS: [Permission, string][] = [
   ["forecast.approve", "Approve purchase suggestions"], ["flow.updateOrder", "Change order status"], ["rooms.manage", "Manage rooms and housekeeping"],
   ["reports.export", "Export reports"], ["settings.audit", "See the audit trail"],
 ];
-const STATE: Record<string, { label: string; tone: "neutral" | "warn" | "ink" }> = { simulated: { label: "Simulated", tone: "ink" }, not_connected: { label: "Not connected", tone: "warn" }, planned: { label: "Planned", tone: "neutral" } };
+const STATE: Record<ConnectionState, { label: string; tone: "neutral" | "warn" | "ink" | "accent" }> = { simulated: { label: "Simulated", tone: "ink" }, adapter_built: { label: "Adapter built, not yet connected to a live account", tone: "accent" }, not_connected: { label: "Not connected", tone: "warn" }, planned: { label: "Planned", tone: "neutral" } };
 
 const Mark = ({ on }: { on: boolean }) => (on ? <Check size={16} className="mx-auto text-pos" aria-label="Yes" /> : <Minus size={16} className="mx-auto text-fog" aria-label="No" />);
 
 export default function SettingsPage() {
   const user = useUser()!;
   const mayAudit = can(user, "settings.audit");
+  const maySample = can(user, "adapters.view");
   const { data: security } = useApi<{ entries: { at: string; name: string; action: string; detail: string; ip: string }[] }>(mayAudit ? "/api/audit" : null);
   const sample = (role: Role) => USERS.find((u) => u.role === role)!;
 
@@ -62,16 +64,20 @@ export default function SettingsPage() {
             <tbody>
               {DATA_SOURCES.map((s) => (
                 <tr key={s.id} className={rowClass}>
-                  <Td><span className="text-ink">{s.system}</span><span className="block font-mono text-[11.5px] text-steel">{s.kind}</span></Td>
-                  <Td><Badge tone={STATE[s.state].tone}>{STATE[s.state].label}</Badge></Td>
+                  <Td><span className="text-ink">{s.system}</span><span translate="no" className="block font-mono text-[11.5px] text-steel">{s.kind}</span></Td>
+                  <Td className="max-w-[210px]">
+                    {/* The long "adapter built" label wraps inside its pill rather than widening the column. */}
+                    <Badge tone={STATE[s.state].tone} className={s.state === "adapter_built" ? "!h-auto min-h-[22px] !whitespace-normal py-0.5 leading-snug" : undefined}>{STATE[s.state].label}</Badge>
+                    {s.verified === false && <span className="mt-1 block text-xs text-steel">Unverified</span>}
+                  </Td>
                   <Td className="max-w-[280px] text-graphite">{s.supplies}</Td>
-                  <Td className="max-w-[360px] text-graphite">{s.note}</Td>
+                  <Td className="max-w-[360px] text-graphite">{s.note}{s.detail && maySample && <span className="mt-1 block"><Link prefetch={false} href={s.detail} className={textLink}>See it run on sample responses</Link></span>}</Td>
                 </tr>
               ))}
             </tbody>
           </table>
         </TableWrap>
-        <Note className="px-6 py-4">Each source sits behind a typed adapter interface in <span className="font-mono">src/lib/adapters.ts</span>. Connecting a real system means writing one adapter. Screens and calculations stay as they are.</Note>
+        <Note className="px-6 py-4">Each source sits behind a typed adapter interface in <span translate="no" className="font-mono">src/lib/adapters.ts</span>. Connecting a real system means writing one adapter. Screens and calculations stay as they are.</Note>
       </Panel>
 
       <Panel title="Roles and permissions" description="The six demo accounts and what each role can open and do." flush>

@@ -1,0 +1,557 @@
+{
+ "OrderItems": [
+  {
+   "Id": "a12a020a-707f-4622-a7ff-d4a21abd6ae9",
+   "EnterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+   "AccountId": "5c31ea4d-628b-4f79-aa27-eb0117513954",
+   "AccountType": "Customer",
+   "ServiceId": "d3012224-7989-4dd5-a41a-e28a6bf02c80",
+   "ServiceOrderId": "fb376439-6f69-485d-ae06-8de729eba415",
+   "Notes": "Room 1415, 3 items",
+   "BillId": null,
+   "AccountingCategoryId": "93690fd8-e03b-4a1d-ad2e-e28de4be164c",
+   "BillingName": "In-Room Dining",
+   "ExternalIdentifier": "R70415.40",
+   "UnitCount": 1,
+   "UnitAmount": {
+    "Currency": "EUR",
+    "NetValue": 48.88,
+    "GrossValue": 55.24,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 6.36
+     }
+    ]
+   },
+   "Amount": {
+    "Currency": "EUR",
+    "NetValue": 48.88,
+    "GrossValue": 55.24,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 6.36
+     }
+    ]
+   },
+   "OriginalAmount": {
+    "Currency": "EUR",
+    "NetValue": 48.88,
+    "GrossValue": 55.24,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 6.36
+     }
+    ]
+   },
+   "RevenueType": "Product",
+   "CreatorProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "UpdaterProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "CreatedUtc": "2026-11-18T23:15:58Z",
+   "UpdatedUtc": "2026-11-18T23:15:58Z",
+   "ConsumedUtc": "2026-11-18T23:15:40Z",
+   "CanceledUtc": null,
+   "ClosedUtc": null,
+   "StartUtc": null,
+   "AccountingState": "Open",
+   "Type": "ProductOrder",
+   "Options": {
+    "CanceledWithReservation": false
+   },
+   "Data": {
+    "Discriminator": "Product",
+    "Rebate": null,
+    "Product": {
+     "ProductId": "aef8835c-948f-4787-ad50-3bfc8397f988",
+     "AgeCategoryId": null
+    }
+   }
+  },
+  {
+   "Id": "c5a0da51-8212-4c21-a363-9c4f54c4d295",
+   "EnterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+   "AccountId": "bc8f03e3-4fef-4060-ac5e-b8c24c519ba0",
+   "AccountType": "Customer",
+   "ServiceId": "d3012224-7989-4dd5-a41a-e28a6bf02c80",
+   "ServiceOrderId": "1c85c488-15ac-44e6-a808-9fe7705e558d",
+   "Notes": "Table 22, 5 items",
+   "BillId": null,
+   "AccountingCategoryId": "93690fd8-e03b-4a1d-ad2e-e28de4be164c",
+   "BillingName": "Mercado",
+   "ExternalIdentifier": "R70412.55",
+   "UnitCount": 1,
+   "UnitAmount": {
+    "Currency": "EUR",
+    "NetValue": 125.27,
+    "GrossValue": 141.55,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 16.28
+     }
+    ]
+   },
+   "Amount": {
+    "Currency": "EUR",
+    "NetValue": 125.27,
+    "GrossValue": 141.55,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 16.28
+     }
+    ]
+   },
+   "OriginalAmount": {
+    "Currency": "EUR",
+    "NetValue": 125.27,
+    "GrossValue": 141.55,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 16.28
+     }
+    ]
+   },
+   "RevenueType": "Product",
+   "CreatorProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "UpdaterProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "CreatedUtc": "2026-11-18T22:04:58Z",
+   "UpdatedUtc": "2026-11-18T22:04:58Z",
+   "ConsumedUtc": "2026-11-18T22:04:40Z",
+   "CanceledUtc": null,
+   "ClosedUtc": null,
+   "StartUtc": null,
+   "AccountingState": "Open",
+   "Type": "ProductOrder",
+   "Options": {
+    "CanceledWithReservation": false
+   },
+   "Data": {
+    "Discriminator": "Product",
+    "Rebate": null,
+    "Product": {
+     "ProductId": "aef8835c-948f-4787-ad50-3bfc8397f988",
+     "AgeCategoryId": null
+    }
+   }
+  },
+  {
+   "Id": "926f6812-f47d-40b9-ab41-9b0c1693d631",
+   "EnterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+   "AccountId": "0f2e4e45-beb6-412b-a2fe-bddfc54ee7e1",
+   "AccountType": "Customer",
+   "ServiceId": "d3012224-7989-4dd5-a41a-e28a6bf02c80",
+   "ServiceOrderId": "8a9f6798-4a06-4369-a941-58034ef24647",
+   "Notes": "Table 7, 4 items",
+   "BillId": null,
+   "AccountingCategoryId": "93690fd8-e03b-4a1d-ad2e-e28de4be164c",
+   "BillingName": "Mercado",
+   "ExternalIdentifier": "R70412.52",
+   "UnitCount": 1,
+   "UnitAmount": {
+    "Currency": "EUR",
+    "NetValue": 102.59,
+    "GrossValue": 115.93,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 13.34
+     }
+    ]
+   },
+   "Amount": {
+    "Currency": "EUR",
+    "NetValue": 102.59,
+    "GrossValue": 115.93,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 13.34
+     }
+    ]
+   },
+   "OriginalAmount": {
+    "Currency": "EUR",
+    "NetValue": 102.59,
+    "GrossValue": 115.93,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 13.34
+     }
+    ]
+   },
+   "RevenueType": "Product",
+   "CreatorProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "UpdaterProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "CreatedUtc": "2026-11-18T21:41:58Z",
+   "UpdatedUtc": "2026-11-18T21:41:58Z",
+   "ConsumedUtc": "2026-11-18T21:41:40Z",
+   "CanceledUtc": null,
+   "ClosedUtc": null,
+   "StartUtc": null,
+   "AccountingState": "Open",
+   "Type": "ProductOrder",
+   "Options": {
+    "CanceledWithReservation": false
+   },
+   "Data": {
+    "Discriminator": "Product",
+    "Rebate": null,
+    "Product": {
+     "ProductId": "aef8835c-948f-4787-ad50-3bfc8397f988",
+     "AgeCategoryId": null
+    }
+   }
+  },
+  {
+   "Id": "fb64fdfa-8208-42e5-af9d-38a93c088890",
+   "EnterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+   "AccountId": "5933c37e-7f70-403e-a972-777251cfe4e5",
+   "AccountType": "Customer",
+   "ServiceId": "d3012224-7989-4dd5-a41a-e28a6bf02c80",
+   "ServiceOrderId": "bc0556cb-76d2-4429-aa85-d62acf969e15",
+   "Notes": "Room 1622, 3 items",
+   "BillId": null,
+   "AccountingCategoryId": "93690fd8-e03b-4a1d-ad2e-e28de4be164c",
+   "BillingName": "In-Room Dining",
+   "ExternalIdentifier": "R70415.33",
+   "UnitCount": 1,
+   "UnitAmount": {
+    "Currency": "EUR",
+    "NetValue": 49.33,
+    "GrossValue": 55.74,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 6.41
+     }
+    ]
+   },
+   "Amount": {
+    "Currency": "EUR",
+    "NetValue": 49.33,
+    "GrossValue": 55.74,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 6.41
+     }
+    ]
+   },
+   "OriginalAmount": {
+    "Currency": "EUR",
+    "NetValue": 49.33,
+    "GrossValue": 55.74,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 6.41
+     }
+    ]
+   },
+   "RevenueType": "Product",
+   "CreatorProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "UpdaterProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "CreatedUtc": "2026-11-18T20:35:12Z",
+   "UpdatedUtc": "2026-11-18T20:35:12Z",
+   "ConsumedUtc": "2026-11-18T20:20:40Z",
+   "CanceledUtc": null,
+   "ClosedUtc": null,
+   "StartUtc": null,
+   "AccountingState": "Open",
+   "Type": "ProductOrder",
+   "Options": {
+    "CanceledWithReservation": false
+   },
+   "Data": {
+    "Discriminator": "Product",
+    "Rebate": null,
+    "Product": {
+     "ProductId": "aef8835c-948f-4787-ad50-3bfc8397f988",
+     "AgeCategoryId": null
+    }
+   }
+  },
+  {
+   "Id": "522d5057-d966-47d5-aebc-4154bb96e75b",
+   "EnterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+   "AccountId": "5933c37e-7f70-403e-a972-777251cfe4e5",
+   "AccountType": "Customer",
+   "ServiceId": "d3012224-7989-4dd5-a41a-e28a6bf02c80",
+   "ServiceOrderId": "673addfe-9a22-4098-ab09-b380d1cd51e6",
+   "Notes": "Room 1622, 3 items",
+   "BillId": null,
+   "AccountingCategoryId": "93690fd8-e03b-4a1d-ad2e-e28de4be164c",
+   "BillingName": "In-Room Dining",
+   "ExternalIdentifier": "R70415.33",
+   "UnitCount": 1,
+   "UnitAmount": {
+    "Currency": "EUR",
+    "NetValue": 36.28,
+    "GrossValue": 41,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 4.72
+     }
+    ]
+   },
+   "Amount": {
+    "Currency": "EUR",
+    "NetValue": 36.28,
+    "GrossValue": 41,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 4.72
+     }
+    ]
+   },
+   "OriginalAmount": {
+    "Currency": "EUR",
+    "NetValue": 36.28,
+    "GrossValue": 41,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 4.72
+     }
+    ]
+   },
+   "RevenueType": "Product",
+   "CreatorProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "UpdaterProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "CreatedUtc": "2026-11-18T20:20:58Z",
+   "UpdatedUtc": "2026-11-18T20:20:58Z",
+   "ConsumedUtc": "2026-11-18T20:20:40Z",
+   "CanceledUtc": "2026-11-18T20:34:00.000Z",
+   "ClosedUtc": null,
+   "StartUtc": null,
+   "AccountingState": "Canceled",
+   "Type": "ProductOrder",
+   "Options": {
+    "CanceledWithReservation": false
+   },
+   "Data": {
+    "Discriminator": "Product",
+    "Rebate": null,
+    "Product": {
+     "ProductId": "aef8835c-948f-4787-ad50-3bfc8397f988",
+     "AgeCategoryId": null
+    }
+   }
+  },
+  {
+   "Id": "4fd8761b-d412-4171-ae72-2d670316b939",
+   "EnterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+   "AccountId": "fbebee9c-e4e3-4af6-ad2f-784b4545f5e0",
+   "AccountType": "Customer",
+   "ServiceId": "d3012224-7989-4dd5-a41a-e28a6bf02c80",
+   "ServiceOrderId": "d5bad364-d317-4849-a0d4-70b052bcedc6",
+   "Notes": "Room 1104, 2 items",
+   "BillId": null,
+   "AccountingCategoryId": "93690fd8-e03b-4a1d-ad2e-e28de4be164c",
+   "BillingName": "In-Room Dining",
+   "ExternalIdentifier": "R70415.21",
+   "UnitCount": 1,
+   "UnitAmount": {
+    "Currency": "EUR",
+    "NetValue": 27.53,
+    "GrossValue": 31.11,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 3.58
+     }
+    ]
+   },
+   "Amount": {
+    "Currency": "EUR",
+    "NetValue": 27.53,
+    "GrossValue": 31.11,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 3.58
+     }
+    ]
+   },
+   "OriginalAmount": {
+    "Currency": "EUR",
+    "NetValue": 27.53,
+    "GrossValue": 31.11,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 3.58
+     }
+    ]
+   },
+   "RevenueType": "Product",
+   "CreatorProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "UpdaterProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "CreatedUtc": "2026-11-18T13:31:59Z",
+   "UpdatedUtc": "2026-11-18T13:31:59Z",
+   "ConsumedUtc": "2026-11-18T13:30:40Z",
+   "CanceledUtc": null,
+   "ClosedUtc": null,
+   "StartUtc": null,
+   "AccountingState": "Open",
+   "Type": "ProductOrder",
+   "Options": {
+    "CanceledWithReservation": false
+   },
+   "Data": {
+    "Discriminator": "Product",
+    "Rebate": null,
+    "Product": {
+     "ProductId": "aef8835c-948f-4787-ad50-3bfc8397f988",
+     "AgeCategoryId": null
+    }
+   }
+  },
+  {
+   "Id": "154e73bb-7bb3-4f42-a400-e10986b441bd",
+   "EnterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+   "AccountId": "fbebee9c-e4e3-4af6-ad2f-784b4545f5e0",
+   "AccountType": "Customer",
+   "ServiceId": "d3012224-7989-4dd5-a41a-e28a6bf02c80",
+   "ServiceOrderId": "37c10209-66aa-4938-a4ff-7132c75b9006",
+   "Notes": "Room 1104, 2 items",
+   "BillId": null,
+   "AccountingCategoryId": "93690fd8-e03b-4a1d-ad2e-e28de4be164c",
+   "BillingName": "In-Room Dining",
+   "ExternalIdentifier": "R70415.21",
+   "UnitCount": 1,
+   "UnitAmount": {
+    "Currency": "EUR",
+    "NetValue": 27.53,
+    "GrossValue": 31.11,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 3.58
+     }
+    ]
+   },
+   "Amount": {
+    "Currency": "EUR",
+    "NetValue": 27.53,
+    "GrossValue": 31.11,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 3.58
+     }
+    ]
+   },
+   "OriginalAmount": {
+    "Currency": "EUR",
+    "NetValue": 27.53,
+    "GrossValue": 31.11,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 3.58
+     }
+    ]
+   },
+   "RevenueType": "Product",
+   "CreatorProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "UpdaterProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "CreatedUtc": "2026-11-18T13:30:58Z",
+   "UpdatedUtc": "2026-11-18T13:30:58Z",
+   "ConsumedUtc": "2026-11-18T13:30:40Z",
+   "CanceledUtc": null,
+   "ClosedUtc": null,
+   "StartUtc": null,
+   "AccountingState": "Open",
+   "Type": "ProductOrder",
+   "Options": {
+    "CanceledWithReservation": false
+   },
+   "Data": {
+    "Discriminator": "Product",
+    "Rebate": null,
+    "Product": {
+     "ProductId": "aef8835c-948f-4787-ad50-3bfc8397f988",
+     "AgeCategoryId": null
+    }
+   }
+  },
+  {
+   "Id": "f7e26b58-4cc2-447f-abb6-fc257223da4c",
+   "EnterpriseId": "bfcb6d24-17cb-43af-af99-44d8b61aedff",
+   "AccountId": "f8c2182d-7f5d-46be-a667-3061b7087bd4",
+   "AccountType": "Customer",
+   "ServiceId": "d3012224-7989-4dd5-a41a-e28a6bf02c80",
+   "ServiceOrderId": "451dde5d-0da8-4729-a447-23005cfdce45",
+   "Notes": "Minibar refill, keyed at the front desk",
+   "BillId": null,
+   "AccountingCategoryId": "93690fd8-e03b-4a1d-ad2e-e28de4be164c",
+   "BillingName": "Minibar",
+   "ExternalIdentifier": null,
+   "UnitCount": 1,
+   "UnitAmount": {
+    "Currency": "EUR",
+    "NetValue": 12.83,
+    "GrossValue": 14.5,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 1.67
+     }
+    ]
+   },
+   "Amount": {
+    "Currency": "EUR",
+    "NetValue": 12.83,
+    "GrossValue": 14.5,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 1.67
+     }
+    ]
+   },
+   "OriginalAmount": {
+    "Currency": "EUR",
+    "NetValue": 12.83,
+    "GrossValue": 14.5,
+    "TaxValues": [
+     {
+      "Code": "PT-2024-I",
+      "Value": 1.67
+     }
+    ]
+   },
+   "RevenueType": "Product",
+   "CreatorProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "UpdaterProfileId": "27f392fa-d545-4183-aed1-d1b75964a335",
+   "CreatedUtc": "2026-11-18T09:31:58Z",
+   "UpdatedUtc": "2026-11-18T09:31:58Z",
+   "ConsumedUtc": "2026-11-18T09:31:40Z",
+   "CanceledUtc": null,
+   "ClosedUtc": null,
+   "StartUtc": null,
+   "AccountingState": "Open",
+   "Type": "ProductOrder",
+   "Options": {
+    "CanceledWithReservation": false
+   },
+   "Data": {
+    "Discriminator": "Product",
+    "Rebate": null,
+    "Product": {
+     "ProductId": "aef8835c-948f-4787-ad50-3bfc8397f988",
+     "AgeCategoryId": null
+    }
+   }
+  }
+ ],
+ "Cursor": null
+}

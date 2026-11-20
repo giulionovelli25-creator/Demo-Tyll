@@ -114,6 +114,11 @@
 "Una differenza può avere varie spiegazioni, come bevande omaggio, scarti non registrati o una consegna in ritardo. Verifica prima di concludere.",
 "قد تكون للفرق تفسيرات عدة، مثل مشروبات مجانية أو هدر غير مسجل أو توريد متأخر. تحقق قبل الاستنتاج."
 ],
+"A difference is a prompt to check the guest bill, not proof of anyone’s mistake. With a live account, these become room charge flags like the ones in the room charge check.": [
+"Eine Abweichung ist ein Anlass, die Gästerechnung zu prüfen, kein Beweis für einen Fehler. Mit einem Live-Konto werden daraus Markierungen wie in der Zimmerbelastungsprüfung.",
+"Una differenza è un invito a controllare il conto dell'ospite, non la prova di un errore. Con un account reale diventano segnalazioni come quelle del controllo addebiti in camera.",
+"الفرق دعوة لمراجعة فاتورة النزيل، وليس دليلًا على خطأ أحد. مع حساب فعلي تصبح هذه تنبيهات لرسوم الغرف مثل تلك الموجودة في فحص رسوم الغرف."
+],
 "A dish was sent back after payment and taken off without asking a manager.": [
 "Ein Gericht wurde nach der Zahlung zurückgegeben und ohne Rücksprache mit einem Manager entfernt.",
 "Un piatto è stato rimandato indietro dopo il pagamento e tolto senza chiedere a un responsabile.",
@@ -193,6 +198,11 @@
 "Eine versehentlich eingegebene Menge, etwa {0} statt {1}.",
 "Una quantità digitata per errore, come {0} invece di {1}.",
 "كمية أُدخلت خطأً، مثل {0} بدلًا من {1}."
+],
+"A refund, kept on the bill it refunds": [
+"Eine Erstattung, auf der erstatteten Rechnung geführt",
+"Un rimborso, tenuto sul conto che rimborsa",
+"مبلغ مسترد يبقى على الفاتورة التي يستردها"
 ],
 "A round for a larger party rung on this table.": [
 "Eine Runde für eine größere Gruppe an diesem Tisch boniert.",
@@ -378,6 +388,11 @@
 "Tatsächlich verbraucht",
 "Consumo reale",
 "المستخدم فعليًا"
+],
+"Adapter built, not yet connected to a live account": [
+"Adapter gebaut, noch nicht mit einem Live-Konto verbunden",
+"Adattatore costruito, non ancora collegato a un account reale",
+"تم بناء المحوّل، ولم يُربط بعد بحساب فعلي"
 ],
 "Add": [
 "Hinzufügen",
@@ -628,6 +643,11 @@
 "Menge",
 "Quantità",
 "الكمية"
+],
+"Amount posted with tax; canceled items are left out": [
+"Gebuchter Betrag mit Steuer; stornierte Posten bleiben außen vor",
+"Importo registrato con imposte; le voci annullate sono escluse",
+"المبلغ المسجل مع الضريبة؛ وتُستبعد البنود الملغاة"
 ],
 "Amount to query per delivery day, last {0} days": [
 "Zu klärender Betrag pro Liefertag, letzte {0} Tage",
@@ -1264,6 +1284,16 @@
 "Conto richiuso",
 "أُغلقت الفاتورة مجددًا"
 ],
+"Bill number, and the reference matched on the guest bill": [
+"Rechnungsnummer und die Referenz, die auf der Gästerechnung abgeglichen wird",
+"Numero del conto e riferimento abbinato sul conto dell'ospite",
+"رقم الفاتورة والمرجع الذي يُطابق على فاتورة النزيل"
+],
+"Bill opened and closed, in the hotel's time zone": [
+"Rechnung geöffnet und geschlossen, in der Zeitzone des Hotels",
+"Conto aperto e chiuso, nel fuso orario dell'hotel",
+"فتح الفاتورة وإغلاقها بتوقيت الفندق"
+],
 "Bill produced": [
 "Rechnung erstellt",
 "Conto emesso",
@@ -1304,6 +1334,11 @@
 "Addebitato, un doppio come due",
 "المحسوب، الجرعة المزدوجة باثنتين"
 ],
+"Bills": [
+"Rechnungen",
+"Conti",
+"الفواتير"
+],
 "Bills at Table {0} that day": [
 "Rechnungen an Tisch {0} an diesem Tag",
 "Conti al tavolo {0} quel giorno",
@@ -1318,6 +1353,11 @@
 "Gemeldete Rechnungen",
 "Conti segnalati",
 "الفواتير المُشار إليها"
+],
+"Bills read from the sample": [
+"Aus dem Beispiel gelesene Rechnungen",
+"Conti letti dall'esempio",
+"الفواتير المقروءة من النموذج"
 ],
 "Bills reopened after payment and closed lower, with no manager’s approval.": [
 "Nach der Zahlung wieder geöffnete und niedriger abgeschlossene Rechnungen, ohne Freigabe eines Managers.",
@@ -1338,6 +1378,16 @@
 "Zu prüfende Rechnungen",
 "Conti da controllare",
 "فواتير للتحقق"
+],
+"Bills, lines, voids, discounts, refunds and payments for one business day": [
+"Rechnungen, Positionen, Stornos, Rabatte, Erstattungen und Zahlungen eines Geschäftstags",
+"Conti, righe, storni, sconti, rimborsi e pagamenti di una giornata operativa",
+"الفواتير والبنود والإلغاءات والخصومات والمبالغ المستردة والمدفوعات ليوم عمل واحد"
+],
+"Bills, lines, voids, discounts, refunds, payments and room charges, per business day": [
+"Rechnungen, Positionen, Stornos, Rabatte, Erstattungen, Zahlungen und Zimmerbelastungen, je Geschäftstag",
+"Conti, righe, storni, sconti, rimborsi, pagamenti e addebiti in camera, per giornata operativa",
+"الفواتير والبنود والإلغاءات والخصومات والمبالغ المستردة والمدفوعات والرسوم على الغرف، لكل يوم عمل"
 ],
 "Bills, till logins and shifts are simulated. Drinks per guest is drinks billed divided by the guests on the bill. Voided bills are left out. Drinks not sold is what colleagues’ pace on the same shifts would have sold, at the outlet’s average drink price: an estimate, not money lost.": [
 "Rechnungen, Kassenanmeldungen und Schichten sind simuliert. Getränke pro Gast sind die berechneten Getränke geteilt durch die Gäste auf der Rechnung. Stornierte Rechnungen bleiben außen vor. Nicht verkaufte Getränke sind, was das Tempo der Kollegen in denselben Schichten verkauft hätte, zum durchschnittlichen Getränkepreis des Outlets: eine Schätzung, kein verlorenes Geld.",
@@ -1719,6 +1769,16 @@
 "Creazione…",
 "جارٍ الإنشاء…"
 ],
+"Built from Lightspeed's public API documentation and tested on sample responses only. Unverified until tested with sandbox credentials. The demo keeps using simulated records.": [
+"Nach der öffentlichen API-Dokumentation von Lightspeed gebaut und nur mit Beispielantworten getestet. Ungeprüft, bis es mit Sandbox-Zugangsdaten getestet ist. Die Demo nutzt weiter simulierte Daten.",
+"Costruito dalla documentazione API pubblica di Lightspeed e provato solo su risposte di esempio. Non verificato finché non viene provato con credenziali sandbox. La demo continua a usare dati simulati.",
+"بُني من وثائق واجهة البرمجة العامة لدى Lightspeed واختُبر على ردود نموذجية فقط. غير متحقق منه حتى يُختبر ببيانات اعتماد بيئة تجريبية. يواصل العرض استخدام سجلات محاكاة."
+],
+"Built from Mews's public Connector API documentation and tested on sample responses only. Unverified until tested with sandbox credentials. The demo keeps using simulated records.": [
+"Nach der öffentlichen Connector-API-Dokumentation von Mews gebaut und nur mit Beispielantworten getestet. Ungeprüft, bis es mit Sandbox-Zugangsdaten getestet ist. Die Demo nutzt weiter simulierte Daten.",
+"Costruito dalla documentazione pubblica della Connector API di Mews e provato solo su risposte di esempio. Non verificato finché non viene provato con credenziali sandbox. La demo continua a usare dati simulati.",
+"بُني من وثائق Connector API العامة لدى Mews واختُبر على ردود نموذجية فقط. غير متحقق منه حتى يُختبر ببيانات اعتماد بيئة تجريبية. يواصل العرض استخدام سجلات محاكاة."
+],
 "Burgundy": [
 "Burgund",
 "Borgogna",
@@ -1839,6 +1899,11 @@
 "Chiama il fornitore",
 "اتصل بالمورد"
 ],
+"Can Tyll read our own tills and guest bills?": [
+"Kann Tyll unsere eigenen Kassen und Gästerechnungen lesen?",
+"Tyll può leggere le nostre casse e i conti degli ospiti?",
+"هل يستطيع Tyll قراءة صناديقنا وفواتير نزلائنا؟"
+],
 "Can wait": [
 "Kann warten",
 "Può attendere",
@@ -1849,10 +1914,20 @@
 "Può aspettare un giorno o due",
 "يمكن أن ينتظر يومًا أو يومين"
 ],
+"Cancelled bills": [
+"Stornierte Rechnungen",
+"Conti annullati",
+"الفواتير الملغاة"
+],
 "Cappuccino": [
 "Cappuccino",
 "Cappuccino",
 "كابتشينو"
+],
+"Card, cash or room, and the room the bill was signed to": [
+"Karte, bar oder Zimmer, und das Zimmer, auf das die Rechnung unterschrieben wurde",
+"Carta, contanti o camera, e la camera su cui è stato firmato il conto",
+"بطاقة أو نقدًا أو على الغرفة، والغرفة التي وُقّعت الفاتورة عليها"
 ],
 "Card, {0}": [
 "Karte, {0}",
@@ -2128,6 +2203,11 @@
 "{0} Lieferantenrechnungen mit den Lieferungen abgleichen",
 "Confronta {0} fatture fornitore con quanto consegnato",
 "طابق {0} فواتير موردين مع ما تم تسليمه"
+],
+"Check-in and check-out; Processed means checked out": [
+"An- und Abreise; Processed bedeutet abgereist",
+"Check-in e check-out; Processed significa partito",
+"الوصول والمغادرة؛ وتعني Processed أن النزيل غادر"
 ],
 "Checked": [
 "Geprüft",
@@ -2668,6 +2748,11 @@
 "Bestätigt. Die Markierung ist für alle geschlossen.",
 "Confermato. La segnalazione è chiusa per tutti.",
 "تم التأكيد. أُغلق التنبيه للجميع."
+],
+"Connecting a real system means writing one adapter. Screens and calculations stay as they are.": [
+"Ein echtes System anzubinden heißt, einen Adapter zu schreiben. Ansichten und Berechnungen bleiben, wie sie sind.",
+"Collegare un sistema reale significa scrivere un adattatore. Schermate e calcoli restano come sono.",
+"ربط نظام حقيقي يعني كتابة محوّل واحد. تبقى الشاشات والحسابات كما هي."
 ],
 "Connections, access and change log": [
 "Verbindungen, Zugriff und Änderungsprotokoll",
@@ -3239,10 +3324,20 @@
 "Costi diretti: cibo e bevande usati",
 "التكاليف المباشرة: الأطعمة والمشروبات المستخدمة"
 ],
+"Discount and its reason; a line taken off in full is complimentary": [
+"Rabatt und Grund; eine voll abgezogene Position ist kostenlos",
+"Sconto e motivo; una riga scontata per intero è offerta",
+"الخصم وسببه؛ والبند المخصوم بالكامل مجاني"
+],
 "Discount limit": [
 "Rabattlimit",
 "Limite sconti",
 "حد الخصم"
+],
+"Discounted bills": [
+"Rabattierte Rechnungen",
+"Conti scontati",
+"فواتير بخصم"
 ],
 "Discounts": [
 "Rabatte",
@@ -3884,6 +3979,11 @@
 "Ogni punto vendita e turno versa vicino allo standard.",
 "يسكب كل منفذ ووردية قرب المعيار."
 ],
+"Every sample charge matched": [
+"Jede Belastung im Beispiel stimmt",
+"Ogni addebito dell'esempio corrisponde",
+"كل رسوم النموذج متطابقة"
+],
 "Every seated table had a bill": [
 "Jeder platzierte Tisch hatte eine Rechnung",
 "Ogni tavolo accomodato ha avuto un conto",
@@ -4093,6 +4193,16 @@
 "Weniger {0}",
 "Meno {0}",
 "أقل من {0}"
+],
+"Field": [
+"Feld",
+"Campo",
+"الحقل"
+],
+"Fields, and what is left to confirm": [
+"Felder, und was noch zu bestätigen ist",
+"Campi, e cosa resta da confermare",
+"الحقول وما بقي لتأكيده"
 ],
 "Filter by department or category": [
 "Nach Abteilung oder Kategorie filtern",
@@ -4454,6 +4564,11 @@
 "Dagli stessi dati di vendite e costi della Panoramica.",
 "من سجلات المبيعات والتكاليف نفسها في نظرة عامة."
 ],
+"From the sample": [
+"Aus dem Beispiel",
+"Dall'esempio",
+"من النموذج"
+],
 "From the stock counts": [
 "Aus den Bestandszählungen",
 "Dai conteggi delle scorte",
@@ -4634,6 +4749,11 @@
 "Registrazioni sui conti, occupazione, arrivi, stato camere",
 "ترحيلات فواتير الضيوف والإشغال والوصول وحالة الغرف"
 ],
+"Guest bill postings, rooms in house, guests per room, check-out times": [
+"Buchungen auf Gästerechnungen, belegte Zimmer, Gäste je Zimmer, Abreisezeiten",
+"Registrazioni sui conti ospite, camere occupate, ospiti per camera, orari di check-out",
+"القيود على فواتير النزلاء، والغرف المشغولة، وعدد النزلاء في كل غرفة، وأوقات المغادرة"
+],
 "Guest folios, room numbers and check-out times are simulated, as is the PMS they come from. Minibar, spa and laundry postings cover the last {0} days.": [
 "Gästefolios, Zimmernummern und Check-out-Zeiten sind simuliert, ebenso das PMS, aus dem sie stammen. Minibar-, Spa- und Wäschebuchungen umfassen die letzten {0} Tage.",
 "Folio degli ospiti, numeri di camera e orari di check-out sono simulati, come il PMS da cui provengono. Gli addebiti di minibar, spa e lavanderia coprono gli ultimi {0} giorni.",
@@ -4723,6 +4843,11 @@
 "Gäste pro Outlet",
 "Ospiti per punto vendita",
 "الضيوف لكل منفذ"
+],
+"Guests per room, for guests a night": [
+"Gäste je Zimmer, für Gäste pro Nacht",
+"Ospiti per camera, per gli ospiti a notte",
+"النزلاء في كل غرفة، لحساب النزلاء في الليلة"
 ],
 "Guests ticked in at breakfast whose rate does not include it, with no breakfast charged to the room or paid at the table.": [
 "Beim Frühstück abgehakte Gäste ohne Frühstück in der Rate, für die weder dem Zimmer etwas berechnet noch am Tisch bezahlt wurde.",
@@ -5069,6 +5194,11 @@
 "Se il pasto è stato servito e non addebitato, registrate l'importo come perdita, o come recuperato se viene pagato.",
 "إذا قُدّمت الوجبة ولم تُحتسب، سجّل المبلغ كخسارة، أو كمسترد إذا دُفع."
 ],
+"In Tyll": [
+"In Tyll",
+"In Tyll",
+"في Tyll"
+],
 "In house last night": [
 "Im Haus letzte Nacht",
 "In casa la notte scorsa",
@@ -5388,6 +5518,11 @@
 "Artikel, die ohne Freigabe entfernt wurden, nachdem der Bon an Küche oder Bar ging.",
 "Articoli rimossi senza approvazione dopo l'invio della comanda a cucina o bar.",
 "أصناف حُذفت دون موافقة بعد وصول تذكرتها إلى المطبخ أو البار."
+],
+"Items taken off after they were rung, with the reason": [
+"Nach dem Bonieren entfernte Artikel, mit Grund",
+"Articoli tolti dopo la battuta, con il motivo",
+"أصناف أُزيلت بعد تسجيلها، مع السبب"
 ],
 "Items the kitchen marked ready that are not on the final bill.": [
 "Von der Küche als fertig markierte Artikel, die nicht auf der Endrechnung stehen.",
@@ -5819,6 +5954,31 @@
 "Modalità chiara",
 "الوضع الفاتح"
 ],
+"Lightspeed": [
+"Lightspeed",
+"Lightspeed",
+"Lightspeed"
+],
+"Lightspeed Restaurant K Series": [
+"Lightspeed Restaurant K Series",
+"Lightspeed Restaurant K Series",
+"Lightspeed Restaurant K Series"
+],
+"Lightspeed Restaurant K Series and Mews adapters, built from their public API documentation and tested on sample responses only. Not yet connected to a live account. The demo keeps running on simulated data.": [
+"Adapter für Lightspeed Restaurant K Series und Mews, nach deren öffentlicher API-Dokumentation gebaut und nur mit Beispielantworten getestet. Noch nicht mit einem Live-Konto verbunden. Die Demo läuft weiter mit simulierten Daten.",
+"Adattatori per Lightspeed Restaurant K Series e Mews, costruiti dalla loro documentazione API pubblica e provati solo su risposte di esempio. Non ancora collegati a un account reale. La demo continua a funzionare con dati simulati.",
+"محوّلان لـ Lightspeed Restaurant K Series وMews، بُنيا من وثائق واجهات البرمجة العامة لديهما واختُبرا على ردود نموذجية فقط. لم يُربطا بعد بحساب فعلي. يواصل العرض العمل ببيانات محاكاة."
+],
+"Lightspeed says {0}": [
+"Lightspeed meldet {0}",
+"Lightspeed indica {0}",
+"يذكر Lightspeed مبلغ {0}"
+],
+"Lightspeed: to confirm with a sandbox account": [
+"Lightspeed: mit einem Sandbox-Konto zu bestätigen",
+"Lightspeed: da confermare con un account sandbox",
+"Lightspeed: يجب تأكيده بحساب في بيئة تجريبية"
+],
 "Limes": [
 "Limetten",
 "Lime",
@@ -5834,6 +5994,11 @@
 "Noleggio biancheria, prima settimana (storico simulato)",
 "استئجار البياضات، الأسبوع الأول (سجل محاكاة)"
 ],
+"Lines": [
+"Positionen",
+"Righe",
+"البنود"
+],
 "Linguine": [
 "Linguine",
 "Linguine",
@@ -5848,6 +6013,11 @@
 "Lisbon, alle Outlets",
 "Lisbon, tutti i punti vendita",
 "لشبونة، جميع المنافذ"
+],
+"Live calls made": [
+"Live-Abrufe",
+"Chiamate reali effettuate",
+"الاتصالات الفعلية المُجراة"
 ],
 "Live ticket status, Winnow and Orbisk waste weights": [
 "Bonstatus in Echtzeit, Abfallgewichte von Winnow und Orbisk",
@@ -6254,6 +6424,11 @@
 "Abbinata e registrata come spesa",
 "طوبقت وسُجلت كمصروف"
 ],
+"Matched once, at onboarding, in the item list. Until then the line stays on the bill under its Lightspeed name.": [
+"Einmal beim Onboarding in der Artikelliste zugeordnet. Bis dahin bleibt die Position unter ihrem Lightspeed-Namen auf der Rechnung.",
+"Si abbina una volta, all'avvio, nell'elenco articoli. Fino ad allora la riga resta sul conto con il suo nome in Lightspeed.",
+"تُطابق مرة واحدة عند الإعداد في قائمة الأصناف. وحتى ذلك الحين يبقى البند على الفاتورة باسمه في Lightspeed."
+],
 "Matching invoices, stock reconciliation, variance reports": [
 "Rechnungsabgleich, Bestandsabstimmung, Abweichungsberichte",
 "Abbinamento fatture, riconciliazione scorte, report sugli scostamenti",
@@ -6309,6 +6484,11 @@
 "Menu",
 "القائمة"
 ],
+"Menu item and units, through the item list agreed at onboarding": [
+"Menüartikel und Menge, über die beim Onboarding vereinbarte Artikelliste",
+"Articolo del menu e unità, tramite l'elenco articoli concordato all'avvio",
+"صنف القائمة والكمية، عبر قائمة الأصناف المتفق عليها عند الإعداد"
+],
 "Menu items": [
 "Menüartikel",
 "Voci di menu",
@@ -6333,6 +6513,16 @@
 "Menü, Menü",
 "Menu, Menu",
 "القائمة، القائمة"
+],
+"Mews": [
+"Mews",
+"Mews",
+"Mews"
+],
+"Mews: to confirm with a sandbox account": [
+"Mews: mit einem Sandbox-Konto zu bestätigen",
+"Mews: da confermare con un account sandbox",
+"Mews: يجب تأكيده بحساب في بيئة تجريبية"
 ],
 "Mezze platter": [
 "Mezze-Platte",
@@ -6679,6 +6869,16 @@
 "Netto",
 "الصافي"
 ],
+"Net of tax, the figure every Tyll total uses": [
+"Netto ohne Steuer, die Zahl, die jede Tyll-Summe nutzt",
+"Al netto delle imposte, la cifra usata da ogni totale di Tyll",
+"صافي الضريبة، وهو الرقم الذي تستخدمه كل مجاميع Tyll"
+],
+"Net of tax: {0} in Lightspeed, {1} in Tyll.": [
+"Netto ohne Steuer: {0} in Lightspeed, {1} in Tyll.",
+"Al netto delle imposte: {0} in Lightspeed, {1} in Tyll.",
+"صافي الضريبة: {0} في Lightspeed، و{1} في Tyll."
+],
 "Net profit": [
 "Nettogewinn",
 "Profitto netto",
@@ -6764,10 +6964,20 @@
 "Night audit",
 "التدقيق الليلي"
 ],
+"Night of {0}. Canceled items left out: {1}.": [
+"Nacht vom {0}. Ausgelassene stornierte Posten: {1}.",
+"Notte del {0}. Voci annullate escluse: {1}.",
+"ليلة {0}. البنود الملغاة المستبعدة: {1}."
+],
 "No": [
 "Nein",
 "No",
 "لا"
+],
+"No account is connected": [
+"Kein Konto ist verbunden",
+"Nessun account è collegato",
+"لا يوجد حساب مربوط"
 ],
 "No bill at Table {0}": [
 "Keine Rechnung an Tisch {0}",
@@ -7134,6 +7344,11 @@
 "Non corrispondenti al giorno, {0} giorni",
 "غير المطابقة يوميًا، {0} يومًا"
 ],
+"Not matched to the menu": [
+"Keinem Menüartikel zugeordnet",
+"Non abbinati al menu",
+"غير مطابقة مع القائمة"
+],
 "Not on last night's in-house list": [
 "Nicht auf der Gästeliste der letzten Nacht",
 "Non presente nella lista ospiti della notte scorsa",
@@ -7158,6 +7373,11 @@
 "Noch nicht",
 "Non ancora",
 "ليس بعد"
+],
+"Not yet matched to the menu": [
+"Noch keinem Menüartikel zugeordnet",
+"Non ancora abbinati al menu",
+"لم تُطابق بعد مع قائمة الطعام"
 ],
 "Note (optional)": [
 "Notiz (optional)",
@@ -7329,6 +7549,11 @@
 "Ora vedi la demo come {0}.",
 "تعرض النسخة الآن بصفة {0}."
 ],
+"Occupancy": [
+"Belegung",
+"Occupazione",
+"نسبة الإشغال"
+],
 "October to date": [
 "Oktober bis heute",
 "Ottobre a oggi",
@@ -7414,6 +7639,11 @@
 "Un inserimento era destinato a un altro tavolo.",
 "كان أحد الإدخالين لطاولة أخرى."
 ],
+"One item is not yet matched to the menu. It stays on the bill and is listed for onboarding.": [
+"Ein Artikel ist noch keinem Menüartikel zugeordnet. Er bleibt auf der Rechnung und wird für das Onboarding aufgeführt.",
+"Un articolo non è ancora abbinato al menu. Resta sul conto ed è elencato per l'avvio.",
+"صنف واحد لم يُطابق بعد مع قائمة الطعام. يبقى على الفاتورة ويُدرج لمرحلة الإعداد."
+],
 "One open bottle can always be part used, so a gap under two bottles is never flagged. Bottles issued and the bills are simulated.": [
 "Eine offene Flasche kann immer angebrochen sein, daher wird eine Lücke unter zwei Flaschen nie gemeldet. Ausgegebene Flaschen und Rechnungen sind simuliert.",
 "Una bottiglia aperta può sempre essere in parte usata, quindi uno scarto sotto le due bottiglie non viene mai segnalato. Bottiglie consegnate e conti sono simulati.",
@@ -7423,6 +7653,16 @@
 "Ein weiteres Outlet ist simuliert.",
 "Un altro punto vendita è simulato.",
 "منفذ آخر محاكاة."
+],
+"One posting in Mews matched no bill charged to a room: {0} at {1}, with no receipt id. It is shown here, not flagged.": [
+"Eine Buchung in Mews passt zu keiner auf ein Zimmer belasteten Rechnung: {0} um {1}, ohne Belegnummer. Sie wird hier gezeigt, nicht markiert.",
+"Una registrazione in Mews non corrisponde ad alcun conto addebitato in camera: {0} alle {1}, senza numero di scontrino. È mostrata qui, non segnalata.",
+"قيد واحد في Mews لا يطابق أي فاتورة محمّلة على غرفة: {0} عند {1}، بلا رقم إيصال. يُعرض هنا ولا يُعلَّم."
+],
+"One posting per bill, and the till's receipt id on it": [
+"Eine Buchung je Rechnung, mit der Belegnummer der Kasse",
+"Una registrazione per conto, con il numero di scontrino della cassa",
+"قيد واحد لكل فاتورة، وعليه رقم إيصال الصندوق"
 ],
 "One thing needs you today.": [
 "Eine Sache braucht heute Ihre Aufmerksamkeit.",
@@ -8059,6 +8299,11 @@
 "Prezzo d'ordine",
 "سعر أمر الشراء"
 ],
+"POS and PMS adapters": [
+"POS- und PMS-Adapter",
+"Adattatori POS e PMS",
+"محوّلات نظام نقاط البيع ونظام إدارة الفندق"
+],
 "POS login": [
 "POS-Login",
 "Accesso POS",
@@ -8398,6 +8643,11 @@
 "Buchung {0}",
 "Registrazione {0}",
 "ترحيل {0}"
+],
+"Postings": [
+"Buchungen",
+"Registrazioni",
+"القيود"
 ],
 "Postings flagged": [
 "Markierte Buchungen",
@@ -9114,6 +9364,11 @@
 "Richiesti, approvati, consegnati o fatturati, ma non ancora spesa registrata. Ogni ordine conta una volta, nella fase attuale.",
 "مطلوبة أو معتمدة أو مسلّمة أو مفوترة، وليست مصروفًا مسجلًا بعد. يُحتسب كل طلب مرة واحدة في مرحلته الحالية."
 ],
+"Requests answered from the sample: {0}.": [
+"Aus dem Beispiel beantwortete Anfragen: {0}.",
+"Richieste a cui ha risposto l'esempio: {0}.",
+"الطلبات التي أجاب عنها النموذج: {0}."
+],
 "Requests are stored on the Tyll server, so every department sees the same record. No order is sent to a real supplier.": [
 "Anfragen liegen auf dem Tyll-Server, sodass jede Abteilung denselben Datensatz sieht. Es geht keine Bestellung an echte Lieferanten.",
 "Le richieste sono sul server Tyll, così ogni reparto vede lo stesso dato. Nessun ordine viene inviato a fornitori reali.",
@@ -9178,6 +9433,11 @@
 "Restaurant und Bar",
 "Ristorante e bar",
 "المطعم والبار"
+],
+"Restaurant and room service bills posted to guest accounts": [
+"Restaurant- und Zimmerservice-Rechnungen auf Gästekonten",
+"Conti di ristorante e servizio in camera registrati sui conti ospite",
+"فواتير المطعم وخدمة الغرف المسجلة على حسابات النزلاء"
 ],
 "Restaurant manager": [
 "Restaurantleitung",
@@ -9369,6 +9629,11 @@
 "Verifica addebiti in camera",
 "مراجعة رسوم الغرف"
 ],
+"Room charge check on the sample": [
+"Zimmerbelastungsprüfung am Beispiel",
+"Controllo addebiti in camera sull'esempio",
+"فحص رسوم الغرف على النموذج"
+],
 "Room charge duplicated": [
 "Zimmerbelastung doppelt",
 "Addebito camera duplicato",
@@ -9423,6 +9688,16 @@
 "Zimmerbelastungen, die auf der Gästerechnung fehlen, doppelt, mit anderem Betrag, auf das falsche Zimmer oder nach dem Check-out gebucht sind.",
 "Addebiti in camera mancanti sul conto, registrati due volte, con importo diverso, sulla camera sbagliata o dopo il check-out.",
 "رسوم غرف مفقودة من فاتورة النزيل، أو مرحّلة مرتين، أو بمبلغ مختلف، أو على الغرفة الخطأ، أو بعد المغادرة."
+],
+"Room charges to check": [
+"Zu prüfende Zimmerbelastungen",
+"Addebiti in camera da verificare",
+"رسوم الغرف المطلوب التحقق منها"
+],
+"Room numbers; meeting rooms and beds are left out": [
+"Zimmernummern; Tagungsräume und Betten bleiben außen vor",
+"Numeri di camera; sale riunioni e letti sono esclusi",
+"أرقام الغرف؛ وتُستبعد قاعات الاجتماعات والأسرّة"
 ],
 "Room only": [
 "Nur Zimmer",
@@ -9624,6 +9899,11 @@
 "Camera {0}: addebito minibar arrivato sul conto dopo il check-out",
 "الغرفة {0}: وصلت رسوم الميني بار إلى فاتورة النزيل بعد المغادرة"
 ],
+"Room {0}: posted as charged": [
+"Zimmer {0}: wie belastet gebucht",
+"Camera {0}: registrato come addebitato",
+"الغرفة {0}: سُجّلت كما حُمّلت"
+],
 "Room {0}: spa charge has not reached the guest bill": [
 "Zimmer {0}: Spabelastung ist nicht auf der Gästerechnung",
 "Camera {0}: l'addebito spa non è arrivato sul conto",
@@ -9669,10 +9949,20 @@
 "Camere ed esperienza ospiti, demo Tyll",
 "الغرف وتجربة الضيوف، عرض Tyll"
 ],
+"Rooms and their numbers": [
+"Zimmer und ihre Nummern",
+"Camere e i loro numeri",
+"الغرف وأرقامها"
+],
 "Rooms by rate": [
 "Zimmer nach Rate",
 "Camere per tariffa",
 "الغرف حسب السعر"
+],
+"Rooms in house": [
+"Belegte Zimmer",
+"Camere occupate",
+"الغرف المشغولة"
 ],
 "Rooms ticked in at breakfast whose guests the room rate does not cover, with no breakfast charged to the room or paid at the table. Guests whose rate includes breakfast are never flagged.": [
 "Beim Frühstück abgehakte Zimmer, deren Gäste die Zimmerrate nicht abdeckt, ohne aufs Zimmer berechnetes oder am Tisch bezahltes Frühstück. Gäste mit Frühstück in der Rate werden nie markiert.",
@@ -9829,10 +10119,20 @@
 "Stesso conto, stesso importo, camera diversa",
 "الفاتورة نفسها والمبلغ نفسه وغرفة مختلفة"
 ],
+"Same net total in Lightspeed and in Tyll": [
+"Gleiche Nettosumme in Lightspeed und in Tyll",
+"Stesso totale netto in Lightspeed e in Tyll",
+"نفس المجموع الصافي في Lightspeed وفي Tyll"
+],
 "Same weekdays moved about {0}": [
 "Gleiche Wochentage schwankten um etwa {0}",
 "Stessi giorni variati di circa {0}",
 "تحركت الأيام نفسها بنحو {0}"
+],
+"Sample totals agree": [
+"Summen des Beispiels stimmen überein",
+"I totali dell'esempio coincidono",
+"مجاميع النموذج متطابقة"
 ],
 "Saucers": [
 "Untertassen",
@@ -10118,6 +10418,11 @@
 "Hotelgäste und Outlet-Belastungen ansehen",
 "Vedi ospiti dell'hotel e addebiti dei punti vendita",
 "عرض نزلاء الفندق مقابل رسوم المنافذ"
+],
+"See it run on sample responses": [
+"Mit Beispielantworten ansehen",
+"Guardalo funzionare su risposte di esempio",
+"شاهده يعمل على ردود نموذجية"
 ],
 "See missing drinks": [
 "Fehlende Getränke ansehen",
@@ -10498,6 +10803,11 @@
 "Alle {0} empfohlenen Artikel anzeigen",
 "Mostra tutti i {0} articoli consigliati",
 "عرض جميع الأصناف الموصى بها ({0})"
+],
+"Show all {0} room charges": [
+"Alle {0} Zimmerbelastungen zeigen",
+"Mostra tutti i {0} addebiti in camera",
+"عرض كل رسوم الغرف البالغة {0}"
 ],
 "Show all {0} rooms": [
 "Alle {0} Zimmer anzeigen",
@@ -11334,6 +11644,11 @@
 "Preso dal libro prenotazioni e dai conti dello stesso giorno. Il valore è una stima alla spesa per ospite del punto vendita.",
 "مأخوذ من سجل الحجوزات وفواتير اليوم نفسه. القيمة تقدير بمتوسط إنفاق الضيف في المنفذ."
 ],
+"Taken off after ringing": [
+"Nach dem Bonieren entfernt",
+"Tolti dopo la battuta",
+"أُزيلت بعد التسجيل"
+],
 "Talked it through, nothing to change": [
 "Besprochen, nichts zu ändern",
 "Parlato insieme, niente da cambiare",
@@ -11363,6 +11678,11 @@
 "Getestete Adapter für POS-, PMS-, Bestands- und Buchhaltungssysteme jedes Kunden.",
 "Adattatori testati per i sistemi POS, PMS, scorte e contabilità di ogni cliente.",
 "موائمات مختبرة لأنظمة نقاط البيع وإدارة الفندق والمخزون والمحاسبة لكل عميل."
+],
+"That check-out times arrive on the stay as soon as the guest leaves.": [
+"Dass die Abreisezeit beim Aufenthalt ankommt, sobald der Gast abreist.",
+"Che l'orario di check-out arrivi sul soggiorno appena l'ospite parte.",
+"أن يصل وقت المغادرة إلى سجل الإقامة فور مغادرة النزيل."
 ],
 "That could not be saved.": [
 "Das konnte nicht gespeichert werden.",
@@ -11428,6 +11748,11 @@
 "Dieser Scan wurde bereits zurückgenommen.",
 "Questa scansione è già stata annullata.",
 "تم التراجع عن هذا المسح بالفعل."
+],
+"That the POS link writes the till's receipt id on each posting (without it, Tyll matches on amount and time).": [
+"Dass die POS-Schnittstelle die Belegnummer der Kasse auf jede Buchung schreibt (ohne sie gleicht Tyll nach Betrag und Uhrzeit ab).",
+"Che il collegamento POS scriva il numero di scontrino della cassa su ogni registrazione (senza, Tyll abbina per importo e ora).",
+"أن يكتب ربط نظام نقاط البيع رقم إيصال الصندوق على كل قيد (وبدونه يطابق Tyll حسب المبلغ والوقت)."
 ],
 "That was not saved. Try again.": [
 "Das wurde nicht gespeichert. Versuchen Sie es erneut.",
@@ -11603,6 +11928,11 @@
 "Der Umsatz pro Gast beim Abendessen im {0} lag in den {1} Tagen davor bei {2}, also sind {3} Gäste etwa {4}.",
 "La spesa per ospite della cena da {0} nei {1} giorni precedenti era di {2}, quindi {3} ospiti valgono circa {4}.",
 "كان متوسط إنفاق الضيف على العشاء في {0} خلال {1} يومًا السابقة {2}، لذا يساوي {3} ضيوف نحو {4}."
+],
+"The documented fields each adapter reads, what Tyll makes of them, and what a sandbox account must confirm.": [
+"Die dokumentierten Felder, die jeder Adapter liest, was Tyll daraus macht, und was ein Sandbox-Konto bestätigen muss.",
+"I campi documentati che ogni adattatore legge, cosa ne fa Tyll, e cosa deve confermare un account sandbox.",
+"الحقول الموثقة التي يقرؤها كل محوّل، وما يصنعه Tyll منها، وما يجب أن يؤكده حساب في بيئة تجريبية."
 ],
 "The extra was refunded to the guest before they left, so nothing was lost or recovered.": [
 "Der Mehrbetrag wurde dem Gast vor dem Gehen erstattet, es ging also nichts verloren und nichts wurde zurückgewonnen.",
@@ -11854,6 +12184,11 @@
 "Gli ultimi {0} giorni allo stesso ritmo per {1} mesi. Stima.",
 "آخر {0} يومًا بالمعدل نفسه لمدة {1} شهرًا. تقدير."
 ],
+"The login on the bill and on each change, through the staff list": [
+"Die Anmeldung auf der Rechnung und bei jeder Änderung, über die Mitarbeiterliste",
+"L'accesso sul conto e su ogni modifica, tramite l'elenco del personale",
+"تسجيل الدخول على الفاتورة وعلى كل تغيير، عبر قائمة الموظفين"
+],
 "The lunch spend per guest at {0} over the {1} days before was {2}, so {3} guests are about {4}.": [
 "Der Umsatz pro Gast beim Mittagessen im {0} lag in den {1} Tagen davor bei {2}, also sind {3} Gäste etwa {4}.",
 "La spesa per ospite del pranzo da {0} nei {1} giorni precedenti era di {2}, quindi {3} ospiti valgono circa {4}.",
@@ -11984,6 +12319,11 @@
 "Il libro prenotazioni mostra la prenotazione {0}, per {1} alle {2}, fatta tramite il concierge.",
 "يُظهر سجل الحجوزات الحجز {0}، لـ {1} الساعة {2}، عبر الكونسيرج."
 ],
+"The room charge check's own rule, run on what the two adapters read. Largest amount to check first. Sample data: it changes no figure in the demo.": [
+"Die Regel der Zimmerbelastungsprüfung, angewendet auf das, was die beiden Adapter lesen. Größter zu prüfender Betrag zuerst. Beispieldaten: Sie ändern keine Zahl in der Demo.",
+"La regola del controllo addebiti in camera, applicata a ciò che leggono i due adattatori. Prima l'importo più alto da verificare. Dati di esempio: non cambiano alcuna cifra nella demo.",
+"قاعدة فحص رسوم الغرف نفسها، مطبقة على ما يقرؤه المحوّلان. الأكبر مبلغًا للتحقق أولًا. بيانات نموذجية: لا تغيّر أي رقم في العرض."
+],
 "The room is not on last night's in-house list.": [
 "Das Zimmer steht nicht auf der Gästeliste der letzten Nacht.",
 "La camera non è nella lista ospiti della notte scorsa.",
@@ -12023,6 +12363,16 @@
 "Dieselben Wochentage schwankten in den letzten {0} Wochen um etwa {1}, und {2} der Gäste sind bereits gebucht. Innerhalb {3} ist hoch, innerhalb {4} ist mittel.",
 "Gli stessi giorni si sono mossi di circa {0} nelle ultime {1} settimane e {2} degli ospiti è già prenotato. Entro {3} è alta, entro {4} è media.",
 "تحركت أيام الأسبوع نفسها بنحو {0} خلال آخر {1} أسابيع، و{2} من الضيوف محجوزون. ضمن {3} عالية، وضمن {4} متوسطة."
+],
+"The sample could not be read.": [
+"Das Beispiel konnte nicht gelesen werden.",
+"Non è stato possibile leggere l'esempio.",
+"تعذرت قراءة النموذج."
+],
+"The sample responses follow each system’s documented format and hold simulated data for the {0}, replayed as last night. They are not recordings of a live account. Both adapters stay unverified until they are tested with sandbox credentials. No credentials are stored in this demo.": [
+"Die Beispielantworten folgen dem dokumentierten Format des jeweiligen Systems und enthalten simulierte Daten des {0}, als letzte Nacht abgespielt. Sie sind keine Aufzeichnungen eines Live-Kontos. Beide Adapter bleiben ungeprüft, bis sie mit Sandbox-Zugangsdaten getestet sind. In dieser Demo sind keine Zugangsdaten gespeichert.",
+"Le risposte di esempio seguono il formato documentato di ciascun sistema e contengono dati simulati del {0}, riprodotti come la notte scorsa. Non sono registrazioni di un account reale. Entrambi gli adattatori restano non verificati finché non vengono provati con credenziali sandbox. In questa demo non sono memorizzate credenziali.",
+"تتبع الردود النموذجية الصيغة الموثقة لكل نظام وتحمل بيانات محاكاة لفندق {0}، تُعاد كأنها الليلة الماضية. ليست تسجيلات من حساب فعلي. يبقى المحوّلان غير متحقق منهما حتى يُختبرا ببيانات اعتماد بيئة تجريبية. لا تُخزَّن أي بيانات اعتماد في هذا العرض."
 ],
 "The server checks your session, role and PIN before every page and every data request, and sends only the records your role may see. Changes you make are still saved in this browser; moving them to the server is the next step.": [
 "Der Server prüft Sitzung, Rolle und PIN vor jeder Seite und Datenabfrage und sendet nur, was Ihre Rolle sehen darf. Ihre Änderungen liegen noch in diesem Browser; der Umzug auf den Server ist der nächste Schritt.",
@@ -12844,6 +13194,11 @@
 "Rimborso insolito · {0}",
 "استرداد غير معتاد · {0}"
 ],
+"Unverified": [
+"Ungeprüft",
+"Non verificato",
+"غير متحقق منه"
+],
 "Up and down arrows to move": [
 "Pfeiltasten zum Bewegen",
 "Frecce su e giù per spostarti",
@@ -13424,6 +13779,11 @@
 "Cosa è in ordine e cosa richiede ancora una decisione?",
 "ما المطلوب حاليًا، وما الذي يحتاج إلى قرار؟"
 ],
+"What it reads": [
+"Was es liest",
+"Cosa legge",
+"ما يقرؤه"
+],
 "What it was compared against.": [
 "Womit es verglichen wurde.",
 "Con cosa è stato confrontato.",
@@ -13539,6 +13899,16 @@
 "Quando Tyll segnala un divario",
 "متى يُعلِّم Tyll فرقًا"
 ],
+"When the business day closes, and that voids after a bill is sent arrive as lines with a negative quantity.": [
+"Wann der Geschäftstag schließt, und dass Stornos nach dem Senden einer Rechnung als Positionen mit negativer Menge ankommen.",
+"Quando si chiude la giornata operativa, e che gli storni dopo l'invio di un conto arrivano come righe con quantità negativa.",
+"متى يُغلق يوم العمل، وأن الإلغاءات بعد إرسال الفاتورة تصل كبنود بكمية سالبة."
+],
+"When the posting reached the guest bill, against check-out": [
+"Wann die Buchung die Gästerechnung erreichte, verglichen mit der Abreise",
+"Quando la registrazione è arrivata sul conto dell'ospite, rispetto al check-out",
+"متى وصل القيد إلى فاتورة النزيل مقارنةً بالمغادرة"
+],
 "Where": [
 "Wo",
 "Dove",
@@ -13594,10 +13964,30 @@
 "Dove ti trovi",
 "موقعك"
 ],
+"Whether line discounts include tax, as line totals do.": [
+"Ob Positionsrabatte Steuer enthalten, wie die Positionssummen.",
+"Se gli sconti di riga includono le imposte, come i totali di riga.",
+"هل تشمل خصومات البنود الضريبة كما تشملها مجاميع البنود."
+],
+"Which Mews services the outlets post to, and that rooms are the active space resources.": [
+"Auf welche Mews-Leistungen die Outlets buchen, und dass Zimmer die aktiven Raumressourcen sind.",
+"Su quali servizi Mews registrano i punti vendita, e che le camere sono le risorse di spazio attive.",
+"إلى أي خدمات في Mews تسجّل المنافذ، وأن الغرف هي موارد المساحات النشطة."
+],
 "Which departments are over or under their budget.": [
 "Welche Abteilungen über oder unter ihrem Budget liegen.",
 "Quali reparti sono sopra o sotto il budget.",
 "الأقسام التي تتجاوز ميزانيتها أو تقل عنها."
+],
+"Which field carries the room number on a room charge payment (read from the payment's external reference here).": [
+"Welches Feld die Zimmernummer bei einer Zahlung auf das Zimmer trägt (hier aus der externen Referenz der Zahlung gelesen).",
+"Quale campo porta il numero di camera in un pagamento addebitato in camera (qui letto dal riferimento esterno del pagamento).",
+"أي حقل يحمل رقم الغرفة في دفعة محمّلة على الغرفة (يُقرأ هنا من المرجع الخارجي للدفعة)."
+],
+"Which guest account belongs to which room": [
+"Welches Gästekonto zu welchem Zimmer gehört",
+"Quale conto ospite appartiene a quale camera",
+"أي حساب نزيل يتبع أي غرفة"
 ],
 "White rum": [
 "Weißer Rum",
@@ -13613,6 +14003,11 @@
 "Bei wem kaufen wir ein, und zu welchen Bedingungen?",
 "Da chi acquistiamo, e a quali condizioni?",
 "ممن نشتري، وبأي شروط؟"
+],
+"Who is in which room, check-in and check-out times, guests per room": [
+"Wer in welchem Zimmer wohnt, An- und Abreisezeiten, Gäste je Zimmer",
+"Chi è in quale camera, orari di check-in e check-out, ospiti per camera",
+"من يقيم في أي غرفة، وأوقات الوصول والمغادرة، وعدد النزلاء في كل غرفة"
 ],
 "Who needs coaching, and where are drinks going missing?": [
 "Wer braucht Coaching, und wo gehen Getränke verloren?",
@@ -14754,6 +15149,11 @@
 "{0} e altri richiedono un ordine nei prossimi giorni.",
 "يحتاج {0} وأصناف أخرى إلى طلب خلال الأيام القادمة."
 ],
+"{0} and {1}, {2}": [
+"{0} und {1}, {2}",
+"{0} e {1}, {2}",
+"{0} و{1}، {2}"
+],
 "{0} at risk until someone checks it.": [
 "{0} gefährdet, bis es jemand prüft.",
 "{0} a rischio finché qualcuno non controlla.",
@@ -15604,6 +16004,11 @@
 "{0} ore a settimana nel team, a {1} l'ora.",
 "{0} ساعة أسبوعيًا عبر الفريق، بسعر {1} للساعة."
 ],
+"{0} in the sample": [
+"{0} im Beispiel",
+"{0} nell'esempio",
+"{0} في النموذج"
+],
 "{0} ingredient is short for this plan.": [
 "{0} Zutat fehlt für diesen Plan.",
 "{0} ingrediente manca per questo piano.",
@@ -15648,6 +16053,11 @@
 "{0} Artikel",
 "{0} articoli",
 "{0} أصناف"
+],
+"{0} items are not yet matched to the menu. They stay on the bill and are listed for onboarding.": [
+"{0} Artikel sind noch keinem Menüartikel zugeordnet. Sie bleiben auf der Rechnung und werden für das Onboarding aufgeführt.",
+"{0} articoli non sono ancora abbinati al menu. Restano sul conto e sono elencati per l'avvio.",
+"{0} أصناف لم تُطابق بعد مع قائمة الطعام. تبقى على الفاتورة وتُدرج لمرحلة الإعداد."
 ],
 "{0} items from {1} suppliers, {2}. Nothing is sent until it is approved.": [
 "{0} Artikel von {1} Lieferanten, {2}. Nichts wird vor der Freigabe gesendet.",
@@ -17333,6 +17743,21 @@
 "{0}, {1}, {2} bis {3}, Schluss",
 "{0}, {1}, dal {2} al {3}, chiusura",
 "{0}، {1}، من {2} إلى {3}، الإغلاق"
+],
+"{0}, {1}. Charged {2}, nothing posted.": [
+"{0}, {1}. Belastet {2}, nichts gebucht.",
+"{0}, {1}. Addebitato {2}, nulla registrato.",
+"{0}، {1}. حُمّل {2}، ولم يُسجّل شيء."
+],
+"{0}, {1}. Charged {2}, posted {3} and {4}.": [
+"{0}, {1}. Belastet {2}, gebucht {3} und {4}.",
+"{0}, {1}. Addebitato {2}, registrato {3} e {4}.",
+"{0}، {1}. حُمّل {2}، وسُجّل {3} و{4}."
+],
+"{0}, {1}. Charged {2}, posted {3}.": [
+"{0}, {1}. Belastet {2}, gebucht {3}.",
+"{0}, {1}. Addebitato {2}, registrato {3}.",
+"{0}، {1}. حُمّل {2}، وسُجّل {3}."
 ],
 "{0}, {1}. For {2} to {3}. Raised by {4}.": [
 "{0}, {1}. Für {2} bis {3}. Erstellt von {4}.",

@@ -1,5 +1,7 @@
 // Integration boundary. Real systems plug in by implementing these interfaces.
 // The demo ships one read-only implementation of each, backed by the simulated dataset, in lib/server/adapters.ts.
+// First real adapters (built from public API documentation, tested on sample responses only, not connected to a live
+// account): Lightspeed Restaurant K Series (PosAdapter) and Mews (PmsAdapter), in lib/server/integrations.
 import type { CountRecord, Delivery, OccupancyDay, Order, ReservationDay, RoomCharge, WasteLog } from "./types";
 
 export interface PosAdapter {
@@ -28,7 +30,8 @@ export interface AccountingAdapter {
   fetchPostedLabor(outletId: string, from: string, to: string): Promise<number | null>;
 }
 
-export type ConnectionState = "simulated" | "not_connected" | "planned";
+/** `adapter_built`: code written and tested on sample responses, not yet connected to a live account (unverified). */
+export type ConnectionState = "simulated" | "adapter_built" | "not_connected" | "planned";
 
 export interface DataSource {
   id: string;
@@ -37,12 +40,18 @@ export interface DataSource {
   state: ConnectionState;
   supplies: string;
   note: string;
+  /** False until the adapter has been tested with real sandbox credentials. */
+  verified?: boolean;
+  /** A page showing what the adapter reads, for roles that may see it. */
+  detail?: string;
 }
 
 /** What is and is not connected in this demo. Shown on the Settings page so nothing passes as a live integration. */
 export const DATA_SOURCES: DataSource[] = [
   { id: "pos", system: "Point of sale", kind: "PosAdapter", state: "simulated", supplies: "Orders, modifications, discounts, refunds, voids, kitchen and bar tickets", note: "Simulated records. The website lists MICROS Simphony, Sapaad and HMS as systems Tyll can connect to." },
+  { id: "pos-lightspeed", system: "Lightspeed Restaurant K Series", kind: "PosAdapter: LightspeedKSeriesPos", state: "adapter_built", verified: false, detail: "/settings/adapters", supplies: "Bills, lines, voids, discounts, refunds, payments and room charges, per business day", note: "Built from Lightspeed's public API documentation and tested on sample responses only. Unverified until tested with sandbox credentials. The demo keeps using simulated records." },
   { id: "pms", system: "Property management system", kind: "PmsAdapter", state: "simulated", supplies: "Guest bill postings, occupancy, arrivals, room status", note: "Simulated records. The website lists OPERA and Shiji Infrasys." },
+  { id: "pms-mews", system: "Mews", kind: "PmsAdapter: MewsPms", state: "adapter_built", verified: false, detail: "/settings/adapters", supplies: "Guest bill postings, rooms in house, guests per room, check-out times", note: "Built from Mews's public Connector API documentation and tested on sample responses only. Unverified until tested with sandbox credentials. The demo keeps using simulated records." },
   { id: "res", system: "Restaurant reservations", kind: "ReservationsAdapter", state: "simulated", supplies: "Booked covers per restaurant and day", note: "Simulated records." },
   { id: "stock", system: "Stock and purchasing", kind: "InventoryAdapter", state: "simulated", supplies: "Purchase orders, deliveries, supplier invoices, counts", note: "Simulated records. Waste, counts and corrections entered in this demo are saved on the demo server." },
   { id: "ledger", system: "Accounting ledger and payroll", kind: "AccountingAdapter", state: "not_connected", supplies: "Posted labor cost, overheads, accounting profit", note: "Not connected. Labor is estimated from rostered hours and overheads are allocated, so every profit figure is labelled an estimate." },

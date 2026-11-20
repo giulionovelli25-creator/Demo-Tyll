@@ -89,7 +89,7 @@ export function activeItem(pathname: string, tab: string | null): NavItem | null
     if (exact) return exact.i;
   }
   // Pages found inside another page: All transactions, the Money Back List, the menu, the count.
-  const SUB: Record<string, string> = { "/investigations": "flags", "/menu": "revenue", "/performance": "revenue", "/finance": "deliveries", "/count": "stock" };
+  const SUB: Record<string, string> = { "/investigations": "flags", "/menu": "revenue", "/performance": "revenue", "/finance": "deliveries", "/count": "stock", "/settings": "settings" };
   const root = `/${pathname.split("/")[1]}`;
   if (SUB[root]) return ALL_ITEMS.find((i) => i.id === SUB[root]) ?? null;
   return addresses.find((x) => x.path === pathname && x.tab === null)?.i ?? null;
