@@ -4,12 +4,13 @@ import { ingredientById, itemById, outletById, propertyById, staffById } from ".
 import type { Dataset } from "../data/generate";
 import type { CountRecord, Exception, Order, RoomCharge } from "../types";
 import { addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "../util";
-import { POLICY, REMOVAL_TYPES, folioTime, type Pattern } from "./detect";
+import { POLICY, REMOVAL_TYPES, belowMenu, fmtClock, folioTime, ringFinding, type Pattern } from "./detect";
+import { cheapName, mixLabelById, mixValue } from "./till-rules";
 import { countVariance, countVarianceValue } from "./inventory";
 import { BOUGHT_USED_CAUSES, boughtQty, itemWords } from "./bought-used";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-import { orderTotals } from "./orders";
+import { lineValue, orderTotals } from "./orders";
 
 export interface StockEvidence {
   ingredientId: string;
@@ -143,6 +144,40 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
     return base;
   }
 
+  if (e.type === "cheaper_item_rung" && e.mix) {
+    const m = e.mix;
+    const l = mixLabelById[m.labelId];
+    const where = outlet?.name ?? propertyById[e.propertyId].name;
+    const premium = l.name;
+    const cheap = cheapName(l);
+    const n = m.bottles * m.perBottle;
+    const value = fmtMoney(Math.round(mixValue(m)), currency);
+    const wine = m.rule === "premium";
+    base.whatHappened = wine
+      ? `In the 7 days to ${fmtDate(m.to)}, ${m.bottles} bottles of ${l.name} went to ${where}, enough for about ${n} glasses. ${m.billed} were billed as reserve, while ${m.cheapBilled} glasses of ${cheap} were billed.`
+      : `In the 7 days to ${fmtDate(m.to)}, ${m.bottles} bottles of ${l.name} went to ${where}, enough for about ${n} single measures. The bills account for ${m.billed}, with ${m.cheapBilled} singles.`;
+    base.facts = [
+      `${m.bottles} full bottles were issued to the bar for empties handed back, against ${m.before.bottles} a week on average in the weeks before.`,
+      wine ? `Each bottle gives about ${m.perBottle} glasses of 150 ml.` : `Each bottle gives about ${m.perBottle} single measures of 50 ml. A double counts as two.`,
+      wine ? `${m.billed} glasses of ${premium} were billed, against ${m.before.billed} a week before.` : `${m.billed} measures were billed, against ${m.before.billed} a week before.`,
+      wine ? `${m.cheapBilled} glasses of ${cheap} were billed at the same bar, against ${m.before.cheapBilled} a week before.` : `${m.cheapBilled} singles were billed, against ${m.before.cheapBilled} a week before.`,
+      `That leaves about ${m.gap} ${l.unit} the bills do not account for, worth about ${value} at the ${fmtMoney(m.priceGap, currency)} difference per serve. An estimate.`,
+    ];
+    base.possibleCauses = wine
+      ? [`${premium} rung on the ${cheap} key.`, `${l.name} poured for ${cheap} when the house bottle ran out at the bar.`, "Bottles opened for a tasting or an event billed somewhere else."]
+      : ["Doubles rung on the single key.", "Measures poured by hand, larger than the standard.", "Gin used for cocktails rung on another key."];
+    base.recommended = [
+      "Count the open and full bottles at the bar, to confirm the week.",
+      wine ? `Ask the bar team which key they use for ${premium}.` : "Ask the bar team how they ring a double.",
+      "Check whether any bottles went to an event or a tasting.",
+      "If the bills were right, close as a legitimate correction. If not, record the amount as a loss.",
+    ];
+    base.message = wine
+      ? `${m.bottles} bottles of ${l.name} went to the bar in the 7 days to ${fmtDate(m.to)}, enough for about ${n} glasses, and ${m.billed} were billed as reserve. The ${m.gap} glasses not billed as reserve are about ${value} at the difference to ${cheap}, an estimate. Please count the bar's bottles and check which key the team uses for the reserve.`
+      : `${m.bottles} bottles of ${l.name} went to the bar in the 7 days to ${fmtDate(m.to)}, about ${n} single measures, and the bills account for ${m.billed}. The ${m.gap} measures not billed are about ${value} if they were doubles rung as singles, an estimate. Please count the bar's bottles and check how the team rings a double.`;
+    return base;
+  }
+
   if (e.type === "stock_shortfall") {
     const count = counts.find((c) => c.id === e.countId);
     if (!count) return base;
@@ -186,6 +221,98 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
       s.variance < 0
         ? `The last count of ${g.name} at ${propertyById[e.propertyId].name} was ${fmtQty(Math.abs(s.variance), g.unit)}${g.unit === "each" ? " units" : ""} short of expected (${money(Math.abs(s.value))}). That is consistent with items leaving stock without a sale, but it cannot show that this particular item was served.`
         : `The last count of ${g.name} matched expected stock, so stock records neither support nor rule out that this item was served.`;
+  }
+
+  const opened = `Order ${order.id} opened at ${fmtTime(order.openMin)} on ${order.table.toLowerCase()} under POS login ${login(order.staffId)}, for ${order.covers} guest${order.covers === 1 ? "" : "s"}.`;
+  const paidBy = order.payment === "room" ? `charged to room ${order.room}` : `paid by ${order.payment}`;
+
+  if (e.type === "bill_reopened" && order.reopened) {
+    const r = order.reopened;
+    const drop = r.paid - t.net;
+    const taken = order.lines.filter((l) => l.state === "removed_post" && (l.removedMin ?? 0) >= r.min);
+    const what = taken.map((l) => `${l.qty} × ${itemById[l.itemId].name}`).join(" and ");
+    const after = r.min - order.closeMin;
+    base.whatHappened = `The bill was ${paidBy} at ${fmtTime(order.closeMin)} for ${money(r.paid)}, reopened ${after} minutes later and closed again at ${money(t.net)}: ${money(drop)} less than the guests paid.`;
+    base.facts = [
+      opened,
+      `${cap(paidBy)} at ${fmtTime(order.closeMin)}: ${money(r.paid)}.`,
+      `Reopened at ${fmtTime(r.min)} under POS login ${login(r.by)}.${what ? ` ${cap(what)} taken off at ${fmtTime(taken[0].removedMin ?? r.min)}.` : ""}`,
+      ...taken.filter((l) => l.completedMin !== undefined && l.completedMin <= order.closeMin).map((l) => `The kitchen display marked ${itemById[l.itemId].name} ready at ${fmtTime(l.completedMin!)}, before the guests paid.`),
+      `Closed again at ${fmtTime(r.closedMin)} for ${money(t.net)}. Reason recorded: ${r.reason ?? "none"}. Approval recorded: ${login(r.approvedBy)}.`,
+    ];
+    base.possibleCauses = [
+      "A dish was sent back after payment and taken off without asking a manager.",
+      "The bill was rung for the wrong table and corrected late.",
+      "The items were served and paid for, and then taken off the bill.",
+    ];
+    base.recommended = [
+      "Ask the manager on duty whether a dish was sent back and agreed to come off.",
+      order.payment === "cash" ? "Compare the cash count for the shift with what the guests paid, not with the bill as it is now." : "Compare the payment record with the bill as it is now.",
+      "If the change was agreed, add the approval and close as a legitimate correction. If not, record the amount as a loss.",
+    ];
+    base.message = `This bill was ${paidBy} for ${money(r.paid)} at ${fmtTime(order.closeMin)} and reopened ${after} minutes later.${what ? ` ${cap(what)} came off and` : ""} it closed again at ${money(t.net)}, with no reason or approval recorded. Please check whether the change was agreed with a manager.`;
+    return base;
+  }
+
+  if (e.type === "price_override") {
+    const line = order.lines.find((l) => l.state === "kept" && belowMenu(l) && !l.till?.approvedBy);
+    if (!line?.till) return base;
+    const item = itemById[line.itemId];
+    const how = { open_item: "an open item", misc: "the misc button", override: "a price changed by hand" }[line.till.kind];
+    const below = Math.round((1 - line.unitPrice / line.till.menuPrice) * 100);
+    base.whatHappened = `${line.qty} × ${item.name} ${line.qty === 1 ? "was" : "were"} charged at ${money(line.unitPrice)} each through ${how}. The menu price is ${money(line.till.menuPrice)}.`;
+    base.facts = [
+      opened,
+      `The ${item.station} ticket shows ${line.qty} × ${item.name}.`,
+      `Menu price ${money(line.till.menuPrice)} each. Charged ${money(line.unitPrice)} each, ${below}% below.`,
+      `Reason recorded: ${line.till.reason ?? "none"}. Approval recorded: ${login(line.till.approvedBy)}.`,
+      `The guest ${paidBy === "paid by card" || paidBy === "paid by cash" ? `paid ${money(t.net)}` : `was charged ${money(t.net)}`} at ${fmtTime(order.closeMin)}.`,
+    ];
+    base.possibleCauses = ["A price agreed with the guest at the table and not recorded.", "The item is missing from the till's menu, so it was rung by hand.", "The wrong price was typed."];
+    base.recommended = [
+      "Ask the manager on duty whether the price was agreed.",
+      "If the item is missing from the till's menu, add it so it is not rung by hand again.",
+      "If it was agreed, add the approval and close as a legitimate correction. If not, record the difference as a loss.",
+    ];
+    base.message = `${item.name} was charged at ${money(line.unitPrice)} through ${how}, ${below}% below the menu price of ${money(line.till.menuPrice)}, with no approval recorded. Please check whether the price was agreed.`;
+    return base;
+  }
+
+  if (e.type === "duplicate_ring") {
+    const ring = ringFinding(order);
+    if (!ring) return base;
+    const guests = `${order.covers} guest${order.covers === 1 ? "" : "s"}`;
+    if (ring.kind === "twice") {
+      const item = itemById[ring.second.itemId];
+      const ready = order.lines.filter((l) => l.itemId === item.id && l.state === "kept" && l.completedMin !== undefined).length;
+      base.whatHappened = `${item.name} was entered twice, ${ring.seconds} seconds apart. The bill charges for ${ring.total} and the table had ${guests}.`;
+      base.facts = [
+        opened,
+        `First entry at ${fmtClock(ring.first.enteredMin, ring.first.enteredSec)}, second at ${fmtClock(ring.second.enteredMin, ring.second.enteredSec)}.`,
+        item.station === "kitchen" ? `The kitchen display marked ${ready} of the entries ready.` : "The bar has no completion screen, so there is no record of how many were poured.",
+        `The guest ${paidBy === "paid by card" || paidBy === "paid by cash" ? "paid" : "was charged"} ${money(t.net)} at ${fmtTime(order.closeMin)}, ${money(lineValue(ring.second))} of it for the second entry.`,
+      ];
+      base.possibleCauses = ["The button was pressed twice, and the guest was charged for one too many.", "Two were ordered and entered one after the other.", "One entry was meant for another table."];
+      base.message = `${item.name} was entered twice within ${ring.seconds} seconds on a bill for ${guests}. Please check how many were served, and refund the guest if one was charged in error.`;
+    } else {
+      const l = ring.line;
+      const item = itemById[l.itemId];
+      base.whatHappened = `${l.qty} × ${item.name} were rung in one entry, on a bill for ${guests}.`;
+      base.facts = [
+        opened,
+        `${l.qty} × ${item.name} entered at ${fmtTime(l.enteredMin)} in one line, ${money(lineValue(l))}.`,
+        `The rule looks at ${POLICY.quantityMin} or more of one item at more than ${POLICY.quantityPerGuest} a guest.`,
+        `The guest ${paidBy === "paid by card" || paidBy === "paid by cash" ? "paid" : "was charged"} ${money(t.net)} at ${fmtTime(order.closeMin)}.`,
+      ];
+      base.possibleCauses = ["A quantity keyed by mistake, such as 12 for 2.", "A round for a larger party rung on this table.", "Items for another table or for staff rung here."];
+      base.message = `${l.qty} × ${item.name} were rung in one entry on a bill for ${guests}. Please check how many were served, and refund the guest if the quantity was keyed in error.`;
+    }
+    base.recommended = [
+      "Ask the team on shift how many were served.",
+      "If the guest was charged for too many, refund the difference and note it here.",
+      "If everything on the bill was served, close as a legitimate correction.",
+    ];
+    return base;
   }
 
   if (REMOVAL_TYPES.includes(e.type) && removed.length > 0) {

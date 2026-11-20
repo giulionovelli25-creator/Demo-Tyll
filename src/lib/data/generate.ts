@@ -1,8 +1,8 @@
 // Builds the simulated demo dataset. Deterministic: the same records are produced on every load.
 // Everything here is fictional and stands in for what POS, PMS and stock adapters would supply.
 import type {
-  Arrival, Attendant, CountRecord, DayItem, DayOutlet, Delivery, Exception, GuestRequest, HotelEvent, InvestigationState,
-  LiveOrder, OccupancyDay, Order, OrderLine, Outlet, ReservationDay, Room, RoomCharge, RoomStatus, Transfer, WasteLog, WasteReason,
+  Arrival, Attendant, BottleIssue, CountRecord, DayItem, DayOutlet, Delivery, Exception, GuestRequest, HotelEvent, InvestigationState,
+  LiveOrder, OccupancyDay, Order, OrderLine, Outcome, Outlet, ReservationDay, Room, RoomCharge, RoomStatus, Transfer, WasteLog, WasteReason,
 } from "../types";
 import { DATA_START, DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, eachDay, isWeekend, rng, round2, weekday, rel } from "../util";
 import { INGREDIENTS, MENU_ITEMS, OUTLETS, PROPERTIES, ingredientById, itemById, outletsOfProperty, propertyById } from "./catalog";
@@ -32,11 +32,17 @@ export interface Dataset {
   arrivals: Arrival[];
   attendants: Attendant[];
   requests: GuestRequest[];
+  /** Premium bottles issued to the bar, one for each empty handed back. Server only: the till rule check reads it. */
+  bottleIssues: BottleIssue[];
   /** Sent to the browser instead of raw order history, for Flow's delay estimates. */
   prepRatios?: Record<string, number>;
 }
 
-import { BOUGHT_STORY, HERO_EXCEPTION_ID, HERO_ORDER_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID, WAITER_STORY } from "./constants";
+import {
+  BOUGHT_STORY, HERO_EXCEPTION_ID, HERO_ORDER_ID, MIX_HISTORY, MIX_STORY, MIX_STORY_EXCEPTION_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID,
+  TILL_PRICE_ORDER_ID, TILL_RING_ORDER_ID, TILL_STORY_EXCEPTION_ID, TILL_STORY_ORDER_ID, WAITER_STORY,
+} from "./constants";
+import { MIX_LABELS, MIX_OUTLETS, detectMix, perBottle } from "../domain/till-rules";
 import { billFacts } from "../domain/waiters";
 import { shiftOf } from "../domain/pour";
 import { SCENARIOS, buildOutletStock, latestPeriods, type OutletStock } from "./outlet-stock";
@@ -240,6 +246,206 @@ function roomStoryOrder(): Order {
   };
 }
 
+/** Bills built for a story, never touched by the simulated till events below. */
+const STORY_ORDERS = new Set<string>();
+
+/**
+ * The till rule worked example (TILL_STORY_ORDER_ID): last night at Mercado a table of three paid cash at 10:07 PM. At
+ * 10:31 PM the bill was reopened under the same login, the two lamb chops came off and it closed again at 10:33 PM, with
+ * no reason and no manager's approval. The lamb chops were marked ready by the kitchen before the guests paid.
+ */
+function tillStoryOrder(): Order {
+  const t = (h: number, m: number) => h * 60 + m;
+  const date = rel(-1);
+  const line = (itemId: string, qty: number, entered: number, prep?: number): OrderLine => ({
+    itemId, qty, unitPrice: menuPriceAt(itemId, "lis-terrace", date), state: "kept", enteredMin: entered, sentMin: entered + 1, completedMin: prep === undefined ? undefined : entered + 1 + prep,
+  });
+  const lines = [line("mezze", 1, t(21, 1), 9), line("sparkling", 2, t(21, 1)), line("lambchops", 2, t(21, 14), 19), line("salmon", 1, t(21, 14), 16)];
+  const order: Order = { id: TILL_STORY_ORDER_ID, outletId: "lis-terrace", date, openMin: t(20, 58), closeMin: t(22, 7), covers: 3, staffId: "MER-S3", table: "Table 9", discountPct: 0, payment: "cash", lines };
+  const paid = orderTotals(order).net;
+  Object.assign(lines[2], { state: "removed_post", removedMin: t(22, 32), removedBy: "MER-S3" });
+  order.reopened = { min: t(22, 31), closedMin: t(22, 33), by: "MER-S3", paid };
+  return order;
+}
+
+/** Two days ago at In-Room Dining: two salmon dinners charged at a price changed by hand, well below the menu. Checked since. */
+function tillPriceOrder(): Order {
+  const t = (h: number, m: number) => h * 60 + m;
+  const o = "lis-ird";
+  const date = rel(-2);
+  const salmon = menuPriceAt("salmon", o, date);
+  return {
+    id: TILL_PRICE_ORDER_ID, outletId: o, date, openMin: t(12, 38), closeMin: t(13, 31), covers: 2, staffId: "IRD-S2", table: "Room 1608", discountPct: 0, payment: "card", room: "1608",
+    lines: [
+      { itemId: "salmon", qty: 2, unitPrice: 18, state: "kept", enteredMin: t(12, 41), sentMin: t(12, 42), completedMin: t(12, 59), till: { kind: "override", menuPrice: salmon } },
+      { itemId: "oj", qty: 2, unitPrice: menuPriceAt("oj", o, date), state: "kept", enteredMin: t(12, 41), sentMin: t(12, 42) },
+    ],
+  };
+}
+
+/** Two days ago at Bar Azulejo: twelve cappuccinos in one entry, on a bill for two guests. Checked since. */
+function tillRingOrder(): Order {
+  const t = (h: number, m: number) => h * 60 + m;
+  const o = "lis-lobby";
+  const date = rel(-2);
+  return {
+    id: TILL_RING_ORDER_ID, outletId: o, date, openMin: t(11, 18), closeMin: t(11, 52), covers: 2, staffId: "AZU-S3", table: "Table 6", discountPct: 0, payment: "card",
+    lines: [
+      { itemId: "cappuccino", qty: 12, unitPrice: menuPriceAt("cappuccino", o, date), state: "kept", enteredMin: t(11, 20), enteredSec: 14, sentMin: t(11, 21) },
+      { itemId: "cheesecake", qty: 2, unitPrice: menuPriceAt("cheesecake", o, date), state: "kept", enteredMin: t(11, 20), enteredSec: 31, sentMin: t(11, 21), completedMin: t(11, 27) },
+    ],
+  };
+}
+
+/**
+ * How often the simulated till does something the till rules look at, per bill. Most of these are ordinary (a tip added
+ * after payment, a price raised for an extra shot, two coffees for two guests rung one by one) and are never flagged; a
+ * minority break a rule. Small rates: a hotel this size sees a handful of each a month.
+ */
+export const TILL_RATES = { reopen: 0.0012, price: 0.004, splitPair: 0.01, twice: 0.0007, quantity: 0.0003 } as const;
+
+/** Items whose units feed a pinned story (Coca-Cola, Over pouring's wine and cocktails, the premium serves) are never changed in number. */
+const PINNED_UNITS = new Set(["coke", "wine", "mojito", "martini", "winepkg", "reserve", "gintonic", "gintonic2"]);
+
+/**
+ * Simulated till events on ordinary bills, from their own random stream so every bill drawn before is unchanged. Only
+ * whole, untouched bills take one (nothing removed, comped, discounted, refunded or voided, never a story bill), at most
+ * one each. Mercado's evening bills are left alone, because the drinks per guest story is built from them, and no drink
+ * at Mercado changes in number for the same reason.
+ */
+export function tillEvents(orders: Order[]): void {
+  for (const o of orders) {
+    if (STORY_ORDERS.has(o.id) || o.id === HERO_ORDER_ID || o.id === ROOM_STORY_ORDER_ID) continue;
+    if (o.voided || o.refund || o.discountPct || o.lines.some((l) => l.state !== "kept")) continue;
+    if (o.outletId === WAITER_STORY.outletId && shiftOf(o.openMin) === WAITER_STORY.shift) continue;
+    const r = rng(`till|${o.date}|${o.outletId}|${o.id.slice(-3)}`);
+    const code = OUTLETS.find((x) => x.id === o.outletId)!.code;
+    const unitSafe = (l: OrderLine) => !PINNED_UNITS.has(l.itemId) && !(o.outletId === "lis-terrace" && itemById[l.itemId].dept === "beverage");
+    let roll = r.next();
+    const take = (p: number) => { const hit = roll < p; roll -= p; return hit; };
+
+    if (take(TILL_RATES.reopen)) {
+      const paid = orderTotals(o).net;
+      const safe = o.lines.filter(unitSafe).sort((a, b) => lineValue(b) - lineValue(a));
+      const variant = r.weighted(["down", "approved", "tip"] as const, (x) => ({ down: 0.5, approved: 0.25, tip: 0.25 })[x]);
+      const min = o.closeMin + r.int(8, 45);
+      if (variant === "tip" || o.payment === "room" || o.lines.length < 2 || !safe[0]) {
+        o.reopened = { min, closedMin: min + 1, by: o.staffId, paid, change: "Tip added to the card payment" };
+        continue;
+      }
+      const l = safe[0];
+      Object.assign(l, { state: "removed_post", removedMin: min + 1, removedBy: o.staffId });
+      if (variant === "approved") Object.assign(l, { reason: r.pick(["Dish sent back, charged in error", "Charged to the wrong table"]), approvedBy: `${code}-S7` });
+      o.reopened = { min, closedMin: min + 2, by: variant === "approved" ? `${code}-S6` : o.staffId, paid, ...(variant === "approved" ? { reason: l.reason, approvedBy: l.approvedBy } : {}) };
+      continue;
+    }
+
+    if (take(TILL_RATES.price)) {
+      const l = r.pick(o.lines);
+      const menu = l.unitPrice;
+      const variant = r.weighted(["below", "approved", "small", "up"] as const, (x) => ({ below: 0.4, approved: 0.25, small: 0.15, up: 0.2 })[x]);
+      const kind = r.pick(["open_item", "misc", "override"] as const);
+      if (variant === "up") {
+        l.unitPrice = menu + r.int(1, 3);
+        l.till = { kind: "override", menuPrice: menu, reason: r.pick(["Extra shot", "Large", "Extra side"]) };
+      } else if (variant === "small") {
+        const price = Math.ceil(menu * 0.92);
+        if (price >= menu) continue;
+        l.unitPrice = price;
+        l.till = { kind, menuPrice: menu };
+      } else {
+        l.unitPrice = Math.max(1, Math.round(menu * r.pick([0.5, 0.6, 0.65, 0.7])));
+        l.till = { kind, menuPrice: menu };
+        if (variant === "approved") Object.assign(l.till, { reason: r.pick(["Dish changed at the guest's request", "Half portion"]), approvedBy: `${code}-S6` });
+      }
+      continue;
+    }
+
+    if (take(TILL_RATES.splitPair)) {
+      // Two of the same for two guests, rung one by one seconds apart: ordinary, never flagged.
+      const i = o.lines.findIndex((l) => l.qty === 2 && o.covers >= 2);
+      if (i < 0) continue;
+      const l = o.lines[i];
+      const sec = r.int(0, 50);
+      l.qty = 1;
+      l.enteredSec = sec;
+      o.lines.splice(i + 1, 0, { ...l, enteredSec: sec + r.int(2, 8) });
+      continue;
+    }
+
+    if (take(TILL_RATES.twice)) {
+      const l = o.lines.find((x) => unitSafe(x) && x.qty >= o.covers);
+      if (!l) continue;
+      const sec = r.int(0, 50);
+      l.enteredSec = sec;
+      // The second entry sends a ticket of its own; the kitchen display shows one marked ready.
+      o.lines.push({ itemId: l.itemId, qty: 1, unitPrice: l.unitPrice, state: "kept", enteredMin: l.enteredMin, enteredSec: sec + r.int(2, 8), sentMin: l.sentMin });
+      continue;
+    }
+
+    if (take(TILL_RATES.quantity)) {
+      const l = o.lines.find((x) => unitSafe(x) && x.qty === 1);
+      if (!l || o.covers > 3) continue;
+      l.qty = r.pick([10, 11, 12]);
+    }
+  }
+}
+
+/** The premium serves Bar Azulejo sells, added to bar bills that already have a drink, from their own random stream. */
+export const MIX_SALES = { reserve: 0.045, gintonic: 0.06, gintonic2: 0.018 } as const;
+
+function barMix(orders: Order[]): void {
+  for (const o of orders) {
+    if (!MIX_OUTLETS.includes(o.outletId) || STORY_ORDERS.has(o.id) || o.voided || o.refund || o.discountPct || o.reopened) continue;
+    if (!o.lines.some((l) => l.state === "kept" && itemById[l.itemId].dept === "beverage")) continue;
+    const r = rng(`mix|${o.date}|${o.outletId}|${o.id.slice(-3)}`);
+    for (const [itemId, p] of Object.entries(MIX_SALES)) {
+      if (!r.chance(p)) continue;
+      const qty = itemId === "gintonic" ? r.int(1, 2) : r.chance(0.2) ? 2 : 1;
+      const entered = Math.min(o.closeMin - 3, o.openMin + r.int(2, 30));
+      o.lines.push({ itemId, qty, unitPrice: menuPriceAt(itemId, o.outletId, o.date), state: "kept", enteredMin: entered, sentMin: entered + 1 });
+    }
+  }
+}
+
+/**
+ * Premium bottles issued to the bar: the bar hands back each empty for a full one, so a bottle is issued on the day one
+ * runs out. What is poured is what was billed, a little spillage, and the story's serves that were not billed as premium.
+ */
+function buildBottleIssues(orders: readonly Order[]): BottleIssue[] {
+  const out: BottleIssue[] = [];
+  const days = eachDay({ from: DATA_START, to: DEMO_TODAY });
+  for (const outletId of MIX_OUTLETS) {
+    const poured = new Map<string, number>();
+    for (const o of orders) {
+      if (o.outletId !== outletId || o.voided) continue;
+      for (const l of o.lines) {
+        if (l.state === "removed_pre") continue;
+        for (const m of MIX_LABELS) {
+          const units = l.itemId === m.premiumItemId ? (m.rule === "double" ? 2 : 1) : m.rule === "double" && l.itemId === m.cheapItemId ? 1 : 0;
+          if (units) poured.set(`${m.id}|${o.date}`, (poured.get(`${m.id}|${o.date}`) ?? 0) + units * l.qty);
+        }
+      }
+    }
+    for (const m of MIX_LABELS) {
+      const per = perBottle(m);
+      // The bar starts with a bottle half used.
+      let cum = per / 2;
+      for (const date of days) {
+        let units = (poured.get(`${m.id}|${date}`) ?? 0) * 1.02;
+        if (outletId === MIX_STORY.outletId && m.id === MIX_STORY.labelId && date >= rel(-MIX_STORY.days) && date <= rel(-1)) units += MIX_STORY.extraPerDay;
+        const histTo = rel(-1 - 7 * MIX_HISTORY.week);
+        if (outletId === MIX_HISTORY.outletId && m.id === MIX_HISTORY.labelId && date >= addDays(histTo, -6) && date <= histTo) units += MIX_HISTORY.extraPerDay;
+        const before = Math.floor(cum / per);
+        cum += units;
+        const bottles = Math.floor(cum / per) - before;
+        if (bottles > 0) out.push({ outletId, date, labelId: m.id, bottles });
+      }
+    }
+  }
+  return out;
+}
+
 function buildOrders(): Order[] {
   const orders: Order[] = [];
   const days = eachDay({ from: DATA_START, to: DEMO_TODAY });
@@ -259,7 +465,13 @@ function buildOrders(): Order[] {
     }
   }
   orders.push(heroOrder(), roomStoryOrder());
+  const stories = [tillStoryOrder(), tillPriceOrder(), tillRingOrder()];
+  for (const o of stories) STORY_ORDERS.add(o.id);
+  orders.push(...stories);
   waiterStory(orders);
+  // After the drinks per guest story, so the bills it moves between logins are exactly as before.
+  tillEvents(orders);
+  barMix(orders);
   return orders;
 }
 
@@ -271,7 +483,7 @@ function buildOrders(): Order[] {
  */
 export function waiterStory(orders: Order[]): void {
   const S = WAITER_STORY;
-  const clean = (o: Order) => o.id !== HERO_ORDER_ID && o.id !== ROOM_STORY_ORDER_ID && !o.voided && !o.refund && !o.discountPct && o.lines.every((l) => l.state === "kept");
+  const clean = (o: Order) => o.id !== HERO_ORDER_ID && o.id !== ROOM_STORY_ORDER_ID && !STORY_ORDERS.has(o.id) && !o.voided && !o.refund && !o.discountPct && o.lines.every((l) => l.state === "kept");
   const byDate = new Map<string, Order[]>();
   for (const o of orders) {
     if (o.outletId !== S.outletId || shiftOf(o.openMin) !== S.shift || !clean(o)) continue;
@@ -389,6 +601,52 @@ function buildRoomCharges(orders: Order[]): RoomCharge[] {
   return out.map(withFolio);
 }
 
+const OUTCOMES: readonly Outcome[] = ["legitimate", "confirmed_loss", "recovered", "inconclusive"];
+/** How the till rule cases of the past were closed: the likely outcomes and what the manager wrote. */
+const TILL_CLOSING: Partial<Record<Exception["type"], { weights: Record<Outcome, number>; text: Record<Outcome, string> }>> = {
+  bill_reopened: {
+    weights: { legitimate: 0.45, confirmed_loss: 0.35, recovered: 0.15, inconclusive: 0.05 },
+    text: {
+      legitimate: "A manager confirmed the change: the dish was sent back and had been charged in error. The approval was added afterwards.",
+      confirmed_loss: "The items taken off had been served. Recorded as a loss, and the reopen rule repeated at the shift briefing.",
+      recovered: "The guest was still in house. The items were charged to the room with the guest's agreement.",
+      inconclusive: "Nobody on shift remembered the table. Closed without a finding.",
+    },
+  },
+  price_override: {
+    weights: { legitimate: 0.5, confirmed_loss: 0.3, recovered: 0.15, inconclusive: 0.05 },
+    text: {
+      legitimate: "The manager on duty had agreed the price at the table. The approval was added afterwards.",
+      confirmed_loss: "Charged below the menu without agreement. Recorded as a loss; open prices now need a manager's code at this till.",
+      recovered: "The guest was still in house. The difference was added to the room bill with the guest's agreement.",
+      inconclusive: "No record of who agreed the price. Closed without a finding.",
+    },
+  },
+  duplicate_ring: {
+    weights: { legitimate: 0.65, confirmed_loss: 0.05, recovered: 0.2, inconclusive: 0.1 },
+    text: {
+      legitimate: "Checked with the table: everything on the bill was served.",
+      confirmed_loss: "The guest disputed the card payment and the bank returned the extra amount.",
+      recovered: "The guest had been charged for one too many. The extra was refunded before the guest left.",
+      inconclusive: "The guest had left and nobody on shift could say. Closed without a finding.",
+    },
+  },
+  cheaper_item_rung: {
+    weights: { legitimate: 0.3, confirmed_loss: 0.55, recovered: 0, inconclusive: 0.15 },
+    text: {
+      legitimate: "The bottles went to a private tasting billed on the event's account, not at the bar.",
+      confirmed_loss: "Doubles were being rung as singles on busy nights. Coached the bar team on the till keys; recorded as a loss.",
+      recovered: "",
+      inconclusive: "The bar could not account for the bottles either way. Closed without a finding, and the bar will scan its empties.",
+    },
+  },
+};
+
+const TILL_EXAMPLES: Record<string, { outcome: Outcome; note: string }> = {
+  [`EX-${TILL_PRICE_ORDER_ID}`]: { outcome: "confirmed_loss", note: "Charged below the menu without agreement. Recorded as a loss; open prices now need a manager's code at this till." },
+  [`EX-${TILL_RING_ORDER_ID}`]: { outcome: "legitimate", note: "Keyed 12 for 2. The guests were charged for two after the bar checked the tickets, and the extra was refunded before they left." },
+};
+
 function seedInvestigation(e: Exception): InvestigationState {
   const r = rng(`inv|${e.id}`);
   const code = e.outletId ? OUTLETS.find((o) => o.id === e.outletId)!.code : "";
@@ -396,8 +654,9 @@ function seedInvestigation(e: Exception): InvestigationState {
   const supervisor = code ? `${code}-S6` : "u-fc";
   const age = diffDays(DEMO_TODAY, e.date);
   const roomCharge = e.type.startsWith("room_charge");
+  const till = TILL_CLOSING[e.type];
   const closed = (): InvestigationState => {
-    const outcome = roomCharge
+    const outcome = till ? r.weighted(OUTCOMES, (x) => till.weights[x]) : roomCharge
       ? r.weighted(["recovered", "legitimate", "confirmed_loss", "inconclusive"] as const, (x) => ({ recovered: 0.7, legitimate: 0.15, confirmed_loss: 0.12, inconclusive: 0.03 })[x])
       : r.weighted(["legitimate", "confirmed_loss", "recovered", "inconclusive"] as const, (x) => ({ legitimate: 0.3, confirmed_loss: 0.14, recovered: 0.52, inconclusive: 0.04 })[x]);
     const by = r.pick([manager, supervisor]);
@@ -410,14 +669,22 @@ function seedInvestigation(e: Exception): InvestigationState {
         : roomCharge ? "Posting corrected on the guest bill before check-out." : "Guest was still in house. The item was added back and paid.",
       inconclusive: "No further records available. Closed without a finding.",
     }[outcome];
+    const said = till?.text[outcome] ?? text;
     return {
       status: "closed", assigneeId: by, deadline: addDays(e.date, 3), outcome,
       confirmedLoss: outcome === "confirmed_loss" ? e.exposure : 0,
       recovered: outcome === "recovered" ? e.exposure : 0,
-      closedAt, closedBy: by, notes: [{ at: closedAt, by, text }],
+      closedAt, closedBy: by, notes: [{ at: closedAt, by, text: said }],
     };
   };
-  if (e.id === HERO_EXCEPTION_ID || e.id === ROOM_STORY_EXCEPTION_ID) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
+  // The two checked till examples: closed yesterday by the outlet's manager, with what they found.
+  const example = TILL_EXAMPLES[e.id];
+  if (example) {
+    const by = `${code}-S7`;
+    const closedAt = addDays(e.date, 1);
+    return { status: "closed", assigneeId: by, deadline: addDays(e.date, 3), outcome: example.outcome, confirmedLoss: example.outcome === "confirmed_loss" ? e.exposure : 0, recovered: 0, closedAt, closedBy: by, notes: [{ at: closedAt, by, text: example.note }] };
+  }
+  if (e.id === HERO_EXCEPTION_ID || e.id === ROOM_STORY_EXCEPTION_ID || e.id === TILL_STORY_EXCEPTION_ID || e.id === MIX_STORY_EXCEPTION_ID) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
   if (age > 6) return closed();
   // The front office settles posting differences at the night audit, so only today's are still open. The worked example
   // survived it: nothing failed, the posting simply sat on another guest's folio.
@@ -790,7 +1057,11 @@ export function getDataset(): Dataset {
       ? { status: "assigned", assigneeId: "MER-S7", deadline: addDays(DEMO_TODAY, 2), notes: [], confirmedLoss: 0, recovered: 0 }
       : { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
   }
-  const exceptions = [...flagged, ...variances];
+  // Cheaper item rung up: a week of bottles issued against a week of sales, checked each morning for the week to yesterday.
+  const bottleIssues = buildBottleIssues(orders);
+  const mixed = detectMix(dayItems, bottleIssues, DEMO_TODAY);
+  for (const e of mixed) seedInvestigations[e.id] = seedInvestigation(e);
+  const exceptions = [...flagged, ...variances, ...mixed];
   const deliveries = buildDeliveries(dayItems);
   cached = {
     orders,
@@ -808,6 +1079,7 @@ export function getDataset(): Dataset {
     ...buildContext(dayOutlets),
     liveOrders: buildLiveOrders(),
     ...buildRooms(),
+    bottleIssues,
   };
   return cached;
 }

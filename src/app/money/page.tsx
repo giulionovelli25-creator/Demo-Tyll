@@ -14,6 +14,7 @@ import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
 import { CashUps } from "@/components/money/cash";
 import { RoomChargeCheck } from "@/components/money/room-charges";
+import { TillRuleCheck } from "@/components/money/till-rules";
 import { DrinksByWaiter } from "@/components/money/waiters";
 import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, SummaryBar, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
@@ -29,12 +30,13 @@ import { useDemo } from "@/lib/store";
 import type { ExceptionType, Order } from "@/lib/types";
 import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
 
-type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips" | "cash" | "waiters";
+type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips" | "cash" | "waiters" | "till";
 
-const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charge check", tips: "Tips (preview)", cash: "Cash on hand against cash sales", waiters: "Drinks per guest by waiter" };
+const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charge check", tips: "Tips (preview)", cash: "Cash on hand against cash sales", waiters: "Drinks per guest by waiter", till: "Till rule check" };
 const SUB_QUESTION: Partial<Record<Tab, [question: string, lead: string]>> = {
   cash: ["Does the cash in the drawer match the cash the till took?", "Per outlet and shift. Simulated data."],
   waiters: ["Who needs coaching, and where are drinks going missing?", "Each waiter against colleagues at the same outlet on the same shift, so a busy night counts for no one. A low figure is a prompt to coach, not proof. Simulated data."],
+  till: ["Did the till charge what was served?", "Bills reopened after payment, cheaper items rung up, open items and prices set by hand, and items rung twice. A flag is a prompt to check, not proof. Simulated data."],
   rooms: ["Did every room charge reach the guest's bill?", "Each bill signed to a room, and each minibar, spa and laundry charge, matched with the guest folio in the PMS. A difference is a prompt to check, not proof. Simulated data."],
 };
 const RevenueProfitChart = dynamic(() => import("@/components/home/chart").then((m) => m.RevenueProfitChart), { ssr: false, loading: () => <div className="h-[264px] animate-pulse rounded-[var(--radius-control)] bg-mist" /> });
@@ -48,7 +50,7 @@ function Period() {
 
 /** Revenue: today, this week and this month first. Flags, outlets and transactions are one click away. */
 export default function MoneyPage() {
-  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips", "cash", "waiters"], null);
+  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips", "cash", "waiters", "till"], null);
   const { sel, money, currency, propertyId, user } = useView();
   const ctx = useCtx();
   const router = useRouter();
@@ -98,6 +100,7 @@ export default function MoneyPage() {
         {tab === "cash" && <CashUps propertyId={propertyId ?? "lis"} />}
         {tab === "orders" && <><Period /><Orders /></>}
         {tab === "rooms" && <><Period /><RoomChargeCheck /></>}
+        {tab === "till" && <><Period /><TillRuleCheck /></>}
         {tab === "tips" && <Tips />}
         {tab === "waiters" && <DrinksByWaiter />}
       </div>
@@ -106,7 +109,7 @@ export default function MoneyPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={tab === "outlets" ? "Outlet performance" : onFlags ? "Flagged transactions" : "Revenue"} question={onFlags ? "Where is money going missing?" : tab === "outlets" ? "Which outlets are doing better or worse?" : "How much did we make?"} lead={onFlags ? "Voids, refunds, discounts, items removed from bills and room charges that broke a rule. A flag is a prompt to check, not a finding. Simulated data." : "Last 7 days against the 7 before. Profit is an estimate. Simulated data."} />
+      <PageHeader title={tab === "outlets" ? "Outlet performance" : onFlags ? "Flagged transactions" : "Revenue"} question={onFlags ? "Where is money going missing?" : tab === "outlets" ? "Which outlets are doing better or worse?" : "How much did we make?"} lead={onFlags ? "Voids, refunds, discounts, items removed from bills, bills changed at the till and room charges that broke a rule. A flag is a prompt to check, not a finding. Simulated data." : "Last 7 days against the 7 before. Profit is an estimate. Simulated data."} />
       {onFlags ? (
         <SummaryBar
           items={[
@@ -142,9 +145,10 @@ export default function MoneyPage() {
       )}
       {onFlags ? (
         <>
-          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds, removed items and room charges" summary={`${flags.length} ${flags.length === 1 ? "flag" : "flags"}, ${money(flagValue)} at risk`}>
+          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds, removed items, till rules and room charges" summary={`${flags.length} ${flags.length === 1 ? "flag" : "flags"}, ${money(flagValue)} at risk`}>
             <Mistakes />
           </Section>
+          {can(user, "till.view") && <SectionLink href="/money?tab=till" title="Till rule check" summary="Bills reopened after payment, cheaper items rung up, open items and prices set by hand, and items rung twice." />}
           <SectionLink href="/money?tab=cash" title="Cash on hand against cash sales" summary="Each outlet's drawer at the end of the shift against the bills paid in cash. Card payments are reconciled by the payment provider." />
           <SectionLink href="/money?tab=rooms" title="Room charge check" summary="Each bill signed to a room against the guest folio: missing, a different amount, the wrong room or after check-out." />
         </>
@@ -236,6 +240,10 @@ function Mistakes() {
             <li>Refunds above {Math.round(POLICY.refundMaxShare * 100)}% of a bill, late, or unexplained.</li>
             <li>Whole orders cancelled after they were sent to the kitchen or bar.</li>
             <li>Room charges missing from the guest bill, posted more than once, for a different amount, to the wrong room or after check-out.</li>
+            <li>Bills reopened after payment and closed lower, with no manager&rsquo;s approval.</li>
+            <li>Premium bottles going out faster than they are billed while the cheaper serve is billed, such as house wine for the reserve red or singles for doubles. An estimate.</li>
+            <li>Open items, the misc button and prices changed by hand, more than {Math.round(POLICY.priceBelowShare * 100)}% below the menu price, with no approval.</li>
+            <li>The same item rung twice within {POLICY.duplicateSeconds} seconds, or {POLICY.quantityMin} or more of one item at more than {POLICY.quantityPerGuest} a guest.</li>
             <li>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use, and {money(BOUGHT_USED_RULES.minValue)} beyond the last delivery, which is the amount at risk. An estimate until a count.</li>
           </ul>
         </Panel>
@@ -276,7 +284,7 @@ function Mistakes() {
               <tbody>
                 {[...inPeriod].sort((a, b) => Number(a.status === "closed") - Number(b.status === "closed") || toDisplay(b.propertyId, b.exposure) - toDisplay(a.propertyId, a.exposure)).slice(0, 8).map((i) => (
                   <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
-                    <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}{i.basis === "estimate" ? ", estimate until a stock take confirms it" : i.basis === "confirmed" ? ", confirmed by a stock take" : ""}</span>{i.comparedWith && <span className="mt-0.5 line-clamp-2 block max-w-[460px] text-xs text-graphite">{i.comparedWith}</span>}</Td>
+                    <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]}{i.type === "cheaper_item_rung" ? ", an estimate from bottles issued" : i.basis === "estimate" ? ", estimate until a stock take confirms it" : i.basis === "confirmed" ? ", confirmed by a stock take" : ""}</span>{i.comparedWith && <span className="mt-0.5 line-clamp-2 block max-w-[460px] text-xs text-graphite">{i.comparedWith}</span>}</Td>
                     <Td>{i.outletId ? outletLabel(i.outletId) : (() => {
                       // Minibar, spa and laundry belong to the hotel, not an outlet: name the source, as the room charge check does.
                       const charge = i.chargeId ? ctx.data.chargesById.get(i.chargeId) : undefined;

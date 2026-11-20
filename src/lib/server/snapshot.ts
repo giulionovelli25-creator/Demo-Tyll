@@ -14,7 +14,7 @@ import { boughtUsedCases } from "./bought-used";
 import type { Exception } from "../types";
 
 /** The dataset as sent to the browser: no orders (fetched one by one) and no lookup maps. */
-export type Snapshot = Omit<Dataset, "orders" | "ordersById" | "chargesById"> & { prepRatios: Record<string, number> };
+export type Snapshot = Omit<Dataset, "orders" | "ordersById" | "chargesById" | "bottleIssues"> & { prepRatios: Record<string, number> };
 
 const cache = new Map<string, Snapshot>();
 

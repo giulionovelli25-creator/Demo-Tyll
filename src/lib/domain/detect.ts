@@ -1,9 +1,10 @@
 // Rule-based detection of unusual restaurant transactions and room-charge postings.
 // Every rule reads recorded facts only. Nothing here decides intent or blame.
 import { itemById, outletById, propertyById } from "../data/catalog";
-import type { Exception, ExceptionType, Order, RoomCharge } from "../types";
+import type { Exception, ExceptionType, Order, OrderLine, RoomCharge } from "../types";
 import { addDays, fmtDate, fmtMoney, fmtTime, round2 } from "../util";
-import { lineValue, orderTotals } from "./orders";
+import { PRICE_BELOW_SHARE, belowMenu, fmtClock, TILL_PRICE_WORDS, lineValue, orderTotals } from "./orders";
+export { belowMenu, fmtClock, TILL_PRICE_WORDS };
 
 /** Thresholds a hotel would agree with Tyll during onboarding. */
 export const POLICY = {
@@ -15,6 +16,15 @@ export const POLICY = {
   patternWindowDays: 14,
   patternMinCases: 5,
   patternMinShare: 0.25,
+  /** Till rules (overnight feature 5). A reopened bill whose total fell by more than this, with no manager's approval. */
+  reopenMinDrop: 0.5,
+  /** An open item, misc line or price changed by hand more than this share below the menu price, with no approval. */
+  priceBelowShare: PRICE_BELOW_SHARE,
+  /** The same item entered twice within this many seconds, with more of it on the bill than guests at the table. */
+  duplicateSeconds: 10,
+  /** A quantity far above normal: at least this many of one item on one line, and more than `quantityPerGuest` a guest. */
+  quantityMin: 6,
+  quantityPerGuest: 3,
 };
 
 export const TYPE_LABEL: Record<ExceptionType, string> = {
@@ -33,10 +43,44 @@ export const TYPE_LABEL: Record<ExceptionType, string> = {
   stock_shortfall: "Stock shortfall",
   usage_variance: "Usage above sales",
   bought_not_used: "Bought more than used",
+  bill_reopened: "Bill reopened after payment",
+  cheaper_item_rung: "Cheaper item rung up",
+  price_override: "Open item or price set by hand",
+  duplicate_ring: "Rung twice or unusual quantity",
 };
 
 export const REMOVAL_TYPES: ExceptionType[] = ["removed_after_dispatch", "prepared_not_charged", "bill_mismatch"];
 export const ROOM_TYPES: ExceptionType[] = ["room_charge_missing", "room_charge_duplicate", "room_charge_incorrect", "room_charge_wrong_room", "room_charge_after_checkout"];
+/** The till rules: how bills were rung and changed at the till. Shown together on the till rule check (`/money?tab=till`). */
+export const TILL_TYPES: ExceptionType[] = ["bill_reopened", "cheaper_item_rung", "price_override", "duplicate_ring"];
+
+/** The till moment of a line, in seconds, when the till recorded seconds. */
+const enteredAt = (l: OrderLine) => (l.enteredSec === undefined ? undefined : l.enteredMin * 60 + l.enteredSec);
+
+export type RingFinding =
+  | { kind: "twice"; first: OrderLine; second: OrderLine; seconds: number; total: number }
+  | { kind: "quantity"; line: OrderLine };
+
+/**
+ * The duplicate and quantity rule on one bill. Twice: the same item entered twice within `duplicateSeconds`, both still on
+ * the bill, with more of it on the bill than guests at the table (two coffees for two guests rung one by one are normal).
+ * Quantity: one line of at least `quantityMin`, more than `quantityPerGuest` a guest. The first that applies wins.
+ */
+export function ringFinding(o: Order): RingFinding | null {
+  const kept = o.lines.filter((l) => l.state === "kept");
+  for (let i = 0; i < kept.length; i++) {
+    for (let j = i + 1; j < kept.length; j++) {
+      const [a, b] = [kept[i], kept[j]];
+      const [ta, tb] = [enteredAt(a), enteredAt(b)];
+      if (a.itemId !== b.itemId || ta === undefined || tb === undefined) continue;
+      const seconds = Math.abs(tb - ta);
+      const total = kept.filter((l) => l.itemId === a.itemId).reduce((s, l) => s + l.qty, 0);
+      if (seconds <= POLICY.duplicateSeconds && total > o.covers) return ta <= tb ? { kind: "twice", first: a, second: b, seconds, total } : { kind: "twice", first: b, second: a, seconds, total };
+    }
+  }
+  const big = kept.find((l) => l.qty >= POLICY.quantityMin && l.qty > POLICY.quantityPerGuest * o.covers);
+  return big ? { kind: "quantity", line: big } : null;
+}
 
 /**
  * Flags raised on a day of their own. A 30 day bought against used check did not happen on a day and is raised again
@@ -65,6 +109,22 @@ export function detectOrderException(o: Order): Exception | null {
         comparedWith: `Compared with the void rule: an order voided after items were sent needs a reason and a manager's approval. This void: ${yes(o.voided.reason, "reason")}, ${yes(o.voided.approvedBy, "approval")}.` };
     }
     return null;
+  }
+
+  // A bill reopened after payment and closed again lower, with no manager's approval. Checked before removals: the lines
+  // taken off after payment are the change, and this rule says so.
+  if (o.reopened) {
+    const r = o.reopened;
+    const drop = round2(r.paid - t.net);
+    if (drop > POLICY.reopenMinDrop && !r.approvedBy) {
+      const cash = (n: number) => fmtMoney(n, propertyById[propertyId].currency, { decimals: n % 1 !== 0 });
+      const after = r.min - o.closeMin;
+      return {
+        ...base, type: "bill_reopened", staffId: r.by, min: r.min, exposure: drop,
+        headline: `Bill reopened ${after} min after payment and closed ${cash(drop)} lower`,
+        comparedWith: `Compared with the reopen rule: a bill changed after payment so the total goes down needs a manager's approval. This bill: paid ${cash(r.paid)} by ${o.payment} at ${fmtTime(o.closeMin)}, reopened at ${fmtTime(r.min)}, closed again at ${cash(t.net)} at ${fmtTime(r.closedMin)}, ${yes(r.reason, "reason")}, ${yes(r.approvedBy, "approval")}.`,
+      };
+    }
   }
 
   const flagged = o.lines.map((l) => l.state === "removed_post" && !l.approvedBy);
@@ -132,6 +192,43 @@ export function detectOrderException(o: Order): Exception | null {
       exposure: t.comps,
       headline: t.comps > POLICY.compMaxValue ? "Complimentary items above the agreed limit" : "Complimentary item with no reason or approval recorded",
       comparedWith: `Compared with the comp rule: up to ${money(POLICY.compMaxValue)} an order, each item with a reason and an approval. This order: ${money(t.comps)} complimentary, ${comped.filter((l) => !l.reason || !l.approvedBy).length} of ${comped.length} without a reason or approval.`,
+    };
+  }
+
+  // Open items, the misc button and prices changed by hand, charged well below the menu price of the item on the ticket.
+  const cheap = o.lines.filter((l) => l.state === "kept" && belowMenu(l) && !l.till!.approvedBy);
+  if (cheap.length > 0) {
+    const price = (n: number) => fmtMoney(n, propertyById[propertyId].currency, { decimals: n % 1 !== 0 });
+    const first = cheap[0];
+    const till = first.till!;
+    const item = itemById[first.itemId];
+    const below = Math.round((1 - first.unitPrice / till.menuPrice) * 100);
+    return {
+      ...base, type: "price_override", min: first.enteredMin, exposure: round2(cheap.reduce((s, l) => s + (l.till!.menuPrice - l.unitPrice) * l.qty, 0)),
+      headline: `${item.name} ${TILL_PRICE_WORDS[till.kind]} at ${price(first.unitPrice)}, menu price ${price(till.menuPrice)}`,
+      comparedWith: `Compared with the menu: the ${item.station} ticket shows ${first.qty} × ${item.name} at ${price(till.menuPrice)} each, and the bill charged ${price(first.unitPrice)} each, ${below}% below. A price set at the till more than ${Math.round(POLICY.priceBelowShare * 100)}% below the menu needs a manager's approval. This line: ${yes(till.reason, "reason")}, ${yes(till.approvedBy, "approval")}.`,
+    };
+  }
+
+  // The same item rung twice within seconds, or a quantity far above normal.
+  const ring = ringFinding(o);
+  if (ring) {
+    const price = (n: number) => fmtMoney(n, propertyById[propertyId].currency, { decimals: n % 1 !== 0 });
+    const guests = `${o.covers} ${o.covers === 1 ? "guest" : "guests"}`;
+    if (ring.kind === "twice") {
+      const name = itemById[ring.second.itemId].name;
+      return {
+        ...base, type: "duplicate_ring", min: ring.second.enteredMin, exposure: lineValue(ring.second),
+        headline: `${name} rung twice ${ring.seconds} seconds apart, ${ring.total} on the bill for ${guests}`,
+        comparedWith: `Compared with the duplicate rule: the same item entered twice within ${POLICY.duplicateSeconds} seconds, with more of it on the bill than guests at the table. This bill: ${name} at ${fmtClock(ring.first.enteredMin, ring.first.enteredSec)} and ${fmtClock(ring.second.enteredMin, ring.second.enteredSec)}, ${ring.total} for ${guests}, ${price(lineValue(ring.second))} on the second entry.`,
+      };
+    }
+    const l = ring.line;
+    const name = itemById[l.itemId].name;
+    return {
+      ...base, type: "duplicate_ring", min: l.enteredMin, exposure: round2(Math.max(0, l.qty - o.covers) * l.unitPrice),
+      headline: `${l.qty} × ${name} on one bill for ${guests}`,
+      comparedWith: `Compared with the quantity rule: at least ${POLICY.quantityMin} of one item and more than ${POLICY.quantityPerGuest} a guest is far above normal. This bill: ${l.qty} × ${name} in one entry at ${fmtTime(l.enteredMin)}, for ${guests}. The value involved is everything beyond one a guest, ${price(Math.max(0, l.qty - o.covers) * l.unitPrice)}.`,
     };
   }
   return null;

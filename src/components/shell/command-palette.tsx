@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/components/ui";
 import { api } from "@/lib/api";
-import { MENU_ITEMS, PROPERTIES, outletById, outletLabel } from "@/lib/data/catalog";
+import { MENU_ITEMS, PROPERTIES, outletById, outletSells, outletLabel } from "@/lib/data/catalog";
 import { MODULE_PATH, allowedOutlets, allowedProperties, can, canOpen, modulesFor, type ModuleId, type Permission } from "@/lib/domain/access";
 import { useInvestigations } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
@@ -81,7 +81,7 @@ export function CommandPalette({ user, pages, onClose }: { user: User; pages: Pa
     }
     if (canOpen(user, "overview")) {
       for (const it of MENU_ITEMS) {
-        if (it.name.toLowerCase().includes(term) && outlets.some((id) => outletById[id].menu.some((m) => m.itemId === it.id))) out.push({ group: "Menu items", label: it.name, detail: it.category, href: `/menu/${it.id}` });
+        if (it.name.toLowerCase().includes(term) && outlets.some((id) => outletSells(id, it.id))) out.push({ group: "Menu items", label: it.name, detail: it.category, href: `/menu/${it.id}` });
       }
     }
     if (canOpen(user, "investigations")) {

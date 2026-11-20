@@ -31,6 +31,8 @@ export interface Outlet {
   code: string;
   priceFactor: number;
   menu: OutletMenuEntry[];
+  /** Items sold beyond the weighted menu: added to bills after they are drawn (Bar Azulejo's premium serves), so the draws stay as they were. */
+  sells?: string[];
   baseOrders: number;
   linesPerOrder: number;
   openMin: number;
@@ -116,6 +118,34 @@ export interface OrderLine {
   removedBy?: string;
   reason?: string;
   approvedBy?: string;
+  /** Seconds into `enteredMin` when the till records them, so two entries seconds apart can be told from a second round. */
+  enteredSec?: number;
+  /** Set when the price on the bill was not the menu price: an open item, the misc button or a price changed by hand. */
+  till?: TillPrice;
+}
+
+/** How a line's price was set at the till when it was not taken from the menu. `unitPrice` on the line is what was charged. */
+export interface TillPrice {
+  kind: "open_item" | "misc" | "override";
+  /** The menu price of the item on the kitchen or bar ticket, per unit, on the day. */
+  menuPrice: number;
+  reason?: string;
+  approvedBy?: string;
+}
+
+/** A bill reopened after it was paid, changed and closed again. Lines taken off are `removed_post` with `removedMin` after `closeMin`. */
+export interface BillReopen {
+  /** When it was reopened and closed again, in minutes from the start of the day. `closeMin` on the order is the first payment. */
+  min: number;
+  closedMin: number;
+  /** The POS login that reopened it. */
+  by: string;
+  /** What the guest paid the first time. The order's totals give what the bill says now. */
+  paid: number;
+  /** What was done, in words, when the till recorded it: "tip added", "two lamb chops taken off". */
+  change?: string;
+  reason?: string;
+  approvedBy?: string;
 }
 
 export interface Order {
@@ -135,6 +165,17 @@ export interface Order {
   voided?: { min: number; reason?: string; approvedBy?: string };
   payment: "card" | "cash" | "room";
   room?: string;
+  /** The bill was reopened after payment and closed again. */
+  reopened?: BillReopen;
+}
+
+/** Bottles issued to a bar from the cellar, one for each empty handed back (simulated). Feeds the cheaper item rule. */
+export interface BottleIssue {
+  outletId: string;
+  date: string;
+  /** A premium label in `MIX_LABELS` (lib/domain/till-rules.ts). */
+  labelId: string;
+  bottles: number;
 }
 
 export interface OrderTotals {
@@ -212,7 +253,11 @@ export type ExceptionType =
   | "room_charge_after_checkout"
   | "stock_shortfall"
   | "usage_variance"
-  | "bought_not_used";
+  | "bought_not_used"
+  | "bill_reopened"
+  | "cheaper_item_rung"
+  | "price_override"
+  | "duplicate_ring";
 
 export interface Exception {
   id: string;
@@ -238,6 +283,34 @@ export interface Exception {
   basis?: "estimate" | "confirmed";
   /** For bought against used: the figures of the 30 day check that raised the flag. */
   boughtUsed?: BoughtUsedEvidence;
+  /** For a cheaper item rung up: the week of bottles issued against what was billed. */
+  mix?: MixEvidence;
+}
+
+/** A week of premium bottles issued to a bar against the premium serves billed, and the cheaper serve billed beside them. */
+export interface MixEvidence {
+  /** The closed days compared, inclusive. */
+  from: string;
+  to: string;
+  /** "premium": a premium bottle against the house wine. "double": doubles against singles of the same bottle. */
+  rule: "premium" | "double";
+  labelId: string;
+  /** The serve Tyll expected to see billed, and the cheaper one it found. */
+  premiumItemId: string;
+  cheapItemId: string;
+  /** Serves in a bottle: glasses for wine, single measures for spirits. */
+  perBottle: number;
+  bottles: number;
+  /** Premium serves billed in the week, in the same units as `perBottle`. */
+  billed: number;
+  /** Serves the bottles give that the premium sales do not account for. */
+  gap: number;
+  /** The cheaper serve billed in the same week. */
+  cheapBilled: number;
+  /** Menu price difference per serve. */
+  priceGap: number;
+  /** Weekly average of the four weeks before. */
+  before: { bottles: number; billed: number; cheapBilled: number };
 }
 
 /** What a manager found when they checked a bought against used gap. */

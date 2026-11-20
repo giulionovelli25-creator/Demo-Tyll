@@ -9,6 +9,21 @@
 "({0} calici a bottiglia)",
 "({0} كؤوس لكل زجاجة)"
 ],
+", an estimate": [
+", eine Schätzung",
+", una stima",
+"، وهذا تقدير"
+],
+", an estimate from bottles issued": [
+", eine Schätzung aus ausgegebenen Flaschen",
+", una stima dalle bottiglie consegnate",
+"، تقدير من الزجاجات المصروفة"
+],
+", weekly check": [
+", wöchentliche Prüfung",
+", controllo settimanale",
+"، فحص أسبوعي"
+],
 ". Connecting a real system means writing one adapter. Screens and calculations stay as they are.": [
 ". Für ein echtes System reicht ein Adapter. Ansichten und Berechnungen bleiben gleich.",
 ". Collegare un sistema reale significa scrivere un adattatore. Schermate e calcoli restano invariati.",
@@ -24,10 +39,25 @@
 ". Costo {0}. Consumo fino al {1}: {2}.",
 ". التكلفة {0}. الاستخدام حتى {1}: {2}."
 ],
+"A POS login shows which account was signed in to the terminal. It does not establish who made the change, or why.": [
+"Ein Kassen-Login zeigt, welches Konto am Terminal angemeldet war. Es belegt nicht, wer die Änderung vorgenommen hat oder warum.",
+"Un accesso cassa mostra quale account era collegato al terminale. Non stabilisce chi ha fatto la modifica, né perché.",
+"يُظهر حساب نقطة البيع الحساب الذي كان مسجلًا على الجهاز. ولا يثبت من أجرى التغيير أو لماذا."
+],
+"A bill reopened after payment and closed lower, with no manager’s approval.": [
+"Eine nach der Zahlung wieder geöffnete und niedriger abgeschlossene Rechnung, ohne Freigabe eines Managers.",
+"Un conto riaperto dopo il pagamento e chiuso con importo inferiore, senza l'approvazione di un responsabile.",
+"فاتورة أُعيد فتحها بعد الدفع وأُغلقت بمبلغ أقل، دون موافقة مدير."
+],
 "A charge to a room with no matching line on the guest bill.": [
 "Eine Zimmerbelastung ohne passende Zeile auf der Gästerechnung.",
 "Un addebito in camera senza riga corrispondente sul conto dell'ospite.",
 "رسوم على غرفة دون بند مطابق في فاتورة النزيل."
+],
+"A cheaper item rung up: premium bottles going out faster than they are billed while the cheaper serve is billed, such as house wine for the reserve red or singles for doubles. At least {0} bottles and {1} of what they give, over {2} days. An estimate.": [
+"Ein günstigerer Artikel boniert: Premiumflaschen gehen schneller hinaus, als sie berechnet werden, während der günstigere Ausschank berechnet wird, etwa Hauswein statt des roten Reserva oder einfache statt doppelte. Mindestens {0} Flaschen und {1} dessen, was sie ergeben, über {2} Tage. Eine Schätzung.",
+"Un articolo più economico battuto: bottiglie premium che escono più in fretta di quanto vengano addebitate mentre si addebita la porzione più economica, come il vino della casa al posto del rosso riserva o singoli al posto dei doppi. Almeno {0} bottiglie e il {1} di ciò che danno, su {2} giorni. Una stima.",
+"تسجيل صنف أرخص: زجاجات فاخرة تخرج أسرع مما تُحسب بينما تُحسب الحصة الأرخص، مثل نبيذ البيت بدل النبيذ الأحمر المعتق أو جرعات مفردة بدل المزدوجة. على الأقل {0} زجاجتين و{1} مما تعطيه، خلال {2} أيام. وهذا تقدير."
 ],
 "A check is confirmed by someone other than the person who made it.": [
 "Eine Prüfung bestätigt jemand anderes als die Person, die sie gemacht hat.",
@@ -54,6 +84,16 @@
 "Una differenza può avere varie spiegazioni, come bevande omaggio, scarti non registrati o una consegna in ritardo. Verifica prima di concludere.",
 "قد تكون للفرق تفسيرات عدة، مثل مشروبات مجانية أو هدر غير مسجل أو توريد متأخر. تحقق قبل الاستنتاج."
 ],
+"A dish was sent back after payment and taken off without asking a manager.": [
+"Ein Gericht wurde nach der Zahlung zurückgegeben und ohne Rücksprache mit einem Manager entfernt.",
+"Un piatto è stato rimandato indietro dopo il pagamento e tolto senza chiedere a un responsabile.",
+"أُعيد طبق بعد الدفع وأُزيل دون الرجوع إلى مدير."
+],
+"A double counts as two.": [
+"Ein Doppelter zählt als zwei.",
+"Un doppio conta come due.",
+"تُحسب الجرعة المزدوجة اثنتين."
+],
 "A folio line for a different amount, beyond {0} of rounding.": [
 "Eine Foliozeile mit anderem Betrag, über {0} Rundung hinaus.",
 "Una riga del folio con importo diverso, oltre {0} di arrotondamento.",
@@ -79,6 +119,11 @@
 "Un responsabile approva il riepilogo prima di ogni pagamento.",
 "يوافق مدير على الملخص قبل أي دفع."
 ],
+"A manager confirmed the change: the dish was sent back and had been charged in error. The approval was added afterwards.": [
+"Ein Manager bestätigte die Änderung: Das Gericht wurde zurückgegeben und irrtümlich berechnet. Die Freigabe wurde nachträglich ergänzt.",
+"Un responsabile ha confermato la modifica: il piatto era stato rimandato indietro e addebitato per errore. L'approvazione è stata aggiunta dopo.",
+"أكد مدير التغيير: أُعيد الطبق وكان قد حُسب خطأً. أُضيفت الموافقة لاحقًا."
+],
 "A posting that reached the bill after the guest had checked out.": [
 "Eine Buchung, die nach dem Check-out des Gastes auf der Rechnung ankam.",
 "Un addebito arrivato sul conto dopo il check-out dell'ospite.",
@@ -89,6 +134,26 @@
 "Anteprima di una funzione prevista. Puoi provare il calcolo, ma nulla viene salvato o inviato alle paghe.",
 "معاينة لميزة مخطط لها. يمكنك تجربة الحساب هنا، لكن لا يُحفظ شيء ولا يُرسل إلى الرواتب."
 ],
+"A price agreed with the guest at the table and not recorded.": [
+"Ein am Tisch mit dem Gast vereinbarter Preis, nicht erfasst.",
+"Un prezzo concordato con l'ospite al tavolo e non registrato.",
+"سعر اتُّفق عليه مع الضيف على الطاولة ولم يُسجل."
+],
+"A price set at the till more than {0} below the menu needs a manager's approval.": [
+"Ein an der Kasse gesetzter Preis mehr als {0} unter der Karte braucht die Freigabe eines Managers.",
+"Un prezzo inserito in cassa oltre il {0} sotto il listino richiede l'approvazione di un responsabile.",
+"السعر المحدد عند الصندوق بأقل من القائمة بأكثر من {0} يحتاج إلى موافقة مدير."
+],
+"A quantity keyed by mistake, such as {0} for {1}.": [
+"Eine versehentlich eingegebene Menge, etwa {0} statt {1}.",
+"Una quantità digitata per errore, come {0} invece di {1}.",
+"كمية أُدخلت خطأً، مثل {0} بدلًا من {1}."
+],
+"A round for a larger party rung on this table.": [
+"Eine Runde für eine größere Gruppe an diesem Tisch boniert.",
+"Un giro per un gruppo più grande battuto su questo tavolo.",
+"جولة لمجموعة أكبر سُجّلت على هذه الطاولة."
+],
 "A running total, not a daily figure: bought less used for the flagged items, added up day by day at the price paid. It rises on delivery days and falls a little each day with sales. Each item's last delivery is left out, as it may still be on the shelf, so the line ends on the flags' total.": [
 "Eine laufende Summe, kein Tageswert: gekauft abzüglich verbraucht für die markierten Artikel, Tag für Tag addiert zum bezahlten Preis. Sie steigt an Liefertagen und sinkt täglich etwas mit den Verkäufen. Die letzte Lieferung jedes Artikels bleibt außen vor, da sie noch im Regal liegen kann, so endet die Linie bei der Summe der Markierungen.",
 "Un totale progressivo, non un dato giornaliero: acquistato meno usato per gli articoli segnalati, sommato giorno per giorno al prezzo pagato. Sale nei giorni di consegna e scende un po' ogni giorno con le vendite. L'ultima consegna di ogni articolo è esclusa, perché può essere ancora sullo scaffale, così la linea finisce sul totale delle segnalazioni.",
@@ -98,6 +163,21 @@
 "Ein Fehlbestand ist Ware, die ohne Verkauf, Abfalleintrag oder Umlagerung abging. Er zeigt, dass etwas ungeklärt ist, nicht was passiert ist.",
 "Un ammanco è merce uscita senza vendita, scarto registrato o trasferimento. Indica che qualcosa non è spiegato, non cosa sia successo.",
 "النقص هو مخزون خرج دون بيع أو تسجيل هدر أو تحويل. يعني أن شيئًا غير مفسر، ولا يبين ما حدث."
+],
+"A table of {0} pays {1} by card": [
+"Ein Tisch mit {0} zahlt {1} mit Karte",
+"Un tavolo di {0} paga {1} con carta",
+"طاولة من {0} أشخاص تدفع {1} بالبطاقة"
+],
+"A table of {0} pays {1} by cash": [
+"Ein Tisch mit {0} zahlt {1} bar",
+"Un tavolo di {0} paga {1} in contanti",
+"طاولة من {0} أشخاص تدفع {1} نقدًا"
+],
+"A week before": [
+"Eine Woche davor",
+"Una settimana prima",
+"أسبوعيًا من قبل"
 ],
 "A worked example of what Tyll looks for. The bill below is in last night's records.": [
 "Ein Beispiel dafür, worauf Tyll achtet. Die Rechnung unten steht in den Daten von gestern Abend.",
@@ -128,6 +208,11 @@
 "Etwa so viele Getränke pro Gast wie die Kollegen in denselben Schichten.",
 "Circa tante bevande per ospite quanto i colleghi negli stessi turni.",
 "مشروبات لكل ضيف بقدر الزملاء في الورديات نفسها تقريبًا."
+],
+"About {0} at risk, an estimate from bottles issued against what was billed.": [
+"Etwa {0} gefährdet, eine Schätzung aus ausgegebenen Flaschen im Vergleich zum Berechneten.",
+"Circa {0} a rischio, una stima dalle bottiglie consegnate rispetto a quanto addebitato.",
+"نحو {0} معرضة للخطر، تقدير من الزجاجات المصروفة مقابل ما حُسب."
 ],
 "About {0} at risk, an estimate until a count confirms it.": [
 "Etwa {0} gefährdet, eine Schätzung, bis eine Zählung sie bestätigt.",
@@ -228,6 +313,16 @@
 "Kommentar hinzufügen",
 "Aggiungi un commento",
 "أضف تعليقًا"
+],
+"Add a note": [
+"Notiz hinzufügen",
+"Aggiungi una nota",
+"إضافة ملاحظة"
+],
+"Add note": [
+"Notiz hinzufügen",
+"Aggiungi nota",
+"إضافة ملاحظة"
 ],
 "Adjustment rate by outlet": [
 "Korrekturquote nach Outlet",
@@ -374,6 +469,11 @@
 "Tutti gli addebiti camera",
 "جميع رسوم الغرف"
 ],
+"All till rules": [
+"Alle Kassenregeln",
+"Tutte le regole di cassa",
+"كل قواعد الصندوق"
+],
 "All transactions": [
 "Alle Transaktionen",
 "Tutte le transazioni",
@@ -429,6 +529,11 @@
 "Una stima, al prezzo medio delle bevande",
 "تقدير، بمتوسط سعر المشروب"
 ],
+"An estimate.": [
+"Eine Schätzung.",
+"Una stima.",
+"هذا تقدير."
+],
 "An independent security review and penetration test.": [
 "Eine unabhängige Sicherheitsprüfung und ein Penetrationstest.",
 "Una revisione di sicurezza indipendente e un penetration test.",
@@ -463,6 +568,11 @@
 "Daten übernehmen",
 "Applica date",
 "طبّق التواريخ"
+],
+"Approval recorded:": [
+"Erfasste Freigabe:",
+"Approvazione registrata:",
+"الموافقة المسجلة:"
 ],
 "Approvals": [
 "Freigaben",
@@ -539,15 +649,40 @@
 "Chiedi ai team del bar e dei banchetti, poi aggiungi la ricetta o registra l'uso.",
 "اسأل فريقي البار والولائم، ثم أضف الوصفة أو سجّل الاستخدام."
 ],
+"Ask the bar team how they ring a double.": [
+"Fragen Sie das Barteam, wie es einen Doppelten boniert.",
+"Chiedete al team del bar come batte un doppio.",
+"اسأل فريق البار عن طريقة تسجيل الجرعة المزدوجة."
+],
+"Ask the bar team which key they use for {0}.": [
+"Fragen Sie das Barteam, welche Taste es für {0} verwendet.",
+"Chiedete al team del bar quale tasto usa per {0}.",
+"اسأل فريق البار عن الزر الذي يستخدمه لـ {0}."
+],
 "Ask the front office to charge the card on file as a late charge, if the hotel's terms allow it.": [
 "Den Empfang bitten, die hinterlegte Karte als Nachbelastung zu belasten, wenn die Bedingungen des Hotels es erlauben.",
 "Chiedere al ricevimento di addebitare la carta registrata come addebito tardivo, se le condizioni dell'hotel lo consentono.",
 "اطلب من الاستقبال تحصيل المبلغ من البطاقة المسجلة كرسوم متأخرة، إن سمحت شروط الفندق."
 ],
+"Ask the manager on duty whether a dish was sent back and agreed to come off.": [
+"Fragen Sie den diensthabenden Manager, ob ein Gericht zurückgegeben und das Entfernen vereinbart wurde.",
+"Chiedete al responsabile di turno se un piatto è stato rimandato indietro e se è stato concordato di toglierlo.",
+"اسأل المدير المناوب عما إذا أُعيد طبق واتُّفق على إزالته."
+],
+"Ask the manager on duty whether the price was agreed.": [
+"Fragen Sie den diensthabenden Manager, ob der Preis vereinbart war.",
+"Chiedete al responsabile di turno se il prezzo era stato concordato.",
+"اسأل المدير المناوب عما إذا كان السعر متفقًا عليه."
+],
 "Ask the shift supervisors about complimentary items not entered in the till.": [
 "Fragen Sie die Schichtleitungen nach kostenlosen Artikeln, die nicht in der Kasse erfasst wurden.",
 "Chiedi ai responsabili di turno degli articoli offerti non registrati in cassa.",
 "اسأل مشرفي الورديات عن الأصناف المجانية غير المدخلة في نقطة البيع."
+],
+"Ask the team on shift how many were served.": [
+"Fragen Sie das Team der Schicht, wie viele serviert wurden.",
+"Chiedete al team di turno quanti ne sono stati serviti.",
+"اسأل فريق المناوبة عن عدد ما قُدّم."
 ],
 "Ask the team, and log it so the next check is right.": [
 "Fragen Sie das Team und erfassen Sie es, damit die nächste Prüfung stimmt.",
@@ -569,10 +704,20 @@
 "Asparagi",
 "هليون"
 ],
+"Assembled by rules, not a language model": [
+"Nach Regeln zusammengestellt, nicht von einem Sprachmodell",
+"Composta da regole, non da un modello linguistico",
+"مُجمّع بقواعد، وليس بنموذج لغوي"
+],
 "Assign investigations": [
 "Prüfungen zuweisen",
 "Assegna verifiche",
 "إسناد التحقيقات"
+],
+"Assign to": [
+"Zuweisen an",
+"Assegna a",
+"إسناد إلى"
 ],
 "Assigned": [
 "Zugewiesen",
@@ -603,6 +748,11 @@
 "Im Tempo der letzten {0} Tage. Jeder Teil ist eine Schätzung, die Annahmen stehen unten. Simulierte Daten.",
 "Al ritmo degli ultimi {0} giorni. Ogni parte è una stima e le ipotesi sono elencate. Dati simulati.",
 "بمعدل آخر {0} يومًا. كل جزء تقدير، والافتراضات مذكورة. بيانات محاكاة."
+],
+"At {0}:{1}": [
+"Um {0}:{1}",
+"Alle {0}:{1}",
+"الساعة {0}:{1}"
 ],
 "Audit trail": [
 "Prüfprotokoll",
@@ -668,6 +818,11 @@
 "Zurück zu Events und Personal",
 "Torna a Eventi e personale",
 "العودة إلى الفعاليات والموظفين"
+],
+"Back to Flagged transactions": [
+"Zurück zu Gemeldete Transaktionen",
+"Torna a Transazioni segnalate",
+"العودة إلى المعاملات المُعلَّمة"
 ],
 "Back to Log waste": [
 "Zurück zu Abfall erfassen",
@@ -884,6 +1039,66 @@
 "Oltre l'ultima consegna, una stima",
 "ما يتجاوز آخر توريد، تقدير"
 ],
+"Bill closed again": [
+"Rechnung erneut abgeschlossen",
+"Conto richiuso",
+"أُغلقت الفاتورة مجددًا"
+],
+"Bill produced": [
+"Rechnung erstellt",
+"Conto emesso",
+"أُصدرت الفاتورة"
+],
+"Bill reopened after payment": [
+"Rechnung nach Zahlung wieder geöffnet",
+"Conto riaperto dopo il pagamento",
+"فاتورة أُعيد فتحها بعد الدفع"
+],
+"Bill reopened {0} min after payment and closed {1} lower": [
+"Rechnung {0} Min. nach Zahlung wieder geöffnet und {1} niedriger abgeschlossen",
+"Conto riaperto {0} min dopo il pagamento e chiuso con {1} in meno",
+"أُعيد فتح الفاتورة بعد الدفع بـ {0} دقيقة وأُغلقت بمبلغ أقل بـ {1}"
+],
+"Billed as {0}": [
+"Berechnet als {0}",
+"Addebitato come {0}",
+"حُسب كـ {0}"
+],
+"Billed, a double as two": [
+"Berechnet, ein Doppelter als zwei",
+"Addebitato, un doppio come due",
+"المحسوب، الجرعة المزدوجة باثنتين"
+],
+"Bills checked": [
+"Geprüfte Rechnungen",
+"Conti controllati",
+"الفواتير المفحوصة"
+],
+"Bills flagged": [
+"Gemeldete Rechnungen",
+"Conti segnalati",
+"الفواتير المُشار إليها"
+],
+"Bills reopened after payment and closed lower, with no manager’s approval.": [
+"Nach der Zahlung wieder geöffnete und niedriger abgeschlossene Rechnungen, ohne Freigabe eines Managers.",
+"Conti riaperti dopo il pagamento e chiusi con importo inferiore, senza l'approvazione di un responsabile.",
+"فواتير أُعيد فتحها بعد الدفع وأُغلقت بمبلغ أقل، دون موافقة مدير."
+],
+"Bills reopened after payment, cheaper items rung up, open items and prices set by hand, and items rung twice.": [
+"Nach Zahlung wieder geöffnete Rechnungen, günstigere Artikel boniert, freie Artikel und Preise von Hand, doppelt bonierte Artikel.",
+"Conti riaperti dopo il pagamento, articoli più economici battuti, articoli aperti e prezzi inseriti a mano, articoli battuti due volte.",
+"فواتير أُعيد فتحها بعد الدفع، وأصناف أرخص سُجّلت، وأصناف مفتوحة وأسعار يدوية، وأصناف سُجّلت مرتين."
+],
+"Bills reopened after payment, cheaper items rung up, open items and prices set by hand, and items rung twice. A flag is a prompt to check, not proof. Simulated data.": [
+"Nach Zahlung wieder geöffnete Rechnungen, günstigere Artikel boniert, freie Artikel und Preise von Hand, doppelt bonierte Artikel. Ein Hinweis ist ein Anlass zur Prüfung, kein Beweis. Simulierte Daten.",
+"Conti riaperti dopo il pagamento, articoli più economici battuti, articoli aperti e prezzi inseriti a mano, articoli battuti due volte. Una segnalazione è un invito a controllare, non una prova. Dati simulati.",
+"فواتير أُعيد فتحها بعد الدفع، وأصناف أرخص سُجّلت، وأصناف مفتوحة وأسعار يدوية، وأصناف سُجّلت مرتين. الإشارة دعوة للتحقق، وليست دليلًا. بيانات محاكاة."
+],
+"Bills to check": [
+"Zu prüfende Rechnungen",
+"Conti da controllare",
+"فواتير للتحقق"
+],
 "Bills, till logins and shifts are simulated. Drinks per guest is drinks billed divided by the guests on the bill. Voided bills are left out. Drinks not sold is what colleagues’ pace on the same shifts would have sold, at the outlet’s average drink price: an estimate, not money lost.": [
 "Rechnungen, Kassenanmeldungen und Schichten sind simuliert. Getränke pro Gast sind die berechneten Getränke geteilt durch die Gäste auf der Rechnung. Stornierte Rechnungen bleiben außen vor. Nicht verkaufte Getränke sind, was das Tempo der Kollegen in denselben Schichten verkauft hätte, zum durchschnittlichen Getränkepreis des Outlets: eine Schätzung, kein verlorenes Geld.",
 "Conti, accessi alla cassa e turni sono simulati. Le bevande per ospite sono le bevande fatturate divise per gli ospiti sul conto. I conti annullati sono esclusi. Le bevande non vendute sono quelle che il ritmo dei colleghi negli stessi turni avrebbe venduto, al prezzo medio delle bevande del punto vendita: una stima, non denaro perso.",
@@ -934,6 +1149,21 @@
 "Le bottiglie vengono dalle scansioni dei vuoti a {0}, altrove sono simulate. Dati simulati.",
 "الزجاجات مأخوذة من مسح الزجاجات الفارغة في {0}، ومحاكاة في غيره. بيانات محاكاة."
 ],
+"Bottles issued": [
+"Ausgegebene Flaschen",
+"Bottiglie consegnate",
+"الزجاجات المصروفة"
+],
+"Bottles issued are the full bottles the bar takes from the cellar for each empty it hands back. Simulated, as are the bills. One open bottle can always be part used, so a gap under {0} bottles is never flagged.": [
+"Ausgegebene Flaschen sind die vollen Flaschen, die die Bar für jede zurückgegebene leere aus dem Keller nimmt. Simuliert, wie die Rechnungen. Eine offene Flasche kann immer angebrochen sein, daher wird eine Lücke unter {0} Flaschen nie gemeldet.",
+"Le bottiglie consegnate sono le bottiglie piene che il bar prende in cantina per ogni vuoto restituito. Simulate, come i conti. Una bottiglia aperta può sempre essere in parte usata, quindi uno scarto sotto le {0} bottiglie non viene mai segnalato.",
+"الزجاجات المصروفة هي الزجاجات الممتلئة التي يأخذها البار من القبو مقابل كل زجاجة فارغة يعيدها. وهي بيانات محاكاة، مثل الفواتير. قد تكون زجاجة مفتوحة مستخدمة جزئيًا دائمًا، لذا لا يُشار أبدًا إلى فرق أقل من {0} زجاجتين."
+],
+"Bottles issued to the bar": [
+"An die Bar ausgegebene Flaschen",
+"Bottiglie consegnate al bar",
+"الزجاجات المصروفة للبار"
+],
 "Bottles opened": [
 "Geöffnete Flaschen",
 "Bottiglie aperte",
@@ -943,6 +1173,11 @@
 "Geöffnete Flaschen sind simuliert. Simulierte Daten.",
 "Le bottiglie aperte sono simulate. Dati simulati.",
 "الزجاجات المفتوحة محاكاة. بيانات محاكاة."
+],
+"Bottles opened for a tasting or an event billed somewhere else.": [
+"Flaschen für eine Verkostung oder eine Veranstaltung geöffnet, die anderswo berechnet wurde.",
+"Bottiglie aperte per una degustazione o un evento addebitato altrove.",
+"زجاجات فُتحت لتذوق أو لفعالية حُسبت في مكان آخر."
 ],
 "Bought": [
 "Gekauft",
@@ -1324,6 +1559,11 @@
 "Addebitato",
 "محتسب"
 ],
+"Charged below the menu without agreement. Recorded as a loss; open prices now need a manager's code at this till.": [
+"Ohne Vereinbarung unter der Karte berechnet. Als Verlust erfasst; freie Preise brauchen an dieser Kasse jetzt einen Managercode.",
+"Addebitato sotto il listino senza accordo. Registrato come perdita; i prezzi aperti ora richiedono il codice di un responsabile su questa cassa.",
+"حُسب بأقل من القائمة دون اتفاق. سُجّل كخسارة؛ وتحتاج الأسعار المفتوحة الآن إلى رمز مدير على هذا الصندوق."
+],
 "Charged to room {0}": [
 "Auf Zimmer {0} belastet",
 "Addebitato alla camera {0}",
@@ -1333,6 +1573,16 @@
 "Als Nachbelastung auf die hinterlegte Karte gebucht.",
 "Addebitato sulla carta registrata come addebito tardivo.",
 "حُصّلت من البطاقة المسجلة كرسوم متأخرة."
+],
+"Charged to the wrong table": [
+"Auf den falschen Tisch gebucht",
+"Addebitato al tavolo sbagliato",
+"حُسب على طاولة خاطئة"
+],
+"Charged {0} each, {1} below.": [
+"Berechnet je {0}, {1} darunter.",
+"Addebitato {0} l'uno, il {1} in meno.",
+"حُسب {0} للواحد، أي أقل بنسبة {1}."
 ],
 "Charges": [
 "Belastungen",
@@ -1363,6 +1613,21 @@
 "Belastungen auf Gästezimmer",
 "Addebiti alle camere",
 "الرسوم على غرف الضيوف"
+],
+"Cheaper item rung up": [
+"Günstigerer Artikel boniert",
+"Battuto un articolo più economico",
+"تسجيل صنف أرخص"
+],
+"Cheaper item rung up, an estimate": [
+"Günstigerer Artikel boniert, eine Schätzung",
+"Battuto un articolo più economico, una stima",
+"تسجيل صنف أرخص، وهذا تقدير"
+],
+"Cheaper item rung up, an estimate from bottles issued": [
+"Günstigerer Artikel boniert, eine Schätzung aus ausgegebenen Flaschen",
+"Battuto un articolo più economico, una stima dalle bottiglie consegnate",
+"تسجيل صنف أرخص، تقدير من الزجاجات المصروفة"
 ],
 "Check": [
 "Prüfen",
@@ -1434,6 +1699,11 @@
 "Controlla le bolle di uscita di magazzino del periodo.",
 "تحقق من إشعارات الصرف من المخزن لهذه الفترة."
 ],
+"Check whether any bottles went to an event or a tasting.": [
+"Prüfen Sie, ob Flaschen an eine Veranstaltung oder Verkostung gingen.",
+"Verificate se alcune bottiglie sono andate a un evento o a una degustazione.",
+"تحقق مما إذا ذهبت أي زجاجات إلى فعالية أو تذوق."
+],
 "Check {0} supplier invoices against what was delivered": [
 "{0} Lieferantenrechnungen mit den Lieferungen abgleichen",
 "Confronta {0} fatture fornitore con quanto consegnato",
@@ -1453,6 +1723,11 @@
 "Früher geprüft von {0}, {1}, als die Lücke {2} betrug.",
 "Controllato prima da {0}, {1}, quando il divario era di {2}.",
 "تحقّق منه {0} سابقًا، {1}، حين كان الفرق {2}."
+],
+"Checked with the table: everything on the bill was served.": [
+"Mit dem Tisch geprüft: Alles auf der Rechnung wurde serviert.",
+"Verificato con il tavolo: tutto ciò che è sul conto è stato servito.",
+"تم التحقق مع الطاولة: قُدّم كل ما في الفاتورة."
 ],
 "Checking the counts.": [
 "Zählungen werden geprüft.",
@@ -1504,6 +1779,11 @@
 "Tortino al cioccolato",
 "فوندان شوكولاتة"
 ],
+"Choose a person": [
+"Person wählen",
+"Scegli una persona",
+"اختر شخصًا"
+],
 "Choose an item": [
 "Artikel wählen",
 "Scegli un articolo",
@@ -1554,6 +1834,11 @@
 "Chiudi l'offerta del percorso guidato",
 "أغلق عرض الجولة الإرشادية"
 ],
+"Close the investigation": [
+"Untersuchung abschließen",
+"Chiudi l'indagine",
+"إغلاق التحقيق"
+],
 "Close the order": [
 "Bestellung abschließen",
 "Chiudi l'ordine",
@@ -1564,10 +1849,25 @@
 "Chiuso",
 "مغلق"
 ],
+"Closed again at {0}": [
+"Erneut abgeschlossen mit {0}",
+"Richiuso a {0}",
+"أُغلقت مجددًا بمبلغ {0}"
+],
+"Closed again at {0} for {1}.": [
+"Um {0} mit {1} erneut abgeschlossen.",
+"Richiuso alle {0} per {1}.",
+"أُغلقت مجددًا الساعة {0} بمبلغ {1}."
+],
 "Closed as legitimate": [
 "Als legitim geschlossen",
 "Chiuso come legittimo",
 "أُغلق كمشروع"
+],
+"Closed {0} by {1}": [
+"Geschlossen am {0} von {1}",
+"Chiuso il {0} da {1}",
+"أُغلق في {0} بواسطة {1}"
 ],
 "Closing count": [
 "Endzählung",
@@ -1694,20 +1994,55 @@
 "Commento:",
 "تعليق:"
 ],
+"Compare the cash count for the shift with what the guests paid, not with the bill as it is now.": [
+"Vergleichen Sie die Kassenzählung der Schicht mit dem, was die Gäste bezahlt haben, nicht mit der Rechnung in ihrem jetzigen Stand.",
+"Confrontate il conteggio di cassa del turno con quanto pagato dagli ospiti, non con il conto com'è ora.",
+"قارن عدّ النقد للمناوبة بما دفعه الضيوف، لا بالفاتورة كما هي الآن."
+],
 "Compare the delivery notes with what was received, on Deliveries and invoices.": [
 "Vergleichen Sie die Lieferscheine mit dem Erhaltenen unter Lieferungen und Rechnungen.",
 "Confronta le bolle di consegna con quanto ricevuto, in Consegne e fatture.",
 "قارن إشعارات التسليم بما استُلم، في التوريدات والفواتير."
+],
+"Compare the payment record with the bill as it is now.": [
+"Vergleichen Sie den Zahlungsbeleg mit der Rechnung in ihrem jetzigen Stand.",
+"Confrontate la registrazione del pagamento con il conto com'è ora.",
+"قارن سجل الدفع بالفاتورة كما هي الآن."
 ],
 "Compared with": [
 "Verglichen mit",
 "Confrontato con",
 "مقارنةً بـ"
 ],
+"Compared with the bottles issued to the bar:": [
+"Verglichen mit den an die Bar ausgegebenen Flaschen:",
+"Confrontato con le bottiglie consegnate al bar:",
+"مقارنةً بالزجاجات المصروفة للبار:"
+],
+"Compared with the duplicate rule:": [
+"Verglichen mit der Regel für Doppelbonierungen:",
+"Confrontato con la regola sui doppi inserimenti:",
+"مقارنةً بقاعدة التسجيل المكرر:"
+],
 "Compared with the guest folio in the PMS:": [
 "Verglichen mit dem Gästefolio im PMS:",
 "Confrontato con il folio dell'ospite nel PMS:",
 "مقارنة بحساب النزيل في نظام إدارة الفندق:"
+],
+"Compared with the menu:": [
+"Verglichen mit der Karte:",
+"Confrontato con il listino:",
+"مقارنةً بالقائمة:"
+],
+"Compared with the quantity rule:": [
+"Verglichen mit der Mengenregel:",
+"Confrontato con la regola sulle quantità:",
+"مقارنةً بقاعدة الكمية:"
+],
+"Compared with the reopen rule:": [
+"Verglichen mit der Regel für wieder geöffnete Rechnungen:",
+"Confrontato con la regola sui conti riaperti:",
+"مقارنةً بقاعدة إعادة الفتح:"
 ],
 "Complete order history": [
 "Vollständiger Bestellverlauf",
@@ -1939,6 +2274,11 @@
 "Conta l'articolo. Se c'è, ordina meno finché non viene usato.",
 "اجرد الصنف. إن كان موجودًا، اطلب أقل حتى يُستخدم."
 ],
+"Count the open and full bottles at the bar, to confirm the week.": [
+"Zählen Sie die offenen und vollen Flaschen an der Bar, um die Woche zu bestätigen.",
+"Contate le bottiglie aperte e piene al bar per confermare la settimana.",
+"عُدّ الزجاجات المفتوحة والممتلئة في البار لتأكيد الأسبوع."
+],
 "Count this item": [
 "Diesen Artikel zählen",
 "Conta questo articolo",
@@ -2109,6 +2449,11 @@
 "Data",
 "التاريخ"
 ],
+"Date and time": [
+"Datum und Uhrzeit",
+"Data e ora",
+"التاريخ والوقت"
+],
 "Date range": [
 "Zeitraum",
 "Periodo",
@@ -2274,6 +2619,11 @@
 "Ogni addebito in camera è arrivato sul conto dell'ospite?",
 "هل وصلت كل رسوم الغرف إلى فاتورة النزيل؟"
 ],
+"Did the till charge what was served?": [
+"Hat die Kasse berechnet, was serviert wurde?",
+"La cassa ha addebitato ciò che è stato servito?",
+"هل حسب الصندوق ما قُدّم؟"
+],
 "Did we get, and pay for, what we ordered?": [
 "Haben wir bekommen und bezahlt, was wir bestellt haben?",
 "Abbiamo ricevuto e pagato ciò che abbiamo ordinato?",
@@ -2339,10 +2689,40 @@
 "Sconti, omaggi e rimborsi",
 "الخصومات والمجاني والمبالغ المستردة"
 ],
+"Dish changed at the guest's request": [
+"Gericht auf Wunsch des Gastes geändert",
+"Piatto cambiato su richiesta dell'ospite",
+"طبق غُيّر بطلب الضيف"
+],
+"Dish sent back, charged in error": [
+"Gericht zurückgegeben, irrtümlich berechnet",
+"Piatto rimandato indietro, addebitato per errore",
+"طبق أُعيد، حُسب خطأً"
+],
 "Dismiss": [
 "Schließen",
 "Chiudi",
 "إغلاق"
+],
+"Doubles rung on the single key.": [
+"Doppelte auf der Taste für einfache boniert.",
+"Doppi battuti con il tasto dei singoli.",
+"جرعات مزدوجة سُجّلت على زر المفردة."
+],
+"Doubles were being rung as singles on busy nights. Coached the bar team on the till keys; recorded as a loss.": [
+"An vollen Abenden wurden Doppelte als einfache boniert. Das Barteam wurde zu den Kassentasten geschult; als Verlust erfasst.",
+"Nelle serate piene i doppi venivano battuti come singoli. Il team del bar è stato formato sui tasti della cassa; registrato come perdita.",
+"كانت الجرعات المزدوجة تُسجّل مفردة في الليالي المزدحمة. دُرّب فريق البار على أزرار الصندوق؛ سُجّلت كخسارة."
+],
+"Douro reserve red": [
+"Douro Reserva rot",
+"Rosso Douro riserva",
+"نبيذ دورو الأحمر المعتق"
+],
+"Douro reserve red, glass": [
+"Douro Reserva rot, Glas",
+"Rosso Douro riserva, calice",
+"نبيذ دورو الأحمر المعتق، كأس"
 ],
 "Download as CSV": [
 "Als CSV herunterladen",
@@ -2518,6 +2898,16 @@
 "Jede auf ein Zimmer unterschriebene Rechnung und jede Minibar-, Spa- und Wäschebelastung, abgeglichen mit dem Gästefolio im PMS. Eine Abweichung ist ein Anlass zur Prüfung, kein Beweis. Simulierte Daten.",
 "Ogni conto firmato su una camera, e ogni addebito di minibar, spa e lavanderia, confrontato con il folio dell'ospite nel PMS. Una differenza invita a verificare, non è una prova. Dati simulati.",
 "كل فاتورة موقعة على غرفة، وكل رسوم الميني بار والسبا والغسيل، تُطابق مع حساب النزيل في نظام إدارة الفندق. الفرق دعوة للتحقق وليس دليلًا. بيانات محاكاة."
+],
+"Each bottle gives about {0} glasses of {1}.": [
+"Jede Flasche ergibt etwa {0} Gläser zu {1}.",
+"Ogni bottiglia dà circa {0} calici da {1}.",
+"تعطي كل زجاجة نحو {0} كؤوس سعة {1}."
+],
+"Each bottle gives about {0} single measures of {1}.": [
+"Jede Flasche ergibt etwa {0} einfache Maße zu {1}.",
+"Ogni bottiglia dà circa {0} misure singole da {1}.",
+"تعطي كل زجاجة نحو {0} جرعة مفردة سعة {1}."
 ],
 "Each charge is matched to the folio line with the same check number. A difference is a prompt to check the folio, not proof of anyone's mistake.": [
 "Jede Belastung wird mit der Foliozeile mit derselben Rechnungsnummer abgeglichen. Eine Abweichung ist ein Anlass, das Folio zu prüfen, kein Beweis für einen Fehler von irgendjemandem.",
@@ -2699,6 +3089,11 @@
 "Espresso martini",
 "إسبريسو مارتيني"
 ],
+"Estimate from bottles issued": [
+"Schätzung aus ausgegebenen Flaschen",
+"Stima dalle bottiglie consegnate",
+"تقدير من الزجاجات المصروفة"
+],
 "Estimated by Tyll": [
 "Von Tyll geschätzt",
 "Stimato da Tyll",
@@ -2799,6 +3194,21 @@
 "Eventi, camere e novità in arrivo",
 "الفعاليات والغرف وما هو قادم"
 ],
+"Every bill followed the till rules": [
+"Jede Rechnung folgte den Kassenregeln",
+"Ogni conto ha rispettato le regole di cassa",
+"اتبعت كل فاتورة قواعد الصندوق"
+],
+"Every bill in the period, at the outlets in view": [
+"Jede Rechnung im Zeitraum, an den angezeigten Outlets",
+"Ogni conto del periodo, nei punti vendita visualizzati",
+"كل فاتورة في الفترة، في المنافذ المعروضة"
+],
+"Every bill in this period followed the till rules": [
+"Jede Rechnung in diesem Zeitraum folgte den Kassenregeln",
+"Ogni conto di questo periodo ha rispettato le regole di cassa",
+"اتبعت كل فاتورة في هذه الفترة قواعد الصندوق"
+],
 "Every case, open and closed": [
 "Jeder Fall, offen und geschlossen",
 "Ogni caso, aperto e chiuso",
@@ -2878,6 +3288,16 @@
 "Alles, was entschieden werden muss, in einer Liste.",
 "Tutto ciò che richiede una decisione, in un elenco.",
 "كل ما يحتاج إلى قرار في قائمة واحدة."
+],
+"Evidence": [
+"Nachweise",
+"Prove",
+"الأدلة"
+],
+"Exact changes, in order": [
+"Genaue Änderungen, der Reihe nach",
+"Modifiche esatte, in ordine",
+"التغييرات الدقيقة بالترتيب"
 ],
 "Example for {0}, week to {1}.": [
 "Beispiel für {0}, Woche bis {1}.",
@@ -2974,6 +3394,16 @@
 "Esporta report",
 "تصدير التقارير"
 ],
+"Extra shot": [
+"Extra Shot",
+"Shot extra",
+"جرعة إضافية"
+],
+"Extra side": [
+"Extra Beilage",
+"Contorno extra",
+"طبق جانبي إضافي"
+],
 "F&B Director": [
 "F&B-Leitung",
 "Direttore F&B",
@@ -3064,6 +3494,11 @@
 "Termina ora",
 "إنهاء الآن"
 ],
+"First entry at {0}:{1}, second at {2}:{3}.": [
+"Erste Eingabe um {0}:{1}, zweite um {2}:{3}.",
+"Primo inserimento alle {0}:{1}, secondo alle {2}:{3}.",
+"الإدخال الأول الساعة {0}:{1}، والثاني الساعة {2}:{3}."
+],
 "Fish and chips": [
 "Fish and Chips",
 "Fish and chips",
@@ -3083,6 +3518,11 @@
 "Markierte Rechnungen",
 "Conti segnalati",
 "فواتير مُعلَّمة"
+],
+"Flagged by rule": [
+"Gemeldet nach Regel",
+"Segnalati per regola",
+"الإشارات حسب القاعدة"
 ],
 "Flagged by type": [
 "Markiert nach Art",
@@ -3208,6 +3648,11 @@
 "Zum Beispiel: Eine Kiste stand im hinteren Kühlschrank",
 "Per esempio: una cassa era nel frigo sul retro",
 "مثال: كان صندوق في الثلاجة الخلفية"
+],
+"For example: bar confirmed the drink was poured and served. Guest had left.": [
+"Zum Beispiel: Die Bar bestätigte, dass das Getränk eingeschenkt und serviert wurde. Der Gast war gegangen.",
+"Ad esempio: il bar ha confermato che la bevanda è stata versata e servita. L'ospite era andato via.",
+"مثلًا: أكد البار أن المشروب سُكب وقُدّم. وكان الضيف قد غادر."
 ],
 "For example: suggest a drink when taking the food order": [
 "Zum Beispiel: beim Aufnehmen der Essensbestellung ein Getränk vorschlagen",
@@ -3354,10 +3799,30 @@
 "Approvato dal direttore generale",
 "وافق المدير العام"
 ],
+"Gin and tonic": [
+"Gin Tonic",
+"Gin tonic",
+"جين وتونيك"
+],
+"Gin and tonic, double": [
+"Gin Tonic, doppelt",
+"Gin tonic, doppio",
+"جين وتونيك، مزدوج"
+],
+"Gin used for cocktails rung on another key.": [
+"Gin für Cocktails, auf einer anderen Taste boniert.",
+"Gin usato per cocktail battuti con un altro tasto.",
+"جين استُخدم لكوكتيلات سُجّلت على زر آخر."
+],
 "Glass and china broken": [
 "Zerbrochenes Glas und Porzellan",
 "Vetro e porcellana rotti",
 "زجاج وخزف مكسور"
+],
+"Glasses billed as reserve": [
+"Als Reserva berechnete Gläser",
+"Calici addebitati come riserva",
+"الكؤوس المحسوبة كنبيذ معتق"
 ],
 "Glasses sold": [
 "Verkaufte Gläser",
@@ -3514,6 +3979,11 @@
 "Mezza giornata",
 "نصف يوم"
 ],
+"Half portion": [
+"Halbe Portion",
+"Mezza porzione",
+"نصف حصة"
+],
 "Hammour fillet": [
 "Hammour-Filet",
 "Filetto di hammour",
@@ -3654,6 +4124,11 @@
 "Come prevede Tyll",
 "كيف يتوقع Tyll"
 ],
+"How many bills or bottle weeks met a till rule each day.": [
+"Wie viele Rechnungen oder Flaschenwochen täglich eine Kassenregel erfüllten.",
+"Quanti conti o settimane di bottiglie hanno soddisfatto una regola di cassa ogni giorno.",
+"عدد الفواتير أو أسابيع الزجاجات التي حققت قاعدة صندوق كل يوم."
+],
 "How many charges did not match the guest bill each day.": [
 "Wie viele Belastungen pro Tag nicht zur Gästerechnung passten.",
 "Quanti addebiti al giorno non corrispondevano al conto dell'ospite.",
@@ -3719,15 +4194,55 @@
 "Se tutte le voci aperte vengono spese",
 "إذا صُرفت كل البنود المفتوحة"
 ],
+"If everything on the bill was served, close as a legitimate correction.": [
+"Wurde alles auf der Rechnung serviert, schließen Sie den Fall als berechtigte Korrektur.",
+"Se tutto ciò che è sul conto è stato servito, chiudete come correzione legittima.",
+"إذا قُدّم كل ما في الفاتورة، فأغلق الحالة كتصحيح مشروع."
+],
+"If it was agreed, add the approval and close as a legitimate correction.": [
+"War er vereinbart, ergänzen Sie die Freigabe und schließen Sie den Fall als berechtigte Korrektur.",
+"Se era concordato, aggiungete l'approvazione e chiudete come correzione legittima.",
+"إذا كان متفقًا عليه، فأضف الموافقة وأغلق الحالة كتصحيح مشروع."
+],
+"If not, record the amount as a loss.": [
+"Wenn nicht, erfassen Sie den Betrag als Verlust.",
+"Altrimenti, registrate l'importo come perdita.",
+"وإلا، فسجّل المبلغ كخسارة."
+],
+"If not, record the difference as a loss.": [
+"Wenn nicht, erfassen Sie die Differenz als Verlust.",
+"Altrimenti, registrate la differenza come perdita.",
+"وإلا، فسجّل الفرق كخسارة."
+],
 "If nothing changes": [
 "Wenn sich nichts ändert",
 "Se nulla cambia",
 "إذا لم يتغير شيء"
 ],
+"If the bills were right, close as a legitimate correction.": [
+"Waren die Rechnungen richtig, schließen Sie den Fall als berechtigte Korrektur.",
+"Se i conti erano corretti, chiudete come correzione legittima.",
+"إذا كانت الفواتير صحيحة، فأغلق الحالة كتصحيح مشروع."
+],
 "If the card cannot be charged, close this case as a loss so it is counted once.": [
 "Wenn die Karte nicht belastet werden kann, diesen Fall als Verlust schließen, damit er einmal gezählt wird.",
 "Se la carta non può essere addebitata, chiudere il caso come perdita così è contato una volta.",
 "إن تعذر التحصيل من البطاقة، أغلق هذه الحالة كخسارة حتى تُحتسب مرة واحدة."
+],
+"If the change was agreed, add the approval and close as a legitimate correction.": [
+"War die Änderung vereinbart, ergänzen Sie die Freigabe und schließen Sie den Fall als berechtigte Korrektur.",
+"Se la modifica era concordata, aggiungete l'approvazione e chiudete come correzione legittima.",
+"إذا كان التغيير متفقًا عليه، فأضف الموافقة وأغلق الحالة كتصحيح مشروع."
+],
+"If the guest was charged for too many, refund the difference and note it here.": [
+"Wurde dem Gast zu viel berechnet, erstatten Sie die Differenz und vermerken Sie es hier.",
+"Se all'ospite è stato addebitato troppo, rimborsate la differenza e annotatelo qui.",
+"إذا حُسب على الضيف أكثر من اللازم، فردّ الفرق وسجّل ذلك هنا."
+],
+"If the item is missing from the till's menu, add it so it is not rung by hand again.": [
+"Fehlt der Artikel in der Kassenkarte, legen Sie ihn an, damit er nicht wieder von Hand boniert wird.",
+"Se l'articolo manca nel listino della cassa, aggiungetelo così non verrà più battuto a mano.",
+"إذا كان الصنف غير موجود في قائمة الصندوق، فأضفه حتى لا يُسجل يدويًا مرة أخرى."
 ],
 "In line": [
 "Im Rahmen",
@@ -3743,6 +4258,21 @@
 "Auf Lager",
 "In scorta",
 "في المخزون"
+],
+"In the same days {0} glasses of {1} were billed.": [
+"In denselben Tagen wurden {0} Gläser {1} berechnet.",
+"Negli stessi giorni sono stati addebitati {0} calici di {1}.",
+"وفي الأيام نفسها حُسب {0} كأسًا من {1}."
+],
+"In the {0} days to {1}, {2} bottles of {3} went to {4}, enough for about {5} glasses.": [
+"In den {0} Tagen bis {1} gingen {2} Flaschen {3} an {4}, genug für etwa {5} Gläser.",
+"Nei {0} giorni fino al {1}, {2} bottiglie di {3} sono andate a {4}, abbastanza per circa {5} calici.",
+"في الأيام الـ {0} حتى {1}، ذهبت {2} زجاجات من {3} إلى {4}، تكفي لنحو {5} كأسًا."
+],
+"In the {0} days to {1}, {2} bottles of {3} went to {4}, enough for about {5} single measures.": [
+"In den {0} Tagen bis {1} gingen {2} Flaschen {3} an {4}, genug für etwa {5} einfache Maße.",
+"Nei {0} giorni fino al {1}, {2} bottiglie di {3} sono andate a {4}, abbastanza per circa {5} misure singole.",
+"في الأيام الـ {0} حتى {1}، ذهبت {2} زجاجات من {3} إلى {4}، تكفي لنحو {5} جرعة مفردة."
 ],
 "In this demo": [
 "In dieser Demo",
@@ -3974,6 +4504,11 @@
 "Articoli confrontati",
 "الأصناف المقارنة"
 ],
+"Items for another table or for staff rung here.": [
+"Artikel für einen anderen Tisch oder für Personal hier boniert.",
+"Articoli per un altro tavolo o per il personale battuti qui.",
+"أصناف لطاولة أخرى أو للموظفين سُجّلت هنا."
+],
 "Items removed after their ticket went to the kitchen or bar, without an approval.": [
 "Artikel, die ohne Freigabe entfernt wurden, nachdem der Bon an Küche oder Bar ging.",
 "Articoli rimossi senza approvazione dopo l'invio della comanda a cucina o bar.",
@@ -4023,6 +4558,11 @@
 "Nur wichtige Artikel",
 "Solo articoli chiave",
 "الأصناف الرئيسية فقط"
+],
+"Keyed 12 for 2. The guests were charged for two after the bar checked the tickets, and the extra was refunded before they left.": [
+"12 statt 2 eingegeben. Nachdem die Bar die Bons geprüft hatte, wurden den Gästen zwei berechnet, und der Mehrbetrag wurde vor dem Gehen erstattet.",
+"Digitato 12 invece di 2. Dopo il controllo degli scontrini al bar agli ospiti ne sono stati addebitati due, e l'eccedenza è stata rimborsata prima che uscissero.",
+"أُدخل 12 بدل 2. حُسب على الضيوف اثنان بعد أن تحقق البار من التذاكر، ورُدّ المبلغ الزائد قبل مغادرتهم."
 ],
 "Kids pasta": [
 "Kinderpasta",
@@ -4119,6 +4659,11 @@
 "Modello linguistico per le spiegazioni",
 "نموذج لغوي للتفسيرات"
 ],
+"Large": [
+"Groß",
+"Grande",
+"كبير"
+],
 "Largest first. Count the item, then mark what you found. Everyone with access sees it.": [
 "Größte zuerst. Zählen Sie den Artikel und markieren Sie dann, was Sie gefunden haben. Alle mit Zugriff sehen es.",
 "Prima i maggiori. Conta l'articolo, poi segna cosa hai trovato. Tutti quelli con accesso lo vedono.",
@@ -4188,6 +4733,16 @@
 "Gestern Abend im {0}. Wie eine Abweichung gefunden wird, Schritt für Schritt.",
 "Ieri sera al {0}. Come si trova una differenza, passo dopo passo.",
 "الليلة الماضية في {0}. كيف يُكتشف فرق واحد، خطوة بخطوة."
+],
+"Last night at {0}. How one flag is found, step by step.": [
+"Gestern Abend im {0}. Wie ein Hinweis gefunden wird, Schritt für Schritt.",
+"Ieri sera al {0}. Come si trova una segnalazione, passo dopo passo.",
+"الليلة الماضية في {0}. كيف تُكتشف إشارة واحدة، خطوة بخطوة."
+],
+"Last night at {0}: a bill changed after payment": [
+"Gestern Abend im {0}: eine nach der Zahlung geänderte Rechnung",
+"Ieri sera al {0}: un conto modificato dopo il pagamento",
+"الليلة الماضية في {0}: فاتورة عُدّلت بعد الدفع"
 ],
 "Last night at {0}: a dinner on another guest's bill": [
 "Gestern Abend im {0}: ein Abendessen auf der Rechnung eines anderen Gastes",
@@ -4359,6 +4914,11 @@
 "Linguine",
 "لينغويني"
 ],
+"Linked stock investigation": [
+"Verknüpfte Bestandsuntersuchung",
+"Indagine di magazzino collegata",
+"تحقيق مخزون مرتبط"
+],
 "Lisbon, all outlets": [
 "Lisbon, alle Outlets",
 "Lisbon, tutti i punti vendita",
@@ -4418,6 +4978,11 @@
 "Bestellung wird geladen",
 "Caricamento dell'ordine",
 "جارٍ تحميل الطلب"
+],
+"Loading the order records.": [
+"Bestelldaten werden geladen.",
+"Caricamento dei dati dell'ordine.",
+"جارٍ تحميل سجلات الطلب."
 ],
 "Loading the request": [
 "Anfrage wird geladen",
@@ -4594,6 +5159,11 @@
 "Gestisci camere e housekeeping",
 "إدارة الغرف والتلشبونةر الفندقي"
 ],
+"Manage this case": [
+"Diesen Fall bearbeiten",
+"Gestisci questo caso",
+"إدارة هذه الحالة"
+],
 "Management report": [
 "Managementbericht",
 "Report direzionale",
@@ -4643,6 +5213,11 @@
 "Alle als gelesen markieren",
 "Segna tutto come letto",
 "تعليم الكل كمقروء"
+],
+"Mark as in review": [
+"Als in Prüfung markieren",
+"Segna come in revisione",
+"تعليم كقيد المراجعة"
 ],
 "Mark checked": [
 "Als geprüft markieren",
@@ -4694,6 +5269,16 @@
 "Pasto",
 "الوجبة"
 ],
+"Measures billed, a double as two": [
+"Berechnete Maße, ein Doppelter als zwei",
+"Misure addebitate, un doppio come due",
+"الجرعات المحسوبة، المزدوجة باثنتين"
+],
+"Measures poured by hand, larger than the standard.": [
+"Von Hand ausgeschenkte Maße, größer als der Standard.",
+"Misure versate a mano, più grandi dello standard.",
+"جرعات سُكبت يدويًا، أكبر من المعيار."
+],
 "Measures sold": [
 "Verkaufte Maße",
 "Misure vendute",
@@ -4728,6 +5313,16 @@
 "Menüleistung",
 "Rendimento del menu",
 "أداء القائمة"
+],
+"Menu price {0}": [
+"Kartenpreis {0}",
+"Prezzo di listino {0}",
+"سعر القائمة {0}"
+],
+"Menu price {0} each.": [
+"Kartenpreis je {0}.",
+"Prezzo di listino {0} l'uno.",
+"سعر القائمة {0} للواحد."
 ],
 "Menu, Menu": [
 "Menü, Menü",
@@ -4853,6 +5448,11 @@
 "Verlorenes Geld, letzte {0} Tage",
 "Denaro perso, ultimi {0} giorni",
 "المال المفقود، آخر {0} يومًا"
+],
+"Money on bills that met a till rule, by the day the bill was rung. The weekly bottle check counts on the morning it runs.": [
+"Geld auf Rechnungen, die eine Kassenregel erfüllten, nach dem Tag der Bonierung. Die wöchentliche Flaschenprüfung zählt am Morgen ihres Laufs.",
+"Importo dei conti che hanno soddisfatto una regola di cassa, per giorno di battitura. Il controllo settimanale delle bottiglie conta al mattino in cui viene eseguito.",
+"المبالغ في الفواتير التي حققت قاعدة صندوق، حسب يوم تسجيل الفاتورة. يُحسب فحص الزجاجات الأسبوعي في صباح تشغيله."
 ],
 "Money on charges that did not match the guest bill, by the day the charge was made.": [
 "Betrag der Belastungen, die nicht zur Gästerechnung passten, nach dem Tag der Belastung.",
@@ -5214,6 +5814,11 @@
 "Nessuna riga corrispondente trovata.",
 "لم يُعثر على بند مطابق."
 ],
+"No notes yet.": [
+"Noch keine Notizen.",
+"Ancora nessuna nota.",
+"لا ملاحظات بعد."
+],
 "No open orders": [
 "Keine offenen Bestellungen",
 "Nessun ordine aperto",
@@ -5233,6 +5838,11 @@
 "Das können keine Daten zeigen. Eine Differenz allein zeigt nicht, dass etwas entnommen wurde.",
 "Nessun dato può mostrarlo. Una differenza da sola non indica che qualcosa sia stato preso.",
 "لا يمكن لأي سجل إظهار ذلك. الفرق وحده لا يعني أن شيئًا أُخذ."
+],
+"No record of who agreed the price. Closed without a finding.": [
+"Kein Nachweis, wer den Preis vereinbart hat. Ohne Befund geschlossen.",
+"Nessuna traccia di chi ha concordato il prezzo. Chiuso senza esito.",
+"لا سجل لمن اتفق على السعر. أُغلقت دون نتيجة."
 ],
 "No repeated pattern in this selection": [
 "Kein wiederkehrendes Muster in dieser Auswahl",
@@ -5274,6 +5884,11 @@
 "Nessuno scarto o rottura registrato per questo articolo qui nel periodo.",
 "لم يُسجل هدر أو كسر لهذا الصنف في هذا المنفذ خلال الفترة."
 ],
+"Nobody on shift remembered the table. Closed without a finding.": [
+"Niemand aus der Schicht erinnerte sich an den Tisch. Ohne Befund geschlossen.",
+"Nessuno del turno ricordava il tavolo. Chiuso senza esito.",
+"لم يتذكر أحد في المناوبة الطاولة. أُغلقت دون نتيجة."
+],
 "None": [
 "Keine",
 "Nessuno",
@@ -5298,6 +5913,11 @@
 "Auch letzte Woche keine",
 "Nessuno anche la settimana scorsa",
 "لا شيء الأسبوع الماضي أيضًا"
+],
+"Not a confirmed loss. It becomes one only if the outcome below says so.": [
+"Kein bestätigter Verlust. Das wird es nur, wenn das Ergebnis unten es so festhält.",
+"Non è una perdita confermata. Lo diventa solo se l'esito qui sotto lo indica.",
+"ليست خسارة مؤكدة. وتصبح كذلك فقط إذا نصّت النتيجة أدناه على ذلك."
 ],
 "Not accounted for": [
 "Nicht erklärt",
@@ -5389,6 +6009,11 @@
 "Non inviato",
 "لم يُرسل"
 ],
+"Not set": [
+"Nicht festgelegt",
+"Non impostato",
+"غير محدد"
+],
 "Not yet": [
 "Noch nicht",
 "Non ancora",
@@ -5398,6 +6023,11 @@
 "Notiz (optional)",
 "Nota (facoltativa)",
 "ملاحظة (اختيارية)"
+],
+"Notes and history": [
+"Notizen und Verlauf",
+"Note e cronologia",
+"الملاحظات والسجل"
 ],
 "Notes for the supplier": [
 "Hinweise für den Lieferanten",
@@ -5609,6 +6239,16 @@
 "Un giorno",
 "يوم واحد"
 ],
+"One entry was meant for another table.": [
+"Eine Eingabe war für einen anderen Tisch gedacht.",
+"Un inserimento era destinato a un altro tavolo.",
+"كان أحد الإدخالين لطاولة أخرى."
+],
+"One open bottle can always be part used, so a gap under two bottles is never flagged. Bottles issued and the bills are simulated.": [
+"Eine offene Flasche kann immer angebrochen sein, daher wird eine Lücke unter zwei Flaschen nie gemeldet. Ausgegebene Flaschen und Rechnungen sind simuliert.",
+"Una bottiglia aperta può sempre essere in parte usata, quindi uno scarto sotto le due bottiglie non viene mai segnalato. Bottiglie consegnate e conti sono simulati.",
+"قد تكون زجاجة مفتوحة مستخدمة جزئيًا دائمًا، لذا لا يُشار أبدًا إلى فرق أقل من زجاجتين. الزجاجات المصروفة والفواتير بيانات محاكاة."
+],
 "One other outlet is simulated.": [
 "Ein weiteres Outlet ist simuliert.",
 "Un altro punto vendita è simulato.",
@@ -5719,6 +6359,11 @@
 "Apri Camere",
 "فتح الغرف"
 ],
+"Open Rule met per day, {0} days larger, with more lines to compare": [
+"Regel erfüllt pro Tag, {0} Tage, größer öffnen, mit mehr Linien zum Vergleich",
+"Apri Regola soddisfatta al giorno, {0} giorni in grande, con più linee da confrontare",
+"افتح قاعدة تحققت يوميًا، {0} يومًا بحجم أكبر، مع خطوط أكثر للمقارنة"
+],
 "Open Server {0}": [
 "Servicekraft {0} öffnen",
 "Apri Cameriere {0}",
@@ -5793,6 +6438,21 @@
 "In Bestellungen und Verlauf öffnen",
 "Apri in Ordini e storico",
 "افتح في الطلبات والسجل"
+],
+"Open item or price set by hand": [
+"Freier Artikel oder Preis von Hand",
+"Articolo aperto o prezzo inserito a mano",
+"صنف مفتوح أو سعر يدوي"
+],
+"Open items, the misc button and prices changed by hand, more than {0} below the menu price of the item on the ticket, with no approval.": [
+"Freie Artikel, die Taste Diverses und von Hand geänderte Preise, mehr als {0} unter dem Kartenpreis des Artikels auf dem Bon, ohne Freigabe.",
+"Articoli aperti, il tasto varie e prezzi cambiati a mano, oltre il {0} sotto il prezzo di listino dell'articolo sullo scontrino, senza approvazione.",
+"الأصناف المفتوحة وزر المتفرقات والأسعار المعدلة يدويًا، بأقل بأكثر من {0} من سعر القائمة للصنف على التذكرة، دون موافقة."
+],
+"Open items, the misc button and prices changed by hand, more than {0} below the menu price, with no approval.": [
+"Freie Artikel, die Taste Diverses und von Hand geänderte Preise, mehr als {0} unter dem Kartenpreis, ohne Freigabe.",
+"Articoli aperti, il tasto varie e prezzi cambiati a mano, oltre il {0} sotto il prezzo di listino, senza approvazione.",
+"الأصناف المفتوحة وزر المتفرقات والأسعار المعدلة يدويًا، بأقل بأكثر من {0} من سعر القائمة، دون موافقة."
 ],
 "Open orders": [
 "Offene Bestellungen",
@@ -5984,6 +6644,26 @@
 "Ordina presto {0} articoli bassi",
 "اطلب قريبًا {0} أصناف منخفضة"
 ],
+"Order {0} opened at {1} on room {2} under POS login {3}, for {4} guest.": [
+"Bestellung {0} um {1} für Zimmer {2} unter dem Kassen-Login {3} geöffnet, für {4} Gast.",
+"Ordine {0} aperto alle {1} per la camera {2} con l'accesso cassa di {3}, per {4} ospite.",
+"فُتح الطلب {0} الساعة {1} للغرفة {2} بحساب نقطة البيع {3}، لعدد {4} ضيف."
+],
+"Order {0} opened at {1} on room {2} under POS login {3}, for {4} guests.": [
+"Bestellung {0} um {1} für Zimmer {2} unter dem Kassen-Login {3} geöffnet, für {4} Gäste.",
+"Ordine {0} aperto alle {1} per la camera {2} con l'accesso cassa di {3}, per {4} ospiti.",
+"فُتح الطلب {0} الساعة {1} للغرفة {2} بحساب نقطة البيع {3}، لعدد {4} ضيوف."
+],
+"Order {0} opened at {1} on table {2} under POS login {3}, for {4} guest.": [
+"Bestellung {0} um {1} an Tisch {2} unter dem Kassen-Login {3} geöffnet, für {4} Gast.",
+"Ordine {0} aperto alle {1} al tavolo {2} con l'accesso cassa di {3}, per {4} ospite.",
+"فُتح الطلب {0} الساعة {1} على الطاولة {2} بحساب نقطة البيع {3}، لعدد {4} ضيف."
+],
+"Order {0} opened at {1} on table {2} under POS login {3}, for {4} guests.": [
+"Bestellung {0} um {1} an Tisch {2} unter dem Kassen-Login {3} geöffnet, für {4} Gäste.",
+"Ordine {0} aperto alle {1} al tavolo {2} con l'accesso cassa di {3}, per {4} ospiti.",
+"فُتح الطلب {0} الساعة {1} على الطاولة {2} بحساب نقطة البيع {3}، لعدد {4} ضيوف."
+],
 "Ordered": [
 "Bestellt",
 "Ordinato",
@@ -6154,6 +6834,16 @@
 "Accesso POS",
 "دخول نقطة البيع"
 ],
+"POS login used": [
+"Verwendeter Kassen-Login",
+"Accesso cassa usato",
+"حساب نقطة البيع المستخدم"
+],
+"POS login {0}": [
+"Kassen-Login {0}",
+"Accesso cassa {0}",
+"حساب نقطة البيع {0}"
+],
 "POS login {0} · reason: none recorded · approval: none recorded": [
 "POS-Login {0} · Grund: keiner erfasst · Freigabe: keine erfasst",
 "Accesso POS {0} · motivo: nessuno registrato · approvazione: nessuna registrata",
@@ -6169,10 +6859,25 @@
 "Pagato con carta",
 "دُفع بالبطاقة"
 ],
+"Paid by card at {0}:": [
+"Mit Karte bezahlt um {0}:",
+"Pagato con carta alle {0}:",
+"دُفع بالبطاقة الساعة {0}:"
+],
 "Paid by cash": [
 "Bar bezahlt",
 "Pagato in contanti",
 "دُفع نقدًا"
+],
+"Paid by cash at {0}:": [
+"Bar bezahlt um {0}:",
+"Pagato in contanti alle {0}:",
+"دُفع نقدًا الساعة {0}:"
+],
+"Paid first, before the bill was reopened": [
+"Zuerst bezahlt, bevor die Rechnung wieder geöffnet wurde",
+"Pagato prima, prima che il conto fosse riaperto",
+"المدفوع أولًا، قبل إعادة فتح الفاتورة"
 ],
 "Par level": [
 "Sollbestand",
@@ -6283,6 +6988,36 @@
 "Geplant. Flow nutzt simulierte Bons.",
 "Previsto. Flow usa comande simulate.",
 "مخطط له. يستخدم Flow تذاكر مباشرة محاكاة."
+],
+"Please check how many were served, and refund the guest if one was charged in error.": [
+"Bitte prüfen Sie, wie viele serviert wurden, und erstatten Sie dem Gast den Betrag, falls einer irrtümlich berechnet wurde.",
+"Verificate quanti ne sono stati serviti e rimborsate l'ospite se uno è stato addebitato per errore.",
+"يُرجى التحقق من عدد ما قُدّم، وردّ المبلغ للضيف إذا حُسب واحد خطأً."
+],
+"Please check how many were served, and refund the guest if the quantity was keyed in error.": [
+"Bitte prüfen Sie, wie viele serviert wurden, und erstatten Sie dem Gast den Betrag, falls die Menge falsch eingegeben wurde.",
+"Verificate quanti ne sono stati serviti e rimborsate l'ospite se la quantità è stata digitata per errore.",
+"يُرجى التحقق من عدد ما قُدّم، وردّ المبلغ للضيف إذا أُدخلت الكمية خطأً."
+],
+"Please check whether the change was agreed with a manager.": [
+"Bitte prüfen Sie, ob die Änderung mit einem Manager vereinbart war.",
+"Verificate se la modifica era stata concordata con un responsabile.",
+"يُرجى التحقق مما إذا كان التغيير متفقًا عليه مع مدير."
+],
+"Please check whether the price was agreed.": [
+"Bitte prüfen Sie, ob der Preis vereinbart war.",
+"Verificate se il prezzo era stato concordato.",
+"يُرجى التحقق مما إذا كان السعر متفقًا عليه."
+],
+"Please count the bar's bottles and check how the team rings a double.": [
+"Bitte zählen Sie die Flaschen der Bar und prüfen Sie, wie das Team einen Doppelten boniert.",
+"Contate le bottiglie del bar e verificate come il team batte un doppio.",
+"يُرجى عدّ زجاجات البار والتحقق من طريقة تسجيل الفريق للجرعة المزدوجة."
+],
+"Please count the bar's bottles and check which key the team uses for the reserve.": [
+"Bitte zählen Sie die Flaschen der Bar und prüfen Sie, welche Taste das Team für den Reserva verwendet.",
+"Contate le bottiglie del bar e verificate quale tasto usa il team per la riserva.",
+"يُرجى عدّ زجاجات البار والتحقق من الزر الذي يستخدمه الفريق للنبيذ المعتق."
 ],
 "Please move it to room {0} and check whether that guest has already checked out.": [
 "Bitte auf Zimmer {0} verschieben und prüfen, ob dieser Gast schon abgereist ist.",
@@ -6424,6 +7159,11 @@
 "Perdite potenziali, casi aperti",
 "خسائر محتملة، حالات مفتوحة"
 ],
+"Potential value involved": [
+"Möglicher betroffener Wert",
+"Valore potenzialmente coinvolto",
+"القيمة المحتملة المعنية"
+],
 "Pour Control, {0}": [
 "Ausschankkontrolle, {0}",
 "Controllo versamenti, {0}",
@@ -6483,6 +7223,21 @@
 "Prognosen, Tyll Demo",
 "Previsioni, demo Tyll",
 "التوقعات، عرض Tyll"
+],
+"Premium bottles against what was billed": [
+"Premiumflaschen im Vergleich zum Berechneten",
+"Bottiglie premium rispetto a quanto addebitato",
+"الزجاجات الفاخرة مقابل ما حُسب"
+],
+"Premium bottles going out faster than they are billed while the cheaper serve is billed, such as house wine for the reserve red or singles for doubles. An estimate.": [
+"Premiumflaschen gehen schneller hinaus, als sie berechnet werden, während der günstigere Ausschank berechnet wird, etwa Hauswein statt des roten Reserva oder einfache statt doppelte. Eine Schätzung.",
+"Bottiglie premium che escono più in fretta di quanto vengano addebitate mentre si addebita la porzione più economica, come il vino della casa al posto del rosso riserva o singoli al posto dei doppi. Una stima.",
+"زجاجات فاخرة تخرج أسرع مما تُحسب بينما تُحسب الحصة الأرخص، مثل نبيذ البيت بدل النبيذ الأحمر المعتق أو جرعات مفردة بدل المزدوجة. وهذا تقدير."
+],
+"Premium gin": [
+"Premium Gin",
+"Gin premium",
+"جين فاخر"
 ],
 "Prep planning, waste sheets, ordering": [
 "Vorbereitungsplanung, Abfalllisten, Bestellungen",
@@ -6674,6 +7429,11 @@
 "Motivo registrato",
 "السبب المسجل"
 ],
+"Reason recorded:": [
+"Erfasster Grund:",
+"Motivo registrato:",
+"السبب المسجل:"
+],
 "Received": [
 "Eingegangen",
 "Ricevuto",
@@ -6728,6 +7488,11 @@
 "Rezepte der {0} wichtigsten Artikel",
 "Ricette dei {0} articoli principali",
 "وصفات أهم {0} صنفًا"
+],
+"Recommended next steps": [
+"Empfohlene nächste Schritte",
+"Prossimi passi consigliati",
+"الخطوات التالية الموصى بها"
 ],
 "Recommended order value": [
 "Empfohlener Bestellwert",
@@ -6803,6 +7568,11 @@
 "Lieferung erfassen",
 "Registra la consegna",
 "تسجيل التوريد"
+],
+"Record the outcome": [
+"Ergebnis erfassen",
+"Registra l'esito",
+"تسجيل النتيجة"
 ],
 "Record the verified cause and any corrective action, then resolve the case.": [
 "Bestätigte Ursache und Korrekturmaßnahme erfassen, dann den Fall abschließen.",
@@ -6884,6 +7654,11 @@
 "Recuperato",
 "المسترد"
 ],
+"Recovered and verified": [
+"Zurückgeholt und geprüft",
+"Recuperato e verificato",
+"مُسترد ومُتحقق منه"
+],
 "Recovered, all time": [
 "Zurückgewonnen, gesamt",
 "Recuperato, totale",
@@ -6963,6 +7738,21 @@
 "Geschlossene Fälle wieder öffnen",
 "Riapri casi chiusi",
 "إعادة فتح الحالات المغلقة"
+],
+"Reopen the case": [
+"Fall wieder öffnen",
+"Riapri il caso",
+"إعادة فتح الحالة"
+],
+"Reopened after payment": [
+"Nach Zahlung wieder geöffnet",
+"Riaperti dopo il pagamento",
+"أُعيد فتحها بعد الدفع"
+],
+"Reopened at {0} under POS login {1}.": [
+"Um {0} unter dem Kassen-Login {1} wieder geöffnet.",
+"Riaperto alle {0} con l'accesso cassa di {1}.",
+"أُعيد فتحها الساعة {0} بحساب نقطة البيع {1}."
 ],
 "Reorder by {0}": [
 "Nachbestellen bis {0}",
@@ -7459,6 +8249,21 @@
 "Regola",
 "القاعدة"
 ],
+"Rule met": [
+"Regel erfüllt",
+"Regola soddisfatta",
+"قاعدة تحققت"
+],
+"Rule met per day, {0} days": [
+"Regel erfüllt pro Tag, {0} Tage",
+"Regola soddisfatta al giorno, {0} giorni",
+"قاعدة تحققت يوميًا، {0} يومًا"
+],
+"Rules agreed with the hotel. A flag is a prompt to check the bill, not proof of anyone's mistake.": [
+"Mit dem Hotel vereinbarte Regeln. Ein Hinweis ist ein Anlass, die Rechnung zu prüfen, kein Beweis für einen Fehler.",
+"Regole concordate con l'hotel. Una segnalazione è un invito a controllare il conto, non la prova di un errore di qualcuno.",
+"قواعد متفق عليها مع الفندق. الإشارة دعوة للتحقق من الفاتورة، وليست دليلًا على خطأ أحد."
+],
 "Rules agreed with the hotel. A flag is a prompt to count, not proof.": [
 "Mit dem Hotel vereinbarte Regeln. Eine Markierung ist ein Anlass zu zählen, kein Beweis.",
 "Regole concordate con l'hotel. Una segnalazione invita a contare, non è una prova.",
@@ -7473,6 +8278,11 @@
 "Regeln zu Trinkgeld und Servicegebühr unterscheiden sich je nach Land und Hotel. Eine echte Version enthielte die für jedes Haus vereinbarte Regel und bräuchte eine rechtliche Prüfung vor Ort.",
 "Le regole su mance e servizio variano per paese e hotel. Una versione reale conterrebbe la regola di ogni struttura e richiederebbe una verifica legale locale.",
 "تختلف قواعد الإكراميات ورسوم الخدمة بين الدول وسياسات الفنادق. ستحتفظ النسخة الفعلية بقاعدة كل فندق وتحتاج إلى مراجعة قانونية محلية."
+],
+"Rung twice or unusual quantity": [
+"Doppelt boniert oder ungewöhnliche Menge",
+"Battuto due volte o quantità insolita",
+"مسجل مرتين أو كمية غير معتادة"
 ],
 "Running costs, estimate": [
 "Laufende Kosten, geschätzt",
@@ -7568,6 +8378,11 @@
 "Speichern",
 "Salva",
 "حفظ"
+],
+"Save assignment": [
+"Zuweisung speichern",
+"Salva l'assegnazione",
+"حفظ الإسناد"
 ],
 "Save recount": [
 "Nachzählung speichern",
@@ -7808,6 +8623,11 @@
 "Scans ansehen",
 "Vedi le scansioni",
 "عرض المسوحات"
+],
+"See the till rule check": [
+"Kassenregel-Prüfung ansehen",
+"Vedi il controllo delle regole di cassa",
+"عرض فحص قواعد الصندوق"
 ],
 "See this item in Bought against used": [
 "Diesen Artikel in Gekauft gegen verbraucht ansehen",
@@ -8074,6 +8894,11 @@
 "Mostra tutti i {0} avvisi",
 "عرض جميع التنبيهات ({0})"
 ],
+"Show all {0} bills": [
+"Alle {0} Rechnungen anzeigen",
+"Mostra tutti i {0} conti",
+"عرض كل الفواتير الـ {0}"
+],
 "Show all {0} charges": [
 "Alle {0} Belastungen zeigen",
 "Mostra tutti i {0} addebiti",
@@ -8263,6 +9088,11 @@
 "Single Sign-on und Mehrfaktor-Anmeldung über den Identitätsanbieter des Hotels.",
 "Single sign-on e accesso a più fattori tramite il provider d'identità dell'hotel.",
 "تسجيل دخول موحد ومتعدد العوامل عبر موفر هوية الفندق."
+],
+"Singles billed": [
+"Einfache berechnet",
+"Singoli addebitati",
+"الجرعات المفردة المحسوبة"
 ],
 "Six kinds of loss Tyll measures": [
 "Sechs Verlustarten, die Tyll misst",
@@ -8589,6 +9419,11 @@
 "Dati delle scorte",
 "سجلات المخزون"
 ],
+"Stock records for the items involved": [
+"Bestandsdaten der betroffenen Artikel",
+"Dati di magazzino degli articoli coinvolti",
+"سجلات المخزون للأصناف المعنية"
+],
 "Stock shortfall": [
 "Fehlbestand",
 "Ammanco di scorte",
@@ -8754,6 +9589,11 @@
 "Noleggio tovagliato (storico simulato)",
 "استئجار مفارش الطاولات (سجل محاكاة)"
 ],
+"Table or room": [
+"Tisch oder Zimmer",
+"Tavolo o camera",
+"الطاولة أو الغرفة"
+],
 "Table {0}": [
 "Tisch {0}",
 "Tavolo {0}",
@@ -8763,6 +9603,11 @@
 "Tisch {0} · POS-Login {1} · {2} Gast",
 "Tavolo {0} · accesso POS {1} · {2} ospite",
 "طاولة {0} · دخول {1} · {2} ضيف"
+],
+"Table {0} · POS login {1} · {2} guests": [
+"Tisch {0} · Kassen-Login {1} · {2} Gäste",
+"Tavolo {0} · accesso cassa {1} · {2} ospiti",
+"الطاولة {0} · حساب نقطة البيع {1} · {2} ضيوف"
 ],
 "Table {0} · {1}": [
 "Tisch {0} · {1}",
@@ -8809,10 +9654,20 @@
 "Annullato. La scansione resta registrata e non conta più.",
 "تم التراجع. يبقى المسح في السجل ولم يعد يُحتسب."
 ],
+"Taken directly from the recorded transaction. Nothing here is inferred.": [
+"Direkt aus der erfassten Transaktion. Hier wird nichts abgeleitet.",
+"Presi direttamente dalla transazione registrata. Qui non si deduce nulla.",
+"مأخوذة مباشرة من المعاملة المسجلة. لا شيء هنا مُستنتج."
+],
 "Taken from supplier deliveries, till sales with their recipes, and the waste log. No stock count is used, so the gap is an estimate.": [
 "Aus Lieferantenlieferungen, Kassenverkäufen mit ihren Rezepten und dem Abfallprotokoll. Es wird keine Zählung verwendet, daher ist die Lücke eine Schätzung.",
 "Preso dalle consegne dei fornitori, dalle vendite in cassa con le loro ricette e dal registro sprechi. Non si usa alcun conteggio, quindi il divario è una stima.",
 "مأخوذ من توريدات الموردين ومبيعات نقطة البيع بوصفاتها وسجل الهدر. لا يُستخدم جرد للمخزون، لذا الفرق تقديري."
+],
+"Taken from the bottles issued to the bar and the till sales of the same week. No count of the open bottles is used, so the gap is an estimate.": [
+"Aus den an die Bar ausgegebenen Flaschen und den Kassenumsätzen derselben Woche. Es wird keine Zählung der offenen Flaschen verwendet, daher ist die Lücke eine Schätzung.",
+"Dalle bottiglie consegnate al bar e dalle vendite in cassa della stessa settimana. Non si usa alcun conteggio delle bottiglie aperte, quindi lo scarto è una stima.",
+"مأخوذة من الزجاجات المصروفة للبار ومبيعات الصندوق للأسبوع نفسه. لا يُستخدم عدّ للزجاجات المفتوحة، لذا فالفرق تقدير."
 ],
 "Talked it through, nothing to change": [
 "Besprochen, nichts zu ändern",
@@ -8853,6 +9708,16 @@
 "Das konnte nicht zurückgenommen werden. Versuchen Sie es erneut.",
 "Non è stato possibile annullare. Riprova.",
 "تعذّر التراجع. حاول مرة أخرى."
+],
+"That leaves about {0} glasses the bills do not account for, worth about {1} at the {2} difference per serve.": [
+"Damit bleiben etwa {0} Gläser, die die Rechnungen nicht erklären, etwa {1} wert bei {2} Differenz pro Ausschank.",
+"Restano circa {0} calici che i conti non spiegano, per un valore di circa {1} alla differenza di {2} a porzione.",
+"يتبقى نحو {0} كأسًا لا تفسرها الفواتير، بقيمة نحو {1} بفرق {2} لكل حصة."
+],
+"That leaves about {0} measures the bills do not account for, worth about {1} at the {2} difference per serve.": [
+"Damit bleiben etwa {0} Maße, die die Rechnungen nicht erklären, etwa {1} wert bei {2} Differenz pro Ausschank.",
+"Restano circa {0} misure che i conti non spiegano, per un valore di circa {1} alla differenza di {2} a porzione.",
+"يتبقى نحو {0} جرعة لا تفسرها الفواتير، بقيمة نحو {1} بفرق {2} لكل حصة."
 ],
 "That leaves {0} cans, {1} of what was used, worth about {2} at the price paid.": [
 "Bleiben {0} Dosen, {1} des Verbrauchs, etwa {2} wert zum bezahlten Preis.",
@@ -8914,30 +9779,95 @@
 "L'importo è quanto i colleghi dello stesso turno hanno venduto in bevande per ospite, al prezzo medio delle bevande: una stima. Ogni importo è un tavolo al ritmo dei colleghi, quindi sommati non danno la stima del turno, che conta ogni tavolo, con o senza bevande. Un tavolo senza bevande è quasi sempre un ospite che non ne voleva. Se a questi tavoli sono state servite bevande, chiedi al bar se sono state battute.",
 "المبلغ هو ما باعه الزملاء في الوردية نفسها من مشروبات لكل ضيف، بمتوسط سعر المشروب: تقدير. كل مبلغ هو طاولة واحدة بوتيرة الزملاء، لذا لا يساوي مجموعها تقدير الوردية الذي يحسب كل الطاولات، بمشروبات أو بدونها. الطاولة دون مشروب غالبًا ضيف لم يرغب فيه. إذا قُدّمت مشروبات على هذه الطاولات، فاسأل البار هل سُجّلت."
 ],
+"The amount was charged again or reposted and has been verified.": [
+"Der Betrag wurde erneut berechnet oder neu gebucht und geprüft.",
+"L'importo è stato addebitato di nuovo o ripostato ed è stato verificato.",
+"احتُسب المبلغ مجددًا أو أُعيد ترحيله وتم التحقق منه."
+],
 "The app takes the colour of the outlet you pick": [
 "Die App übernimmt die Farbe des gewählten Outlets",
 "L'app prende il colore del punto vendita scelto",
 "يأخذ التطبيق لون المنفذ الذي تختاره"
+],
+"The bar could not account for the bottles either way. Closed without a finding, and the bar will scan its empties.": [
+"Die Bar konnte die Flaschen weder so noch so erklären. Ohne Befund geschlossen, und die Bar wird ihr Leergut scannen.",
+"Il bar non ha saputo giustificare le bottiglie in nessun senso. Chiuso senza esito, e il bar scansionerà i vuoti.",
+"لم يستطع البار تفسير الزجاجات بأي حال. أُغلقت دون نتيجة، وسيمسح البار زجاجاته الفارغة."
+],
+"The bar has no completion screen, so there is no record of how many were poured.": [
+"Die Bar hat keinen Fertigmeldungs-Bildschirm, daher ist nicht erfasst, wie viele ausgeschenkt wurden.",
+"Il bar non ha uno schermo di completamento, quindi non c'è traccia di quanti ne sono stati versati.",
+"لا توجد في البار شاشة إنجاز، لذا لا سجل لعدد ما سُكب."
+],
+"The bar ticket shows {0} × {1}.": [
+"Der Barbon zeigt {0} × {1}.",
+"Lo scontrino del bar riporta {0} × {1}.",
+"تُظهر تذكرة البار {0} × {1}."
+],
+"The bill charges for {0} and the table had {1} guest.": [
+"Die Rechnung berechnet {0} und am Tisch saß {1} Gast.",
+"Il conto ne addebita {0} e al tavolo c'era {1} ospite.",
+"تحتسب الفاتورة {0} وكان على الطاولة {1} ضيف."
+],
+"The bill charges for {0} and the table had {1} guests.": [
+"Die Rechnung berechnet {0} und am Tisch saßen {1} Gäste.",
+"Il conto ne addebita {0} e al tavolo c'erano {1} ospiti.",
+"تحتسب الفاتورة {0} وكان على الطاولة {1} ضيوف."
 ],
 "The bill is settled without the dinner": [
 "Die Rechnung wird ohne das Abendessen bezahlt",
 "Il conto viene saldato senza la cena",
 "تُسدد الفاتورة دون العشاء"
 ],
+"The bill was paid by card at {0} for {1}, reopened {2} minutes later and closed again at {3}:": [
+"Die Rechnung wurde um {0} mit {1} per Karte bezahlt, {2} Minuten später wieder geöffnet und mit {3} erneut abgeschlossen:",
+"Il conto è stato pagato con carta alle {0} per {1}, riaperto {2} minuti dopo e richiuso a {3}:",
+"دُفعت الفاتورة بالبطاقة الساعة {0} بمبلغ {1}، وأُعيد فتحها بعد {2} دقيقة وأُغلقت مجددًا بمبلغ {3}:"
+],
+"The bill was paid by cash at {0} for {1}, reopened {2} minutes later and closed again at {3}:": [
+"Die Rechnung wurde um {0} mit {1} bar bezahlt, {2} Minuten später wieder geöffnet und mit {3} erneut abgeschlossen:",
+"Il conto è stato pagato in contanti alle {0} per {1}, riaperto {2} minuti dopo e richiuso a {3}:",
+"دُفعت الفاتورة نقدًا الساعة {0} بمبلغ {1}، وأُعيد فتحها بعد {2} دقيقة وأُغلقت مجددًا بمبلغ {3}:"
+],
+"The bill was rung for the wrong table and corrected late.": [
+"Die Rechnung wurde für den falschen Tisch boniert und spät korrigiert.",
+"Il conto è stato battuto sul tavolo sbagliato e corretto in ritardo.",
+"سُجّلت الفاتورة على طاولة خاطئة وصُححت متأخرًا."
+],
 "The bill was signed in a hurry and the room number was hard to read.": [
 "Die Rechnung wurde in Eile unterschrieben und die Zimmernummer war schwer lesbar.",
 "Il conto è stato firmato in fretta e il numero di camera era difficile da leggere.",
 "وُقعت الفاتورة على عجل وكان رقم الغرفة صعب القراءة."
+],
+"The bills account for {0}, with {1} singles.": [
+"Die Rechnungen erklären {0}, mit {1} einfachen.",
+"I conti ne spiegano {0}, con {1} singoli.",
+"تفسر الفواتير {0}، مع {1} جرعة مفردة."
+],
+"The bottles went to a private tasting billed on the event's account, not at the bar.": [
+"Die Flaschen gingen an eine private Verkostung, die über das Veranstaltungskonto abgerechnet wurde, nicht an der Bar.",
+"Le bottiglie sono andate a una degustazione privata addebitata sul conto dell'evento, non al bar.",
+"ذهبت الزجاجات إلى تذوق خاص حُسب على حساب الفعالية، لا في البار."
 ],
 "The breakfast buffet includes coffee and juice, so a breakfast bill is never a table without drinks. {0} is left out: drinks there are sold as packages per event.": [
 "Das Frühstücksbuffet enthält Kaffee und Saft, deshalb ist eine Frühstücksrechnung nie ein Tisch ohne Getränke. {0} bleibt außen vor: Getränke werden dort als Pakete pro Veranstaltung verkauft.",
 "Il buffet della colazione include caffè e succo, quindi un conto della colazione non è mai un tavolo senza bevande. {0} è escluso: lì le bevande si vendono a pacchetto per evento.",
 "بوفيه الإفطار يشمل القهوة والعصير، لذلك لا تُعد فاتورة الإفطار طاولة دون مشروبات. يُستبعد {0}: تُباع المشروبات هناك كباقات لكل مناسبة."
 ],
+"The button was pressed twice, and the guest was charged for one too many.": [
+"Die Taste wurde zweimal gedrückt, und dem Gast wurde einer zu viel berechnet.",
+"Il tasto è stato premuto due volte e all'ospite ne è stato addebitato uno in più.",
+"ضُغط الزر مرتين، وحُسب على الضيف واحد زائد."
+],
 "The case shows both sides and what to check: move the charge before room {0} checks out, and collect it from room {1}’s card on file.": [
 "Der Fall zeigt beide Seiten und was zu prüfen ist: die Belastung verschieben, bevor Zimmer {0} abreist, und sie über die hinterlegte Karte von Zimmer {1} einziehen.",
 "Il caso mostra entrambe le parti e cosa verificare: spostare l'addebito prima del check-out della camera {0}, e incassarlo dalla carta registrata della camera {1}.",
 "تعرض الحالة الجانبين وما يجب التحقق منه: نقل الرسوم قبل مغادرة الغرفة {0}، وتحصيلها من البطاقة المسجلة للغرفة {1}."
+],
+"The change was valid. Nothing was lost.": [
+"Die Änderung war berechtigt. Es ging nichts verloren.",
+"La modifica era valida. Non si è perso nulla.",
+"كان التغيير صحيحًا. لم يُفقد شيء."
 ],
 "The complete record of each order: created, items entered, tickets sent, changes, final bill and payment.": [
 "Der vollständige Verlauf jeder Bestellung: Anlage, Artikel, gesendete Bons, Änderungen, Endrechnung und Zahlung.",
@@ -8964,10 +9894,35 @@
 "L'ospite ha fatto il check-out il {0}, {1}. L'addebito è arrivato sul conto il {2}, {3}.",
 "غادر النزيل في {0}، {1}. وصل الترحيل إلى الفاتورة في {2}، {3}."
 ],
+"The guest disputed the card payment and the bank returned the extra amount.": [
+"Der Gast widersprach der Kartenzahlung und die Bank erstattete den Mehrbetrag.",
+"L'ospite ha contestato il pagamento con carta e la banca ha restituito l'importo in eccesso.",
+"اعترض الضيف على الدفع بالبطاقة وأعاد البنك المبلغ الزائد."
+],
 "The guest gave a different room number, or moved rooms during the stay.": [
 "Der Gast nannte eine andere Zimmernummer oder wechselte während des Aufenthalts das Zimmer.",
 "L'ospite ha dato un altro numero di camera, o ha cambiato camera durante il soggiorno.",
 "ذكر النزيل رقم غرفة مختلفًا، أو انتقل إلى غرفة أخرى أثناء الإقامة."
+],
+"The guest had been charged for one too many. The extra was refunded before the guest left.": [
+"Dem Gast war einer zu viel berechnet worden. Der Mehrbetrag wurde erstattet, bevor der Gast ging.",
+"All'ospite ne era stato addebitato uno in più. L'eccedenza è stata rimborsata prima che l'ospite partisse.",
+"حُسب على الضيف واحد زائد. رُدّ المبلغ الزائد قبل مغادرة الضيف."
+],
+"The guest had left and nobody on shift could say. Closed without a finding.": [
+"Der Gast war gegangen und niemand aus der Schicht konnte es sagen. Ohne Befund geschlossen.",
+"L'ospite era andato via e nessuno del turno sapeva dirlo. Chiuso senza esito.",
+"كان الضيف قد غادر ولم يستطع أحد في المناوبة الإفادة. أُغلقت دون نتيجة."
+],
+"The guest paid {0} at {1}, {2} of it for the second entry.": [
+"Der Gast zahlte {0} um {1}, davon {2} für die zweite Eingabe.",
+"L'ospite ha pagato {0} alle {1}, di cui {2} per il secondo inserimento.",
+"دفع الضيف {0} الساعة {1}، منها {2} للإدخال الثاني."
+],
+"The guest paid {0} at {1}.": [
+"Der Gast zahlte {0} um {1}.",
+"L'ospite ha pagato {0} alle {1}.",
+"دفع الضيف {0} الساعة {1}."
 ],
 "The guest pays for the burger only": [
 "Der Gast zahlt nur den Burger",
@@ -8979,15 +9934,80 @@
 "L'ospite ha saldato il conto prima che il punto vendita chiudesse lo scontrino.",
 "سدد النزيل الفاتورة قبل أن يغلق المنفذ الحساب."
 ],
+"The guest was charged {0} at {1}, {2} of it for the second entry.": [
+"Dem Gast wurden {0} um {1} berechnet, davon {2} für die zweite Eingabe.",
+"All'ospite sono stati addebitati {0} alle {1}, di cui {2} per il secondo inserimento.",
+"حُسب على الضيف {0} الساعة {1}، منها {2} للإدخال الثاني."
+],
+"The guest was charged {0} at {1}.": [
+"Dem Gast wurden {0} um {1} berechnet.",
+"All'ospite sono stati addebitati {0} alle {1}.",
+"حُسب على الضيف {0} الساعة {1}."
+],
+"The guest was still in house. The difference was added to the room bill with the guest's agreement.": [
+"Der Gast war noch im Haus. Die Differenz wurde mit Zustimmung des Gastes auf die Zimmerrechnung gesetzt.",
+"L'ospite era ancora in hotel. La differenza è stata aggiunta al conto della camera con il consenso dell'ospite.",
+"كان الضيف لا يزال في الفندق. أُضيف الفرق إلى فاتورة الغرفة بموافقة الضيف."
+],
+"The guest was still in house. The items were charged to the room with the guest's agreement.": [
+"Der Gast war noch im Haus. Die Artikel wurden mit Zustimmung des Gastes aufs Zimmer gebucht.",
+"L'ospite era ancora in hotel. Gli articoli sono stati addebitati in camera con il consenso dell'ospite.",
+"كان الضيف لا يزال في الفندق. حُسبت الأصناف على الغرفة بموافقة الضيف."
+],
 "The individual orders behind the figures above. Choose one to see its full history.": [
 "Die einzelnen Bestellungen hinter den Zahlen oben. Wählen Sie eine für den vollen Verlauf.",
 "I singoli ordini dietro i valori sopra. Scegline uno per la storia completa.",
 "الطلبات الفردية وراء الأرقام أعلاه. اختر واحدًا لترى سجله الكامل."
 ],
+"The item is missing from the till's menu, so it was rung by hand.": [
+"Der Artikel fehlt in der Kassenkarte und wurde deshalb von Hand boniert.",
+"L'articolo manca nel listino della cassa, quindi è stato battuto a mano.",
+"الصنف غير موجود في قائمة الصندوق، لذا سُجّل يدويًا."
+],
+"The item was served or made and cannot be charged.": [
+"Der Artikel wurde serviert oder zubereitet und kann nicht berechnet werden.",
+"L'articolo è stato servito o preparato e non può essere addebitato.",
+"قُدّم الصنف أو حُضّر ولا يمكن احتسابه."
+],
+"The items taken off had been served. Recorded as a loss, and the reopen rule repeated at the shift briefing.": [
+"Die entfernten Artikel waren serviert worden. Als Verlust erfasst und die Regel für wieder geöffnete Rechnungen in der Schichtbesprechung wiederholt.",
+"Gli articoli tolti erano stati serviti. Registrato come perdita e la regola sui conti riaperti ripetuta al briefing di turno.",
+"كانت الأصناف المُزالة قد قُدّمت. سُجّلت كخسارة، وأُعيد شرح قاعدة إعادة الفتح في اجتماع المناوبة."
+],
+"The items were served and paid for, and then taken off the bill.": [
+"Die Artikel wurden serviert und bezahlt und danach von der Rechnung entfernt.",
+"Gli articoli sono stati serviti e pagati, e poi tolti dal conto.",
+"قُدّمت الأصناف ودُفع ثمنها، ثم أُزيلت من الفاتورة."
+],
+"The kitchen display marked {0} of the entries ready.": [
+"Der Küchenmonitor meldete {0} der Eingaben als fertig.",
+"Il monitor di cucina ha segnato come pronti {0} degli inserimenti.",
+"عَلّمت شاشة المطبخ {0} من الإدخالات كجاهزة."
+],
+"The kitchen display marked {0} ready at {1}, before the guests paid.": [
+"Der Küchenmonitor meldete {0} um {1} als fertig, bevor die Gäste zahlten.",
+"Il monitor di cucina ha segnato {0} come pronto alle {1}, prima che gli ospiti pagassero.",
+"عَلّمت شاشة المطبخ {0} كجاهز الساعة {1}، قبل أن يدفع الضيوف."
+],
+"The kitchen marked the lamb chops ready at {0}": [
+"Die Küche meldete die Lammkoteletts um {0} als fertig",
+"La cucina ha segnato le costolette d'agnello pronte alle {0}",
+"عَلّم المطبخ ريش الغنم كجاهزة الساعة {0}"
+],
+"The kitchen ticket shows {0} × {1}.": [
+"Der Küchenbon zeigt {0} × {1}.",
+"Lo scontrino di cucina riporta {0} × {1}.",
+"تُظهر تذكرة المطبخ {0} × {1}."
+],
 "The largest patterns over the last {0} weeks.": [
 "Die größten Muster der letzten {0} Wochen.",
 "Gli schemi maggiori delle ultime {0} settimane.",
 "أكبر الأنماط خلال آخر {0} أسابيع."
+],
+"The last count of {0} at {1} was {2} short of expected ({3}). That is consistent with items leaving stock without a sale, but it cannot show that this particular item was served.": [
+"Die letzte Zählung von {0} im {1} lag {2} unter dem Soll ({3}). Das passt zu Artikeln, die ohne Verkauf den Bestand verlassen, kann aber nicht zeigen, dass genau dieser Artikel serviert wurde.",
+"L'ultimo conteggio di {0} al {1} era {2} sotto il previsto ({3}). È coerente con articoli usciti dal magazzino senza vendita, ma non può dimostrare che proprio questo articolo sia stato servito.",
+"كان آخر عدّ لـ {0} في {1} أقل من المتوقع بـ {2} ({3}). وهذا يتسق مع أصناف خرجت من المخزون دون بيع، لكنه لا يُثبت أن هذا الصنف بعينه قُدّم."
 ],
 "The last delivery brought {0} cans, which may still be on the shelf.": [
 "Die letzte Lieferung brachte {0} Dosen, die noch im Regal liegen können.",
@@ -9014,6 +10034,16 @@
 "Gli ultimi {0} giorni allo stesso ritmo per {1} mesi. Stima.",
 "آخر {0} يومًا بالمعدل نفسه لمدة {1} شهرًا. تقدير."
 ],
+"The manager on duty had agreed the price at the table. The approval was added afterwards.": [
+"Der diensthabende Manager hatte den Preis am Tisch vereinbart. Die Freigabe wurde nachträglich ergänzt.",
+"Il responsabile di turno aveva concordato il prezzo al tavolo. L'approvazione è stata aggiunta dopo.",
+"كان المدير المناوب قد اتفق على السعر على الطاولة. أُضيفت الموافقة لاحقًا."
+],
+"The menu price is {0}.": [
+"Der Kartenpreis ist {0}.",
+"Il prezzo di listino è {0}.",
+"سعر القائمة {0}."
+],
 "The minibar was not checked before the guest settled the bill.": [
 "Die Minibar wurde nicht geprüft, bevor der Gast die Rechnung bezahlte.",
 "Il minibar non è stato controllato prima che l'ospite saldasse il conto.",
@@ -9024,20 +10054,40 @@
 "L'addebito del punto vendita confrontato con quanto registrato nel PMS.",
 "رسوم المنفذ مقارنة بما يحتفظ به نظام إدارة الفندق."
 ],
+"The paid bill is reopened": [
+"Die bezahlte Rechnung wird wieder geöffnet",
+"Il conto pagato viene riaperto",
+"يُعاد فتح الفاتورة المدفوعة"
+],
 "The posting waited in the interface queue between the till and the PMS.": [
 "Die Buchung wartete in der Schnittstelle zwischen Kasse und PMS.",
 "L'addebito è rimasto in coda nell'interfaccia tra cassa e PMS.",
 "انتظر الترحيل في قائمة الربط بين الكاشير ونظام إدارة الفندق."
+],
+"The records cannot settle it either way.": [
+"Die Aufzeichnungen können es weder so noch so klären.",
+"I dati non permettono di stabilirlo in nessun senso.",
+"لا تستطيع السجلات حسم الأمر في أي اتجاه."
 ],
 "The records make this unlikely": [
 "Laut Daten unwahrscheinlich",
 "I dati lo rendono improbabile",
 "تجعل السجلات هذا غير مرجح"
 ],
+"The removal is one possible explanation for part of that difference. Neither record shows that the item was served.": [
+"Das Entfernen ist eine mögliche Erklärung für einen Teil dieser Differenz. Keiner der Datensätze zeigt, dass der Artikel serviert wurde.",
+"La rimozione è una possibile spiegazione per parte di quella differenza. Nessuno dei due dati mostra che l'articolo sia stato servito.",
+"الإزالة تفسير محتمل لجزء من هذا الفرق. ولا يُظهر أي من السجلين أن الصنف قُدّم."
+],
 "The room number was keyed by hand and two digits were swapped or one key was off.": [
 "Die Zimmernummer wurde von Hand eingegeben und zwei Ziffern wurden vertauscht oder eine Taste verfehlt.",
 "Il numero di camera è stato digitato a mano e due cifre sono state invertite o un tasto era sbagliato.",
 "أُدخل رقم الغرفة يدويًا فتبادلت خانتان أو أُخطئ في مفتاح."
+],
+"The rule looks at {0} or more of one item at more than {1} a guest.": [
+"Die Regel prüft {0} oder mehr von einem Artikel bei mehr als {1} pro Gast.",
+"La regola considera {0} o più di un articolo con più di {1} per ospite.",
+"تنظر القاعدة في {0} أو أكثر من صنف واحد بأكثر من {1} لكل ضيف."
 ],
 "The rules behind Finance's flags. A hotel agrees these during onboarding. They are fixed in this demo.": [
 "Die Regeln hinter den Finanzhinweisen. Ein Hotel vereinbart sie beim Onboarding. In dieser Demo sind sie fest.",
@@ -9048,6 +10098,16 @@
 "Dieselbe Belastung mehr als einmal gebucht.",
 "Lo stesso addebito registrato più di una volta.",
 "الرسوم نفسها مرحّلة أكثر من مرة."
+],
+"The same item rung twice within {0} seconds with more of it on the bill than guests at the table, or {1} or more of one item at more than {2} a guest.": [
+"Derselbe Artikel zweimal innerhalb von {0} Sekunden boniert, mit mehr davon auf der Rechnung als Gästen am Tisch, oder {1} oder mehr von einem Artikel bei mehr als {2} pro Gast.",
+"Lo stesso articolo battuto due volte entro {0} secondi con più pezzi sul conto che ospiti al tavolo, oppure {1} o più di un articolo con più di {2} per ospite.",
+"الصنف نفسه سُجّل مرتين خلال {0} ثوانٍ وعدده في الفاتورة أكبر من عدد الضيوف على الطاولة، أو {1} أو أكثر من صنف واحد بأكثر من {2} لكل ضيف."
+],
+"The same item rung twice within {0} seconds, or {1} or more of one item at more than {2} a guest.": [
+"Derselbe Artikel zweimal innerhalb von {0} Sekunden boniert, oder {1} oder mehr von einem Artikel bei mehr als {2} pro Gast.",
+"Lo stesso articolo battuto due volte entro {0} secondi, oppure {1} o più di un articolo con più di {2} per ospite.",
+"الصنف نفسه سُجّل مرتين خلال {0} ثوانٍ، أو {1} أو أكثر من صنف واحد بأكثر من {2} لكل ضيف."
 ],
 "The same weekdays have moved about {0} over the last {1} weeks, and {2} of guests are already booked. Within {3} is high, within {4} is medium.": [
 "Dieselben Wochentage schwankten in den letzten {0} Wochen um etwa {1}, und {2} der Gäste sind bereits gebucht. Innerhalb {3} ist hoch, innerhalb {4} ist mittel.",
@@ -9079,6 +10139,16 @@
 "La cassa invia l'addebito al folio dell'ospite",
 "يرسل نظام الكاشير الرسوم إلى حساب النزيل"
 ],
+"The value involved is everything beyond one a guest, {0}.": [
+"Der betroffene Wert ist alles über einen pro Gast, {0}.",
+"Il valore coinvolto è tutto ciò che supera uno per ospite, {0}.",
+"القيمة المعنية هي كل ما يتجاوز واحدًا لكل ضيف، {0}."
+],
+"The wrong price was typed.": [
+"Ein falscher Preis wurde eingetippt.",
+"È stato digitato il prezzo sbagliato.",
+"كُتب سعر خاطئ."
+],
 "The {0} beyond it are worth about {1} at the price paid.": [
 "Die {0} darüber hinaus sind zum bezahlten Preis etwa {1} wert.",
 "I {0} oltre questa valgono circa {1} al prezzo pagato.",
@@ -9094,15 +10164,60 @@
 "L'addebito di {0} firmato sulla camera {1} alle {2} è arrivato sul conto della camera {3}.",
 "وصلت رسوم بقيمة {0} موقعة على الغرفة {1} عند {2} إلى فاتورة الغرفة {3}."
 ],
+"The {0} days to {1}. {2} of {3} bottles beyond the rule, an estimate.": [
+"Die {0} Tage bis {1}. {2} von {3} Flaschen über der Regel, eine Schätzung.",
+"I {0} giorni fino al {1}. {2} su {3} bottiglie oltre la regola, una stima.",
+"الأيام الـ {0} حتى {1}. {2} من {3} زجاجات تتجاوز القاعدة، وهذا تقدير."
+],
+"The {0} glasses not billed as reserve are about {1} at the difference to {2}, an estimate.": [
+"Die {0} nicht als Reserva berechneten Gläser sind etwa {1} bei der Differenz zu {2}, eine Schätzung.",
+"I {0} calici non addebitati come riserva valgono circa {1} alla differenza rispetto a {2}, una stima.",
+"الكؤوس الـ {0} غير المحسوبة كنبيذ معتق تساوي نحو {1} بالفرق عن {2}، وهذا تقدير."
+],
+"The {0} glasses not billed as reserve are valued at the {1} difference to {2}, an estimate.": [
+"Die {0} nicht als Reserva berechneten Gläser werden mit der Differenz von {1} zu {2} bewertet, eine Schätzung.",
+"I {0} calici non addebitati come riserva sono valutati alla differenza di {1} rispetto a {2}, una stima.",
+"تُقدّر قيمة الكؤوس الـ {0} غير المحسوبة كنبيذ معتق بفرق {1} عن {2}، وهذا تقدير."
+],
+"The {0} measures not billed are about {1} if they were doubles rung as singles, an estimate.": [
+"Die {0} nicht berechneten Maße sind etwa {1}, falls es einfach bonierte Doppelte waren, eine Schätzung.",
+"Le {0} misure non addebitate valgono circa {1} se erano doppi battuti come singoli, una stima.",
+"الجرعات الـ {0} غير المحسوبة تساوي نحو {1} إذا كانت مزدوجة سُجّلت مفردة، وهذا تقدير."
+],
+"The {0} measures not billed are valued as doubles rung as singles, {1} each, an estimate.": [
+"Die {0} nicht berechneten Maße werden als einfach bonierte Doppelte bewertet, je {1}, eine Schätzung.",
+"Le {0} misure non addebitate sono valutate come doppi battuti come singoli, {1} l'una, una stima.",
+"تُقدّر الجرعات الـ {0} غير المحسوبة كجرعات مزدوجة سُجّلت مفردة، {1} لكل منها، وهذا تقدير."
+],
 "The {0} of restaurant and room-service sales charged to rooms in this period is already inside net sales at the outlet. Posting it to a room moves it to the guest bill, and settlement at check-out clears that bill. Neither step adds revenue, so Tyll never adds room postings or check-out payments on top of outlet sales.": [
 "Die {0} an Restaurant- und Zimmerservice-Umsätzen, die in diesem Zeitraum auf Zimmer gebucht wurden, sind bereits im Nettoumsatz des Outlets enthalten. Die Buchung verschiebt sie auf die Gästerechnung, das Check-out begleicht sie. Keiner der Schritte erhöht den Umsatz, daher addiert Tyll sie nie zusätzlich.",
 "I {0} di vendite di ristorante e servizio in camera addebitati alle camere nel periodo sono già nelle vendite nette del punto vendita. L'addebito li sposta sul conto ospite, il check-out lo salda. Nessuno dei due aggiunge ricavi, quindi Tyll non li somma mai.",
 "مبلغ {0} من مبيعات المطعم وخدمة الغرف المحمل على الغرف في هذه الفترة مشمول بالفعل في صافي مبيعات المنفذ. الترحيل ينقله إلى فاتورة الضيف والتسوية عند المغادرة تغلقها. ولا تضيف أي خطوة إيرادات، لذا لا يضيفها Tyll أبدًا."
 ],
+"They give about": [
+"Sie ergeben etwa",
+"Danno circa",
+"تعطي نحو"
+],
 "This area is outside your role": [
 "Dieser Bereich gehört nicht zu Ihrer Rolle",
 "Quest'area non rientra nel tuo ruolo",
 "هذا القسم خارج نطاق دورك"
+],
+"This bill was paid by card for {0} at {1} and reopened {2} minutes later.": [
+"Diese Rechnung wurde mit {0} um {1} per Karte bezahlt und {2} Minuten später wieder geöffnet.",
+"Questo conto è stato pagato con carta per {0} alle {1} e riaperto {2} minuti dopo.",
+"دُفعت هذه الفاتورة بالبطاقة بمبلغ {0} الساعة {1} وأُعيد فتحها بعد {2} دقيقة."
+],
+"This bill was paid by cash for {0} at {1} and reopened {2} minutes later.": [
+"Diese Rechnung wurde mit {0} um {1} bar bezahlt und {2} Minuten später wieder geöffnet.",
+"Questo conto è stato pagato in contanti per {0} alle {1} e riaperto {2} minuti dopo.",
+"دُفعت هذه الفاتورة نقدًا بمبلغ {0} الساعة {1} وأُعيد فتحها بعد {2} دقيقة."
+],
+"This bill:": [
+"Diese Rechnung:",
+"Questo conto:",
+"هذه الفاتورة:"
 ],
 "This check does not wait for a manager.": [
 "Diese Prüfung wartet nicht auf eine Führungskraft.",
@@ -9124,6 +10239,11 @@
 "Questo non è il profitto netto. Tyll non ha la contabilità completa dell'hotel: ricavi camere, ammortamenti, affitto, finanziamenti e tasse sono esclusi.",
 "هذا ليس صافي الربح. لا يملك Tyll حسابات الفندق الكاملة: إيرادات الغرف والإهلاك والإيجار والتمويل والضرائب غير مشمولة."
 ],
+"This line:": [
+"Diese Position:",
+"Questa riga:",
+"هذا البند:"
+],
 "This module is in development and not yet part of our pilots.": [
 "Dieses Modul ist in Entwicklung und noch nicht Teil unserer Pilotprojekte.",
 "Questo modulo è in sviluppo e non fa ancora parte dei nostri progetti pilota.",
@@ -9138,6 +10258,11 @@
 "Heute Morgen reist Zimmer {0} ab",
 "Stamattina la camera {0} fa il check-out",
 "هذا الصباح تغادر الغرفة {0}"
+],
+"This order’s removed item falls inside a stock period at {0} where use is higher than sales explain:": [
+"Der entfernte Artikel dieser Bestellung fällt in einen Bestandszeitraum bei {0}, in dem der Verbrauch höher ist, als die Verkäufe erklären:",
+"L'articolo tolto da questo ordine rientra in un periodo di magazzino a {0} in cui il consumo è superiore a quanto spiegano le vendite:",
+"يقع الصنف المُزال من هذا الطلب ضمن فترة مخزون في {0} يزيد فيها الاستخدام عما تفسره المبيعات:"
 ],
 "This part of stock covers the month.": [
 "Dieser Bestandsbereich reicht für den Monat.",
@@ -9163,6 +10288,16 @@
 "Dreifachabgleich",
 "Confronto a tre vie",
 "المطابقة الثلاثية"
+],
+"Till rule check": [
+"Kassenregel-Prüfung",
+"Controllo delle regole di cassa",
+"فحص قواعد الصندوق"
+],
+"Till rule check, {0} days of bottles": [
+"Kassenregel-Prüfung, {0} Tage Flaschen",
+"Controllo delle regole di cassa, {0} giorni di bottiglie",
+"فحص قواعد الصندوق، {0} أيام من الزجاجات"
 ],
 "Till, card company and bank matching": [
 "Abgleich von Kasse, Kartenanbieter und Bank",
@@ -9349,6 +10484,16 @@
 "Totale {0}",
 "الإجمالي {0}"
 ],
+"Total {0}, the same as paid": [
+"Summe {0}, gleich wie bezahlt",
+"Totale {0}, uguale al pagato",
+"الإجمالي {0}، مثل المدفوع"
+],
+"Total {0}, {1} less than paid": [
+"Summe {0}, {1} weniger als bezahlt",
+"Totale {0}, {1} in meno del pagato",
+"الإجمالي {0}، أقل بـ {1} من المدفوع"
+],
 "Total, a year": [
 "Gesamt pro Jahr",
 "Totale annuo",
@@ -9368,6 +10513,11 @@
 "Tour durch diese Seite",
 "Tour di questa pagina",
 "جولة في هذه الصفحة"
+],
+"Transaction": [
+"Transaktion",
+"Transazione",
+"المعاملة"
 ],
 "Transfers": [
 "Umlagerungen",
@@ -9424,6 +10574,11 @@
 "Due giorni",
 "يومان"
 ],
+"Two were ordered and entered one after the other.": [
+"Es wurden zwei bestellt und nacheinander eingegeben.",
+"Ne sono stati ordinati due e inseriti uno dopo l'altro.",
+"طُلب اثنان وأُدخلا واحدًا تلو الآخر."
+],
 "Tyll": [
 "Tyll",
 "Tyll",
@@ -9458,6 +10613,11 @@
 "Tyll erwartet",
 "Tyll prevede",
 "يتوقع Tyll"
+],
+"Tyll flags that a paid bill was reopened and closed lower with no manager’s approval. It does not conclude why. The case shows the bill before and after, and what to check: whether the dish was sent back, and whether the cash count for the shift matched what the guests paid.": [
+"Tyll meldet, dass eine bezahlte Rechnung ohne Freigabe eines Managers wieder geöffnet und niedriger abgeschlossen wurde. Es schließt nicht auf den Grund. Der Fall zeigt die Rechnung vorher und nachher und was zu prüfen ist: ob das Gericht zurückgegeben wurde und ob die Kassenzählung der Schicht dem entsprach, was die Gäste bezahlt haben.",
+"Tyll segnala che un conto pagato è stato riaperto e chiuso con importo inferiore senza l'approvazione di un responsabile. Non ne trae il motivo. Il caso mostra il conto prima e dopo e cosa controllare: se il piatto è stato rimandato indietro e se il conteggio di cassa del turno corrispondeva a quanto pagato dagli ospiti.",
+"يشير Tyll إلى أن فاتورة مدفوعة أُعيد فتحها وأُغلقت بمبلغ أقل دون موافقة مدير. ولا يستنتج السبب. تعرض الحالة الفاتورة قبل التغيير وبعده وما يجب التحقق منه: هل أُعيد الطبق، وهل طابق عدّ النقد للمناوبة ما دفعه الضيوف."
 ],
 "Tyll flags that the Coke was removed after its ticket went to the bar. It does not conclude why. The investigation shows the evidence and what to check.": [
 "Tyll markiert, dass die Cola entfernt wurde, nachdem der Bon an die Bar ging. Tyll schließt nicht auf den Grund. Die Prüfung zeigt die Belege und was zu kontrollieren ist.",
@@ -9514,6 +10674,11 @@
 "Valore di Tyll quest'anno",
 "قيمة Tyll هذا العام"
 ],
+"Tyll's explanation": [
+"Erklärung von Tyll",
+"La spiegazione di Tyll",
+"شرح Tyll"
+],
 "Tyll's suggestion from past sales, bookings and occupancy. Adjust anything you know better.": [
 "Tylls Vorschlag aus früheren Verkäufen, Buchungen und Auslastung. Passen Sie an, was Sie besser wissen.",
 "Suggerimento di Tyll da vendite passate, prenotazioni e occupazione. Modifica ciò che conosci meglio.",
@@ -9538,6 +10703,11 @@
 "Nicht zugewiesen",
 "Non assegnato",
 "غير مسند"
+],
+"Under the login that rang it": [
+"Unter dem Login, mit dem sie boniert wurde",
+"Con l'accesso che l'ha battuto",
+"بالحساب الذي سجّلها"
 ],
 "Under {0}": [
 "Unter {0}",
@@ -9744,6 +10914,11 @@
 "Valore non fatturato al giorno, ultimi {0} giorni",
 "القيمة غير المفوترة يوميًا، آخر {0} يومًا"
 ],
+"Value of bills that met a till rule, per day for the last {0} days. {1} in the selected period.": [
+"Wert der Rechnungen, die eine Kassenregel erfüllten, pro Tag in den letzten {0} Tagen. {1} im gewählten Zeitraum.",
+"Valore dei conti che hanno soddisfatto una regola di cassa, al giorno negli ultimi {0} giorni. {1} nel periodo scelto.",
+"قيمة الفواتير التي حققت قاعدة صندوق، يوميًا خلال آخر {0} يومًا. {1} في الفترة المحددة."
+],
 "Value of priority items missing at each weekly count, at the cost on the day.": [
 "Wert fehlender Prioritätsartikel bei jeder Wochenzählung, zu den Tageskosten.",
 "Valore degli articoli prioritari mancanti a ogni conteggio settimanale, al costo del giorno.",
@@ -9758,6 +10933,11 @@
 "Wert der Zimmerbelastungen, die nicht zur Gästerechnung passten, pro Tag in den letzten {0} Tagen. {1} von {2} Belastungen passten im gewählten Zeitraum nicht.",
 "Valore degli addebiti in camera non corrispondenti al conto, al giorno negli ultimi {0} giorni. {1} di {2} addebiti non corrispondevano nel periodo scelto.",
 "قيمة رسوم الغرف التي لم تطابق فاتورة النزيل يوميًا خلال آخر {0} يومًا. {1} من {2} رسوم لم تطابق في الفترة المختارة."
+],
+"Value that was involved": [
+"Betroffener Wert",
+"Valore coinvolto",
+"القيمة المعنية"
 ],
 "Vanilla ice cream": [
 "Vanilleeis",
@@ -9804,10 +10984,20 @@
 "Annullamenti, rimborsi, sconti, articoli rimossi dai conti e addebiti in camera che hanno violato una regola. Una segnalazione invita a verificare, non è una conclusione. Dati simulati.",
 "الإلغاءات والمبالغ المستردة والخصومات والأصناف المحذوفة من الفواتير ورسوم الغرف التي خالفت قاعدة. الإشارة دعوة للتحقق وليست نتيجة. بيانات محاكاة."
 ],
+"Voids, refunds, discounts, items removed from bills, bills changed at the till and room charges that broke a rule. A flag is a prompt to check, not a finding. Simulated data.": [
+"Stornos, Erstattungen, Rabatte, von Rechnungen entfernte Artikel, an der Kasse geänderte Rechnungen und Zimmerbuchungen, die gegen eine Regel verstießen. Ein Hinweis ist ein Anlass zur Prüfung, kein Befund. Simulierte Daten.",
+"Storni, rimborsi, sconti, articoli tolti dai conti, conti modificati in cassa e addebiti in camera che hanno violato una regola. Una segnalazione è un invito a controllare, non un accertamento. Dati simulati.",
+"إلغاءات واستردادات وخصومات وأصناف أُزيلت من الفواتير وفواتير عُدّلت عند الصندوق ورسوم غرف خالفت قاعدة. الإشارة دعوة للتحقق، وليست نتيجة. بيانات محاكاة."
+],
 "Voids, refunds, removed items and room charges": [
 "Stornos, Erstattungen, entfernte Artikel und Zimmerbelastungen",
 "Annullamenti, rimborsi, articoli rimossi e addebiti in camera",
 "الإلغاءات والمبالغ المستردة والأصناف المحذوفة ورسوم الغرف"
+],
+"Voids, refunds, removed items, till rules and room charges": [
+"Stornos, Erstattungen, entfernte Artikel, Kassenregeln und Zimmerbuchungen",
+"Storni, rimborsi, articoli tolti, regole di cassa e addebiti in camera",
+"الإلغاءات والاستردادات والأصناف المُزالة وقواعد الصندوق ورسوم الغرف"
 ],
 "Vs usual": [
 "Ggü. üblich",
@@ -10139,6 +11329,11 @@
 "Cosa è in ordine e cosa richiede ancora una decisione?",
 "ما المطلوب حاليًا، وما الذي يحتاج إلى قرار؟"
 ],
+"What it was compared against.": [
+"Womit es verglichen wurde.",
+"Con cosa è stato confrontato.",
+"ما قورن به."
+],
 "What might explain it?": [
 "Was könnte es erklären?",
 "Cosa potrebbe spiegarlo?",
@@ -10209,6 +11404,11 @@
 "Cosa è stato scartato o rotto?",
 "ما الذي تم هدره أو كسره؟"
 ],
+"What you checked, who you spoke to": [
+"Was Sie geprüft haben, mit wem Sie gesprochen haben",
+"Cosa hai controllato, con chi hai parlato",
+"ما تحققت منه، ومن تحدثت إليه"
+],
 "What your entries changed": [
 "Was Ihre Einträge verändert haben",
 "Cosa hanno cambiato le tue voci",
@@ -10248,6 +11448,11 @@
 "Wo sind alle Details?",
 "Dove sono tutti i dettagli?",
 "أين التفاصيل الكاملة؟"
+],
+"Where it happened": [
+"Wo es geschah",
+"Dove è successo",
+"أين حدث"
 ],
 "Where missing stock went": [
 "Wohin fehlender Bestand ging",
@@ -10429,10 +11634,20 @@
 "Entro l'ultima consegna",
 "ضمن آخر توريد"
 ],
+"Within the rule": [
+"Innerhalb der Regel",
+"Entro la regola",
+"ضمن القاعدة"
+],
 "Within what the last delivery could leave on the shelf": [
 "Innerhalb dessen, was die letzte Lieferung im Regal lassen kann",
 "Entro quanto l'ultima consegna può lasciare sullo scaffale",
 "ضمن ما قد يتركه آخر توريد على الرف"
+],
+"Worked example: a bill reopened after the guests paid": [
+"Durchgerechnetes Beispiel: eine Rechnung, die nach der Zahlung wieder geöffnet wurde",
+"Esempio svolto: un conto riaperto dopo che gli ospiti hanno pagato",
+"مثال تطبيقي: فاتورة أُعيد فتحها بعد أن دفع الضيوف"
 ],
 "Worked example: a dinner posted to the wrong room": [
 "Beispiel: ein Abendessen auf dem falschen Zimmer gebucht",
@@ -10554,6 +11769,11 @@
 "Il tuo ruolo non registra bottiglie vuote.",
 "دورك لا يسجل الزجاجات الفارغة."
 ],
+"a bill changed after payment so the total goes down needs a manager's approval.": [
+"eine nach der Zahlung so geänderte Rechnung, dass die Summe sinkt, braucht die Freigabe eines Managers.",
+"un conto modificato dopo il pagamento in modo che il totale scenda richiede l'approvazione di un responsabile.",
+"الفاتورة التي تُعدّل بعد الدفع فينخفض إجماليها تحتاج إلى موافقة مدير."
+],
 "a day,": [
 "pro Tag,",
 "al giorno,",
@@ -10574,6 +11794,11 @@
 "dopo il conteggio iniziale",
 "بعد الجرد الافتتاحي"
 ],
+"approval:": [
+"Freigabe:",
+"approvazione:",
+"الموافقة:"
+],
 "assigned": [
 "zugewiesen",
 "assegnato",
@@ -10583,6 +11808,11 @@
 "zum Einstandspreis.",
 "al costo.",
 "بسعر التكلفة."
+],
+"at least {0} of one item and more than {1} a guest is far above normal.": [
+"mindestens {0} von einem Artikel und mehr als {1} pro Gast liegt weit über dem Üblichen.",
+"almeno {0} di un articolo e più di {1} per ospite è molto sopra il normale.",
+"ما لا يقل عن {0} من صنف واحد وأكثر من {1} لكل ضيف أعلى بكثير من المعتاد."
 ],
 "at risk": [
 "gefährdet",
@@ -10659,6 +11889,11 @@
 "conta in l",
 "الجرد باللتر"
 ],
+"counted {0} by {1}": [
+"gezählt am {0} von {1}",
+"contato il {0} da {1}",
+"عُدّ في {0} بواسطة {1}"
+],
 "counted {0} of {1}": [
 "{0} von {1} gezählt",
 "contati {0} di {1}",
@@ -10688,6 +11923,11 @@
 "Soll minus gezählt",
 "previsto meno contato",
 "المتوقع ناقص المجرود"
+],
+"expected {0}, counted {1}": [
+"erwartet {0}, gezählt {1}",
+"previsto {0}, contato {1}",
+"المتوقع {0}، والمعدود {1}"
 ],
 "flagged": [
 "markiert",
@@ -10794,6 +12034,11 @@
 "corrisponde",
 "مطابق"
 ],
+"misc button, menu {0}": [
+"Taste Diverses, Karte {0}",
+"tasto varie, listino {0}",
+"زر المتفرقات، القائمة {0}"
+],
 "more than {0} times the last {1} weeks of use ({2}).": [
 "mehr als das {0}-fache des Verbrauchs der letzten {1} Wochen ({2}).",
 "più di {0} volte l'uso delle ultime {1} settimane ({2}).",
@@ -10819,6 +12064,11 @@
 "nessun dato precedente",
 "لا توجد بيانات سابقة"
 ],
+"no reason, no approval.": [
+"kein Grund, keine Freigabe.",
+"nessun motivo, nessuna approvazione.",
+"لا سبب ولا موافقة."
+],
 "none": [
 "keine",
 "nessuno",
@@ -10829,10 +12079,25 @@
 "nessuno scaduto",
 "لا يوجد متأخر"
 ],
+"none recorded": [
+"nicht erfasst",
+"nessuno registrato",
+"لم يُسجل"
+],
+"none.": [
+"keiner.",
+"nessuno.",
+"لا شيء."
+],
 "not billed": [
 "nicht berechnet",
 "non fatturato",
 "غير مفوتر"
+],
+"not recorded.": [
+"nicht erfasst.",
+"non registrata.",
+"غير مسجلة."
 ],
 "not set": [
 "nicht gesetzt",
@@ -10869,10 +12134,25 @@
 "un addebito di {0} alla cassa, {1} registrazioni nel folio.",
 "رسوم واحدة بقيمة {0} في الكاشير، {1} ترحيلات في الحساب."
 ],
+"open item, menu {0}": [
+"freier Artikel, Karte {0}",
+"articolo aperto, listino {0}",
+"صنف مفتوح، القائمة {0}"
+],
 "over invoiced": [
 "zu viel berechnet",
 "fatturato in eccesso",
 "فوترة زائدة"
+],
+"paid {0} by card at {1}, reopened at {2}, closed again at {3} at {4}, no reason, no approval.": [
+"{0} mit Karte bezahlt um {1}, um {2} wieder geöffnet, mit {3} um {4} erneut abgeschlossen, kein Grund, keine Freigabe.",
+"pagato {0} con carta alle {1}, riaperto alle {2}, richiuso a {3} alle {4}, nessun motivo, nessuna approvazione.",
+"دُفع {0} بالبطاقة الساعة {1}، وأُعيد فتحها الساعة {2}، وأُغلقت مجددًا بمبلغ {3} الساعة {4}، دون سبب ودون موافقة."
+],
+"paid {0} by cash at {1}, reopened at {2}, closed again at {3} at {4}, no reason, no approval.": [
+"{0} bar bezahlt um {1}, um {2} wieder geöffnet, mit {3} um {4} erneut abgeschlossen, kein Grund, keine Freigabe.",
+"pagato {0} in contanti alle {1}, riaperto alle {2}, richiuso a {3} alle {4}, nessun motivo, nessuna approvazione.",
+"دُفع {0} نقدًا الساعة {1}، وأُعيد فتحها الساعة {2}، وأُغلقت مجددًا بمبلغ {3} الساعة {4}، دون سبب ودون موافقة."
 ],
 "pending": [
 "ausstehend",
@@ -10894,6 +12174,11 @@
 "porzioni",
 "حصص"
 ],
+"price set by hand, menu {0}": [
+"Preis von Hand, Karte {0}",
+"prezzo a mano, listino {0}",
+"سعر يدوي، القائمة {0}"
+],
 "priority": [
 "Priorität",
 "priorità",
@@ -10908,6 +12193,11 @@
 "Bestellung {0}",
 "ordine d'acquisto {0}",
 "أمر شراء {0}"
+],
+"reason:": [
+"Grund:",
+"motivo:",
+"السبب:"
 ],
 "received {0}": [
 "erhalten {0}",
@@ -10974,6 +12264,26 @@
 "supervisore",
 "مشرف"
 ],
+"taken off after payment": [
+"nach Zahlung entfernt",
+"tolto dopo il pagamento",
+"أُزيل بعد الدفع"
+],
+"the bar ticket shows {0} × {1} at {2} each, and the bill charged {3} each, {4} below.": [
+"der Barbon zeigt {0} × {1} zu je {2}, die Rechnung berechnete je {3}, {4} darunter.",
+"lo scontrino del bar riporta {0} × {1} a {2} l'uno, e il conto ha addebitato {3} l'uno, {4} in meno.",
+"تُظهر تذكرة البار {0} × {1} بسعر {2} للواحد، وحسبت الفاتورة {3} للواحد، أي أقل بنسبة {4}."
+],
+"the bottles issued to the bar:": [
+"den an die Bar ausgegebenen Flaschen:",
+"le bottiglie consegnate al bar:",
+"الزجاجات المصروفة للبار:"
+],
+"the duplicate rule:": [
+"der Regel für Doppelbonierungen:",
+"la regola sui doppi inserimenti:",
+"قاعدة التسجيل المكرر:"
+],
 "the folio has no matching posting.": [
 "das Folio hat keine passende Buchung.",
 "il folio non ha un addebito corrispondente.",
@@ -10989,10 +12299,40 @@
 "il folio dell'ospite nel PMS:",
 "حساب النزيل في نظام إدارة الفندق:"
 ],
+"the kitchen ticket shows {0} × {1} at {2} each, and the bill charged {3} each, {4} below.": [
+"der Küchenbon zeigt {0} × {1} zu je {2}, die Rechnung berechnete je {3}, {4} darunter.",
+"lo scontrino di cucina riporta {0} × {1} a {2} l'uno, e il conto ha addebitato {3} l'uno, {4} in meno.",
+"تُظهر تذكرة المطبخ {0} × {1} بسعر {2} للواحد، وحسبت الفاتورة {3} للواحد، أي أقل بنسبة {4}."
+],
+"the menu:": [
+"der Karte:",
+"il listino:",
+"القائمة:"
+],
+"the quantity rule:": [
+"der Mengenregel:",
+"la regola sulle quantità:",
+"قاعدة الكمية:"
+],
+"the reopen rule:": [
+"der Regel für wieder geöffnete Rechnungen:",
+"la regola sui conti riaperti:",
+"قاعدة إعادة الفتح:"
+],
+"the same item entered twice within {0} seconds, with more of it on the bill than guests at the table.": [
+"derselbe Artikel zweimal innerhalb von {0} Sekunden eingegeben, mit mehr davon auf der Rechnung als Gästen am Tisch.",
+"lo stesso articolo inserito due volte entro {0} secondi, con più pezzi sul conto che ospiti al tavolo.",
+"الصنف نفسه أُدخل مرتين خلال {0} ثوانٍ، وعدده في الفاتورة أكبر من عدد الضيوف على الطاولة."
+],
 "the till charged {0} to room {1}": [
 "die Kasse belastete {0} auf Zimmer {1}",
 "la cassa ha addebitato {0} alla camera {1}",
 "حمّل نظام الكاشير {0} على الغرفة {1}"
+],
+"tip added to the card payment": [
+"Trinkgeld zur Kartenzahlung hinzugefügt",
+"mancia aggiunta al pagamento con carta",
+"أُضيف إكرامية إلى الدفع بالبطاقة"
 ],
 "to order": [
 "zu bestellen",
@@ -11139,6 +12479,11 @@
 "{0} L, {1} dell'uso, segnalato",
 "{0} لتر، {1} من الاستخدام، مُعلَّم"
 ],
+"{0} a week before": [
+"{0} pro Woche davor",
+"{0} a settimana prima",
+"{0} أسبوعيًا من قبل"
+],
 "{0} act today, {1} this week, {2} involved, including orders to place.": [
 "{0} heute, {1} diese Woche, {2} betroffen, einschließlich anstehender Bestellungen.",
 "{0} oggi, {1} questa settimana, {2} coinvolti, compresi gli ordini da fare.",
@@ -11159,10 +12504,25 @@
 "{0} a rischio finché qualcuno non controlla.",
 "{0} معرّض للخطر حتى يتحقق منه أحد."
 ],
+"{0} at risk, an estimate": [
+"{0} gefährdet, eine Schätzung",
+"{0} a rischio, una stima",
+"{0} معرضة للخطر، وهذا تقدير"
+],
 "{0} at {1} stands out against the rota. Chart and table inside.": [
 "{0} bei {1} fällt gegenüber dem Dienstplan auf. Diagramm und Tabelle im Inneren.",
 "{0} a {1} spicca rispetto ai turni. Grafico e tabella all'interno.",
 "{0} في {1} يبرز مقارنة بجدول الورديات. الرسم والجدول في الداخل."
+],
+"{0} at {1}:{2} and {3}:{4}, {5} for {6} guest, {7} on the second entry.": [
+"{0} um {1}:{2} und {3}:{4}, {5} für {6} Gast, {7} auf der zweiten Eingabe.",
+"{0} alle {1}:{2} e alle {3}:{4}, {5} per {6} ospite, {7} sul secondo inserimento.",
+"{0} الساعة {1}:{2} و{3}:{4}، {5} لعدد {6} ضيف، و{7} على الإدخال الثاني."
+],
+"{0} at {1}:{2} and {3}:{4}, {5} for {6} guests, {7} on the second entry.": [
+"{0} um {1}:{2} und {3}:{4}, {5} für {6} Gäste, {7} auf der zweiten Eingabe.",
+"{0} alle {1}:{2} e alle {3}:{4}, {5} per {6} ospiti, {7} sul secondo inserimento.",
+"{0} الساعة {1}:{2} و{3}:{4}، {5} لعدد {6} ضيوف، و{7} على الإدخال الثاني."
 ],
 "{0} available": [
 "{0} verfügbar",
@@ -11194,10 +12554,60 @@
 "{0} bottiglie",
 "{0} زجاجات"
 ],
+"{0} bottles give about {1} glasses, {2} more than the bills account for": [
+"{0} Flaschen ergeben etwa {1} Gläser, {2} mehr, als die Rechnungen erklären",
+"{0} bottiglie danno circa {1} calici, {2} in più di quanto spiegano i conti",
+"{0} زجاجات تعطي نحو {1} كأسًا، أي {2} أكثر مما تفسره الفواتير"
+],
+"{0} bottles give about {1} measures, {2} more than the bills account for": [
+"{0} Flaschen ergeben etwa {1} Maße, {2} mehr, als die Rechnungen erklären",
+"{0} bottiglie danno circa {1} misure, {2} in più di quanto spiegano i conti",
+"{0} زجاجات تعطي نحو {1} جرعة، أي {2} أكثر مما تفسره الفواتير"
+],
+"{0} bottles of {1} in the {2} days to {3} give about {4} glasses, and {5} were billed as {6}.": [
+"{0} Flaschen {1} in den {2} Tagen bis {3} ergeben etwa {4} Gläser, und {5} wurden als {6} berechnet.",
+"{0} bottiglie di {1} nei {2} giorni fino al {3} danno circa {4} calici, e {5} sono stati addebitati come {6}.",
+"{0} زجاجات من {1} في الأيام الـ {2} حتى {3} تعطي نحو {4} كأسًا، وحُسب {5} منها كـ {6}."
+],
+"{0} bottles of {1} in the {2} days to {3} give about {4} glasses, and {5} were billed.": [
+"{0} Flaschen {1} in den {2} Tagen bis {3} ergeben etwa {4} Gläser, und {5} wurden berechnet.",
+"{0} bottiglie di {1} nei {2} giorni fino al {3} danno circa {4} calici, e ne sono stati addebitati {5}.",
+"{0} زجاجات من {1} في الأيام الـ {2} حتى {3} تعطي نحو {4} كأسًا، وحُسب منها {5}."
+],
+"{0} bottles of {1} in the {2} days to {3} give about {4} single measures, and the bills account for {5}, with {6} singles.": [
+"{0} Flaschen {1} in den {2} Tagen bis {3} ergeben etwa {4} einfache Maße, und die Rechnungen erklären {5}, mit {6} einfachen.",
+"{0} bottiglie di {1} nei {2} giorni fino al {3} danno circa {4} misure singole, e i conti ne spiegano {5}, con {6} singoli.",
+"{0} زجاجات من {1} في الأيام الـ {2} حتى {3} تعطي نحو {4} جرعة مفردة، وتفسر الفواتير {5} منها، مع {6} جرعة مفردة."
+],
+"{0} bottles of {1} went to the bar in the {2} days to {3}, about {4} single measures, and the bills account for {5}.": [
+"{0} Flaschen {1} gingen in den {2} Tagen bis {3} an die Bar, etwa {4} einfache Maße, und die Rechnungen erklären {5}.",
+"{0} bottiglie di {1} sono andate al bar nei {2} giorni fino al {3}, circa {4} misure singole, e i conti ne spiegano {5}.",
+"ذهبت {0} زجاجات من {1} إلى البار في الأيام الـ {2} حتى {3}، نحو {4} جرعة مفردة، وتفسر الفواتير {5} منها."
+],
+"{0} bottles of {1} went to the bar in the {2} days to {3}, enough for about {4} glasses, and {5} were billed as reserve.": [
+"{0} Flaschen {1} gingen in den {2} Tagen bis {3} an die Bar, genug für etwa {4} Gläser, und {5} wurden als Reserva berechnet.",
+"{0} bottiglie di {1} sono andate al bar nei {2} giorni fino al {3}, abbastanza per circa {4} calici, e {5} sono stati addebitati come riserva.",
+"ذهبت {0} زجاجات من {1} إلى البار في الأيام الـ {2} حتى {3}، تكفي لنحو {4} كأسًا، وحُسب {5} منها كنبيذ معتق."
+],
+"{0} bottles of {1} went to the bar in the {2} days to {3}, enough for about {4} glasses, and {5} were billed as {6}.": [
+"{0} Flaschen {1} gingen in den {2} Tagen bis {3} an die Bar, genug für etwa {4} Gläser, und {5} wurden als {6} berechnet.",
+"{0} bottiglie di {1} sono andate al bar nei {2} giorni fino al {3}, abbastanza per circa {4} calici, e {5} sono stati addebitati come {6}.",
+"ذهبت {0} زجاجات من {1} إلى البار في الأيام الـ {2} حتى {3}، تكفي لنحو {4} كأسًا، وحُسب {5} منها كـ {6}."
+],
 "{0} bottles opened, {1} glasses sold, expected {2}.": [
 "{0} Flaschen geöffnet, {1} Gläser verkauft, erwartet {2}.",
 "{0} bottiglie aperte, {1} calici venduti, previsti {2}.",
 "فُتحت {0} زجاجات، بيعت {1} كأسًا، المتوقع {2}."
+],
+"{0} bottles used, {1} of about {2} glasses billed": [
+"{0} Flaschen verbraucht, {1} von etwa {2} Gläsern berechnet",
+"{0} bottiglie usate, {1} di circa {2} calici addebitati",
+"استُخدمت {0} زجاجات، وحُسب {1} من نحو {2} كأسًا"
+],
+"{0} bottles used, {1} of about {2} measures billed, mostly as singles": [
+"{0} Flaschen verbraucht, {1} von etwa {2} Maßen berechnet, meist als einfache",
+"{0} bottiglie usate, {1} di circa {2} misure addebitate, per lo più come singoli",
+"استُخدمت {0} زجاجات، وحُسب {1} من نحو {2} جرعة، معظمها جرعات مفردة"
 ],
 "{0} bought in {1} days": [
 "{0} eingekauft in {1} Tagen",
@@ -11313,6 +12723,11 @@
 "{0} Rechnung {1}: {2} für Zimmer {3}, erfasst um {4}.",
 "{0} conto {1}: {2} per la camera {3}, registrato alle {4}.",
 "{0} الفاتورة {1}: {2} للغرفة {3}، سُجلت عند {4}."
+],
+"{0} closed lower with no approval": [
+"{0} niedriger abgeschlossen ohne Freigabe",
+"{0} chiusi con importo inferiore senza approvazione",
+"{0} أُغلقت بمبلغ أقل دون موافقة"
 ],
 "{0} coming": [
 "{0} unterwegs",
@@ -11504,6 +12919,21 @@
 "{0} coperti previsti, {1} evento, consumi delle ultime {2} settimane. Affidabilità alta.",
 "{0} زبونًا متوقعًا، {1} فعالية، استخدام آخر {2} أسابيع. الثقة عالية."
 ],
+"{0} full bottles were issued to the bar for empties handed back, against {1} a week on average in the weeks before.": [
+"{0} volle Flaschen wurden gegen zurückgegebene Leergut an die Bar ausgegeben, gegenüber durchschnittlich {1} pro Woche in den Wochen davor.",
+"{0} bottiglie piene sono state consegnate al bar in cambio dei vuoti restituiti, contro una media di {1} a settimana nelle settimane precedenti.",
+"صُرفت {0} زجاجات ممتلئة للبار مقابل الفارغة المُعادة، مقابل {1} أسبوعيًا في المتوسط في الأسابيع السابقة."
+],
+"{0} glasses": [
+"{0} Gläser",
+"{0} calici",
+"{0} كأسًا"
+],
+"{0} glasses billed": [
+"{0} Gläser berechnet",
+"{0} calici addebitati",
+"كؤوس {0} المحسوبة"
+],
 "{0} glasses from {1} bottles, counted with empty bottle scans": [
 "{0} Gläser aus {1} Flaschen, gezählt mit Scans leerer Flaschen",
 "{0} bicchieri da {1} bottiglie, contate con le scansioni dei vuoti",
@@ -11523,6 +12953,16 @@
 "{0} Gläser Wein diese Woche nicht berechnet, {1}. Siehe Getränkekontrolle.",
 "{0} calici di vino non fatturati questa settimana, {1}. Vedi Controllo bevande.",
 "{0} كأس نبيذ غير مفوترة هذا الأسبوع، {1}. راجع مراقبة المشروبات."
+],
+"{0} glasses of {1} were billed at the same bar, against {2} a week before.": [
+"{0} Gläser {1} wurden an derselben Bar berechnet, gegenüber {2} pro Woche davor.",
+"Sono stati addebitati {0} calici di {1} allo stesso bar, contro {2} a settimana prima.",
+"حُسب {0} كأسًا من {1} في البار نفسه، مقابل {2} أسبوعيًا من قبل."
+],
+"{0} glasses of {1} were billed, against {2} a week before.": [
+"{0} Gläser {1} wurden berechnet, gegenüber {2} pro Woche davor.",
+"Sono stati addebitati {0} calici di {1}, contro {2} a settimana prima.",
+"حُسب {0} كأسًا من {1}، مقابل {2} أسبوعيًا من قبل."
 ],
 "{0} glasses recorded": [
 "{0} Gläser erfasst",
@@ -11659,6 +13099,16 @@
 "{0} in meno della settimana scorsa",
 "{0} أقل من الأسبوع الماضي"
 ],
+"{0} less than the guests paid": [
+"{0} weniger, als die Gäste bezahlt haben",
+"{0} in meno di quanto hanno pagato gli ospiti",
+"أقل بـ {0} مما دفعه الضيوف"
+],
+"{0} less than the guests paid.": [
+"{0} weniger, als die Gäste bezahlt haben.",
+"{0} in meno di quanto hanno pagato gli ospiti.",
+"أقل بـ {0} مما دفعه الضيوف."
+],
 "{0} less than the week before": [
 "{0} weniger als in der Vorwoche",
 "{0} in meno della settimana prima",
@@ -11709,10 +13159,20 @@
 "{0} segnato pronto",
 "أُشير إلى جاهزية {0}"
 ],
+"{0} measures": [
+"{0} Maße",
+"{0} misure",
+"{0} جرعة"
+],
 "{0} measures from {1} bottles, counted with empty bottle scans": [
 "{0} Portionen aus {1} Flaschen, gezählt mit Scans leerer Flaschen",
 "{0} dosi da {1} bottiglie, contate con le scansioni dei vuoti",
 "{0} جرعة من {1} زجاجات، محسوبة بمسح الزجاجات الفارغة"
+],
+"{0} measures were billed, against {1} a week before.": [
+"{0} Maße wurden berechnet, gegenüber {1} pro Woche davor.",
+"Sono state addebitate {0} misure, contro {1} a settimana prima.",
+"حُسبت {0} جرعة، مقابل {1} أسبوعيًا من قبل."
 ],
 "{0} min": [
 "{0} Min.",
@@ -11839,6 +13299,36 @@
 "{0} di {1}",
 "{0} من {1}"
 ],
+"{0} of {1} bill reopened": [
+"{0} von {1} wieder geöffneten Rechnung",
+"{0} su {1} conto riaperto",
+"{0} من {1} فاتورة أُعيد فتحها"
+],
+"{0} of {1} bill with a repeat entry": [
+"{0} von {1} Rechnung mit Wiederholungseingabe",
+"{0} su {1} conto con un inserimento ripetuto",
+"{0} من {1} فاتورة بإدخال مكرر"
+],
+"{0} of {1} bills reopened": [
+"{0} von {1} wieder geöffneten Rechnungen",
+"{0} su {1} conti riaperti",
+"{0} من {1} فواتير أُعيد فتحها"
+],
+"{0} of {1} bills with a repeat entry": [
+"{0} von {1} Rechnungen mit Wiederholungseingabe",
+"{0} su {1} conti con un inserimento ripetuto",
+"{0} من {1} فواتير بإدخال مكرر"
+],
+"{0} of {1} bottle week checked": [
+"{0} von {1} geprüften Flaschenwoche",
+"{0} su {1} settimana di bottiglie controllata",
+"{0} من {1} أسبوع زجاجات مفحوص"
+],
+"{0} of {1} bottle weeks checked": [
+"{0} von {1} geprüften Flaschenwochen",
+"{0} su {1} settimane di bottiglie controllate",
+"{0} من {1} أسابيع زجاجات مفحوصة"
+],
 "{0} of {1} charges": [
 "{0} von {1} Belastungen",
 "{0} di {1} addebiti",
@@ -11853,6 +13343,16 @@
 "{0} von {1} Bestellungen",
 "{0} di {1} ordini",
 "{0} من {1} طلب"
+],
+"{0} of {1} price set at the till": [
+"{0} von {1} an der Kasse gesetzten Preis",
+"{0} su {1} prezzo inserito in cassa",
+"{0} من {1} سعر حُدد عند الصندوق"
+],
+"{0} of {1} prices set at the till": [
+"{0} von {1} an der Kasse gesetzten Preisen",
+"{0} su {1} prezzi inseriti in cassa",
+"{0} من {1} أسعار حُددت عند الصندوق"
 ],
 "{0} of {1} tables with food": [
 "{0} von {1} Tischen mit Essen",
@@ -11939,6 +13439,21 @@
 "{0} potenziali",
 "{0} محتمل"
 ],
+"{0} poured for {1} when the house bottle ran out at the bar.": [
+"{0} für {1} ausgeschenkt, als die Hausflasche an der Bar leer war.",
+"{0} versato al posto di {1} quando la bottiglia della casa è finita al bar.",
+"سُكب {0} بدلًا من {1} عندما نفدت زجاجة البيت في البار."
+],
+"{0} price changed by hand at {1}": [
+"{0}: Preis von Hand auf {1} geändert",
+"{0}: prezzo cambiato a mano a {1}",
+"{0}: تغيير السعر يدويًا إلى {1}"
+],
+"{0} price changed by hand at {1}, menu price {2}": [
+"{0}: Preis von Hand auf {1} geändert, Kartenpreis {2}",
+"{0}: prezzo cambiato a mano a {1}, prezzo di listino {2}",
+"{0}: تغيير السعر يدويًا إلى {1}، وسعر القائمة {2}"
+],
 "{0} profit, estimate": [
 "{0} Gewinn, geschätzt",
 "{0} di profitto, stima",
@@ -11974,6 +13489,41 @@
 "{0} rimosso {1} min dopo l'invio al bar",
 "حُذف {0} بعد {1} دقيقة من إرساله إلى البار"
 ],
+"{0} rung as an open item at {1}": [
+"{0} als freier Artikel zu {1} boniert",
+"{0} battuto come articolo aperto a {1}",
+"{0} سُجّل كصنف مفتوح بسعر {1}"
+],
+"{0} rung as an open item at {1}, menu price {2}": [
+"{0} als freier Artikel zu {1} boniert, Kartenpreis {2}",
+"{0} battuto come articolo aperto a {1}, prezzo di listino {2}",
+"{0} سُجّل كصنف مفتوح بسعر {1}، وسعر القائمة {2}"
+],
+"{0} rung on the misc button at {1}": [
+"{0} über die Taste Diverses zu {1} boniert",
+"{0} battuto con il tasto varie a {1}",
+"{0} سُجّل بزر المتفرقات بسعر {1}"
+],
+"{0} rung on the misc button at {1}, menu price {2}": [
+"{0} über die Taste Diverses zu {1} boniert, Kartenpreis {2}",
+"{0} battuto con il tasto varie a {1}, prezzo di listino {2}",
+"{0} سُجّل بزر المتفرقات بسعر {1}، وسعر القائمة {2}"
+],
+"{0} rung on the {1} key.": [
+"{0} auf der Taste {1} boniert.",
+"{0} battuto con il tasto {1}.",
+"سُجّل {0} على زر {1}."
+],
+"{0} rung twice {1} seconds apart, {2} on the bill for {3} guest": [
+"{0} zweimal im Abstand von {1} Sekunden boniert, {2} auf der Rechnung für {3} Gast",
+"{0} battuto due volte a {1} secondi di distanza, {2} sul conto per {3} ospite",
+"{0} سُجّل مرتين بفارق {1} ثوانٍ، {2} في الفاتورة لعدد {3} ضيف"
+],
+"{0} rung twice {1} seconds apart, {2} on the bill for {3} guests": [
+"{0} zweimal im Abstand von {1} Sekunden boniert, {2} auf der Rechnung für {3} Gäste",
+"{0} battuto due volte a {1} secondi di distanza, {2} sul conto per {3} ospiti",
+"{0} سُجّل مرتين بفارق {1} ثوانٍ، {2} في الفاتورة لعدد {3} ضيوف"
+],
 "{0} runs out first, {1}. An order placed later arrives too late.": [
 "{0} geht zuerst aus, {1}. Eine spätere Bestellung kommt zu spät.",
 "{0} finisce per primo, {1}. Un ordine più tardi arriva troppo tardi.",
@@ -11994,6 +13544,11 @@
 "mancano {0}",
 "نقص {0}"
 ],
+"{0} short, {1}": [
+"{0} zu wenig, {1}",
+"{0} in meno, {1}",
+"نقص {0}، {1}"
+],
 "{0} short. Invoice shows the full {1}.": [
 "{0} fehlen. Die Rechnung zeigt die vollen {1}.",
 "Mancano {0}. La fattura riporta tutti i {1}.",
@@ -12013,6 +13568,11 @@
 "{0} seit {1}.",
 "{0} dal {1}.",
 "{0} منذ {1}."
+],
+"{0} singles were billed, against {1} a week before.": [
+"{0} einfache wurden berechnet, gegenüber {1} pro Woche davor.",
+"Sono stati addebitati {0} singoli, contro {1} a settimana prima.",
+"حُسبت {0} جرعة مفردة، مقابل {1} أسبوعيًا من قبل."
 ],
 "{0} snoozed": [
 "{0} zurückgestellt",
@@ -12063,6 +13623,11 @@
 "{0} Lieferantenrechnungen zu prüfen.",
 "{0} fatture fornitore da controllare.",
 "{0} فواتير موردين للتحقق."
+],
+"{0} taken off the paid bill": [
+"{0} von der bezahlten Rechnung entfernt",
+"{0} tolto dal conto pagato",
+"أُزيل {0} من الفاتورة المدفوعة"
 ],
 "{0} things need you today.": [
 "{0} Dinge brauchen heute Ihre Aufmerksamkeit.",
@@ -12128,6 +13693,11 @@
 "{0} bis {1}. Betroffener Wert. Wählen Sie einen Grund, um seine Fälle zu sehen.",
 "Da {0} a {1}. Valore coinvolto. Scegli un motivo per vederne i casi.",
 "من {0} إلى {1}. القيمة المعنية. اختر سببًا لرؤية حالاته."
+],
+"{0} to {1}. Value involved. Choose a rule to see its cases.": [
+"{0} bis {1}. Betroffener Wert. Wählen Sie eine Regel, um ihre Fälle zu sehen.",
+"Dal {0} al {1}. Valore coinvolto. Scegliete una regola per vederne i casi.",
+"من {0} إلى {1}. القيمة المعنية. اختر قاعدة لعرض حالاتها."
 ],
 "{0} transactions, {1} to {2}. Filter by day and search.": [
 "{0} Transaktionen, {1} bis {2}. Nach Tag filtern und suchen.",
@@ -12234,6 +13804,21 @@
 "{0} in attesa di approvazione, {1} in arrivo, {2} in totale",
 "{0} بانتظار الموافقة، {1} في الطريق، {2} إجمالًا"
 ],
+"{0} was charged at {1} through a price changed by hand, {2} below the menu price of {3}, with no approval recorded.": [
+"{0} wurde zu {1} mit einem von Hand geänderten Preis berechnet, {2} unter dem Kartenpreis von {3}, ohne erfasste Freigabe.",
+"{0} è stato addebitato a {1} con un prezzo cambiato a mano, il {2} sotto il prezzo di listino di {3}, senza approvazione registrata.",
+"حُسب {0} بسعر {1} عبر سعر غُيّر يدويًا، أي أقل بنسبة {2} من سعر القائمة البالغ {3}، دون تسجيل موافقة."
+],
+"{0} was charged at {1} through an open item, {2} below the menu price of {3}, with no approval recorded.": [
+"{0} wurde zu {1} als freier Artikel berechnet, {2} unter dem Kartenpreis von {3}, ohne erfasste Freigabe.",
+"{0} è stato addebitato a {1} come articolo aperto, il {2} sotto il prezzo di listino di {3}, senza approvazione registrata.",
+"حُسب {0} بسعر {1} كصنف مفتوح، أي أقل بنسبة {2} من سعر القائمة البالغ {3}، دون تسجيل موافقة."
+],
+"{0} was charged at {1} through the misc button, {2} below the menu price of {3}, with no approval recorded.": [
+"{0} wurde zu {1} über die Taste Diverses berechnet, {2} unter dem Kartenpreis von {3}, ohne erfasste Freigabe.",
+"{0} è stato addebitato a {1} con il tasto varie, il {2} sotto il prezzo di listino di {3}, senza approvazione registrata.",
+"حُسب {0} بسعر {1} عبر زر المتفرقات، أي أقل بنسبة {2} من سعر القائمة البالغ {3}، دون تسجيل موافقة."
+],
 "{0} was charged to room {1}, and the folio line for check {2} is on room {3}.": [
 "{0} wurde auf Zimmer {1} belastet, und die Foliozeile für Rechnung {2} steht auf Zimmer {3}.",
 "{0} è stato addebitato alla camera {1}, e la riga del folio per il conto {2} è sulla camera {3}.",
@@ -12249,6 +13834,21 @@
 "{0} era previsto oggi alle {1}:{2} e non è arrivato.",
 "كان {0} مستحقًا اليوم الساعة {1}:{2} ولم يصل."
 ],
+"{0} was entered twice within {1} seconds on a bill for {2} guest.": [
+"{0} wurde innerhalb von {1} Sekunden zweimal auf einer Rechnung für {2} Gast eingegeben.",
+"{0} è stato inserito due volte entro {1} secondi su un conto per {2} ospite.",
+"أُدخل {0} مرتين خلال {1} ثوانٍ في فاتورة لعدد {2} ضيف."
+],
+"{0} was entered twice within {1} seconds on a bill for {2} guests.": [
+"{0} wurde innerhalb von {1} Sekunden zweimal auf einer Rechnung für {2} Gäste eingegeben.",
+"{0} è stato inserito due volte entro {1} secondi su un conto per {2} ospiti.",
+"أُدخل {0} مرتين خلال {1} ثوانٍ في فاتورة لعدد {2} ضيوف."
+],
+"{0} was entered twice, {1} seconds apart.": [
+"{0} wurde zweimal eingegeben, im Abstand von {1} Sekunden.",
+"{0} è stato inserito due volte, a {1} secondi di distanza.",
+"أُدخل {0} مرتين بفارق {1} ثوانٍ."
+],
 "{0} waste": [
 "{0} Abfall",
 "{0} di spreco",
@@ -12258,6 +13858,16 @@
 "{0} Abfall, {1} Bruch",
 "{0} scarti, {1} rotture",
 "{0} هدر، {1} كسر"
+],
+"{0} were billed as reserve, while {1} glasses of {2} were billed.": [
+"{0} wurden als Reserva berechnet, während {1} Gläser {2} berechnet wurden.",
+"{0} sono stati addebitati come riserva, mentre sono stati addebitati {1} calici di {2}.",
+"حُسب {0} كنبيذ معتق، بينما حُسب {1} كأسًا من {2}."
+],
+"{0} were billed as {1}, while {2} glasses of {3} were billed.": [
+"{0} wurden als {1} berechnet, während {2} Gläser {3} berechnet wurden.",
+"{0} sono stati addebitati come {1}, mentre sono stati addebitati {2} calici di {3}.",
+"حُسب {0} كـ {1}، بينما حُسب {2} كأسًا من {3}."
 ],
 "{0} wine and {1} spirit patterns over the last {2} weeks": [
 "{0} Wein- und {1} Spirituosenmuster der letzten {2} Wochen",
@@ -12319,10 +13929,155 @@
 "{0} · per unità · in {1} ricette",
 "{0} · للوحدة · في {1} وصفات"
 ],
+"{0} × {1} came off and it closed again at {2}, with no reason or approval recorded.": [
+"{0} × {1} wurden entfernt und sie wurde mit {2} erneut abgeschlossen, ohne erfassten Grund oder Freigabe.",
+"{0} × {1} sono stati tolti e il conto è stato richiuso a {2}, senza motivo né approvazione registrati.",
+"أُزيل {0} × {1} وأُغلقت مجددًا بمبلغ {2}، دون تسجيل سبب أو موافقة."
+],
+"{0} × {1} entered": [
+"{0} × {1} eingegeben",
+"{0} × {1} inserito",
+"أُدخل {0} × {1}"
+],
+"{0} × {1} entered at {2} in one line, {3}.": [
+"{0} × {1} um {2} in einer Zeile eingegeben, {3}.",
+"{0} × {1} inserito alle {2} in una sola riga, {3}.",
+"أُدخل {0} × {1} الساعة {2} في سطر واحد، {3}."
+],
+"{0} × {1} in one entry at {2}, for {3} guest.": [
+"{0} × {1} in einer Eingabe um {2}, für {3} Gast.",
+"{0} × {1} in un solo inserimento alle {2}, per {3} ospite.",
+"{0} × {1} في إدخال واحد الساعة {2}، لعدد {3} ضيف."
+],
+"{0} × {1} in one entry at {2}, for {3} guests.": [
+"{0} × {1} in einer Eingabe um {2}, für {3} Gäste.",
+"{0} × {1} in un solo inserimento alle {2}, per {3} ospiti.",
+"{0} × {1} في إدخال واحد الساعة {2}، لعدد {3} ضيوف."
+],
+"{0} × {1} marked ready": [
+"{0} × {1} als fertig markiert",
+"{0} × {1} segnato come pronto",
+"عُلّم {0} × {1} كجاهز"
+],
+"{0} × {1} on one bill for {2} guest": [
+"{0} × {1} auf einer Rechnung für {2} Gast",
+"{0} × {1} su un conto per {2} ospite",
+"{0} × {1} في فاتورة واحدة لعدد {2} ضيف"
+],
+"{0} × {1} on one bill for {2} guests": [
+"{0} × {1} auf einer Rechnung für {2} Gäste",
+"{0} × {1} su un conto per {2} ospiti",
+"{0} × {1} في فاتورة واحدة لعدد {2} ضيوف"
+],
+"{0} × {1} price changed by hand at {2}": [
+"{0} × {1}: Preis von Hand auf {2} geändert",
+"{0} × {1}: prezzo cambiato a mano a {2}",
+"{0} × {1}: تغيير السعر يدويًا إلى {2}"
+],
+"{0} × {1} rung as an open item at {2}": [
+"{0} × {1} als freier Artikel zu {2} boniert",
+"{0} × {1} battuto come articolo aperto a {2}",
+"{0} × {1} سُجّل كصنف مفتوح بسعر {2}"
+],
+"{0} × {1} rung on the misc button at {2}": [
+"{0} × {1} über die Taste Diverses zu {2} boniert",
+"{0} × {1} battuto con il tasto varie a {2}",
+"{0} × {1} سُجّل بزر المتفرقات بسعر {2}"
+],
+"{0} × {1} sent to bar": [
+"{0} × {1} an die Bar gesendet",
+"{0} × {1} inviato al bar",
+"أُرسل {0} × {1} إلى البار"
+],
+"{0} × {1} sent to kitchen": [
+"{0} × {1} an die Küche gesendet",
+"{0} × {1} inviato in cucina",
+"أُرسل {0} × {1} إلى المطبخ"
+],
+"{0} × {1} taken off": [
+"{0} × {1} entfernt",
+"{0} × {1} tolto",
+"أُزيل {0} × {1}"
+],
+"{0} × {1} taken off at {2}.": [
+"{0} × {1} um {2} entfernt.",
+"{0} × {1} tolto alle {2}.",
+"أُزيل {0} × {1} الساعة {2}."
+],
+"{0} × {1} taken off the paid bill": [
+"{0} × {1} von der bezahlten Rechnung entfernt",
+"{0} × {1} tolto dal conto pagato",
+"أُزيل {0} × {1} من الفاتورة المدفوعة"
+],
+"{0} × {1} was charged at {2} each through a price changed by hand.": [
+"{0} × {1} wurde zu je {2} mit einem von Hand geänderten Preis berechnet.",
+"{0} × {1} è stato addebitato a {2} l'uno con un prezzo cambiato a mano.",
+"حُسب {0} × {1} بسعر {2} للواحد عبر سعر غُيّر يدويًا."
+],
+"{0} × {1} was charged at {2} each through an open item.": [
+"{0} × {1} wurde zu je {2} als freier Artikel berechnet.",
+"{0} × {1} è stato addebitato a {2} l'uno come articolo aperto.",
+"حُسب {0} × {1} بسعر {2} للواحد كصنف مفتوح."
+],
+"{0} × {1} was charged at {2} each through the misc button.": [
+"{0} × {1} wurde zu je {2} über die Taste Diverses berechnet.",
+"{0} × {1} è stato addebitato a {2} l'uno con il tasto varie.",
+"حُسب {0} × {1} بسعر {2} للواحد عبر زر المتفرقات."
+],
+"{0} × {1} were charged at {2} each through a price changed by hand.": [
+"{0} × {1} wurden zu je {2} mit einem von Hand geänderten Preis berechnet.",
+"{0} × {1} sono stati addebitati a {2} l'uno con un prezzo cambiato a mano.",
+"حُسب {0} × {1} بسعر {2} للواحد عبر سعر غُيّر يدويًا."
+],
+"{0} × {1} were charged at {2} each through an open item.": [
+"{0} × {1} wurden zu je {2} als freier Artikel berechnet.",
+"{0} × {1} sono stati addebitati a {2} l'uno come articolo aperto.",
+"حُسب {0} × {1} بسعر {2} للواحد كصنف مفتوح."
+],
+"{0} × {1} were charged at {2} each through the misc button.": [
+"{0} × {1} wurden zu je {2} über die Taste Diverses berechnet.",
+"{0} × {1} sono stati addebitati a {2} l'uno con il tasto varie.",
+"حُسب {0} × {1} بسعر {2} للواحد عبر زر المتفرقات."
+],
+"{0} × {1} were rung in one entry on a bill for {2} guest.": [
+"{0} × {1} wurden in einer Eingabe auf einer Rechnung für {2} Gast boniert.",
+"{0} × {1} sono stati battuti in un solo inserimento su un conto per {2} ospite.",
+"سُجّل {0} × {1} في إدخال واحد في فاتورة لعدد {2} ضيف."
+],
+"{0} × {1} were rung in one entry on a bill for {2} guests.": [
+"{0} × {1} wurden in einer Eingabe auf einer Rechnung für {2} Gäste boniert.",
+"{0} × {1} sono stati battuti in un solo inserimento su un conto per {2} ospiti.",
+"سُجّل {0} × {1} في إدخال واحد في فاتورة لعدد {2} ضيوف."
+],
+"{0} × {1} were rung in one entry, on a bill for {2} guest.": [
+"{0} × {1} wurden in einer Eingabe boniert, auf einer Rechnung für {2} Gast.",
+"{0} × {1} sono stati battuti in un solo inserimento, su un conto per {2} ospite.",
+"سُجّل {0} × {1} في إدخال واحد، في فاتورة لعدد {2} ضيف."
+],
+"{0} × {1} were rung in one entry, on a bill for {2} guests.": [
+"{0} × {1} wurden in einer Eingabe boniert, auf einer Rechnung für {2} Gäste.",
+"{0} × {1} sono stati battuti in un solo inserimento, su un conto per {2} ospiti.",
+"سُجّل {0} × {1} في إدخال واحد، في فاتورة لعدد {2} ضيوف."
+],
+"{0}, Executive Chef": [
+"{0}, Küchenchef",
+"{0}, executive chef",
+"{0}، رئيس الطهاة"
+],
+"{0}, F&B Director": [
+"{0}, F&B Director",
+"{0}, direttore F&B",
+"{0}، مدير الأغذية والمشروبات"
+],
 "{0}, F&B Director, {1}": [
 "{0}, F&B-Leitung, {1}",
 "{0}, Direttore F&B, {1}",
 "{0}، مدير الأغذية والمشروبات، {1}"
+],
+"{0}, Financial Controller": [
+"{0}, Finanzcontrollerin",
+"{0}, controller finanziaria",
+"{0}، المراقبة المالية"
 ],
 "{0}, Friday day shift:": [
 "{0}, Freitag, Tagschicht:",
@@ -12344,6 +14099,11 @@
 "{0}, turno notturno del venerdì: {1} non fatturati. Squadra, motivi e come aiutare all'interno.",
 "{0}، وردية الجمعة المتأخرة: {1} غير مُفوتر. الفريق والأسباب وكيفية المساعدة في الداخل."
 ],
+"{0}, General Manager": [
+"{0}, General Manager",
+"{0}, direttore generale",
+"{0}، المدير العام"
+],
 "{0}, Lisbon": [
 "{0}, Lisbon",
 "{0}, Lisbon",
@@ -12364,10 +14124,20 @@
 "{0}, lunedì, turno di notte:",
 "{0}، الإثنين، الوردية المتأخرة:"
 ],
+"{0}, Owner": [
+"{0}, Inhaberin",
+"{0}, proprietaria",
+"{0}، المالكة"
+],
 "{0}, POS login {1}": [
 "{0}, POS-Login {1}",
 "{0}, accesso POS {1}",
 "{0}، دخول {1}"
+],
+"{0}, Purchasing Manager": [
+"{0}, Einkaufsleiterin",
+"{0}, responsabile acquisti",
+"{0}، مديرة المشتريات"
 ],
 "{0}, Saturday day shift:": [
 "{0}, Samstag, Tagschicht:",
@@ -12444,6 +14214,11 @@
 "{0}, mercoledì, turno di notte:",
 "{0}، الأربعاء، الوردية المتأخرة:"
 ],
+"{0}, an estimate": [
+"{0}, eine Schätzung",
+"{0}, una stima",
+"{0}، وهذا تقدير"
+],
 "{0}, bartender": [
 "{0}, Barkeeper",
 "{0}, barista",
@@ -12479,6 +14254,11 @@
 "{0}, turno serale, {1}:",
 "{0}، الوردية المسائية، {1}:"
 ],
+"{0}, glasses billed": [
+"{0}, berechnete Gläser",
+"{0}, calici addebitati",
+"{0}، الكؤوس المحسوبة"
+],
 "{0}, late night shift": [
 "{0}, Spätschicht",
 "{0}, turno di notte",
@@ -12489,6 +14269,16 @@
 "{0}, turno notturno, {1}:",
 "{0}، الوردية المتأخرة، {1}:"
 ],
+"{0}, manager": [
+"{0}, Manager",
+"{0}, responsabile",
+"{0}، مدير"
+],
+"{0}, no reason, no approval": [
+"{0}, kein Grund, keine Freigabe",
+"{0}, nessun motivo, nessuna approvazione",
+"{0}، دون سبب ودون موافقة"
+],
 "{0}, prepared": [
 "{0}, zubereitet",
 "{0}, preparato",
@@ -12498,6 +14288,11 @@
 "{0}, Servicekraft",
 "{0}, cameriere",
 "{0}، نادل"
+],
+"{0}, supervisor": [
+"{0}, Supervisor",
+"{0}, supervisore",
+"{0}، مشرف"
 ],
 "{0}, {1} day check": [
 "{0}, {1}-Tage-Prüfung",
@@ -12528,6 +14323,11 @@
 "{0}, {1} verkauft",
 "{0}, {1} venduti",
 "{0}، {1} مباع"
+],
+"{0}, {1} to {2}": [
+"{0}, {1} bis {2}",
+"{0}, dal {1} al {2}",
+"{0}، من {1} إلى {2}"
 ],
 "{0}, {1} to {2}, close": [
 "{0}, {1} bis {2}, Schluss",

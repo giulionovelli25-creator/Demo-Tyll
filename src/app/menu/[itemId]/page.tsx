@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { TrendChart } from "@/components/charts";
 import { Badge, Button, Delta, EmptyState, Note, PageHeader, Panel, Stat, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
-import { ingredientById, itemById, outletById, outletLabel, propertyById } from "@/lib/data/catalog";
+import { ingredientById, itemById, outletById, outletSells, outletLabel, propertyById } from "@/lib/data/catalog";
 import { computeTotals, itemPerformance, type Sel } from "@/lib/domain/metrics";
 import { ingredientCostAt, itemEconomics, recipeBreakdown } from "@/lib/domain/pricing";
 import { useApi, useCtx, useView } from "@/lib/hooks";
@@ -20,7 +20,7 @@ export default function MenuItemPage() {
   const [onlyChanged, setOnlyChanged] = useState(false);
   const [shown, setShown] = useState(25);
 
-  const selling = useMemo(() => sel.outletIds.filter((id) => outletById[id].menu.some((m) => m.itemId === itemId)), [sel.outletIds, itemId]);
+  const selling = useMemo(() => sel.outletIds.filter((id) => outletSells(id, itemId)), [sel.outletIds, itemId]);
   const row = useMemo(() => itemPerformance(ctx, { ...sel, dept: "all" }).find((r) => r.itemId === itemId), [ctx, sel, itemId]);
   const byOutlet = useMemo(
     () => selling.map((id) => ({ id, econ: itemEconomics(itemId, id, DEMO_TODAY, ctx.overrides), perf: itemPerformance(ctx, { ...sel, dept: "all", outletIds: [id] }).find((r) => r.itemId === itemId) })),

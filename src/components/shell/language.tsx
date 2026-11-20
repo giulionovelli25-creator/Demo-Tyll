@@ -3,6 +3,7 @@ import { Languages } from "lucide-react";
 import { useEffect } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { MIX_LABELS } from "@/lib/domain/till-rules";
 import { INGREDIENTS, MENU_ITEMS, OUTLETS, PROPERTIES, STAFF, SUPPLIERS, USERS } from "@/lib/data/catalog";
 import { HISTORY_EXPENSES } from "@/lib/data/finance-rules";
 import { startTranslating } from "@/lib/i18n/dom";
@@ -28,8 +29,8 @@ export function LanguageLayer() {
     import("@/lib/i18n/messages.json").then((m) => {
       if (cancelled) return;
       const translator = new Translator(lang, m.default as unknown as Messages, {
-        // The bottle labels of Over pouring and empty bottle scans read like items in a sentence.
-        items: [...INGREDIENTS, ...MENU_ITEMS, ...POUR_SKUS].map((x) => x.name),
+        // The bottle labels of Over pouring, empty bottle scans and the till rule check read like items in a sentence.
+        items: [...INGREDIENTS, ...MENU_ITEMS, ...POUR_SKUS, ...MIX_LABELS].map((x) => x.name),
         names: [...[...OUTLETS, ...PROPERTIES, ...SUPPLIERS, ...STAFF, ...USERS].map((x) => x.name), ...HISTORY_EXPENSES.map((x) => x.supplier)],
       });
       (window as unknown as { __tyllMissing?: Set<string> }).__tyllMissing = translator.missing;

@@ -3,7 +3,7 @@ import { RecordFields, Timeline, type TimelineItem } from "@/components/timeline
 import { Badge, cn } from "@/components/ui";
 import { itemById, outletById, propertyById, staffById } from "@/lib/data/catalog";
 import { classifyRoomCharge, folioTime } from "@/lib/domain/detect";
-import { lineValue, orderTimeline, orderTotals } from "@/lib/domain/orders";
+import { belowMenu, lineValue, orderTimeline, orderTotals } from "@/lib/domain/orders";
 import type { Order, RoomCharge } from "@/lib/types";
 import { fmtMoney, fmtTime } from "@/lib/util";
 
@@ -11,6 +11,8 @@ const useMoney = (order: Order) => {
   const currency = propertyById[outletById[order.outletId].propertyId].currency;
   return (n: number) => fmtMoney(n, currency, { decimals: n % 1 !== 0 });
 };
+
+const TILL_BADGE = { open_item: "open item", misc: "misc button", override: "price set by hand" } as const;
 
 /** Original order and final bill, side by side. */
 export function OrderVersusBill({ order }: { order: Order }) {
@@ -28,7 +30,10 @@ export function OrderVersusBill({ order }: { order: Order }) {
               <li key={i} className="flex items-baseline justify-between gap-3 py-2">
                 <span className={cn(gone && "text-steel")}>
                   {l.qty} × {itemById[l.itemId].name}
-                  {l.state === "removed_post" && !order.voided && <Badge tone="warn" className="ms-2 !py-0">removed after dispatch</Badge>}
+                  {l.state === "removed_post" && !order.voided && (order.reopened && (l.removedMin ?? 0) >= order.reopened.min
+                    ? <Badge tone="warn" className="ms-2 !py-0">taken off after payment</Badge>
+                    : <Badge tone="warn" className="ms-2 !py-0">removed after dispatch</Badge>)}
+                  {l.till && <Badge tone={belowMenu(l) && !l.till.approvedBy ? "warn" : "neutral"} className="ms-2 !py-0">{TILL_BADGE[l.till.kind]}, menu {money(l.till.menuPrice)}</Badge>}
                   {l.state === "removed_pre" && <Badge className="ms-2 !py-0">removed before dispatch</Badge>}
                   {l.state === "comped" && <Badge className="ms-2 !py-0">complimentary</Badge>}
                 </span>
@@ -55,6 +60,7 @@ export function OrderVersusBill({ order }: { order: Order }) {
             {t.refunds > 0 && <li className="flex justify-between py-2"><span>Refund after payment</span><span className="num">{money(-t.refunds)}</span></li>}
           </ul>
         )}
+        {order.reopened && <p className="num mt-2 flex justify-between border-t border-line pt-2 text-sm"><span className="text-steel">Paid first, before the bill was reopened</span>{money(order.reopened.paid)}</p>}
         <p className="num mt-2 flex justify-between border-t border-line pt-2 text-sm"><span className="text-steel">{order.voided ? "Charged" : order.payment === "room" ? `Charged to room ${order.room}` : `Paid by ${order.payment}`}</span>{money(t.net)}</p>
         {t.original - t.net > 0.005 && <p className="num mt-1 flex justify-between text-sm text-warn"><span>Difference from the original order</span>{money(t.original - t.net)}</p>}
       </div>

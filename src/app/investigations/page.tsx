@@ -8,7 +8,7 @@ import { StripTrend } from "@/components/charts";
 import { byDay, versus, weekSums } from "@/lib/domain/trends";
 import { outletById, outletLabel, propertyById } from "@/lib/data/catalog";
 import { can } from "@/lib/domain/access";
-import { ROOM_TYPES, TYPE_LABEL, datedFlags } from "@/lib/domain/detect";
+import { ROOM_TYPES, TILL_TYPES, TYPE_LABEL, datedFlags } from "@/lib/domain/detect";
 import { exceptionInSel } from "@/lib/domain/metrics";
 import { assignablePeople, personName, useInvestigations, useView } from "@/lib/hooks";
 import { useDemo } from "@/lib/store";
@@ -46,7 +46,7 @@ export default function MoneyBackListPage() {
     if (inPeriod === "period") list = list.filter((i) => i.date >= sel.range.from && i.date <= sel.range.to);
     if (status === "open") list = list.filter((i) => i.status !== "closed");
     if (status === "closed") list = list.filter((i) => i.status === "closed");
-    if (type !== "all") list = list.filter((i) => (type === "room" ? ROOM_TYPES.includes(i.type) : i.type === type));
+    if (type !== "all") list = list.filter((i) => (type === "room" ? ROOM_TYPES.includes(i.type) : type === "till" ? TILL_TYPES.includes(i.type) : i.type === type));
     if (outcome !== "all") list = list.filter((i) => i.outcome === outcome);
     if (assignee !== "all") list = list.filter((i) => (assignee === "none" ? !i.assigneeId : i.assigneeId === assignee));
     const value = (i: Investigation): number | string =>
@@ -123,6 +123,7 @@ export default function MoneyBackListPage() {
           <Select label="Type" hideLabel className="w-[210px]" value={type} onChange={(e) => setType(e.target.value)}>
             <option value="all">All types</option>
             <option value="room">All room charges</option>
+            <option value="till">All till rules</option>
             {(Object.keys(TYPE_LABEL) as ExceptionType[]).map((t) => <option key={t} value={t}>{TYPE_LABEL[t]}</option>)}
           </Select>
           <Select label="Outcome" hideLabel className="w-[190px]" value={outcome} onChange={(e) => { setOutcome(e.target.value); if (e.target.value !== "all") setStatus("closed"); }}>
@@ -179,10 +180,10 @@ export default function MoneyBackListPage() {
                           <span className="mt-0.5 block text-xs text-steel">{TYPE_LABEL[i.type]} · {i.id.replace("EX-", "")}</span>
                         </Td>
                         <Td>{i.outletId ? outletLabel(i.outletId) : <span className="text-steel">{propertyById[i.propertyId].name}</span>}</Td>
-                        <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}{i.type === "stock_shortfall" ? ", count" : i.type === "bought_not_used" ? ", 30 day check" : `, ${fmtTime(i.min)}`}</Td>
+                        <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}{i.type === "stock_shortfall" ? ", count" : i.type === "bought_not_used" ? ", 30 day check" : i.type === "cheaper_item_rung" ? ", weekly check" : `, ${fmtTime(i.min)}`}</Td>
                         <Td className={cn(!i.assigneeId && "text-steel")}>{personName(i.assigneeId)}</Td>
                         <Td className={cn("num whitespace-nowrap", late ? "text-neg" : "text-graphite")}>{i.deadline ? fmtDate(i.deadline) : <span className="text-fog">not set</span>}{late && <span className="block text-xs">overdue</span>}</Td>
-                        <Td align="right">{money(toDisplay(i, i.exposure))}{i.type === "bought_not_used" && <span className="block text-xs text-steel">estimate</span>}</Td>
+                        <Td align="right">{money(toDisplay(i, i.exposure))}{(i.type === "bought_not_used" || i.type === "cheaper_item_rung") && <span className="block text-xs text-steel">estimate</span>}</Td>
                         <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
                         <Td>
                           {i.outcome ? (

@@ -1,5 +1,5 @@
 // Financial aggregation. Every figure on every screen comes from these functions.
-import { MENU_ITEMS, OUTLETS, itemById, outletById, propertyById, ingredientById } from "../data/catalog";
+import { MENU_ITEMS, OUTLETS, itemById, outletById, outletSells, propertyById, ingredientById } from "../data/catalog";
 import type { Dataset } from "../data/generate";
 import type { CountRecord, Currency, DateRange, DayItem, DayOutlet, Dept, Exception, Investigation, InvestigationState, WasteLog } from "../types";
 import { DEMO_NOW_MIN, DEMO_TODAY, eachDay, fxRate, previousRange } from "../util";
@@ -288,7 +288,7 @@ export function itemPerformance(ctx: Ctx, sel: Sel): ItemRow[] {
   const startDate = prevSel(sel).range.from;
   return MENU_ITEMS.flatMap((item) => {
     if (sel.dept !== "all" && item.dept !== sel.dept) return [];
-    const selling = sel.outletIds.filter((id) => outletById[id].menu.some((m) => m.itemId === item.id));
+    const selling = sel.outletIds.filter((id) => outletSells(id, item.id));
     if (selling.length === 0) return [];
     const s = now.get(item.id) ?? { units: 0, revenue: 0, net: 0, cost: 0 };
     const b = before.get(item.id);

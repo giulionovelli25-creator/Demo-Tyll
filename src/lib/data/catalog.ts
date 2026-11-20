@@ -205,6 +205,11 @@ export const MENU_ITEMS: MenuItem[] = [
     ["coffee", 0.015], ["milk", 0.08], ["brioche", 1], ["butter", 0.01], ["orange", 0.2],
   ]),
   item("winepkg", "Banquet wine package", "باقة النبيذ للولائم", "beverage", "Banquets", 24, 2, [["wine", 0.375]]),
+  // Bar Azulejo's premium serves (overnight feature 5). They are not in any outlet's menu weights, so the simulated orders
+  // are drawn exactly as before; `barMix` in generate.ts adds them to bar bills. Standard cost until recipes are built.
+  item("reserve", "Douro reserve red, glass", "نبيذ دورو الأحمر المعتق، كأس", "beverage", "Wine and beer", 16, 2, 4.6),
+  item("gintonic", "Gin and tonic", "جين وتونيك", "beverage", "Cocktails", 12, 3, 2.2),
+  item("gintonic2", "Gin and tonic, double", "جين وتونيك، مزدوج", "beverage", "Cocktails", 18, 3, 3.9),
 ];
 
 /** Supplier price changes during the demo period (euros per unit). */
@@ -235,6 +240,7 @@ export const OUTLETS: Outlet[] = [
   {
     id: "lis-lobby", propertyId: "lis", name: "Bar Azulejo", kind: "Lobby bar", code: "AZU", priceFactor: 1,
     menu: menu([["wine", 16], ["martini", 8], ["mojito", 8], ["beer", 10], ["cappuccino", 9], ["oj", 4], ["coke", 6], ["still", 7], ["sparkling", 4], ["club", 3], ["mezze", 3], ["fries", 5], ["cheesecake", 2]]),
+    sells: ["reserve", "gintonic", "gintonic2"],
     baseOrders: 74, linesPerOrder: 2.8, openMin: 10 * 60, closeMin: 23 * 60 + 59, roomChargeShare: 0.25,
     laborFixed: 780, laborVariable: 0.07, opexDaily: 290, targetMinutes: 10, reservable: false,
   },
@@ -341,6 +347,8 @@ export function storeOwner(propertyId: string, ingredientId: string): string | n
 const index = <T extends { id: string }>(arr: T[]) => Object.fromEntries(arr.map((x) => [x.id, x])) as Record<string, T>;
 export const propertyById = index(PROPERTIES);
 export const outletById = index(OUTLETS);
+/** Whether an outlet sells an item: on its menu, or one of the items it sells beyond the weighted menu. */
+export const outletSells = (outletId: string, itemId: string) => outletById[outletId].menu.some((m) => m.itemId === itemId) || !!outletById[outletId].sells?.includes(itemId);
 export const ingredientById = index(INGREDIENTS);
 export const itemById = index(MENU_ITEMS);
 export const supplierById = index(SUPPLIERS);

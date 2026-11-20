@@ -1,9 +1,18 @@
 // Order arithmetic shared by the dashboard, Money, Investigations and Reports.
 import { itemById, staffById } from "../data/catalog";
 import type { DayItem, DayOutlet, Order, OrderLine, OrderTotals } from "../types";
-import { DEMO_NOW_MIN, round2 } from "../util";
+import { DEMO_NOW_MIN, fmtTime, round2 } from "../util";
 
 export const lineValue = (l: OrderLine) => l.qty * l.unitPrice;
+
+/** A price set at the till more than this share below the menu price needs a manager's approval (POLICY.priceBelowShare). */
+export const PRICE_BELOW_SHARE = 0.1;
+/** A line's price is more than the agreed share below the menu price of the item on its ticket. */
+export const belowMenu = (l: OrderLine) => !!l.till && l.unitPrice < l.till.menuPrice * (1 - PRICE_BELOW_SHARE) - 1e-9;
+/** How a price was set at the till, in words: "rung as an open item". */
+export const TILL_PRICE_WORDS = { open_item: "rung as an open item", misc: "rung on the misc button", override: "price changed by hand" } as const;
+/** A clock time with seconds, for entries the till records to the second: "9:14:07 PM". */
+export const fmtClock = (min: number, sec = 0) => fmtTime(min).replace(" ", `:${String(sec).padStart(2, "0")} `);
 
 export function orderTotals(o: Order): OrderTotals {
   let original = 0;
@@ -73,7 +82,7 @@ export function buildRollups(orders: readonly Order[]): { dayItems: DayItem[]; d
 
 export interface TimelineEvent {
   min: number;
-  kind: "created" | "entered" | "sent" | "completed" | "removed" | "comped" | "discount" | "bill" | "paid" | "refund" | "void";
+  kind: "created" | "entered" | "sent" | "completed" | "removed" | "comped" | "discount" | "bill" | "paid" | "refund" | "void" | "reopened";
   title: string;
   detail?: string;
   flagged?: boolean;
@@ -91,15 +100,23 @@ export function orderTimeline(o: Order): TimelineEvent[] {
   ];
   for (const l of o.lines) {
     const name = `${l.qty > 1 ? `${l.qty} × ` : ""}${itemById[l.itemId].name}`;
-    ev.push({ min: l.enteredMin, kind: "entered", title: `${name} entered`, line: l });
+    const price = (n: number) => (n % 1 ? n.toFixed(2) : String(n));
+    if (l.till) {
+      ev.push({
+        min: l.enteredMin, kind: "entered", title: `${name} ${TILL_PRICE_WORDS[l.till.kind]} at ${price(l.unitPrice)}`,
+        detail: `Menu price ${price(l.till.menuPrice)} · reason: ${l.till.reason ?? "none recorded"} · approval: ${l.till.approvedBy ? who(l.till.approvedBy) : "none recorded"}`,
+        flagged: l.state === "kept" && belowMenu(l) && !l.till.approvedBy, line: l,
+      });
+    } else ev.push({ min: l.enteredMin, kind: "entered", title: `${name} entered`, ...(l.enteredSec !== undefined ? { detail: `At ${fmtClock(l.enteredMin, l.enteredSec)}` } : {}), line: l });
     if (l.sentMin !== undefined) ev.push({ min: l.sentMin, kind: "sent", title: `${name} sent to ${stationOf(l.itemId)}`, detail: "Preparation ticket printed", line: l });
     if (l.completedMin !== undefined) ev.push({ min: l.completedMin, kind: "completed", title: `${name} marked ready`, detail: "Kitchen display", line: l });
     if ((l.state === "removed_pre" || l.state === "removed_post") && l.removedMin !== undefined) {
       const after = l.state === "removed_post";
+      const reopened = !!o.reopened && after && l.removedMin >= o.reopened.min;
       ev.push({
         min: l.removedMin,
         kind: "removed",
-        title: `${name} removed from the order`,
+        title: reopened ? `${name} taken off the paid bill` : `${name} removed from the order`,
         detail: `POS login ${who(l.removedBy)} · reason: ${l.reason ?? "none recorded"} · approval: ${l.approvedBy ? who(l.approvedBy) : "none recorded"}`,
         flagged: after && !l.approvedBy,
         line: l,
@@ -136,7 +153,13 @@ export function orderTimeline(o: Order): TimelineEvent[] {
       flagged: !o.discountReason || !o.discountApprovedBy,
     });
   }
-  ev.push({ min: o.closeMin - 1, kind: "bill", title: "Final bill produced", detail: `Total ${t.net + t.refunds}` });
+  ev.push({ min: o.closeMin - 1, kind: "bill", title: o.reopened ? "Bill produced" : "Final bill produced", detail: `Total ${o.reopened ? o.reopened.paid : t.net + t.refunds}` });
+  if (o.reopened) {
+    const r = o.reopened;
+    const lower = r.paid - t.net > 0.005;
+    ev.push({ min: r.min, kind: "reopened", title: "Bill reopened after payment", detail: `POS login ${who(r.by)}${r.change ? ` · ${r.change.toLowerCase()}` : ""} · reason: ${r.reason ?? "none recorded"} · approval: ${r.approvedBy ? who(r.approvedBy) : "none recorded"}`, flagged: lower && !r.approvedBy });
+    ev.push({ min: r.closedMin, kind: "bill", title: "Bill closed again", detail: `Total ${round2(t.net + t.refunds)}, ${lower ? `${round2(r.paid - t.net)} less than paid` : "the same as paid"}` });
+  }
   ev.push({
     min: o.closeMin,
     kind: "paid",
