@@ -64,6 +64,11 @@
 "Una riga del folio su una camera diversa da quella su cui è stato firmato il conto.",
 "بند في حساب غرفة غير الغرفة التي وُقعت عليها الفاتورة."
 ],
+"A low figure is a prompt to coach, not proof of anything else.": [
+"Ein niedriger Wert ist ein Anlass zum Coaching, kein Beweis für etwas anderes.",
+"Un valore basso è uno spunto per il coaching, non la prova di altro.",
+"الرقم المنخفض دعوة إلى التوجيه، وليس دليلًا على أي شيء آخر."
+],
 "A managed database with backups in place of the local file store and browser storage.": [
 "Eine verwaltete Datenbank mit Backups statt lokaler Dateien und Browserspeicher.",
 "Un database gestito con backup al posto di file locali e memoria del browser.",
@@ -119,6 +124,11 @@
 "Un addebito di {0} per la camera {1} è arrivato sul conto della camera {2}.",
 "وصلت رسوم بقيمة {0} للغرفة {1} إلى فاتورة الغرفة {2}."
 ],
+"About as many drinks per guest as colleagues on the same shifts.": [
+"Etwa so viele Getränke pro Gast wie die Kollegen in denselben Schichten.",
+"Circa tante bevande per ospite quanto i colleghi negli stessi turni.",
+"مشروبات لكل ضيف بقدر الزملاء في الورديات نفسها تقريبًا."
+],
 "About {0} at risk, an estimate until a count confirms it.": [
 "Etwa {0} gefährdet, eine Schätzung, bis eine Zählung sie bestätigt.",
 "Circa {0} a rischio, una stima finché un conteggio non la conferma.",
@@ -143,6 +153,11 @@
 "Über Lieferung oder Preis",
 "Oltre la consegna o il prezzo",
 "أعلى من التوريد أو السعر"
+],
+"Above the team": [
+"Über dem Team",
+"Sopra il team",
+"أعلى من الفريق"
 ],
 "Accounting ledger and payroll": [
 "Hauptbuch und Lohnabrechnung",
@@ -409,6 +424,11 @@
 "Una stima da coperti previsti, eventi e consumi recenti. Dati simulati.",
 "تقدير من الزبائن المتوقعين والفعاليات والاستخدام الأخير. بيانات محاكاة."
 ],
+"An estimate, at the average drink price": [
+"Eine Schätzung, zum durchschnittlichen Getränkepreis",
+"Una stima, al prezzo medio delle bevande",
+"تقدير، بمتوسط سعر المشروب"
+],
 "An independent security review and penetration test.": [
 "Eine unabhängige Sicherheitsprüfung und ein Penetrationstest.",
 "Una revisione di sicurezza indipendente e un penetration test.",
@@ -538,6 +558,11 @@
 "Fragen, ob Bestand an ein anderes Outlet oder das Bankett verliehen wurde.",
 "Chiedi se le scorte sono state prestate a un altro punto vendita o al banqueting.",
 "اسأل عما إذا أُعير المخزون إلى منفذ آخر أو إلى الولائم."
+],
+"Asked the bar to check drinks against bills": [
+"Die Bar gebeten, Getränke mit den Rechnungen abzugleichen",
+"Chiesto al bar di confrontare le bevande con i conti",
+"طُلب من البار مطابقة المشروبات مع الفواتير"
 ],
 "Asparagus": [
 "Spargel",
@@ -759,6 +784,16 @@
 "Bar (bevande)",
 "البار (مشروبات)"
 ],
+"Bartender": [
+"Barkeeper",
+"Barista",
+"ساقي البار"
+],
+"Bartender, {0}. Last {1} days.": [
+"Barkeeper, {0}. Letzte {1} Tage.",
+"Barista, {0}. Ultimi {1} giorni.",
+"ساقي البار، {0}. آخر {1} يومًا."
+],
 "Batch": [
 "Charge",
 "Lotto",
@@ -843,6 +878,11 @@
 "Über die letzte Lieferung hinaus, eine Schätzung",
 "Oltre l'ultima consegna, una stima",
 "ما يتجاوز آخر توريد، تقدير"
+],
+"Bills, till logins and shifts are simulated. Drinks per guest is drinks billed divided by the guests on the bill. Voided bills are left out. Drinks not sold is what colleagues’ pace on the same shifts would have sold, at the outlet’s average drink price: an estimate, not money lost.": [
+"Rechnungen, Kassenanmeldungen und Schichten sind simuliert. Getränke pro Gast sind die berechneten Getränke geteilt durch die Gäste auf der Rechnung. Stornierte Rechnungen bleiben außen vor. Nicht verkaufte Getränke sind, was das Tempo der Kollegen in denselben Schichten verkauft hätte, zum durchschnittlichen Getränkepreis des Outlets: eine Schätzung, kein verlorenes Geld.",
+"Conti, accessi alla cassa e turni sono simulati. Le bevande per ospite sono le bevande fatturate divise per gli ospiti sul conto. I conti annullati sono esclusi. Le bevande non vendute sono quelle che il ritmo dei colleghi negli stessi turni avrebbe venduto, al prezzo medio delle bevande del punto vendita: una stima, non denaro perso.",
+"الفواتير وتسجيلات الدخول إلى نظام البيع والورديات محاكاة. المشروبات لكل ضيف هي المشروبات المحتسبة مقسومة على ضيوف الفاتورة. تُستبعد الفواتير الملغاة. المشروبات التي لم تُبع هي ما كان سيبيعه الزملاء بالوتيرة نفسها في الورديات نفسها، بمتوسط سعر المشروب في المنفذ: تقدير، وليس مالًا مفقودًا."
 ],
 "Blind count": [
 "Blindzählung",
@@ -1103,6 +1143,11 @@
 "Nach Bereich",
 "Per sezione",
 "حسب القسم"
+],
+"By shift": [
+"Nach Schicht",
+"Per turno",
+"حسب الوردية"
 ],
 "By source": [
 "Nach Quelle",
@@ -1444,6 +1489,11 @@
 "Scegli un punto vendita per iniziare",
 "اختر منفذًا للبدء"
 ],
+"Choose an outlet with table service in the outlet selector.": [
+"Wählen Sie in der Outlet-Auswahl ein Outlet mit Tischservice.",
+"Scegli un punto vendita con servizio al tavolo nel selettore.",
+"اختر منفذًا فيه خدمة طاولات من محدد المنافذ."
+],
 "Choose outlet and department": [
 "Outlet und Abteilung wählen",
 "Scegli punto vendita e reparto",
@@ -1514,6 +1564,31 @@
 "Club sandwich",
 "كلوب ساندويتش"
 ],
+"Coach {0}": [
+"{0} coachen",
+"Segui {0}",
+"وجّه {0}"
+],
+"Coached on suggesting drinks": [
+"Gecoacht, Getränke vorzuschlagen",
+"Seguito sul proporre le bevande",
+"تم توجيهه لاقتراح المشروبات"
+],
+"Coached {0}": [
+"Gecoacht {0}",
+"Seguito il {0}",
+"تم التوجيه {0}"
+],
+"Coaching is recorded by the outlet’s managers, who are the only ones to see names here.": [
+"Coaching wird von den Führungskräften des Outlets erfasst, die als Einzige hier Namen sehen.",
+"Il coaching è registrato dai responsabili del punto vendita, gli unici a vedere i nomi qui.",
+"يسجّل التوجيهَ مديرو المنفذ، وهم وحدهم من يرى الأسماء هنا."
+],
+"Coaching recorded on {0}.": [
+"Coaching erfasst am {0}.",
+"Coaching registrato il {0}.",
+"سُجّل التوجيه في {0}."
+],
 "Coca-Cola": [
 "Coca-Cola",
 "Coca-Cola",
@@ -1553,6 +1628,21 @@
 "Kaffeelikör",
 "Liquore al caffè",
 "ليكيور القهوة"
+],
+"Colleagues": [
+"Kollegen",
+"Colleghi",
+"الزملاء"
+],
+"Colleagues on the same shifts {0}": [
+"Kollegen in denselben Schichten {0}",
+"Colleghi negli stessi turni {0}",
+"الزملاء في الورديات نفسها {0}"
+],
+"Colleagues on the same shifts {0} · {1} guests": [
+"Kollegen in denselben Schichten {0} · {1} Gäste",
+"Colleghi negli stessi turni {0} · {1} ospiti",
+"الزملاء في الورديات نفسها {0} · {1} ضيفًا"
 ],
 "Colours": [
 "Farben",
@@ -2004,6 +2094,21 @@
 "Giorno dell'evento",
 "يوم الحدوث"
 ],
+"Day shift, last {0} days. Most are guests who did not want a drink. Many more than colleagues on the same shifts is worth a word with the waiter, and with the bar.": [
+"Tagschicht, letzte {0} Tage. Meist sind es Gäste, die kein Getränk wollten. Deutlich mehr als bei den Kollegen in denselben Schichten ist ein Gespräch mit der Servicekraft und mit der Bar wert.",
+"Turno di giorno, ultimi {0} giorni. Per lo più sono ospiti che non volevano bere. Molti più dei colleghi negli stessi turni meritano una parola con il cameriere e con il bar.",
+"وردية النهار، آخر {0} يومًا. معظمهم ضيوف لم يرغبوا في مشروب. إذا كانت أكثر بكثير مما لدى الزملاء في الورديات نفسها فالأمر يستحق حديثًا مع النادل ومع البار."
+],
+"Day shifts at {0}": [
+"Tagschichten im {0}",
+"Turni di giorno al {0}",
+"ورديات النهار في {0}"
+],
+"Day shifts: {0} drinks per guest, against {1} for colleagues on the same shifts. About {2} drinks fewer, {3} at the average drink price, an estimate.": [
+"Tagschichten: {0} Getränke pro Gast, gegen {1} bei den Kollegen in denselben Schichten. Etwa {2} Getränke weniger, {3} zum durchschnittlichen Getränkepreis, eine Schätzung.",
+"Turni di giorno: {0} bevande per ospite, contro {1} dei colleghi negli stessi turni. Circa {2} bevande in meno, {3} al prezzo medio delle bevande, una stima.",
+"ورديات النهار: {0} مشروب لكل ضيف، مقابل {1} لدى الزملاء في الورديات نفسها. نحو {2} مشروبًا أقل، {3} بمتوسط سعر المشروب، تقديرًا."
+],
 "Days of cover": [
 "Reichweite in Tagen",
 "Giorni di copertura",
@@ -2239,6 +2344,16 @@
 "Bevande",
 "المشروبات"
 ],
+"Drinks billed per guest each day for the last {0} days. {1} over the period shown.": [
+"Berechnete Getränke pro Gast an jedem Tag der letzten {0} Tage. {1} im gezeigten Zeitraum.",
+"Bevande fatturate per ospite ogni giorno negli ultimi {0} giorni. {1} nel periodo mostrato.",
+"المشروبات المحتسبة لكل ضيف يوميًا خلال آخر {0} يومًا. {1} خلال الفترة المعروضة."
+],
+"Drinks billed per guest each day, every waiter at the outlets in view.": [
+"Berechnete Getränke pro Gast an jedem Tag, alle Servicekräfte der angezeigten Outlets.",
+"Bevande fatturate per ospite ogni giorno, tutti i camerieri dei punti vendita mostrati.",
+"المشروبات المحتسبة لكل ضيف يوميًا، لكل النُدُل في المنافذ المعروضة."
+],
 "Drinks control": [
 "Getränkekontrolle",
 "Controllo bevande",
@@ -2253,6 +2368,61 @@
 "Nicht berechnete Getränke",
 "Bevande non addebitate",
 "مشروبات غير مفوترة"
+],
+"Drinks not sold, to coach": [
+"Nicht verkaufte Getränke, für Coaching",
+"Bevande non vendute, da seguire",
+"مشروبات لم تُبع، للتوجيه"
+],
+"Drinks per guest": [
+"Getränke pro Gast",
+"Bevande per ospite",
+"المشروبات لكل ضيف"
+],
+"Drinks per guest by waiter": [
+"Getränke pro Gast nach Servicekraft",
+"Bevande per ospite per cameriere",
+"المشروبات لكل ضيف حسب النادل"
+],
+"Drinks per guest by waiter could not load.": [
+"Getränke pro Gast nach Servicekraft konnten nicht geladen werden.",
+"Impossibile caricare le bevande per ospite per cameriere.",
+"تعذّر تحميل المشروبات لكل ضيف حسب النادل."
+],
+"Drinks per guest by waiter, last {0} days. Choose a waiter to see the tables and to coach.": [
+"Getränke pro Gast nach Servicekraft, letzte {0} Tage. Wählen Sie eine Servicekraft, um die Tische zu sehen und zu coachen.",
+"Bevande per ospite per cameriere, ultimi {0} giorni. Scegli un cameriere per vedere i tavoli e seguirlo.",
+"المشروبات لكل ضيف حسب النادل، آخر {0} يومًا. اختر نادلًا لرؤية الطاولات ولتوجيهه."
+],
+"Drinks per guest by waiter, last {0} days. Choose a waiter to see the tables.": [
+"Getränke pro Gast nach Servicekraft, letzte {0} Tage. Wählen Sie eine Servicekraft, um die Tische zu sehen.",
+"Bevande per ospite per cameriere, ultimi {0} giorni. Scegli un cameriere per vedere i tavoli.",
+"المشروبات لكل ضيف حسب النادل، آخر {0} يومًا. اختر نادلًا لرؤية الطاولات."
+],
+"Drinks per guest for each waiter on the day shift at {0}, against the team average of {1}.": [
+"Getränke pro Gast je Servicekraft in der Tagschicht im {0}, gegen den Teamdurchschnitt von {1}.",
+"Bevande per ospite per ogni cameriere nel turno di giorno al {0}, contro la media del team di {1}.",
+"المشروبات لكل ضيف لكل نادل في وردية النهار في {0}، مقابل متوسط الفريق البالغ {1}."
+],
+"Drinks per guest for each waiter on the evening shift at {0}, against the team average of {1}.": [
+"Getränke pro Gast je Servicekraft in der Abendschicht im {0}, gegen den Teamdurchschnitt von {1}.",
+"Bevande per ospite per ogni cameriere nel turno serale al {0}, contro la media del team di {1}.",
+"المشروبات لكل ضيف لكل نادل في الوردية المسائية في {0}، مقابل متوسط الفريق البالغ {1}."
+],
+"Drinks per guest for each waiter on the late night shift at {0}, against the team average of {1}.": [
+"Getränke pro Gast je Servicekraft in der Spätschicht im {0}, gegen den Teamdurchschnitt von {1}.",
+"Bevande per ospite per ogni cameriere nel turno di notte al {0}, contro la media del team di {1}.",
+"المشروبات لكل ضيف لكل نادل في الوردية الليلية في {0}، مقابل متوسط الفريق البالغ {1}."
+],
+"Drinks per guest, last {0} days": [
+"Getränke pro Gast, letzte {0} Tage",
+"Bevande per ospite, ultimi {0} giorni",
+"المشروبات لكل ضيف، آخر {0} يومًا"
+],
+"Drinks poured and not billed are on Over pouring": [
+"Ausgeschenkte, nicht berechnete Getränke stehen unter Überausschank",
+"Le bevande versate e non fatturate sono in Mescita eccessiva",
+"المشروبات المسكوبة غير المحتسبة في صفحة السكب الزائد"
 ],
 "Drinks poured, not billed": [
 "Ausgeschenkt, nicht berechnet",
@@ -2298,6 +2468,11 @@
 "Doppelt",
 "Duplicato",
 "مكرر"
+],
+"Each bill counts for the waiter whose till login rang it. Drinks are the drinks billed; complimentary and removed ones are not sold.": [
+"Jede Rechnung zählt für die Servicekraft, unter deren Kassenanmeldung sie gebucht wurde. Getränke sind die berechneten Getränke; kostenlose und entfernte sind nicht verkauft.",
+"Ogni conto conta per il cameriere con il cui accesso alla cassa è stato battuto. Le bevande sono quelle fatturate; quelle omaggio e rimosse non sono vendute.",
+"تُحسب كل فاتورة للنادل الذي سُجّلت بدخوله إلى نظام البيع. المشروبات هي المشروبات المحتسبة؛ المجانية والمحذوفة لم تُبع."
 ],
 "Each bill signed to a room against the guest folio: missing, a different amount, the wrong room or after check-out.": [
 "Jede auf ein Zimmer unterschriebene Rechnung gegen das Gästefolio: fehlend, anderer Betrag, falsches Zimmer oder nach Check-out.",
@@ -2348,6 +2523,21 @@
 "Jede Lieferantenrechnung wird dreifach geprüft: was bestellt wurde, was ankam und was berechnet wurde. Eine Differenz ist ein zu prüfender Fakt, kein Beweis für Fehlverhalten.",
 "Ogni fattura fornitore è verificata in tre modi: cosa è stato ordinato, cosa è arrivato e cosa è stato fatturato. Una differenza è un fatto da verificare, non la prova di un illecito.",
 "تُفحص كل فاتورة مورد بثلاث طرق: ما طُلب وما وصل وما فُوتر. الفرق حقيقة للتحقق وليس دليلًا على مخالفة."
+],
+"Each waiter against colleagues at the same outlet on the same shift, so a busy night counts for no one. A low figure is a prompt to coach, not proof. Simulated data.": [
+"Jede Servicekraft im Vergleich mit den Kollegen im selben Outlet und in derselben Schicht, so zählt ein voller Abend für niemanden. Ein niedriger Wert ist ein Anlass zum Coaching, kein Beweis. Simulierte Daten.",
+"Ogni cameriere confrontato con i colleghi dello stesso punto vendita e dello stesso turno, così una serata piena non conta per nessuno. Un valore basso è uno spunto per il coaching, non una prova. Dati simulati.",
+"كل نادل مقارنة بزملائه في المنفذ نفسه وفي الوردية نفسها، فلا تُحسب ليلة مزدحمة لأحد أو عليه. الرقم المنخفض دعوة إلى التوجيه، وليس دليلًا. بيانات محاكاة."
+],
+"Each waiter against colleagues on the same outlet and shift, with the tables that had food and no drink.": [
+"Jede Servicekraft im Vergleich mit den Kollegen im selben Outlet und in derselben Schicht, mit den Tischen, die Essen und kein Getränk hatten.",
+"Ogni cameriere confrontato con i colleghi dello stesso punto vendita e turno, con i tavoli che hanno avuto cibo e nessuna bevanda.",
+"كل نادل مقارنة بزملائه في المنفذ والوردية نفسيهما، مع الطاولات التي طلبت طعامًا دون مشروب."
+],
+"Each waiter is compared with the colleagues who worked the same outlet on the same days and shift, so a busy Saturday night or a quiet breakfast counts for no one.": [
+"Jede Servicekraft wird mit den Kollegen verglichen, die im selben Outlet an denselben Tagen und in derselben Schicht gearbeitet haben, so zählt ein voller Samstagabend oder ein ruhiges Frühstück für niemanden.",
+"Ogni cameriere è confrontato con i colleghi che hanno lavorato nello stesso punto vendita negli stessi giorni e turni, così un sabato sera pieno o una colazione tranquilla non conta per nessuno.",
+"يُقارن كل نادل بالزملاء الذين عملوا في المنفذ نفسه في الأيام والوردية نفسها، فلا تُحسب ليلة سبت مزدحمة أو إفطار هادئ لأحد أو عليه."
 ],
 "Early access": [
 "Früher Zugang",
@@ -2494,6 +2684,21 @@
 "Sera",
 "المساء"
 ],
+"Evening shift, last {0} days. Most are guests who did not want a drink. Many more than colleagues on the same shifts is worth a word with the waiter, and with the bar.": [
+"Abendschicht, letzte {0} Tage. Meist sind es Gäste, die kein Getränk wollten. Deutlich mehr als bei den Kollegen in denselben Schichten ist ein Gespräch mit der Servicekraft und mit der Bar wert.",
+"Turno serale, ultimi {0} giorni. Per lo più sono ospiti che non volevano bere. Molti più dei colleghi negli stessi turni meritano una parola con il cameriere e con il bar.",
+"الوردية المسائية، آخر {0} يومًا. معظمهم ضيوف لم يرغبوا في مشروب. إذا كانت أكثر بكثير مما لدى الزملاء في الورديات نفسها فالأمر يستحق حديثًا مع النادل ومع البار."
+],
+"Evening shifts at {0}": [
+"Abendschichten im {0}",
+"Turni serali al {0}",
+"الورديات المسائية في {0}"
+],
+"Evening shifts: {0} drinks per guest, against {1} for colleagues on the same shifts. About {2} drinks fewer, {3} at the average drink price, an estimate.": [
+"Abendschichten: {0} Getränke pro Gast, gegen {1} bei den Kollegen in denselben Schichten. Etwa {2} Getränke weniger, {3} zum durchschnittlichen Getränkepreis, eine Schätzung.",
+"Turni serali: {0} bevande per ospite, contro {1} dei colleghi negli stessi turni. Circa {2} bevande in meno, {3} al prezzo medio delle bevande, una stima.",
+"الورديات المسائية: {0} مشروب لكل ضيف، مقابل {1} لدى الزملاء في الورديات نفسها. نحو {2} مشروبًا أقل، {3} بمتوسط سعر المشروب، تقديرًا."
+],
 "Event": [
 "Event",
 "Evento",
@@ -2583,6 +2788,16 @@
 "Jede von Tyll markierte Transaktion, wer zuständig ist und was daraus wurde. Geteilt von Eigentümern, Finanzen und Outlet-Leitungen.",
 "Ogni transazione segnalata da Tyll, chi ne è responsabile e com'è finita. Condivisa da proprietari, finanza e responsabili.",
 "كل معاملة أشار إليها Tyll، ومن المسؤول عنها، وما نتج عنها. مشتركة بين المالكين والمالية ومديري المنافذ."
+],
+"Every waiter in line with colleagues": [
+"Alle Servicekräfte im Rahmen der Kollegen",
+"Tutti i camerieri in linea con i colleghi",
+"كل النُدُل على مستوى زملائهم"
+],
+"Every waiter, every shift": [
+"Jede Servicekraft, jede Schicht",
+"Ogni cameriere, ogni turno",
+"كل نادل، كل وردية"
 ],
 "Everything matched. Nothing to look at.": [
 "Alles stimmt. Nichts zu prüfen.",
@@ -2919,6 +3134,11 @@
 "Per esempio: una cassa era nel frigo sul retro",
 "مثال: كان صندوق في الثلاجة الخلفية"
 ],
+"For example: suggest a drink when taking the food order": [
+"Zum Beispiel: beim Aufnehmen der Essensbestellung ein Getränk vorschlagen",
+"Per esempio: proporre una bevanda quando si prende l'ordine del cibo",
+"مثلًا: اقترح مشروبًا عند أخذ طلب الطعام"
+],
 "For example: the menu serves {0}": [
 "Zum Beispiel: Die Karte sieht {0} vor",
 "Per esempio: il menu serve {0}",
@@ -3179,6 +3399,11 @@
 "Ospiti",
 "الضيوف"
 ],
+"Guests on the bills compared.": [
+"Gäste auf den verglichenen Rechnungen.",
+"Ospiti sui conti confrontati.",
+"الضيوف في الفواتير المقارنة."
+],
 "Guests per outlet": [
 "Gäste pro Outlet",
 "Ospiti per punto vendita",
@@ -3334,6 +3559,11 @@
 "Responsabile housekeeping",
 "مدير التلشبونةر الفندقي"
 ],
+"How Tyll compares": [
+"Wie Tyll vergleicht",
+"Come confronta Tyll",
+"كيف يقارن Tyll"
+],
 "How Tyll forecasts": [
 "So prognostiziert Tyll",
 "Come prevede Tyll",
@@ -3408,6 +3638,11 @@
 "Wenn die Karte nicht belastet werden kann, diesen Fall als Verlust schließen, damit er einmal gezählt wird.",
 "Se la carta non può essere addebitata, chiudere il caso come perdita così è contato una volta.",
 "إن تعذر التحصيل من البطاقة، أغلق هذه الحالة كخسارة حتى تُحتسب مرة واحدة."
+],
+"In line": [
+"Im Rahmen",
+"In linea",
+"على المستوى"
 ],
 "In review": [
 "In Prüfung",
@@ -3919,6 +4154,26 @@
 "In ritardo",
 "متأخر"
 ],
+"Late night": [
+"Spätschicht",
+"Notte",
+"الوردية الليلية"
+],
+"Late night shift, last {0} days. Most are guests who did not want a drink. Many more than colleagues on the same shifts is worth a word with the waiter, and with the bar.": [
+"Spätschicht, letzte {0} Tage. Meist sind es Gäste, die kein Getränk wollten. Deutlich mehr als bei den Kollegen in denselben Schichten ist ein Gespräch mit der Servicekraft und mit der Bar wert.",
+"Turno di notte, ultimi {0} giorni. Per lo più sono ospiti che non volevano bere. Molti più dei colleghi negli stessi turni meritano una parola con il cameriere e con il bar.",
+"الوردية الليلية، آخر {0} يومًا. معظمهم ضيوف لم يرغبوا في مشروب. إذا كانت أكثر بكثير مما لدى الزملاء في الورديات نفسها فالأمر يستحق حديثًا مع النادل ومع البار."
+],
+"Late night shifts at {0}": [
+"Spätschichten im {0}",
+"Turni di notte al {0}",
+"الورديات الليلية في {0}"
+],
+"Late night shifts: {0} drinks per guest, against {1} for colleagues on the same shifts. About {2} drinks fewer, {3} at the average drink price, an estimate.": [
+"Spätschichten: {0} Getränke pro Gast, gegen {1} bei den Kollegen in denselben Schichten. Etwa {2} Getränke weniger, {3} zum durchschnittlichen Getränkepreis, eine Schätzung.",
+"Turni di notte: {0} bevande per ospite, contro {1} dei colleghi negli stessi turni. Circa {2} bevande in meno, {3} al prezzo medio delle bevande, una stima.",
+"الورديات الليلية: {0} مشروب لكل ضيف، مقابل {1} لدى الزملاء في الورديات نفسها. نحو {2} مشروبًا أقل، {3} بمتوسط سعر المشروب، تقديرًا."
+],
 "Late refund": [
 "Späte Erstattung",
 "Rimborso tardivo",
@@ -4309,6 +4564,11 @@
 "Segnato come controllato da un responsabile",
 "معلَّم كمُتحقق منه من قبل مدير"
 ],
+"Marked to coach when drinks per guest on a shift is {0} or more below those colleagues, the gap is beyond what chance alone produces, and there are at least {1} guests to compare.": [
+"Für Coaching markiert, wenn die Getränke pro Gast in einer Schicht {0} oder mehr unter diesen Kollegen liegen, der Abstand größer ist als der Zufall allein erklärt und mindestens {1} Gäste zum Vergleich da sind.",
+"Segnato da seguire quando le bevande per ospite in un turno sono {0} o più sotto quei colleghi, il divario va oltre il solo caso e ci sono almeno {1} ospiti da confrontare.",
+"يُعلَّم للتوجيه عندما تكون المشروبات لكل ضيف في وردية أقل بنسبة {0} أو أكثر من هؤلاء الزملاء، ويتجاوز الفرق ما تنتجه الصدفة وحدها، ويوجد {1} ضيفًا على الأقل للمقارنة."
+],
 "Matched and recorded as an expense": [
 "Abgeglichen und als Ausgabe erfasst",
 "Abbinata e registrata come spesa",
@@ -4559,6 +4819,11 @@
 "È arrivato più di quanto spieghino vendite e sprechi registrati, oltre quanto l'ultima consegna potrebbe lasciare sullo scaffale.",
 "ورد أكثر مما تفسره المبيعات والهدر المسجل، بما يزيد على ما قد يتركه آخر توريد على الرف."
 ],
+"More drinks per guest than colleagues on the same shifts. Worth asking what works.": [
+"Mehr Getränke pro Gast als die Kollegen in denselben Schichten. Fragen Sie, was funktioniert.",
+"Più bevande per ospite dei colleghi negli stessi turni. Vale la pena chiedere cosa funziona.",
+"مشروبات لكل ضيف أكثر من الزملاء في الورديات نفسها. يستحق أن تسأل عمّا ينجح."
+],
 "More tools": [
 "Weitere Tools",
 "Altri strumenti",
@@ -4668,6 +4933,11 @@
 "Name",
 "Nome",
 "الاسم"
+],
+"Names are shown only to the managers who coach the team.": [
+"Namen sehen nur die Führungskräfte, die das Team coachen.",
+"I nomi sono visibili solo ai responsabili che seguono il team.",
+"تظهر الأسماء فقط للمديرين الذين يوجّهون الفريق."
 ],
 "Needs a closer look": [
 "Braucht einen genaueren Blick",
@@ -4799,6 +5069,11 @@
 "Nessun accredito registrato",
 "لم يُسجل أي رصيد بعد"
 ],
+"No drink, of tables with food": [
+"Ohne Getränk, von Tischen mit Essen",
+"Senza bevande, dei tavoli con cibo",
+"دون مشروب، من الطاولات بطعام"
+],
 "No event is booked in this period.": [
 "In diesem Zeitraum ist kein Event gebucht.",
 "Nessun evento prenotato nel periodo.",
@@ -4869,6 +5144,11 @@
 "Nessun addebito in camera in questa selezione",
 "لا رسوم غرف في هذا الاختيار"
 ],
+"No table service in your selection": [
+"Kein Tischservice in Ihrer Auswahl",
+"Nessun servizio al tavolo nella selezione",
+"لا خدمة طاولات في اختيارك"
+],
 "No transfers in or out are recorded for this outlet in this period.": [
 "Für dieses Outlet sind im Zeitraum keine Umlagerungen erfasst.",
 "Nessun trasferimento registrato per questo punto vendita nel periodo.",
@@ -4893,6 +5173,16 @@
 "Nichts fällig",
 "Nulla in scadenza",
 "لا شيء مستحق"
+],
+"None in the {0} days before": [
+"Keine in den {0} Tagen davor",
+"Nessuno nei {0} giorni precedenti",
+"لا شيء في الـ{0} يومًا السابقة"
+],
+"None in this period.": [
+"Keine in diesem Zeitraum.",
+"Nessuno in questo periodo.",
+"لا شيء في هذه الفترة."
 ],
 "Not accounted for": [
 "Nicht erklärt",
@@ -5139,6 +5429,11 @@
 "Ottobre {0}. Solo spese registrate.",
 "أكتوبر {0}. المصروفات المسجلة فقط."
 ],
+"Of the tables with food on the bill, the share with no drink. The breakfast buffet includes coffee and juice, so it is left out.": [
+"Von den Tischen mit Essen auf der Rechnung der Anteil ohne Getränk. Das Frühstücksbuffet enthält Kaffee und Saft und bleibt deshalb außen vor.",
+"Dei tavoli con cibo sul conto, la quota senza bevande. Il buffet della colazione include caffè e succo, quindi è escluso.",
+"من الطاولات التي في فاتورتها طعام، نسبة التي لا مشروب فيها. بوفيه الإفطار يشمل القهوة والعصير، لذلك يُستبعد."
+],
 "Offline entries stay on this device, out of stock and reports, until the connection returns. They are then saved on the Tyll server once, so every device and manager sees the same entry. Two devices correcting the same entry are both recorded; the latest correction applies.": [
 "Offline-Einträge bleiben auf diesem Gerät, außerhalb von Bestand und Berichten, bis die Verbindung zurück ist. Dann werden sie einmal auf dem Tyll-Server gespeichert, sodass alle denselben Eintrag sehen. Korrigieren zwei Geräte denselben Eintrag, werden beide erfasst; es gilt die letzte Korrektur.",
 "Le voci offline restano su questo dispositivo, fuori da scorte e report, fino al ritorno della connessione. Vengono poi salvate una volta sul server Tyll, così tutti vedono la stessa voce. Se due dispositivi correggono la stessa voce vengono registrate entrambe; vale l'ultima.",
@@ -5234,6 +5529,11 @@
 "Apri Importo da verificare per giorno di consegna, ultimi {0} giorni, più grande, con più linee da confrontare",
 "افتح المبلغ للاستفسار لكل يوم توريد، آخر {0} يومًا، بحجم أكبر مع خطوط أكثر للمقارنة"
 ],
+"Open Drinks per guest, last {0} days larger, with more lines to compare": [
+"Getränke pro Gast, letzte {0} Tage größer öffnen, mit weiteren Linien zum Vergleich",
+"Apri Bevande per ospite, ultimi {0} giorni in grande, con altre linee da confrontare",
+"افتح المشروبات لكل ضيف، آخر {0} يومًا بحجم أكبر مع خطوط أخرى للمقارنة"
+],
 "Open Flow": [
 "Flow öffnen",
 "Apri Flow",
@@ -5284,6 +5584,11 @@
 "Apri Camere",
 "فتح الغرف"
 ],
+"Open Server {0}": [
+"Servicekraft {0} öffnen",
+"Apri Cameriere {0}",
+"افتح النادل {0}"
+],
 "Open Stock": [
 "Bestand öffnen",
 "Apri Scorte",
@@ -5298,6 +5603,11 @@
 "Öffnen Sie ein Outlet, um die Kosten, Transaktionen und markierten Posten zu sehen.",
 "Apri un punto vendita per vedere costi, transazioni e voci segnalate.",
 "افتح منفذًا لترى مكونات تكاليفه ثم معاملاته والعناصر المشار إليها."
+],
+"Open bill": [
+"Rechnung öffnen",
+"Apri il conto",
+"افتح الفاتورة"
 ],
 "Open bottles are counted to the nearest tenth. Each count can be out by up to {0}.": [
 "Offene Flaschen werden auf ein Zehntel gezählt. Jede Zählung kann um bis zu {0} abweichen.",
@@ -6299,6 +6609,11 @@
 "Registra l'esito e chiudi",
 "سجل النتيجة وأغلق"
 ],
+"Record coaching": [
+"Coaching erfassen",
+"Registra il coaching",
+"سجّل التوجيه"
+],
 "Record count": [
 "Zählung erfassen",
 "Registra conteggio",
@@ -6348,6 +6663,21 @@
 "An der Quelle erfasst",
 "Registrato all'origine",
 "مسجل في المصدر"
+],
+"Recorded by {0}, {1}, when day shifts were at {2} drinks per guest against {3}.": [
+"Erfasst von {0}, {1}, als die Tagschichten bei {2} Getränken pro Gast gegen {3} lagen.",
+"Registrato da {0}, {1}, quando i turni di giorno erano a {2} bevande per ospite contro {3}.",
+"سجّله {0}، {1}، حين كانت ورديات النهار عند {2} مشروب لكل ضيف مقابل {3}."
+],
+"Recorded by {0}, {1}, when evening shifts were at {2} drinks per guest against {3}.": [
+"Erfasst von {0}, {1}, als die Abendschichten bei {2} Getränken pro Gast gegen {3} lagen.",
+"Registrato da {0}, {1}, quando i turni serali erano a {2} bevande per ospite contro {3}.",
+"سجّله {0}، {1}، حين كانت الورديات المسائية عند {2} مشروب لكل ضيف مقابل {3}."
+],
+"Recorded by {0}, {1}, when late night shifts were at {2} drinks per guest against {3}.": [
+"Erfasst von {0}, {1}, als die Spätschichten bei {2} Getränken pro Gast gegen {3} lagen.",
+"Registrato da {0}, {1}, quando i turni di notte erano a {2} bevande per ospite contro {3}.",
+"سجّله {0}، {1}، حين كانت الورديات الليلية عند {2} مشروب لكل ضيف مقابل {3}."
 ],
 "Recorded expense": [
 "Erfasste Ausgabe",
@@ -7109,6 +7439,11 @@
 "Il risparmio è il denaro recuperato nei casi chiusi, gli accrediti dei fornitori e ogni perdita sotto il ritmo giornaliero dei {0} giorni precedenti, che è una stima.",
 "الموفَّر هو المال المسترد في الحالات المغلقة، وأرصدة الموردين، وأي خسارة جاءت دون المعدل اليومي للـ{0} يومًا السابقة، وهذا تقدير."
 ],
+"Saved on the hotel's records.": [
+"In den Unterlagen des Hotels gespeichert.",
+"Salvato nei registri dell'hotel.",
+"حُفظ في سجلات الفندق."
+],
 "Saved on the hotel’s records with your name. A manager confirms counted and no recipe before the flag closes; not found keeps it open.": [
 "Mit Ihrem Namen in den Unterlagen des Hotels gespeichert. Gezählt und ohne Rezeptur bestätigt eine Führungskraft, bevor die Markierung schließt; nicht gefunden lässt sie offen.",
 "Salvato nei registri dell'hotel con il tuo nome. Contato e senza ricetta vengono confermati da un responsabile prima che la segnalazione si chiuda; non trovato la lascia aperta.",
@@ -7123,6 +7458,11 @@
 "Mit Ihrem Namen in den Unterlagen des Hotels gespeichert. Ohne Rezeptur schließt die Markierung; nicht gefunden lässt sie offen. Gezählt wird von jemandem erfasst, der Bestand zählt.",
 "Salvato nei registri dell'hotel con il tuo nome. Senza ricetta chiude la segnalazione; non trovato la lascia aperta. Contato viene registrato da chi conta le scorte.",
 "حُفظ في سجلات الفندق باسمك. خيار \"بلا وصفة\" يغلق التنبيه، و\"لم يُعثر عليه\" يبقيه مفتوحًا. يسجّل \"تم الجرد\" شخص يجرد المخزون."
+],
+"Saved on the hotel’s records with your name. Only the managers who coach the team see names on this page.": [
+"Mit Ihrem Namen in den Unterlagen des Hotels gespeichert. Nur die Führungskräfte, die das Team coachen, sehen auf dieser Seite Namen.",
+"Salvato nei registri dell'hotel con il tuo nome. Solo i responsabili che seguono il team vedono i nomi in questa pagina.",
+"حُفظ في سجلات الفندق باسمك. لا يرى الأسماء في هذه الصفحة إلا المديرون الذين يوجّهون الفريق."
 ],
 "Saved to today's log straight away. Simulated data.": [
 "Sofort im heutigen Protokoll gespeichert. Simulierte Daten.",
@@ -7259,6 +7599,11 @@
 "Vedi vendite, margine per punto vendita e ordini",
 "اعرض المبيعات والهامش حسب المنفذ والطلبات"
 ],
+"See tables": [
+"Tische ansehen",
+"Vedi i tavoli",
+"عرض الطاولات"
+],
 "See the audit trail": [
 "Prüfprotokoll ansehen",
 "Vedi il registro di controllo",
@@ -7379,6 +7724,21 @@
 "Servito o regalato senza registrazione in cassa.",
 "قُدّم أو أُعطي دون تسجيل في نقطة البيع."
 ],
+"Server": [
+"Servicekraft",
+"Cameriere",
+"نادل"
+],
+"Server {0}": [
+"Servicekraft {0}",
+"Cameriere {0}",
+"النادل {0}"
+],
+"Server, {0}. Last {1} days.": [
+"Servicekraft, {0}. Letzte {1} Tage.",
+"Cameriere, {0}. Ultimi {1} giorni.",
+"نادل، {0}. آخر {1} يومًا."
+],
 "Service charge": [
 "Servicegebühr",
 "Costo di servizio",
@@ -7433,6 +7793,11 @@
 "Gemeinsame Daten (Anfragen, Events, Zimmer, Verkauf, Finanzen, Abfall) liegen auf dem Demoserver; Prüfentscheidungen und Preisänderungen in diesem Browser.",
 "I dati condivisi (richieste, eventi, camere, vendite, finanza, scarti) sono sul server demo; decisioni sulle verifiche e modifiche di prezzo restano in questo browser.",
 "السجلات المشتركة (الطلبات والفعاليات والغرف والمبيعات والمالية والهدر) على الخادم التجريبي، وقرارات التحقيق وتغييرات الأسعار في هذا المتصفح."
+],
+"Shift": [
+"Schicht",
+"Turno",
+"الوردية"
 ],
 "Shortages also count what the kitchen will use for other meals and drinks in the same period.": [
 "Engpässe berücksichtigen auch den Küchenbedarf für andere Mahlzeiten und Getränke im selben Zeitraum.",
@@ -7539,10 +7904,20 @@
 "Mostra tutti i {0} articoli consigliati",
 "عرض جميع الأصناف الموصى بها ({0})"
 ],
+"Show all {0} tables": [
+"Alle {0} Tische zeigen",
+"Mostra tutti i {0} tavoli",
+"اعرض كل الطاولات الـ{0}"
+],
 "Show all {0} types": [
 "Alle {0} Arten zeigen",
 "Mostra tutti i {0} tipi",
 "عرض كل الأنواع ({0})"
+],
+"Show all {0} waiters": [
+"Alle {0} Servicekräfte zeigen",
+"Mostra tutti i {0} camerieri",
+"اعرض كل النُدُل الـ{0}"
 ],
 "Show items": [
 "Artikel anzeigen",
@@ -7558,6 +7933,11 @@
 "Die fünf größten zeigen",
 "Mostra i cinque più alti",
 "عرض الخمسة الأكبر"
+],
+"Show the five with most": [
+"Die fünf mit den meisten zeigen",
+"Mostra i cinque con più tavoli",
+"اعرض الخمسة الأعلى"
 ],
 "Show this hotel": [
 "Dieses Hotel anzeigen",
@@ -8159,6 +8539,16 @@
 "Tavolo {0} · {1}",
 "طاولة {0} · {1}"
 ],
+"Tables with food and no drink": [
+"Tische mit Essen und ohne Getränk",
+"Tavoli con cibo e nessuna bevanda",
+"طاولات بطعام دون مشروب"
+],
+"Tables with food, no drink": [
+"Tische mit Essen, ohne Getränk",
+"Tavoli con cibo, senza bevande",
+"طاولات بطعام دون مشروب"
+],
 "Tahini": [
 "Tahini",
 "Tahina",
@@ -8174,6 +8564,11 @@
 "Annulla",
 "تراجع"
 ],
+"Taken back.": [
+"Zurückgenommen.",
+"Annullato.",
+"تم التراجع."
+],
 "Taken back. The item is to check again.": [
 "Zurückgenommen. Der Artikel ist wieder zu prüfen.",
 "Annullato. L'articolo è di nuovo da controllare.",
@@ -8184,6 +8579,11 @@
 "Preso dalle consegne dei fornitori, dalle vendite in cassa con le loro ricette e dal registro sprechi. Non si usa alcun conteggio, quindi il divario è una stima.",
 "مأخوذ من توريدات الموردين ومبيعات نقطة البيع بوصفاتها وسجل الهدر. لا يُستخدم جرد للمخزون، لذا الفرق تقديري."
 ],
+"Talked it through, nothing to change": [
+"Besprochen, nichts zu ändern",
+"Parlato insieme, niente da cambiare",
+"تمت مناقشة الأمر، لا شيء يتغير"
+],
 "Tap the item, tap the number. Done in two taps, with Undo.": [
 "Artikel antippen, Zahl antippen. Fertig in zwei Schritten, mit Rückgängig.",
 "Tocca l'articolo, tocca il numero. Fatto in due tocchi, con Annulla.",
@@ -8193,6 +8593,11 @@
 "Tippen auf eine Zahl speichert sie.",
 "Toccando un numero lo salvi.",
 "النقر على رقم يحفظه."
+],
+"Team average on this shift, {0} drinks per guest": [
+"Teamdurchschnitt in dieser Schicht, {0} Getränke pro Gast",
+"Media del team in questo turno, {0} bevande per ospite",
+"متوسط الفريق في هذه الوردية، {0} مشروب لكل ضيف"
 ],
 "Team member": [
 "Teammitglied",
@@ -8244,6 +8649,11 @@
 "La Coca-Cola viene rimossa dall'ordine",
 "تُحذف الكوكاكولا من الطلب"
 ],
+"The amount is what colleagues on the same shift sold in drinks per guest, at the average drink price: an estimate. A table with no drink is most often a guest who did not want one. If drinks were served at these tables, ask the bar whether they were rung.": [
+"Der Betrag ist, was die Kollegen in derselben Schicht an Getränken pro Gast verkauften, zum durchschnittlichen Getränkepreis: eine Schätzung. Ein Tisch ohne Getränk ist meist ein Gast, der keines wollte. Wurden an diesen Tischen Getränke serviert, fragen Sie die Bar, ob sie gebucht wurden.",
+"L'importo è quanto i colleghi dello stesso turno hanno venduto in bevande per ospite, al prezzo medio delle bevande: una stima. Un tavolo senza bevande è quasi sempre un ospite che non ne voleva. Se a questi tavoli sono state servite bevande, chiedi al bar se sono state battute.",
+"المبلغ هو ما باعه الزملاء في الوردية نفسها من مشروبات لكل ضيف، بمتوسط سعر المشروب: تقدير. الطاولة دون مشروب غالبًا ضيف لم يرغب فيه. إذا قُدّمت مشروبات على هذه الطاولات، فاسأل البار هل سُجّلت."
+],
 "The app takes the colour of the outlet you pick": [
 "Die App übernimmt die Farbe des gewählten Outlets",
 "L'app prende il colore del punto vendita scelto",
@@ -8258,6 +8668,11 @@
 "Die Rechnung wurde in Eile unterschrieben und die Zimmernummer war schwer lesbar.",
 "Il conto è stato firmato in fretta e il numero di camera era difficile da leggere.",
 "وُقعت الفاتورة على عجل وكان رقم الغرفة صعب القراءة."
+],
+"The breakfast buffet includes coffee and juice, so a breakfast bill is never a table without drinks. {0} is left out: drinks there are sold as packages per event.": [
+"Das Frühstücksbuffet enthält Kaffee und Saft, deshalb ist eine Frühstücksrechnung nie ein Tisch ohne Getränke. {0} bleibt außen vor: Getränke werden dort als Pakete pro Veranstaltung verkauft.",
+"Il buffet della colazione include caffè e succo, quindi un conto della colazione non è mai un tavolo senza bevande. {0} è escluso: lì le bevande si vendono a pacchetto per evento.",
+"بوفيه الإفطار يشمل القهوة والعصير، لذلك لا تُعد فاتورة الإفطار طاولة دون مشروبات. يُستبعد {0}: تُباع المشروبات هناك كباقات لكل مناسبة."
 ],
 "The case shows both sides and what to check: move the charge before room {0} checks out, and collect it from room {1}’s card on file.": [
 "Der Fall zeigt beide Seiten und was zu prüfen ist: die Belastung verschieben, bevor Zimmer {0} abreist, und sie über die hinterlegte Karte von Zimmer {1} einziehen.",
@@ -8519,6 +8934,11 @@
 "Da controllare",
 "للتحقق"
 ],
+"To coach": [
+"Für Coaching",
+"Da seguire",
+"للتوجيه"
+],
 "To order": [
 "Zu bestellen",
 "Da ordinare",
@@ -8598,6 +9018,16 @@
 "Heute Abend in {0}: Artikel entfernt, nachdem er an die Bar ging",
 "Stasera a {0}: articolo rimosso dopo l'invio al bar",
 "الليلة في {0}: حذف صنف بعد إرساله إلى البار"
+],
+"Too few guests in the last {0} days to compare with colleagues.": [
+"Zu wenige Gäste in den letzten {0} Tagen für einen Vergleich mit den Kollegen.",
+"Troppo pochi ospiti negli ultimi {0} giorni per un confronto con i colleghi.",
+"عدد الضيوف في آخر {0} يومًا أقل من أن يُقارن بالزملاء."
+],
+"Too few guests to tell": [
+"Zu wenige Gäste für eine Aussage",
+"Troppo pochi ospiti per dirlo",
+"عدد الضيوف أقل من أن يُحكم"
 ],
 "Top items by gap": [
 "Größte Lücken nach Artikel",
@@ -9109,6 +9539,16 @@
 "Macinato di manzo wagyu",
 "لحم واغيو مفروم"
 ],
+"Waiter": [
+"Servicekraft",
+"Cameriere",
+"النادل"
+],
+"Waiters to coach": [
+"Servicekräfte für Coaching",
+"Camerieri da seguire",
+"نُدُل يحتاجون إلى توجيه"
+],
 "Waiting for a manager": [
 "Wartet auf eine Führungskraft",
 "In attesa di un responsabile",
@@ -9303,6 +9743,11 @@
 "Was es erklären könnte",
 "Cosa potrebbe spiegarlo",
 "ما الذي قد يفسره"
+],
+"What did you do?": [
+"Was haben Sie getan?",
+"Cosa hai fatto?",
+"ماذا فعلت؟"
 ],
 "What did you find?": [
 "Was haben Sie gefunden?",
@@ -9538,6 +9983,11 @@
 "Bei wem kaufen wir ein, und zu welchen Bedingungen?",
 "Da chi acquistiamo, e a quali condizioni?",
 "ممن نشتري، وبأي شروط؟"
+],
+"Who needs coaching, and where are drinks going missing?": [
+"Wer braucht Coaching, und wo gehen Getränke verloren?",
+"Chi ha bisogno di coaching, e dove si perdono le bevande?",
+"من يحتاج إلى توجيه، وأين تضيع المشروبات؟"
 ],
 "Whole order voided after items were sent for preparation": [
 "Ganze Bestellung storniert, nachdem Artikel zur Zubereitung geschickt wurden",
@@ -9863,6 +10313,11 @@
 "gedeckt",
 "coperto",
 "مغطى"
+],
+"drinks per guest": [
+"Getränke pro Gast",
+"bevande per ospite",
+"مشروب لكل ضيف"
 ],
 "each": [
 "Stück",
@@ -10544,6 +10999,11 @@
 "Sconto {0}, oltre il limite di {1}",
 "خصم {0}، فوق حد السياسة {1}"
 ],
+"{0} drinks per guest, colleagues {1}": [
+"{0} Getränke pro Gast, Kollegen {1}",
+"{0} bevande per ospite, colleghi {1}",
+"{0} مشروب لكل ضيف، الزملاء {1}"
+],
 "{0} each": [
 "je {0}",
 "{0} cad.",
@@ -10569,6 +11029,11 @@
 "{0} voce, {1}",
 "إدخال واحد ({0})، {1}"
 ],
+"{0} fewer than the {1} days before": [
+"{0} weniger als in den {1} Tagen davor",
+"{0} in meno rispetto ai {1} giorni precedenti",
+"أقل بنسبة {0} من الـ{1} يومًا السابقة"
+],
 "{0} flag, {1} at risk": [
 "{0} Markierung, {1} gefährdet",
 "{0} segnalazione, {1} a rischio",
@@ -10593,6 +11058,11 @@
 "{0} Markierungen, {1} gefährdet",
 "{0} segnalazioni, {1} a rischio",
 "{0} تنبيهات، {1} معرّض للخطر"
+],
+"{0} food": [
+"{0} Essen",
+"{0} cibo",
+"{0} طعام"
 ],
 "{0} food, {1} beverage, {2} inventory": [
 "{0} Speisen, {1} Getränke, {2} Inventar",
@@ -10623,6 +11093,11 @@
 "{0} Gläser erfasst",
 "{0} calici registrati",
 "{0} كأس مسجلة"
+],
+"{0} guest": [
+"{0} Gast",
+"{0} ospite",
+"{0} ضيف"
 ],
 "{0} guests": [
 "{0} Gäste",
@@ -10668,6 +11143,16 @@
 "{0} betroffen",
 "{0} coinvolti",
 "{0} معنية"
+],
+"{0} is left out.": [
+"{0} bleibt außen vor.",
+"{0} è escluso.",
+"يُستبعد {0}."
+],
+"{0} is left out: drinks there are sold as packages per event, not by a waiter at the table.": [
+"{0} bleibt außen vor: Getränke werden dort als Pakete pro Veranstaltung verkauft, nicht von einer Servicekraft am Tisch.",
+"{0} è escluso: lì le bevande si vendono a pacchetto per evento, non da un cameriere al tavolo.",
+"يُستبعد {0}: تُباع المشروبات هناك كباقات لكل مناسبة، لا من نادل على الطاولة."
 ],
 "{0} item": [
 "{0} Artikel",
@@ -10804,6 +11289,11 @@
 "{0} bevande mancanti da controllare.",
 "{0} مشروبات مفقودة للتحقق."
 ],
+"{0} more": [
+"{0} mehr",
+"{0} in più",
+"{0} أكثر"
+],
 "{0} more came in than the till and the waste log account for. That is within normal stock, so it is not flagged.": [
 "{0} mehr kam herein, als Kasse und Abfallprotokoll erklären. Das liegt im normalen Bestand und wird daher nicht markiert.",
 "Sono arrivati {0} in più di quanto spieghino cassa e registro sprechi. È nella scorta normale, quindi non è segnalato.",
@@ -10819,6 +11309,11 @@
 "{0} in più in fattura rispetto a consegnato o concordato.",
 "{0} في الفواتير أكثر مما سُلم أو اتفق عليه."
 ],
+"{0} more than colleagues": [
+"{0} mehr als Kollegen",
+"{0} in più dei colleghi",
+"{0} أكثر من الزملاء"
+],
 "{0} more than the week before": [
 "{0} mehr als in der Vorwoche",
 "{0} in più della settimana prima",
@@ -10827,7 +11322,7 @@
 "{0} more than the {1} days before": [
 "{0} mehr als in den {1} Tagen davor",
 "{0} in più rispetto ai {1} giorni precedenti",
-"أكثر بـ{0} من الـ{1} يومًا السابقة"
+"أكثر بنسبة {0} من الـ{1} يومًا السابقة"
 ],
 "{0} more was used than bought. Stock on the shelf went down.": [
 "{0} mehr wurde verbraucht als gekauft. Der Bestand im Regal ist gesunken.",
@@ -10898,6 +11393,36 @@
 "{0} von {1} Bestellungen",
 "{0} di {1} ordini",
 "{0} من {1} طلب"
+],
+"{0} of {1} tables with food": [
+"{0} von {1} Tischen mit Essen",
+"{0} di {1} tavoli con cibo",
+"{0} من {1} طاولة بطعام"
+],
+"{0} of {1} tables with food had no drink ({2}). Colleagues' share on the same shifts would give about {3}.": [
+"{0} von {1} Tischen mit Essen hatten kein Getränk ({2}). Der Anteil der Kollegen in denselben Schichten ergäbe etwa {3}.",
+"{0} di {1} tavoli con cibo non hanno avuto bevande ({2}). La quota dei colleghi negli stessi turni darebbe circa {3}.",
+"{0} من {1} طاولة بطعام لم يكن فيها مشروب ({2}). نسبة الزملاء في الورديات نفسها كانت ستعطي نحو {3}."
+],
+"{0} of {1} tables with food on day shifts, last {2} days. Colleagues' share on the same shifts would give about {3}. Largest estimate first.": [
+"{0} von {1} Tischen mit Essen in Tagschichten, letzte {2} Tage. Der Anteil der Kollegen in denselben Schichten ergäbe etwa {3}. Größte Schätzung zuerst.",
+"{0} di {1} tavoli con cibo nei turni di giorno, ultimi {2} giorni. La quota dei colleghi negli stessi turni darebbe circa {3}. Prima la stima più alta.",
+"{0} من {1} طاولة بطعام في ورديات النهار، آخر {2} يومًا. نسبة الزملاء في الورديات نفسها كانت ستعطي نحو {3}. الأكبر تقديرًا أولًا."
+],
+"{0} of {1} tables with food on evening shifts, last {2} days. Colleagues' share on the same shifts would give about {3}. Largest estimate first.": [
+"{0} von {1} Tischen mit Essen in Abendschichten, letzte {2} Tage. Der Anteil der Kollegen in denselben Schichten ergäbe etwa {3}. Größte Schätzung zuerst.",
+"{0} di {1} tavoli con cibo nei turni serali, ultimi {2} giorni. La quota dei colleghi negli stessi turni darebbe circa {3}. Prima la stima più alta.",
+"{0} من {1} طاولة بطعام في الورديات المسائية، آخر {2} يومًا. نسبة الزملاء في الورديات نفسها كانت ستعطي نحو {3}. الأكبر تقديرًا أولًا."
+],
+"{0} of {1} tables with food on late night shifts, last {2} days. Colleagues' share on the same shifts would give about {3}. Largest estimate first.": [
+"{0} von {1} Tischen mit Essen in Spätschichten, letzte {2} Tage. Der Anteil der Kollegen in denselben Schichten ergäbe etwa {3}. Größte Schätzung zuerst.",
+"{0} di {1} tavoli con cibo nei turni di notte, ultimi {2} giorni. La quota dei colleghi negli stessi turni darebbe circa {3}. Prima la stima più alta.",
+"{0} من {1} طاولة بطعام في الورديات الليلية، آخر {2} يومًا. نسبة الزملاء في الورديات نفسها كانت ستعطي نحو {3}. الأكبر تقديرًا أولًا."
+],
+"{0} of {1} tables with food, every shift, last {2} days. Colleagues' share on the same shifts would give about {3}. Largest estimate first.": [
+"{0} von {1} Tischen mit Essen, alle Schichten, letzte {2} Tage. Der Anteil der Kollegen in denselben Schichten ergäbe etwa {3}. Größte Schätzung zuerst.",
+"{0} di {1} tavoli con cibo, tutti i turni, ultimi {2} giorni. La quota dei colleghi negli stessi turni darebbe circa {3}. Prima la stima più alta.",
+"{0} من {1} طاولة بطعام، كل الورديات، آخر {2} يومًا. نسبة الزملاء في الورديات نفسها كانت ستعطي نحو {3}. الأكبر تقديرًا أولًا."
 ],
 "{0} on the till, {1} on the folio.": [
 "{0} an der Kasse, {1} im Folio.",
@@ -11164,6 +11689,26 @@
 "{0} usati dalle ricette di quanto venduto, inclusi gli articoli offerti.",
 "{0} مستخدمة في وصفات ما بيع، بما فيها الأصناف المجانية."
 ],
+"{0} waiters at {1} outlet, {2} guests in the last {3} days.": [
+"{0} Servicekräfte in {1} Outlet, {2} Gäste in den letzten {3} Tagen.",
+"{0} camerieri in {1} punto vendita, {2} ospiti negli ultimi {3} giorni.",
+"{0} نادلًا في {1} منفذ، {2} ضيفًا في آخر {3} يومًا."
+],
+"{0} waiters at {1} outlet, {2} guests in the last {3} days. {4} is left out.": [
+"{0} Servicekräfte in {1} Outlet, {2} Gäste in den letzten {3} Tagen. {4} bleibt außen vor.",
+"{0} camerieri in {1} punto vendita, {2} ospiti negli ultimi {3} giorni. {4} è escluso.",
+"{0} نادلًا في {1} منفذ، {2} ضيفًا في آخر {3} يومًا. يُستبعد {4}."
+],
+"{0} waiters at {1} outlets, {2} guests in the last {3} days.": [
+"{0} Servicekräfte in {1} Outlets, {2} Gäste in den letzten {3} Tagen.",
+"{0} camerieri in {1} punti vendita, {2} ospiti negli ultimi {3} giorni.",
+"{0} نادلًا في {1} منافذ، {2} ضيفًا في آخر {3} يومًا."
+],
+"{0} waiters at {1} outlets, {2} guests in the last {3} days. {4} is left out.": [
+"{0} Servicekräfte in {1} Outlets, {2} Gäste in den letzten {3} Tagen. {4} bleibt außen vor.",
+"{0} camerieri in {1} punti vendita, {2} ospiti negli ultimi {3} giorni. {4} è escluso.",
+"{0} نادلًا في {1} منافذ، {2} ضيفًا في آخر {3} يومًا. يُستبعد {4}."
+],
 "{0} waiting": [
 "{0} wartend",
 "{0} in attesa",
@@ -11394,6 +11939,11 @@
 "{0}, mercoledì, turno di notte:",
 "{0}، الأربعاء، الوردية المتأخرة:"
 ],
+"{0}, bartender": [
+"{0}, Barkeeper",
+"{0}, barista",
+"{0}، ساقي البار"
+],
 "{0}, check {1}": [
 "{0}, Rechnung {1}",
 "{0}, conto {1}",
@@ -11404,10 +11954,30 @@
 "{0}, chiusura",
 "{0}، الإغلاق"
 ],
+"{0}, day shift": [
+"{0}, Tagschicht",
+"{0}, turno di giorno",
+"{0}، وردية النهار"
+],
+"{0}, evening shift": [
+"{0}, Abendschicht",
+"{0}, turno serale",
+"{0}، الوردية المسائية"
+],
+"{0}, late night shift": [
+"{0}, Spätschicht",
+"{0}, turno di notte",
+"{0}، الوردية الليلية"
+],
 "{0}, prepared": [
 "{0}, zubereitet",
 "{0}, preparato",
 "{0}، جاهز"
+],
+"{0}, server": [
+"{0}, Servicekraft",
+"{0}, cameriere",
+"{0}، نادل"
 ],
 "{0}, {1} day check": [
 "{0}, {1}-Tage-Prüfung",

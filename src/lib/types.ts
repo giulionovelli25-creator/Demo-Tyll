@@ -244,6 +244,30 @@ export interface Exception {
 export type BoughtUsedOutcome = "on_shelf" | "no_recipe" | "not_found";
 
 /** A bought against used gap marked checked, saved on the demo server with who did it. */
+/** What a manager did after looking at a waiter's drinks per guest. */
+export type CoachingOutcome = "coached" | "bar_check" | "no_change";
+
+/** A coaching note on one waiter at one outlet, kept on the demo server. The latest per waiter is shown. */
+export interface WaiterCoaching {
+  id: string;
+  propertyId: string;
+  outletId: string;
+  /** The POS login of the waiter. */
+  staffId: string;
+  /** The business date it was recorded. */
+  date: string;
+  outcome: CoachingOutcome;
+  note?: string;
+  by: string;
+  role: Role;
+  at: string;
+  /** The figures it answered: the shift marked to coach (or the waiter's busiest), drinks per guest against colleagues, and the period. */
+  shift: "day" | "evening" | "late";
+  rate: number | null;
+  peerRate: number | null;
+  days: number;
+}
+
 export interface BoughtUsedCheck {
   id: string;
   propertyId: string;

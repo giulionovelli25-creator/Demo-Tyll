@@ -21,3 +21,11 @@ export const ROOM_STORY = { room: "1412", folioRoom: "1421", checkoutMin: 24 * 6
  */
 export const BOUGHT_STORY = { ingredientId: "coke", extraPerDelivery: 72, fromDay: -24 } as const;
 export const BOUGHT_STORY_EXCEPTION_ID = `EX-BU-LIS-COKE-${mmdd(DEMO_TODAY)}`;
+/**
+ * Drinks per guest by waiter: on evening shifts at Mercado, Rahul Okafor (POS login MER-S1) sells fewer drinks than the
+ * colleagues on the same shifts, and more of his tables have food on the bill and no drink. On day shifts he sells like
+ * everyone else, which is why the comparison is made shift by shift. Built by moving whole bills between logins within
+ * the same evening (`waiterStory` in generate.ts), so no sale, total or stock figure changes. `share` is the part of his
+ * evening bills with drinks that are swapped for a colleague's bill with food and no drink.
+ */
+export const WAITER_STORY = { outletId: "lis-terrace", staffId: "MER-S1", shift: "evening", share: 0.4 } as const;

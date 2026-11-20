@@ -133,6 +133,43 @@ export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; l
   );
 }
 
+/**
+ * Bars against one reference line, such as each waiter's drinks per guest against the team average on that shift. Rows can
+ * be clicked to drill in. The line is drawn dashed in the comparison grey; a row's tone marks what the rule found.
+ */
+export function BarsAgainstLine({ rows, line, lineLabel, format, summary }: { rows: { key: string; label: string; sub?: string; value: number | null; tone?: "ink" | "warn" | "muted"; badge?: ReactNode; onClick?: () => void }[]; line: number | null; lineLabel: string; format: (n: number) => string; summary: string }) {
+  const max = Math.max(...rows.map((r) => r.value ?? 0), line ?? 0, 1e-9) * 1.12;
+  const at = (n: number) => `${Math.min(100, (n / max) * 100)}%`;
+  return (
+    <figure>
+      <figcaption className="sr-only">{summary}</figcaption>
+      <ul className="space-y-1">
+        {rows.map((r) => {
+          const body = (
+            <>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="min-w-0 truncate text-sm text-ink">{r.label}</span>
+                <span className="num shrink-0 text-sm font-medium text-ink">{r.value === null ? "None" : format(r.value)}</span>
+              </div>
+              <div className="relative mt-1.5 h-2.5 rounded-full bg-hair">
+                {r.value !== null && <div className={cn("absolute inset-y-0 start-0 rounded-full", r.tone === "warn" ? "bg-warn" : r.tone === "muted" ? "bg-[var(--chart-b)]" : "bg-accent")} style={{ width: at(r.value) }} />}
+                {line !== null && <div className="absolute -inset-y-1 w-0 border-s-2 border-dashed border-[var(--chart-axis)]" style={{ insetInlineStart: at(line) }} aria-hidden />}
+              </div>
+              {(r.sub || r.badge) && <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">{r.badge}{r.sub && <span className="text-xs text-steel">{r.sub}</span>}</div>}
+            </>
+          );
+          return (
+            <li key={r.key}>
+              {r.onClick ? <button type="button" onClick={r.onClick} className="-mx-2 block w-[calc(100%+1rem)] rounded-xl px-2 py-2.5 text-start transition-colors duration-200 hover:bg-mist">{body}</button> : <div className="py-2.5">{body}</div>}
+            </li>
+          );
+        })}
+      </ul>
+      {line !== null && <p className="mt-3 flex items-center gap-2 text-xs text-steel"><span className="inline-block h-3 w-0 border-s-2 border-dashed border-[var(--chart-axis)]" aria-hidden />{lineLabel}</p>}
+    </figure>
+  );
+}
+
 export function Spark({ values, width = 84, height = 26, goodWhen = "up" }: { values: number[]; width?: number; height?: number; goodWhen?: "up" | "down" }) {
   if (values.length < 2) return null;
   const min = Math.min(...values);
@@ -236,7 +273,9 @@ function TrendExplorer({ open, onClose, title, explain, series, predicted }: { o
   const [more, setMore] = useState(false);
   const smoothed = (pts: TrendSeries["points"]) => pts.map((p, i) => {
     const win = pts.slice(Math.max(0, i - 6), i + 1).map((x) => x.value).filter((v): v is number => v !== null);
-    return { date: p.date, value: p.value === null || win.length < 4 ? null : Math.round(win.reduce((n, v) => n + v, 0) / win.length) };
+    const avg = win.reduce((n, v) => n + v, 0) / Math.max(win.length, 1);
+    // Small figures, such as drinks per guest, keep two decimals; everything else rounds to whole numbers as before.
+    return { date: p.date, value: p.value === null || win.length < 4 ? null : Math.abs(avg) < 10 ? Math.round(avg * 100) / 100 : Math.round(avg) };
   });
   const shown = series.filter((s) => on[s.id]);
   // Together: lines in the same unit share a chart. Apart: every line gets its own chart, so each shape is easy to read.
@@ -309,7 +348,7 @@ function TrendExplorer({ open, onClose, title, explain, series, predicted }: { o
                   <ComposedChart data={[...data, ...extra]} margin={{ top: 16, right: 20, bottom: 4, left: 4 }} barGap={2} barCategoryGap="24%">
                     <CartesianGrid stroke={LINE} strokeDasharray="2 4" vertical={false} />
                     <XAxis dataKey="label" {...axis_} minTickGap={48} tickMargin={8} />
-                    <YAxis {...axis_} axisLine={false} width={72} domain={domain} allowDataOverflow={false} ticks={nice?.ticks} tickCount={5} tickFormatter={(n: number) => (Math.abs(n) >= 10000 ? fmt(n).replace(/[\d,.]+/, `${Math.round(n / 1000)}k`) : fmt(Math.round(n)))} />
+                    <YAxis {...axis_} axisLine={false} width={72} domain={domain} allowDataOverflow={false} ticks={nice?.ticks} tickCount={5} tickFormatter={(n: number) => (Math.abs(n) >= 10000 ? fmt(n).replace(/[\d,.]+/, `${Math.round(n / 1000)}k`) : fmt(Math.abs(n) < 10 ? n : Math.round(n)))} />
                     <Tooltip content={(p) => <Tip {...(p as object)} format={fmt} />} cursor={{ stroke: FOG, strokeDasharray: "3 3" }} />
                     {/* Counts are whole things, so they are bars; amounts are lines. */}
                     {group.map((s) => s.axis === "count"

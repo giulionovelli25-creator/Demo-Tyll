@@ -14,10 +14,11 @@ import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
 import { CashUps } from "@/components/money/cash";
 import { RoomChargeCheck } from "@/components/money/room-charges";
+import { DrinksByWaiter } from "@/components/money/waiters";
 import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, SummaryBar, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
-import { canSeeOutlet } from "@/lib/domain/access";
+import { can, canSeeOutlet } from "@/lib/domain/access";
 import { BOUGHT_USED_RULES } from "@/lib/domain/bought-used";
 import { POLICY, TYPE_LABEL, datedFlags, detectOrderException } from "@/lib/domain/detect";
 import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
@@ -28,11 +29,12 @@ import { useDemo } from "@/lib/store";
 import type { ExceptionType, Order } from "@/lib/types";
 import { DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
 
-type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips" | "cash";
+type Tab = "flags" | "mistakes" | "pour" | "outlets" | "orders" | "rooms" | "tips" | "cash" | "waiters";
 
-const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charge check", tips: "Tips (preview)", cash: "Cash on hand against cash sales" };
+const SUB_PAGE: Partial<Record<Tab, string>> = { orders: "All transactions", rooms: "Room charge check", tips: "Tips (preview)", cash: "Cash on hand against cash sales", waiters: "Drinks per guest by waiter" };
 const SUB_QUESTION: Partial<Record<Tab, [question: string, lead: string]>> = {
   cash: ["Does the cash in the drawer match the cash the till took?", "Per outlet and shift. Simulated data."],
+  waiters: ["Who needs coaching, and where are drinks going missing?", "Each waiter against colleagues at the same outlet on the same shift, so a busy night counts for no one. A low figure is a prompt to coach, not proof. Simulated data."],
   rooms: ["Did every room charge reach the guest's bill?", "Each bill signed to a room, and each minibar, spa and laundry charge, matched with the guest folio in the PMS. A difference is a prompt to check, not proof. Simulated data."],
 };
 const RevenueProfitChart = dynamic(() => import("@/components/home/chart").then((m) => m.RevenueProfitChart), { ssr: false, loading: () => <div className="h-[264px] animate-pulse rounded-[var(--radius-control)] bg-mist" /> });
@@ -46,8 +48,8 @@ function Period() {
 
 /** Revenue: today, this week and this month first. Flags, outlets and transactions are one click away. */
 export default function MoneyPage() {
-  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips", "cash"], null);
-  const { sel, money, currency, propertyId } = useView();
+  const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips", "cash", "waiters"], null);
+  const { sel, money, currency, propertyId, user } = useView();
   const ctx = useCtx();
   const router = useRouter();
   const investigations = useInvestigations();
@@ -97,6 +99,7 @@ export default function MoneyPage() {
         {tab === "orders" && <><Period /><Orders /></>}
         {tab === "rooms" && <><Period /><RoomChargeCheck /></>}
         {tab === "tips" && <Tips />}
+        {tab === "waiters" && <DrinksByWaiter />}
       </div>
     );
   }
@@ -154,6 +157,7 @@ export default function MoneyPage() {
             <Period />
             <OutletFinance />
           </Section></div>
+          {can(user, "waiters.view") && <SectionLink href="/money?tab=waiters" title="Drinks per guest by waiter" summary="Each waiter against colleagues on the same outlet and shift, with the tables that had food and no drink." />}
           <SectionLink href="/money?tab=orders" title="All transactions" summary={`${fmtNum(t.orders)} transactions, ${fmtRange(sel.range)}. Filter by day and search.`} />
         </>
       )}

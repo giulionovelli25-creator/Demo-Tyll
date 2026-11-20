@@ -36,7 +36,9 @@ export interface Dataset {
   prepRatios?: Record<string, number>;
 }
 
-import { BOUGHT_STORY, HERO_EXCEPTION_ID, HERO_ORDER_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID } from "./constants";
+import { BOUGHT_STORY, HERO_EXCEPTION_ID, HERO_ORDER_ID, ROOM_STORY, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID, WAITER_STORY } from "./constants";
+import { billFacts } from "../domain/waiters";
+import { shiftOf } from "../domain/pour";
 import { SCENARIOS, buildOutletStock, latestPeriods, type OutletStock } from "./outlet-stock";
 import { headlineFor, needsCase, periodVariance } from "../domain/variance";
 import { lossLevel } from "../domain/story";
@@ -257,7 +259,38 @@ function buildOrders(): Order[] {
     }
   }
   orders.push(heroOrder(), roomStoryOrder());
+  waiterStory(orders);
   return orders;
+}
+
+/**
+ * The drinks per guest story (WAITER_STORY). Inside each Mercado evening, some of the story waiter's bills with food and
+ * drinks change login with a colleague's bill with food and no drink from the same evening. Only whole, untouched bills
+ * move (nothing removed, comped, discounted, refunded or voided, and never a worked example), and only the login changes,
+ * so sales, guests, stock, flags and over pouring are exactly as before. Exported for the test that pins this.
+ */
+export function waiterStory(orders: Order[]): void {
+  const S = WAITER_STORY;
+  const clean = (o: Order) => o.id !== HERO_ORDER_ID && o.id !== ROOM_STORY_ORDER_ID && !o.voided && !o.refund && !o.discountPct && o.lines.every((l) => l.state === "kept");
+  const byDate = new Map<string, Order[]>();
+  for (const o of orders) {
+    if (o.outletId !== S.outletId || shiftOf(o.openMin) !== S.shift || !clean(o)) continue;
+    byDate.set(o.date, [...(byDate.get(o.date) ?? []), o]);
+  }
+  for (const [date, list] of byDate) {
+    const r = rng(`waiter-story|${date}`);
+    const shuffle = <T,>(xs: T[]) => xs.map((x) => ({ x, k: r.next() })).sort((a, b) => a.k - b.k).map((y) => y.x);
+    const his = shuffle(list.filter((o) => { const f = billFacts(o); return o.staffId === S.staffId && !!f && f.food && f.drinks > 0; }));
+    const theirs = shuffle(list.filter((o) => o.staffId !== S.staffId && !!billFacts(o)?.noDrink));
+    const k = Math.min(theirs.length, Math.floor(his.length * S.share + r.next()));
+    for (const mine of his.slice(0, k)) {
+      // A bill for the same number of guests where there is one, so each login's guests stay much as they were.
+      const i = Math.max(0, theirs.findIndex((o) => o.covers === mine.covers));
+      const other = theirs.splice(i, 1)[0];
+      if (!other) break;
+      [mine.staffId, other.staffId] = [other.staffId, mine.staffId];
+    }
+  }
 }
 
 /**

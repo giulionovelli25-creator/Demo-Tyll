@@ -72,7 +72,11 @@ export type Permission =
   /** See room charges set against guest folios, with room numbers and check-out times. */
   | "roomcharge.view"
   /** See what the hotel bought against what it used, per item, and mark a gap as checked. Needs the whole hotel. */
-  | "stock.boughtUsed";
+  | "stock.boughtUsed"
+  /** See drinks per guest by waiter and tables with food and no drink, for the outlets the user holds. */
+  | "waiters.view"
+  /** Record coaching on a waiter. Also the only roles that see waiters' names on that page. */
+  | "waiters.coach";
 
 const MODULES: Record<Role, ModuleId[]> = {
   owner: ["overview", "money", "drinks", "stock", "waste", "forecast", "alerts", "events", "flow", "rooms", "investigations", "reports", "finance", "more", "settings"],
@@ -97,11 +101,11 @@ const MODULES: Record<Role, ModuleId[]> = {
 };
 
 const PERMISSIONS: Record<Role, Permission[]> = {
-  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "finance.view", "sales.view", "roomcharge.view", "stock.boughtUsed"],
-  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "hk.manage", "fo.desk", "concierge", "bell.dispatch", "gc.respond", "finance.view", "sales.view", "sales.approve", "stock.review", "roomcharge.view", "stock.boughtUsed"],
-  controller: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.editPrices", "reports.export", "settings.reset", "settings.audit", "purchase.approveFinance", "finance.view", "finance.review", "roomcharge.view", "stock.boughtUsed"],
-  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "purchase.approveFnb", "prep.plan", "events.plan", "staff.request", "staff.lend", "gc.respond", "stock.review", "roomcharge.view", "stock.boughtUsed"],
-  restaurant_manager: ["investigation.assign", "investigation.note", "investigation.close", "stock.logWaste", "stock.count", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "staff.lend", "gc.respond", "stock.review", "roomcharge.view"],
+  owner: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "finance.view", "sales.view", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach"],
+  gm: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "rooms.manage", "reports.export", "settings.reset", "settings.audit", "purchase.create", "purchase.approveFnb", "purchase.approveManager", "prep.plan", "events.plan", "staff.request", "staff.lend", "rooms.view", "hk.manage", "fo.desk", "concierge", "bell.dispatch", "gc.respond", "finance.view", "sales.view", "sales.approve", "stock.review", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach"],
+  controller: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.editPrices", "reports.export", "settings.reset", "settings.audit", "purchase.approveFinance", "finance.view", "finance.review", "roomcharge.view", "stock.boughtUsed", "waiters.view"],
+  fnb_director: ["investigation.assign", "investigation.note", "investigation.close", "investigation.reopen", "stock.logWaste", "stock.count", "stock.editPrices", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "purchase.approveFnb", "prep.plan", "events.plan", "staff.request", "staff.lend", "gc.respond", "stock.review", "roomcharge.view", "stock.boughtUsed", "waiters.view", "waiters.coach"],
+  restaurant_manager: ["investigation.assign", "investigation.note", "investigation.close", "stock.logWaste", "stock.count", "forecast.approve", "flow.updateOrder", "reports.export", "settings.reset", "purchase.create", "prep.plan", "prep.complete", "staff.request", "staff.lend", "gc.respond", "stock.review", "roomcharge.view", "waiters.view", "waiters.coach"],
   front_office: ["settings.reset", "rooms.view", "fo.desk", "concierge", "staff.request", "staff.lend"],
   housekeeping_manager: ["settings.reset", "rooms.view", "hk.manage", "staff.request", "staff.lend", "purchase.create"],
   concierge: ["settings.reset", "rooms.view", "fo.desk", "concierge"],
