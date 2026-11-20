@@ -6,8 +6,7 @@ import type { CountRecord, Exception, Order, RoomCharge } from "../types";
 import { addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "../util";
 import { POLICY, REMOVAL_TYPES, folioTime, type Pattern } from "./detect";
 import { countVariance, countVarianceValue } from "./inventory";
-import { BOUGHT_USED_CAUSES, itemWords } from "./bought-used";
-import { qtyWords } from "./variance";
+import { BOUGHT_USED_CAUSES, boughtQty, itemWords } from "./bought-used";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 import { orderTotals } from "./orders";
@@ -125,17 +124,18 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
 
   if (e.type === "bought_not_used" && e.boughtUsed && e.ingredientId) {
     const b = e.boughtUsed;
-    const q = (n: number) => qtyWords(n, e.ingredientId!);
+    const q = (n: number) => boughtQty(n, e.ingredientId!);
     const name = itemWords(e.ingredientId);
+    const excess = b.excess ?? Math.max(0, b.gap - b.lastDelivery);
     // A hotel wide check has no outlet, so "similar cases at this outlet" does not apply.
     base.similarAtOutlet = 0;
     base.whatHappened = `${cap(q(b.gap))} more ${name} came in than the till and the waste log account for, over the 30 days to ${fmtDate(b.to)}.`;
     base.facts = [
-      `${cap(q(b.bought))} received from suppliers in ${b.deliveries} deliver${b.deliveries === 1 ? "y" : "ies"}${b.movedIn > 0 ? `, and ${q(b.movedIn)} moved in from another store` : ""}.`,
+      `${cap(q(b.bought))} received from suppliers in ${b.deliveries} deliver${b.deliveries === 1 ? "y" : "ies"}${b.movedIn > 0 ? `, and ${q(b.movedIn)} moved in from outside the hotel` : ""}.`,
       `${cap(q(b.sold))} used by the recipes of what was sold, including complimentary items.`,
-      `${cap(q(b.waste))} logged as waste or breakage${b.movedOut > 0 ? `, and ${q(b.movedOut)} moved out to another store` : ""}.`,
-      `That leaves ${q(b.gap)}, ${Math.round(b.share * 100)}% of what was used, worth about ${fmtMoney(Math.round(e.exposure), currency)} at the price paid.`,
-      `The last delivery brought ${q(b.lastDelivery)}. Tyll allows that much to still be on the shelf before it flags a gap.`,
+      `${cap(q(b.waste))} logged as waste or breakage${b.movedOut > 0 ? `, and ${q(b.movedOut)} moved out for use outside the till` : ""}.`,
+      `That leaves ${q(b.gap)}, ${Math.round(b.share * 100)}% of what was used.`,
+      `The last delivery brought ${q(b.lastDelivery)}, which may still be on the shelf. The ${q(excess)} beyond it are worth about ${fmtMoney(Math.round(e.exposure), currency)} at the price paid.`,
     ];
     base.possibleCauses = BOUGHT_USED_CAUSES.map((c) => c.title);
     base.recommended = [`Count ${name} in every store and bar.`, ...BOUGHT_USED_CAUSES.slice(1).map((c) => c.check)];

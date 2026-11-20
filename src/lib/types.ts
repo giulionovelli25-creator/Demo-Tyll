@@ -267,12 +267,15 @@ export interface BoughtUsedEvidence {
   bought: number;
   deliveries: number;
   lastDelivery: number;
+  lastDeliveryDate?: string | null;
   sold: number;
   waste: number;
   movedIn: number;
   movedOut: number;
   used: number;
   gap: number;
+  /** The gap beyond the last delivery: what the flag values. */
+  excess?: number;
   unitCost: number;
   share: number;
 }
@@ -366,6 +369,8 @@ export interface Transfer {
   qty: number;
   direction: "in" | "out";
   counterparty: string;
+  /** The hotel's own outlet on the other side, when it is one: a move inside the hotel, not stock coming or going. */
+  outletId?: string;
 }
 
 // ---- Outlet stock -----------------------------------------------------------

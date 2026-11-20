@@ -18,6 +18,8 @@ export interface Issue {
   outletId?: string;
   /** Money involved, in the selection's currency. Null where it cannot be measured. */
   impact: number | null;
+  /** The money is an estimate a count confirms, not a recorded transaction (bought against used). */
+  estimate?: boolean;
   priority: Priority;
   assignee?: string;
   status: string;
@@ -60,6 +62,7 @@ export function buildIssues(
     const priority: Priority = impact >= ISSUE_RULES.highImpact * aed || (patterned && i.status === "new") || overdue || freshStock ? "high" : impact >= ISSUE_RULES.mediumImpact * aed || i.type === "usage_variance" ? "medium" : "low";
     out.push({
       id: i.id, kind: "investigation", title: i.headline, location: where(i.outletId, i.propertyId), outletId: i.outletId, impact, priority,
+      ...(i.type === "bought_not_used" ? { estimate: true } : {}),
       assignee: i.assigneeId, status: overdue ? "Overdue" : { new: "New", assigned: "Assigned", in_review: "In review", closed: "Closed" }[i.status],
       href: `/investigations/${i.id}`,
     });

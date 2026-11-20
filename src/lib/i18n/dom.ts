@@ -21,7 +21,22 @@ export function startTranslating(root: Element, t: Translator) {
     if (node.data !== shown) node.data = shown;
   };
 
+  const attributes = (el: Element) => {
+    for (const name of ATTRS) {
+      const value = el.getAttribute(name);
+      if (!value) continue;
+      const seen = attrs.get(el) ?? {};
+      const en = seen[name]?.shown === value ? seen[name].en : value;
+      const shown = t.translate(en);
+      seen[name] = { en, shown };
+      attrs.set(el, seen);
+      if (value !== shown) el.setAttribute(name, shown);
+    }
+  };
+
   const element = (el: Element) => {
+    // What someone types in a text area stays as typed, but its placeholder and label are page text.
+    if (el.tagName === "TEXTAREA" && el.closest("[translate=no]") === null) return attributes(el);
     if (skip(el)) return;
     // React splits "{n} item{s}" into several text nodes, so adjacent ones are read as one line.
     let run: Text[] = [];
@@ -38,16 +53,7 @@ export function startTranslating(root: Element, t: Translator) {
       else flush();
     }
     flush();
-    for (const name of ATTRS) {
-      const value = el.getAttribute(name);
-      if (!value) continue;
-      const seen = attrs.get(el) ?? {};
-      const en = seen[name]?.shown === value ? seen[name].en : value;
-      const shown = t.translate(en);
-      seen[name] = { en, shown };
-      attrs.set(el, seen);
-      if (value !== shown) el.setAttribute(name, shown);
-    }
+    attributes(el);
   };
 
   const walk = (top: Element) => {

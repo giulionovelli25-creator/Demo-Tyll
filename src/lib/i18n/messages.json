@@ -79,6 +79,11 @@
 "Anteprima di una funzione prevista. Puoi provare il calcolo, ma nulla viene salvato o inviato alle paghe.",
 "معاينة لميزة مخطط لها. يمكنك تجربة الحساب هنا، لكن لا يُحفظ شيء ولا يُرسل إلى الرواتب."
 ],
+"A running total, not a daily figure: bought less used for the flagged items, added up day by day at the price paid. It rises on delivery days and falls a little each day with sales. Each item's last delivery is left out, as it may still be on the shelf, so the line ends on the flags' total.": [
+"Eine laufende Summe, kein Tageswert: gekauft abzüglich verbraucht für die markierten Artikel, Tag für Tag addiert zum bezahlten Preis. Sie steigt an Liefertagen und sinkt täglich etwas mit den Verkäufen. Die letzte Lieferung jedes Artikels bleibt außen vor, da sie noch im Regal liegen kann, so endet die Linie bei der Summe der Markierungen.",
+"Un totale progressivo, non un dato giornaliero: acquistato meno usato per gli articoli segnalati, sommato giorno per giorno al prezzo pagato. Sale nei giorni di consegna e scende un po' ogni giorno con le vendite. L'ultima consegna di ogni articolo è esclusa, perché può essere ancora sullo scaffale, così la linea finisce sul totale delle segnalazioni.",
+"مجموع تراكمي وليس رقمًا يوميًا: المشتريات ناقص الاستخدام للأصناف المُعلَّمة، تُجمع يومًا بيوم بالسعر المدفوع. يرتفع في أيام التوريد وينخفض قليلًا كل يوم مع المبيعات. يُستبعد آخر توريد لكل صنف لأنه قد يكون ما زال على الرف، فينتهي الخط عند مجموع التنبيهات."
+],
 "A shortfall is stock that left without a sale, a waste entry or a transfer. It says something is unexplained. It does not say what happened.": [
 "Ein Fehlbestand ist Ware, die ohne Verkauf, Abfalleintrag oder Umlagerung abging. Er zeigt, dass etwas ungeklärt ist, nicht was passiert ist.",
 "Un ammanco è merce uscita senza vendita, scarto registrato o trasferimento. Indica che qualcosa non è spiegato, non cosa sia successo.",
@@ -108,6 +113,16 @@
 "Eine Belastung über {0} für Zimmer {1} kam auf die Gästerechnung von Zimmer {2}.",
 "Un addebito di {0} per la camera {1} è arrivato sul conto della camera {2}.",
 "وصلت رسوم بقيمة {0} للغرفة {1} إلى فاتورة الغرفة {2}."
+],
+"About {0} at risk, an estimate until a count confirms it.": [
+"Etwa {0} gefährdet, eine Schätzung, bis eine Zählung sie bestätigt.",
+"Circa {0} a rischio, una stima finché un conteggio non la conferma.",
+"نحو {0} معرّض للخطر، تقدير حتى يؤكده الجرد."
+],
+"About {0} at the price paid, an estimate": [
+"Etwa {0} zum bezahlten Preis, eine Schätzung",
+"Circa {0} al prezzo pagato, una stima",
+"نحو {0} بالسعر المدفوع، تقدير"
 ],
 "About {0} less profit in this period.": [
 "Etwa {0} weniger Gewinn in diesem Zeitraum.",
@@ -253,6 +268,11 @@
 "Alle Kategorien",
 "Tutte le categorie",
 "جميع الفئات"
+],
+"All checked by a manager": [
+"Alles von einer Führungskraft geprüft",
+"Tutto controllato da un responsabile",
+"تحقّق مدير من الكل"
 ],
 "All checked, an estimate": [
 "Alles geprüft, eine Schätzung",
@@ -539,6 +559,11 @@
 "A rischio di esaurimento",
 "معرضة للنفاد"
 ],
+"At the price paid, an estimate. Grey items are below the rules, so not flagged. Choose an item for its figures.": [
+"Zum bezahlten Preis, eine Schätzung. Graue Artikel liegen unter den Regeln und sind daher nicht markiert. Wählen Sie einen Artikel für seine Zahlen.",
+"Al prezzo pagato, una stima. Gli articoli in grigio sono sotto le regole, quindi non segnalati. Scegli un articolo per vederne i dati.",
+"بالسعر المدفوع، تقدير. الأصناف الرمادية دون القواعد، فهي غير مُعلَّمة. اختر صنفًا لعرض أرقامه."
+],
 "At the rate of the last {0} days. Every part is an estimate, and the assumptions are listed. Simulated data.": [
 "Im Tempo der letzten {0} Tage. Jeder Teil ist eine Schätzung, die Annahmen stehen unten. Simulierte Daten.",
 "Al ritmo degli ultimi {0} giorni. Ogni parte è una stima e le ipotesi sono elencate. Dati simulati.",
@@ -794,6 +819,21 @@
 "Scarti di bevande nel tempo",
 "هدر المشروبات بمرور الوقت"
 ],
+"Beyond last delivery": [
+"Über letzte Lieferung",
+"Oltre ultima consegna",
+"ما يتجاوز آخر توريد"
+],
+"Beyond the last delivery": [
+"Über die letzte Lieferung hinaus",
+"Oltre l'ultima consegna",
+"ما يتجاوز آخر توريد"
+],
+"Beyond the last delivery, an estimate": [
+"Über die letzte Lieferung hinaus, eine Schätzung",
+"Oltre l'ultima consegna, una stima",
+"ما يتجاوز آخر توريد، تقدير"
+],
 "Blind count": [
 "Blindzählung",
 "Conteggio alla cieca",
@@ -854,10 +894,20 @@
 "Acquistato contro usato, {0} giorni",
 "المشتريات مقابل الاستخدام، {0} يومًا"
 ],
+"Bought is what suppliers delivered, including deliveries received in Tyll. Used is units sold, including complimentary ones, times the recipe quantity, plus logged waste and transfers out of the hotel. Beyond last delivery is the gap less the last delivery, which may still be on the shelf, at the price paid. A gap does not show what happened to the stock.": [
+"Gekauft ist, was Lieferanten geliefert haben, einschließlich in Tyll erfasster Lieferungen. Verbraucht sind verkaufte Einheiten, auch kostenlose, mal Rezeptmenge, plus erfasster Abfall und Umbuchungen aus dem Hotel. Über letzte Lieferung ist die Lücke abzüglich der letzten Lieferung, die noch im Regal liegen kann, zum bezahlten Preis. Eine Lücke zeigt nicht, was mit dem Bestand geschah.",
+"Acquistato è ciò che i fornitori hanno consegnato, comprese le consegne ricevute in Tyll. Usato sono le unità vendute, anche quelle offerte, per la quantità della ricetta, più sprechi registrati e trasferimenti fuori dall'hotel. Oltre ultima consegna è il divario meno l'ultima consegna, che può essere ancora sullo scaffale, al prezzo pagato. Un divario non mostra cosa è successo alla merce.",
+"المشتراة هي ما سلّمه الموردون، بما في ذلك التوريدات المستلمة في Tyll. والمستخدمة هي الوحدات المباعة، بما فيها المجانية، مضروبة في كمية الوصفة، زائد الهدر المسجل والتحويلات إلى خارج الفندق. وما يتجاوز آخر توريد هو الفرق ناقص آخر توريد، الذي قد يكون ما زال على الرف، بالسعر المدفوع. الفرق لا يُظهر ما حدث للمخزون."
+],
 "Bought is what suppliers delivered, including deliveries received in Tyll. Used is units sold, including complimentary ones, times the recipe quantity, plus logged waste and transfers. A gap does not show what happened to the stock.": [
 "Gekauft ist, was Lieferanten geliefert haben, einschließlich in Tyll erfasster Lieferungen. Verbraucht sind verkaufte Einheiten, auch kostenlose, mal Rezeptmenge, plus erfasster Abfall und Umbuchungen. Eine Lücke zeigt nicht, was mit dem Bestand geschah.",
 "Acquistato è ciò che i fornitori hanno consegnato, comprese le consegne ricevute in Tyll. Usato sono le unità vendute, anche quelle offerte, per la quantità della ricetta, più sprechi registrati e trasferimenti. Un divario non mostra cosa è successo alla merce.",
 "المشتراة هي ما سلّمه الموردون، بما في ذلك التوريدات المستلمة في Tyll. والمستخدمة هي الوحدات المباعة، بما فيها المجانية، مضروبة في كمية الوصفة، زائد الهدر المسجل والتحويلات. الفرق لا يُظهر ما حدث للمخزون."
+],
+"Bought less used for the flagged items, added up day by day at the price paid, leaving out each item's last delivery. {0} by today. An estimate.": [
+"Gekauft abzüglich verbraucht für die markierten Artikel, Tag für Tag addiert zum bezahlten Preis, ohne die letzte Lieferung jedes Artikels. {0} bis heute. Eine Schätzung.",
+"Acquistato meno usato per gli articoli segnalati, sommato giorno per giorno al prezzo pagato, senza l'ultima consegna di ogni articolo. {0} a oggi. Una stima.",
+"المشتريات ناقص الاستخدام للأصناف المُعلَّمة، تُجمع يومًا بيوم بالسعر المدفوع، دون آخر توريد لكل صنف. {0} حتى اليوم. تقدير."
 ],
 "Bought less used for the flagged items, added up day by day at the price paid. It rises on delivery days and falls a little each day with sales.": [
 "Gekauft abzüglich verbraucht für die markierten Artikel, Tag für Tag addiert zum bezahlten Preis. Sie steigt an Liefertagen und sinkt täglich etwas mit den Verkäufen.",
@@ -1313,6 +1363,16 @@
 "Geprüft",
 "Verificato",
 "تمت المراجعة"
+],
+"Checked earlier by {0}, {1}, when the gap was {2} cans.": [
+"Früher geprüft von {0}, {1}, als die Lücke {2} Dosen betrug.",
+"Controllato prima da {0}, {1}, quando il divario era di {2} lattine.",
+"تحقّق منه {0} سابقًا، {1}، حين كان الفرق {2} علبة."
+],
+"Checked earlier by {0}, {1}, when the gap was {2}.": [
+"Früher geprüft von {0}, {1}, als die Lücke {2} betrug.",
+"Controllato prima da {0}, {1}, quando il divario era di {2}.",
+"تحقّق منه {0} سابقًا، {1}، حين كان الفرق {2}."
 ],
 "Checking the counts.": [
 "Zählungen werden geprüft.",
@@ -2824,6 +2884,11 @@
 "Per esempio: due casse mancanti sul pallet",
 "مثال: صندوقان مفقودان من المنصة"
 ],
+"For example: {0} cases in the main store, standing order cut": [
+"Zum Beispiel: {0} Kisten im Hauptlager, Dauerauftrag gekürzt",
+"Per esempio: {0} casse nel magazzino principale, ordine fisso ridotto",
+"مثال: {0} صندوقًا في المخزن الرئيسي، تم تقليص الطلب الدائم"
+],
 "For you": [
 "Für Sie",
 "Per te",
@@ -3494,6 +3559,11 @@
 "Finisce in qualcosa senza ricetta in cassa: un pacchetto bevande, un menu per eventi, minibar o bevande del personale.",
 "يدخل في شيء بلا وصفة في نقطة البيع: باقة مشروبات أو قائمة فعالية أو الميني بار أو مشروبات الموظفين."
 ],
+"It has grown by more than a delivery since, so it is to check again.": [
+"Sie ist seitdem um mehr als eine Lieferung gewachsen und ist daher erneut zu prüfen.",
+"Da allora è cresciuto di più di una consegna, quindi va controllato di nuovo.",
+"ونما منذ ذلك الحين بأكثر من توريد، فيجب التحقق منه مجددًا."
+],
 "It lands on the bill of room {0}": [
 "Sie landet auf der Rechnung von Zimmer {0}",
 "Finisce sul conto della camera {0}",
@@ -3523,6 +3593,11 @@
 "Artikel, die über {0} Tage über das hinaus gekauft wurden, was Verkäufe, Rezepte und erfasster Abfall erklären: mehr als die letzte Lieferung, mindestens {1} des Verbrauchs und {2}. Eine Schätzung bis zur Zählung.",
 "Articoli acquistati in {0} giorni oltre quanto spiegano vendite, ricette e sprechi registrati: più dell'ultima consegna, almeno il {1} dell'uso e {2}. Una stima fino a un conteggio.",
 "أصناف اشتُريت خلال {0} يومًا بما يتجاوز ما تفسره المبيعات والوصفات والهدر المسجل: أكثر من آخر توريد، و{1} على الأقل من الاستخدام و{2}. تقدير حتى الجرد."
+],
+"Items bought over {0} days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {1} of use, and {2} beyond the last delivery, which is the amount at risk. An estimate until a count.": [
+"Artikel, die über {0} Tage über das hinaus gekauft wurden, was Verkäufe, Rezepte und erfasster Abfall erklären: mehr als die letzte Lieferung, mindestens {1} des Verbrauchs und {2} über die letzte Lieferung hinaus, der gefährdete Betrag. Eine Schätzung bis zur Zählung.",
+"Articoli acquistati in {0} giorni oltre quanto spiegano vendite, ricette e sprechi registrati: più dell'ultima consegna, almeno il {1} dell'uso e {2} oltre l'ultima consegna, che è l'importo a rischio. Una stima fino a un conteggio.",
+"أصناف اشتُريت خلال {0} يومًا بما يتجاوز ما تفسره المبيعات والوصفات والهدر المسجل: أكثر من آخر توريد، و{1} على الأقل من الاستخدام، و{2} تتجاوز آخر توريد، وهو المبلغ المعرّض للخطر. تقدير حتى الجرد."
 ],
 "Items compared": [
 "Verglichene Artikel",
@@ -3679,10 +3754,20 @@
 "Prima i maggiori. Conta l'articolo, poi segna cosa hai trovato. Tutti quelli con accesso lo vedono.",
 "الأكبر أولًا. اجرد الصنف، ثم سجّل ما وجدته. يراه كل من لديه صلاحية."
 ],
+"Largest flagged gap": [
+"Größte markierte Lücke",
+"Divario segnalato più grande",
+"أكبر فرق مُعلَّم"
+],
 "Largest gap": [
 "Größte Lücke",
 "Divario più grande",
 "أكبر فرق"
+],
+"Largest gaps beyond the last delivery": [
+"Größte Lücken über die letzte Lieferung hinaus",
+"Divari maggiori oltre l'ultima consegna",
+"أكبر الفروق التي تتجاوز آخر توريد"
 ],
 "Last count": [
 "Letzte Zählung",
@@ -3693,6 +3778,11 @@
 "Letzte Zählung {0} am {1}.",
 "Ultimo conteggio {0} il {1}.",
 "آخر جرد {0} في {1}."
+],
+"Last delivery, which may still be on the shelf": [
+"Letzte Lieferung, die noch im Regal liegen kann",
+"Ultima consegna, che può essere ancora sullo scaffale",
+"آخر توريد، وقد يكون ما زال على الرف"
 ],
 "Last full count, {0}": [
 "Letzte volle Zählung, {0}",
@@ -4464,6 +4554,16 @@
 "Trasferito da un altro magazzino",
 "منقول من مخزن آخر"
 ],
+"Moved in from outside the hotel": [
+"Von außerhalb des Hotels zugebucht",
+"Entrato da fuori dall'hotel",
+"منقول إلى الفندق من خارجه"
+],
+"Moved out for use outside the till, such as staff meals": [
+"Für Verbrauch außerhalb der Kasse abgebucht, etwa Personalessen",
+"Uscito per usi fuori cassa, come i pasti del personale",
+"منقول لاستخدام خارج نقطة البيع، مثل وجبات الموظفين"
+],
 "Moved out to another store": [
 "In ein anderes Lager umgebucht",
 "Trasferito a un altro magazzino",
@@ -4473,6 +4573,11 @@
 "Auf das richtige Zimmer im Gästefolio verschoben und die Rechnung des anderen Gastes korrigiert.",
 "Spostato sulla camera giusta nel folio, e corretto il conto dell'altro ospite.",
 "نُقلت إلى الغرفة الصحيحة في حساب النزيل، وصُححت فاتورة النزيل الآخر."
+],
+"Moves between the hotel’s own outlets are left out: the check covers the whole hotel.": [
+"Umbuchungen zwischen den eigenen Outlets des Hotels bleiben außen vor: die Prüfung umfasst das ganze Hotel.",
+"Gli spostamenti tra i punti vendita dell'hotel sono esclusi: il controllo copre tutto l'hotel.",
+"تُستبعد التحويلات بين منافذ الفندق نفسه: الفحص يشمل الفندق كله."
 ],
 "Moves walk-ins only. Booked guests are not counted again.": [
 "Ändert nur Laufkundschaft. Gebuchte Gäste werden nicht erneut gezählt.",
@@ -4759,6 +4864,26 @@
 "Non spiegato",
 "غير مفسر"
 ],
+"Not flagged:": [
+"Nicht markiert:",
+"Non segnalato:",
+"غير مُعلَّم:"
+],
+"Not flagged: under {0}": [
+"Nicht markiert: unter {0}",
+"Non segnalato: sotto {0}",
+"غير مُعلَّم: أقل من {0}"
+],
+"Not flagged: under {0} of use": [
+"Nicht markiert: unter {0} des Verbrauchs",
+"Non segnalato: sotto il {0} dell'uso",
+"غير مُعلَّم: أقل من {0} من الاستخدام"
+],
+"Not flagged: within the last delivery": [
+"Nicht markiert: innerhalb der letzten Lieferung",
+"Non segnalato: entro l'ultima consegna",
+"غير مُعلَّم: ضمن آخر توريد"
+],
 "Not found: needs a closer look": [
 "Nicht gefunden: braucht einen genaueren Blick",
 "Non trovato: serve un controllo più attento",
@@ -4876,7 +5001,7 @@
 ],
 "Nothing to check": [
 "Nichts zu prüfen",
-"Nulla da controllare",
+"Niente da controllare",
 "لا شيء للتحقق"
 ],
 "Nothing to order here": [
@@ -7294,6 +7419,11 @@
 "Mostra tutti i {0} piatti",
 "عرض جميع الأطباق ({0})"
 ],
+"Show all {0} flagged items": [
+"Alle {0} markierten Artikel zeigen",
+"Mostra tutti i {0} articoli segnalati",
+"عرض جميع الأصناف المُعلَّمة البالغة {0}"
+],
 "Show all {0} flagged items below": [
 "Alle {0} markierten Artikel unten zeigen",
 "Mostra tutti i {0} articoli segnalati sotto",
@@ -7979,10 +8109,20 @@
 "Restano {0} lattine, il {1} di quanto usato, per circa {2} al prezzo pagato.",
 "يبقى {0} علبة، {1} من الاستخدام، بقيمة نحو {2} بالسعر المدفوع."
 ],
+"That leaves {0} cans, {1} of what was used.": [
+"Bleiben {0} Dosen, {1} des Verbrauchs.",
+"Restano {0} lattine, il {1} dell'uso.",
+"يتبقى {0} علبة، أي {1} من الاستخدام."
+],
 "That leaves {0}, {1} of what was used, worth about {2} at the price paid.": [
 "Bleiben {0}, {1} des Verbrauchs, etwa {2} wert zum bezahlten Preis.",
 "Restano {0}, il {1} di quanto usato, per circa {2} al prezzo pagato.",
 "يبقى {0}، {1} من الاستخدام، بقيمة نحو {2} بالسعر المدفوع."
+],
+"That leaves {0}, {1} of what was used.": [
+"Bleiben {0}, {1} des Verbrauchs.",
+"Restano {0}, il {1} dell'uso.",
+"يتبقى {0}، أي {1} من الاستخدام."
 ],
 "That role could not open.": [
 "Diese Rolle konnte nicht geöffnet werden.",
@@ -8024,6 +8164,11 @@
 "La storia completa di ogni ordine: creazione, articoli, comande, modifiche, conto finale e pagamento.",
 "السجل الكامل لكل طلب: الإنشاء والأصناف والتذاكر المرسلة والتغييرات والفاتورة النهائية والدفع."
 ],
+"The gap is at least {0} of what was used, and the part beyond the last delivery is worth at least {1}. That part is the amount at risk.": [
+"Die Lücke beträgt mindestens {0} des Verbrauchs, und der Teil über die letzte Lieferung hinaus ist mindestens {1} wert. Dieser Teil ist der gefährdete Betrag.",
+"Il divario è almeno il {0} dell'uso, e la parte oltre l'ultima consegna vale almeno {1}. Quella parte è l'importo a rischio.",
+"الفرق لا يقل عن {0} من الاستخدام، والجزء الذي يتجاوز آخر توريد لا تقل قيمته عن {1}. هذا الجزء هو المبلغ المعرّض للخطر."
+],
 "The gap is at least {0} of what was used, and worth at least {1}.": [
 "Die Lücke beträgt mindestens {0} des Verbrauchs und ist mindestens {1} wert.",
 "Il divario è almeno il {0} di quanto usato e vale almeno {1}.",
@@ -8064,10 +8209,20 @@
 "Gli schemi maggiori delle ultime {0} settimane.",
 "أكبر الأنماط خلال آخر {0} أسابيع."
 ],
+"The last delivery brought {0} cans, which may still be on the shelf.": [
+"Die letzte Lieferung brachte {0} Dosen, die noch im Regal liegen können.",
+"L'ultima consegna ha portato {0} lattine, che possono essere ancora sullo scaffale.",
+"جلب آخر توريد {0} علبة، وقد تكون ما زالت على الرف."
+],
 "The last delivery brought {0} cans. Tyll allows that much to still be on the shelf before it flags a gap.": [
 "Die letzte Lieferung brachte {0} Dosen. So viel darf laut Tyll noch im Regal liegen, bevor eine Lücke markiert wird.",
 "L'ultima consegna ha portato {0} lattine. Tyll ammette che tanto sia ancora sullo scaffale prima di segnalare un divario.",
 "جلب آخر توريد {0} علبة. يسمح Tyll بأن يبقى هذا القدر على الرف قبل أن يُعلِّم فرقًا."
+],
+"The last delivery brought {0}, which may still be on the shelf.": [
+"Die letzte Lieferung brachte {0}, die noch im Regal liegen können.",
+"L'ultima consegna ha portato {0}, che può essere ancora sullo scaffale.",
+"جلب آخر توريد {0}، وقد يكون ما زال على الرف."
 ],
 "The last delivery brought {0}. Tyll allows that much to still be on the shelf before it flags a gap.": [
 "Die letzte Lieferung brachte {0}. So viel darf laut Tyll noch im Regal liegen, bevor eine Lücke markiert wird.",
@@ -8143,6 +8298,16 @@
 "Die Kasse sendet die Belastung an das Gästefolio",
 "La cassa invia l'addebito al folio dell'ospite",
 "يرسل نظام الكاشير الرسوم إلى حساب النزيل"
+],
+"The {0} beyond it are worth about {1} at the price paid.": [
+"Die {0} darüber hinaus sind zum bezahlten Preis etwa {1} wert.",
+"I {0} oltre questa valgono circa {1} al prezzo pagato.",
+"قيمة الـ{0} التي تتجاوزه نحو {1} بالسعر المدفوع."
+],
+"The {0} cans beyond it are worth about {1} at the price paid.": [
+"Die {0} Dosen darüber hinaus sind zum bezahlten Preis etwa {1} wert.",
+"Le {0} lattine oltre questa valgono circa {1} al prezzo pagato.",
+"قيمة الـ{0} علبة التي تتجاوزه نحو {1} بالسعر المدفوع."
 ],
 "The {0} charge signed to room {1} at {2} reached the guest bill of room {3}.": [
 "Die Belastung über {0}, um {1} auf Zimmer {2} unterschrieben, kam auf die Gästerechnung von Zimmer {3}.",
@@ -8563,6 +8728,16 @@
 "Nicht zugewiesen",
 "Non assegnato",
 "غير مسند"
+],
+"Under {0}": [
+"Unter {0}",
+"Sotto {0}",
+"أقل من {0}"
+],
+"Under {0} of use": [
+"Unter {0} des Verbrauchs",
+"Sotto il {0} dell'uso",
+"أقل من {0} من الاستخدام"
 ],
 "Undo": [
 "Rückgängig",
@@ -9344,6 +9519,16 @@
 "Nel budget eventi.",
 "ضمن ميزانية الفعاليات."
 ],
+"Within the last delivery": [
+"Innerhalb der letzten Lieferung",
+"Entro l'ultima consegna",
+"ضمن آخر توريد"
+],
+"Within what the last delivery could leave on the shelf": [
+"Innerhalb dessen, was die letzte Lieferung im Regal lassen kann",
+"Entro quanto l'ultima consegna può lasciare sullo scaffale",
+"ضمن ما قد يتركه آخر توريد على الرف"
+],
 "Worked example: a dinner posted to the wrong room": [
 "Beispiel: ein Abendessen auf dem falschen Zimmer gebucht",
 "Esempio: una cena addebitata alla camera sbagliata",
@@ -9484,6 +9669,11 @@
 "a rischio",
 "معرّض للخطر"
 ],
+"at risk, an estimate": [
+"gefährdet, eine Schätzung",
+"a rischio, una stima",
+"معرّض للخطر، تقدير"
+],
 "at {0} per kg": [
 "zu {0} pro kg",
 "a {0} al kg",
@@ -9513,6 +9703,11 @@
 "nach Tag der Belastung",
 "per giorno dell'addebito",
 "حسب يوم الرسوم"
+],
+"by today, an estimate": [
+"bis heute, eine Schätzung",
+"a oggi, una stima",
+"حتى اليوم، تقدير"
 ],
 "choose dates": [
 "Daten wählen",
@@ -9859,6 +10054,16 @@
 "invariato",
 "دون تغيير"
 ],
+"under {0} of use.": [
+"unter {0} des Verbrauchs.",
+"sotto il {0} dell'uso.",
+"أقل من {0} من الاستخدام."
+],
+"under {0}.": [
+"unter {0}.",
+"sotto {0}.",
+"أقل من {0}."
+],
 "up to the closing count": [
 "bis zur Endzählung",
 "fino al conteggio finale",
@@ -9883,6 +10088,11 @@
 "Wochenzählung, {0}",
 "conteggio settimanale, {0}",
 "جرد أسبوعي، {0}"
+],
+"within the last delivery.": [
+"innerhalb der letzten Lieferung.",
+"entro l'ultima consegna.",
+"ضمن آخر توريد."
 ],
 "you": [
 "Sie",
@@ -9914,6 +10124,11 @@
 "{0} L",
 "{0} لتر"
 ],
+"{0} L beyond the last delivery, {1}": [
+"{0} L über die letzte Lieferung hinaus, {1}",
+"{0} L oltre l'ultima consegna, {1}",
+"{0} لتر تتجاوز آخر توريد، {1}"
+],
 "{0} L coming": [
 "{0} L unterwegs",
 "{0} L in arrivo",
@@ -9928,6 +10143,26 @@
 "{0} L Abfall",
 "{0} L di spreco",
 "{0} لتر هدر"
+],
+"{0} L, about {1} bottle": [
+"{0} L, etwa {1} Flasche",
+"{0} L, circa {1} bottiglia",
+"{0} لتر، نحو {1} زجاجة"
+],
+"{0} L, about {1} bottles": [
+"{0} L, etwa {1} Flaschen",
+"{0} L, circa {1} bottiglie",
+"{0} لتر، نحو {1} زجاجة"
+],
+"{0} L, about {1} bottles more came in than the till and the waste log account for.": [
+"{0} L, etwa {1} Flaschen, kamen mehr herein, als Kasse und Abfallprotokoll erklären.",
+"Sono entrati {0} L, circa {1} bottiglie, in più di quanto spiegano cassa e registro sprechi.",
+"ورد {0} لتر، نحو {1} زجاجة، أكثر مما تفسره نقطة البيع وسجل الهدر."
+],
+"{0} L, about {1} bottles more was used than bought. Stock on the shelf went down.": [
+"{0} L, etwa {1} Flaschen, wurden mehr verbraucht als gekauft. Der Bestand im Regal ist gesunken.",
+"Sono stati usati {0} L, circa {1} bottiglie, più di quanto acquistato. La merce sullo scaffale è diminuita.",
+"استُخدم {0} لتر، نحو {1} زجاجة، أكثر مما اشتُري. انخفض المخزون على الرف."
 ],
 "{0} L, {1} of use": [
 "{0} L, {1} des Verbrauchs",
@@ -9944,6 +10179,11 @@
 "{0} oggi, {1} questa settimana, {2} coinvolti, compresi gli ordini da fare.",
 "{0} اليوم، {1} هذا الأسبوع، {2} معنية، بما فيها الطلبات المطلوبة."
 ],
+"{0} alone, the largest flagged gap.": [
+"{0} allein, die größte markierte Lücke.",
+"{0} da solo, il divario segnalato più grande.",
+"{0} وحده، أكبر فرق مُعلَّم."
+],
 "{0} and others need an order in the next few days.": [
 "{0} und weitere brauchen in den nächsten Tagen eine Bestellung.",
 "{0} e altri richiedono un ordine nei prossimi giorni.",
@@ -9958,6 +10198,11 @@
 "{0} verfügbar",
 "{0} disponibili",
 "{0} متاح"
+],
+"{0} beyond the last delivery, {1}": [
+"{0} über die letzte Lieferung hinaus, {1}",
+"{0} oltre l'ultima consegna, {1}",
+"{0} تتجاوز آخر توريد، {1}"
 ],
 "{0} billed": [
 "{0} berechnet",
@@ -9993,6 +10238,11 @@
 "{0} Dosen",
 "{0} lattine",
 "{0} علب"
+],
+"{0} cans beyond the last delivery, {1}": [
+"{0} Dosen über die letzte Lieferung hinaus, {1}",
+"{0} lattine oltre l'ultima consegna, {1}",
+"{0} علبة تتجاوز آخر توريد، {1}"
 ],
 "{0} cans logged as waste or breakage.": [
 "{0} Dosen als Abfall oder Bruch erfasst.",
@@ -10189,6 +10439,11 @@
 "{0} voce, {1}",
 "إدخال واحد ({0})، {1}"
 ],
+"{0} flag, {1} at risk": [
+"{0} Markierung, {1} gefährdet",
+"{0} segnalazione, {1} a rischio",
+"{0} تنبيه، {1} معرّض للخطر"
+],
 "{0} flagged bills still open, {1} until checked.": [
 "{0} markierte Rechnungen noch offen, {1} bis zur Prüfung.",
 "{0} conti segnalati ancora aperti, {1} fino al controllo.",
@@ -10203,6 +10458,11 @@
 "{0} markiert, {1} gefährdet",
 "{0} segnalati, {1} a rischio",
 "{0} مشار إليها، {1} معرّض للخطر"
+],
+"{0} flags, {1} at risk": [
+"{0} Markierungen, {1} gefährdet",
+"{0} segnalazioni, {1} a rischio",
+"{0} تنبيهات، {1} معرّض للخطر"
 ],
 "{0} food, {1} beverage, {2} inventory": [
 "{0} Speisen, {1} Getränke, {2} Inventar",
@@ -10284,6 +10544,11 @@
 "{0} articolo",
 "صنف واحد ({0})"
 ],
+"{0} item to check": [
+"{0} Artikel zu prüfen",
+"{0} articolo da controllare",
+"{0} صنف للتحقق"
+],
 "{0} item to check, an estimate": [
 "{0} Artikel zu prüfen, eine Schätzung",
 "{0} articolo da controllare, una stima",
@@ -10303,6 +10568,11 @@
 "Die {0} wichtigsten Artikel",
 "I {0} articoli più importanti",
 "أهم {0} صنفًا"
+],
+"{0} items to check": [
+"{0} Artikel zu prüfen",
+"{0} articoli da controllare",
+"{0} أصناف للتحقق"
 ],
 "{0} items to check, an estimate": [
 "{0} Artikel zu prüfen, eine Schätzung",
@@ -10468,6 +10738,11 @@
 "{0} des Verlusts. {1} pro Jahr bei diesem Tempo.",
 "{0} di quanto perso. {1} all'anno a questo ritmo.",
 "{0} من الخسارة. {1} سنويًا بهذا المعدل."
+],
+"{0} of what was used": [
+"{0} des Verbrauchs",
+"{0} dell'uso",
+"{0} من الاستخدام"
 ],
 "{0} of what was used, about {1} at the price paid": [
 "{0} des Verbrauchs, etwa {1} zum bezahlten Preis",
@@ -10723,6 +10998,11 @@
 "{0} ungeklärt",
 "{0} non spiegati",
 "{0} غير مفسرة"
+],
+"{0} units beyond the last delivery, {1}": [
+"{0} Stück über die letzte Lieferung hinaus, {1}",
+"{0} unità oltre l'ultima consegna, {1}",
+"{0} وحدة تتجاوز آخر توريد، {1}"
 ],
 "{0} units waste": [
 "{0} Stück Abfall",
@@ -11163,6 +11443,11 @@
 "− {0} L",
 "− {0} L",
 "− {0} لتر"
+],
+"− {0} L, about {1} bottles": [
+"− {0} L, etwa {1} Flaschen",
+"− {0} L, circa {1} bottiglie",
+"− {0} لتر، نحو {1} زجاجة"
 ],
 "− {0} cans": [
 "− {0} Dosen",

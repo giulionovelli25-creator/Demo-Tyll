@@ -71,7 +71,7 @@ export function IssueRow({ issue, money, onOutlet }: { issue: Issue; money: (n: 
           <span className="mt-0.5 block truncate text-xs text-steel">{issue.location} · {KIND_LABEL[issue.kind]} · {issue.assignee ? personName(issue.assignee) : "Unassigned"}</span>
         </span>
         <span className="flex flex-col items-end gap-1">
-          <span className="num text-sm text-ink">{issue.impact === null ? "None" : money(issue.impact, { decimals: issue.impact < 100 })}</span>
+          <span className="num text-sm text-ink">{issue.impact === null ? "None" : money(issue.impact, { decimals: issue.impact < 100 })}{issue.estimate && <span className="block text-end text-xs text-steel">estimate</span>}</span>
           <span className="flex gap-1">
             <Badge tone={PRIORITY_TONE[issue.priority]} className="!py-0">{PRIORITY_LABEL[issue.priority]}</Badge>
             <Badge className="!py-0">{issue.status}</Badge>

@@ -445,7 +445,17 @@ function buildWaste(): WasteLog[] {
 const LAST_FULL_COUNT = rel(-2);
 const TERRACE_HEAVY = ["wagyu", "hammour", "coke", "potato", "brioche", "mozzarella", "chicken"];
 
-function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
+/**
+ * The Coca-Cola story's extra cases delivered to a hotel up to a date. They sit in the main store, so the store's
+ * book stock includes them and the weekly counts find them on the shelf: the counts and the bought against used check agree.
+ */
+function storyOnShelf(deliveries: readonly Delivery[], propertyId: string, date: string): number {
+  if (propertyId !== "lis") return 0;
+  return deliveries.filter((d) => d.propertyId === propertyId && d.status === "delivered" && d.supplierId === "bev" && d.date >= rel(BOUGHT_STORY.fromDay) && d.date <= date)
+    .reduce((s, d) => s + (d.lines.some((l) => l.ingredientId === BOUGHT_STORY.ingredientId) ? BOUGHT_STORY.extraPerDelivery : 0), 0);
+}
+
+function buildCounts(orders: Order[], dayItems: DayItem[], deliveries: readonly Delivery[]): CountRecord[] {
   const out: CountRecord[] = [];
   // Quantities on tickets that were sent for preparation and then removed without approval, by property and day.
   const leak = new Map<string, number>();
@@ -482,10 +492,11 @@ function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
         const drifting = p.id === "lis" && TERRACE_HEAVY.includes(g.id) ? 0.06 * driftLevel("lis-terrace", date) : 0;
         const shrink = (weekUsage.get(g.id) ?? 0) * (r.between(0.02, 0.08) + drifting) + leaked * 0.75 - (r.chance(0.15) ? daily * 0.05 : 0);
         const precision = g.unit === "each" ? 1 : 100;
-        const counted = Math.max(0, Math.round((expected - shrink) * precision) / precision);
+        const shelf = g.id === BOUGHT_STORY.ingredientId ? storyOnShelf(deliveries, p.id, date) : 0;
+        const counted = Math.max(0, Math.round((expected - shrink) * precision) / precision) + shelf;
         out.push({
           id: `C-${p.id}-${date}-${g.id}`, propertyId: p.id, ingredientId: g.id, date, kind: "weekly",
-          expected: Math.round(expected * precision) / precision, counted, by: `${outletsOfProperty(p.id)[1].code}-S9`, seq: 0,
+          expected: Math.round(expected * precision) / precision + shelf, counted, by: `${outletsOfProperty(p.id)[1].code}-S9`, seq: 0,
           allocation: varianceAllocation(dayItems, p.id, g.id, date),
         });
       }
@@ -505,8 +516,9 @@ function buildCounts(orders: Order[], dayItems: DayItem[]): CountRecord[] {
         const g = r.pick(pool);
         const daily = avg.get(g.id)!;
         const precision = g.unit === "each" ? 1 : 100;
-        const expected = Math.round(daily * r.between(1.2, 3) * precision) / precision;
-        const counted = Math.max(0, Math.round((expected - daily * r.between(-0.01, 0.035)) * precision) / precision);
+        const shelf = g.id === BOUGHT_STORY.ingredientId ? storyOnShelf(deliveries, p.id, date) : 0;
+        const expected = Math.round(daily * r.between(1.2, 3) * precision) / precision + shelf;
+        const counted = Math.max(0, Math.round((expected - shelf - daily * r.between(-0.01, 0.035)) * precision) / precision) + shelf;
         const id = `C-${p.id}-${date}-${g.id}-spot`;
         if (out.some((c) => c.id === id)) continue;
         out.push({ id, propertyId: p.id, ingredientId: g.id, date, kind: "spot", expected, counted, by: `${outletsOfProperty(p.id)[1].code}-S9`, seq: 0, allocation: varianceAllocation(dayItems, p.id, g.id, date) });
@@ -562,10 +574,15 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
           const chicken = lines.find((l) => l.ingredientId === "chicken");
           if (chicken) for (const k of ["ordered", "delivered", "invoiced"] as const) chicken[k] += 30;
         }
-        // Bought against used: two more cases of Coca-Cola on each drinks delivery in the three weeks before the last full count.
-        if (p.id === "lis" && date >= rel(BOUGHT_STORY.fromDay) && date < LAST_FULL_COUNT) {
-          const coke = lines.find((l) => l.ingredientId === BOUGHT_STORY.ingredientId);
-          if (coke) for (const k of ["ordered", "delivered", "invoiced"] as const) coke[k] += BOUGHT_STORY.extraPerDelivery;
+        // Bought against used: a standing order adds three cases of Coca-Cola to every drinks delivery, whatever the bars
+        // need. The cases go into the main store, where the weekly counts find them (see storyOnShelf).
+        if (p.id === "lis" && supplierId === "bev" && !future && date >= rel(BOUGHT_STORY.fromDay)) {
+          let coke = lines.find((l) => l.ingredientId === BOUGHT_STORY.ingredientId);
+          if (!coke) {
+            const price = round2(ingredientCostAt(BOUGHT_STORY.ingredientId, date) * p.costFactor);
+            lines.push((coke = { ingredientId: BOUGHT_STORY.ingredientId, ordered: 0, delivered: 0, invoiced: 0, poPrice: price, invoicePrice: price }));
+          }
+          for (const k of ["ordered", "delivered", "invoiced"] as const) coke[k] += BOUGHT_STORY.extraPerDelivery;
         }
         if (p.id === "lis" && supplierId === "dry" && date <= addDays(DEMO_TODAY, -2) && date >= addDays(DEMO_TODAY, -4)) {
           const l = lines.find((x) => x.ingredientId === "parmesan") ?? lines[0];
@@ -584,11 +601,11 @@ function buildDeliveries(dayItems: DayItem[]): Delivery[] {
 
 function buildTransfers(): Transfer[] {
   return [
-    { id: "T-1", propertyId: "lis", ingredientId: "wine", date: rel(-1), qty: 4.5, direction: "out", counterparty: "Banqueting" },
+    { id: "T-1", propertyId: "lis", ingredientId: "wine", date: rel(-1), qty: 4.5, direction: "out", counterparty: "Banqueting", outletId: "lis-banquets" },
     { id: "T-2", propertyId: "lis", ingredientId: "chicken", date: rel(0), qty: 6, direction: "out", counterparty: "Staff restaurant" },
-    { id: "T-3", propertyId: "lis", ingredientId: "coke", date: rel(0), qty: 48, direction: "in", counterparty: "Banqueting" },
-    { id: "T-7", propertyId: "lis", ingredientId: "chicken", date: rel(0), qty: 30, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner" },
-    { id: "T-6", propertyId: "lis", ingredientId: "lobster", date: rel(0), qty: 3, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner" },
+    { id: "T-3", propertyId: "lis", ingredientId: "coke", date: rel(0), qty: 48, direction: "in", counterparty: "Banqueting", outletId: "lis-banquets" },
+    { id: "T-7", propertyId: "lis", ingredientId: "chicken", date: rel(0), qty: 30, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner", outletId: "lis-banquets" },
+    { id: "T-6", propertyId: "lis", ingredientId: "lobster", date: rel(0), qty: 3, direction: "out", counterparty: "Banqueting, for Thursday's conference dinner", outletId: "lis-banquets" },
   ];
 }
 
@@ -739,6 +756,7 @@ export function getDataset(): Dataset {
       : { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
   }
   const exceptions = [...flagged, ...variances];
+  const deliveries = buildDeliveries(dayItems);
   cached = {
     orders,
     ordersById: new Map(orders.map((o) => [o.id, o])),
@@ -749,8 +767,8 @@ export function getDataset(): Dataset {
     exceptions,
     seedInvestigations,
     wasteLogs,
-    counts: buildCounts(orders, dayItems),
-    deliveries: buildDeliveries(dayItems),
+    counts: buildCounts(orders, dayItems, deliveries),
+    deliveries,
     transfers: buildTransfers(),
     ...buildContext(dayOutlets),
     liveOrders: buildLiveOrders(),

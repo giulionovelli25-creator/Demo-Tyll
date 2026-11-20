@@ -8,7 +8,8 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tyll-bu-"));
 process.env.TYLL_AUTH_STORE = path.join(dir, "auth.json");
 process.env.TYLL_PURCHASING_STORE = path.join(dir, "purchasing.json");
 
-const { BOUGHT_USED_RULES, boughtAgainstUsed, boughtUsedExceptions, boughtUsedPeriod, summarise } = await import("../domain/bought-used");
+const { BOUGHT_USED_RULES, boughtAgainstUsed, boughtQty, boughtUsedExceptions, boughtUsedPeriod, summarise } = await import("../domain/bought-used");
+const { stockPosition } = await import("../domain/inventory");
 const { getDataset } = await import("../data/generate");
 const { demoCases } = await import("../data/demo-cases");
 const { BOUGHT_STORY, BOUGHT_STORY_EXCEPTION_ID } = await import("../data/constants");
@@ -54,7 +55,21 @@ describe("bought against used rules", () => {
     expect(r.lastDelivery).toBe(240);
     expect(r.share).toBeCloseTo(0.6, 6);
     expect(r.gapValue).toBeCloseTo(360 * 1.35, 2);
+    // What is at risk is the part beyond what today's delivery could leave on the shelf.
+    expect(r.excess).toBe(120);
+    expect(r.excessValue).toBeCloseTo(120 * 1.35, 2);
     expect(r.flagged).toBe(true);
+    expect(boughtUsedExceptions([r])[0].exposure).toBeCloseTo(120 * 1.35, 2);
+    expect(summarise([r]).flaggedValue).toBeCloseTo(120 * 1.35, 2);
+  });
+
+  it("does not flag when the whole gap is worth the threshold but the part beyond the last delivery is not", () => {
+    // 960 bought, 650 used: 310 cans (EUR 418) over, 70 of them beyond today's 240 (EUR 94.50).
+    const r = coke(month, [sold(addDays(to, -3), 650)]);
+    expect(r.gapValue).toBeGreaterThan(BOUGHT_USED_RULES.minValue);
+    expect(r.excess).toBe(70);
+    expect(r.excessValue).toBeLessThan(BOUGHT_USED_RULES.minValue);
+    expect(r.flagged).toBe(false);
   });
 
   it("does not flag what the last delivery could leave on the shelf", () => {
@@ -98,6 +113,19 @@ describe("bought against used rules", () => {
       { id: "T-b", propertyId: "lis", ingredientId: "coke", date: addDays(to, -1), qty: 24, direction: "in", counterparty: "Banqueting" },
     ]);
     expect(moved.gap).toBe(base.gap - 48 + 24);
+    // A move between the hotel's own outlets changes nothing for the whole hotel.
+    const inside = coke(month, [sold(addDays(to, -3), 600)], [], [
+      { id: "T-c", propertyId: "lis", ingredientId: "coke", date: addDays(to, -1), qty: 48, direction: "in", counterparty: "Banqueting", outletId: "lis-banquets" },
+      { id: "T-d", propertyId: "lis", ingredientId: "coke", date: addDays(to, -1), qty: 24, direction: "out", counterparty: "Bar Azulejo", outletId: "lis-lobby" },
+    ]);
+    expect(inside.gap).toBe(base.gap);
+    expect(inside.movedIn + inside.movedOut).toBe(0);
+  });
+
+  it("writes a month of wine in litres and bottles, and keeps millilitres for a glass", () => {
+    expect(boughtQty(34.8, "wine")).toBe("34.8 L, about 46 bottles");
+    expect(boughtQty(0.75, "wine")).toBe("750 ml");
+    expect(boughtQty(496, "coke")).toBe("496 cans");
   });
 
   it("leaves out what does not belong to the period, the hotel or a recorded fact", () => {
@@ -138,7 +166,9 @@ describe("the Coca-Cola story", () => {
     const c = flagged[0];
     expect(c.gap).toBeGreaterThan(c.lastDelivery + 2 * 24);
     expect(c.share).toBeGreaterThan(0.2);
-    expect(c.gapValue).toBeGreaterThan(250);
+    expect(c.excessValue).toBeGreaterThan(150);
+    // The Banqueting move (T-3) is inside the hotel, so it is not counted as stock coming in.
+    expect(c.movedIn).toBe(0);
     // Only a few items stand out; the rest move with sales.
     expect(flagged.length).toBeLessThanOrEqual(4);
     const ex = boughtUsedExceptions(rows).find((e) => e.ingredientId === "coke")!;
@@ -158,16 +188,40 @@ describe("the Coca-Cola story", () => {
       const c = rows.find((r) => r.ingredientId === "coke")!;
       expect(c.flagged, period.to).toBe(true);
       expect(rows.filter((r) => r.flagged)[0].ingredientId, period.to).toBe("coke");
+      // The part beyond the last delivery stays well above the threshold, whichever day of the week it is.
+      expect(c.excessValue, period.to).toBeGreaterThan(150);
+      expect(c.excessValue, period.to).toBeLessThan(650);
     }
     vi.resetModules();
     process.env.TYLL_DEMO_DATE = "2026-10-13";
   });
 
-  it("adds the extra cases only before the last full count, so the stock estimate since that count is untouched", () => {
-    // Drinks arrive on Tuesdays and Fridays. Each one in the story weeks carries at least the two extra cases.
-    const lines = getDataset().deliveries.filter((d) => d.propertyId === "lis" && d.date >= rel(BOUGHT_STORY.fromDay) && d.date < rel(-2)).flatMap((d) => d.lines.filter((l) => l.ingredientId === "coke"));
-    expect(lines.length).toBeGreaterThanOrEqual(5);
+  it("adds the standing order's extra cases to every drinks delivery of the story weeks", () => {
+    // Drinks arrive on Tuesdays and Fridays. Each one in the story weeks carries at least the three extra cases.
+    const lines = getDataset().deliveries.filter((d) => d.propertyId === "lis" && d.supplierId === "bev" && d.status === "delivered" && d.date >= rel(BOUGHT_STORY.fromDay)).flatMap((d) => d.lines.filter((l) => l.ingredientId === "coke"));
+    expect(lines.length).toBeGreaterThanOrEqual(6);
     expect(lines.every((l) => l.delivered >= BOUGHT_STORY.extraPerDelivery)).toBe(true);
+  });
+
+  it("agrees with the count records: the weekly counts find the extra cases on the shelf, and Missing stock is unchanged", () => {
+    const d = getDataset();
+    const storyDeliveries = d.deliveries.filter((x) => x.propertyId === "lis" && x.supplierId === "bev" && x.status === "delivered" && x.date >= rel(BOUGHT_STORY.fromDay));
+    const extrasBy = (date: string) => storyDeliveries.filter((x) => x.date <= date).length * BOUGHT_STORY.extraPerDelivery;
+    const counts = d.counts.filter((c) => c.propertyId === "lis" && c.ingredientId === "coke");
+    const inStory = counts.filter((c) => extrasBy(c.date) > 0);
+    expect(inStory.length).toBeGreaterThanOrEqual(2);
+    for (const c of counts) {
+      // The book stock includes the extra cases delivered so far, and the count finds them: the shortfall at each count
+      // stays the usual few dozen cans, before and during the story.
+      expect(c.expected, c.date).toBeGreaterThanOrEqual(extrasBy(c.date));
+      expect(c.counted, c.date).toBeGreaterThanOrEqual(extrasBy(c.date));
+      expect(c.expected - c.counted, c.date).toBeLessThan(60);
+    }
+    // So the stock estimate holds at least the cans the flag counts beyond the last delivery: "Counted, on the shelf" is
+    // what a count would find.
+    const row = checkRows("lis").find((r) => r.ingredientId === "coke")!;
+    const est = stockPosition("lis", { counts: d.counts, deliveries: d.deliveries, dayItems: d.dayItems, waste: d.wasteLogs, transfers: d.transfers, recipes: [] }).find((r) => r.ingredientId === "coke")!;
+    expect(est.estimated).toBeGreaterThan(row.excess);
   });
 });
 
@@ -183,7 +237,8 @@ describe("the flag", () => {
     expect(story.date).toBe(DEMO_TODAY);
     expect(story.basis).toBe("estimate");
     const row = checkRows("lis").find((r) => r.ingredientId === "coke")!;
-    expect(story.exposure).toBe(row.gapValue);
+    expect(story.exposure).toBe(row.excessValue);
+    expect(story.exposure).toBeCloseTo((row.gap - row.lastDelivery) * row.unitCost, 1);
     expect(story.boughtUsed!.gap).toBe(row.gap);
     expect(story.headline).toMatch(/^Coca-Cola: [\d,]+ cans more bought than used in 30 days$/);
     expect(story.comparedWith).toContain("received from suppliers");
@@ -287,10 +342,35 @@ describe("who may see it, and checks saved on the server", () => {
     if (!again.ok) throw new Error(again.error);
     expect(loadStore().boughtUsedChecks).toHaveLength(1);
     expect(snapshotFor(U("u-fnb")).seedInvestigations[BOUGHT_STORY_EXCEPTION_ID].status).toBe("in_review");
+    // Not found is looked at, not settled: it does not count as checked.
+    const looked = boughtUsedFor(U("u-fnb"), "lis");
+    if (!looked.ok) throw new Error(looked.error);
+    expect(looked.summary.checkedFlagged).toBe(0);
 
     expect(clearCheck(U("u-chef"), { id: again.check.id }).ok).toBe(false);
     expect(clearCheck(U("u-fnb"), { id: again.check.id }).ok).toBe(true);
     expect(snapshotFor(U("u-fnb")).seedInvestigations[BOUGHT_STORY_EXCEPTION_ID].status).toBe("new");
+  });
+
+  it("lets an earlier check answer the flag only while the gap has grown by no more than a delivery", async () => {
+    const { checkHolds } = await import("../server/bought-used");
+    const check = { id: "BUC-x", propertyId: "lis", ingredientId: "coke", date: DEMO_TODAY, outcome: "on_shelf" as const, by: "u-fnb", role: "fnb_director" as const, at: "", gap: 400, gapValue: 1 };
+    expect(checkHolds(check, { gap: 400, lastDelivery: 240 })).toBe(true);
+    expect(checkHolds(check, { gap: 640, lastDelivery: 240 })).toBe(true);
+    expect(checkHolds(check, { gap: 700, lastDelivery: 240 })).toBe(false);
+    // In the store: a check recorded when the gap was small no longer closes today's flag, and shows as history.
+    const r = markChecked(U("u-fnb"), { propertyId: "lis", ingredientId: "coke", outcome: "on_shelf" });
+    if (!r.ok) throw new Error(r.error);
+    const { mutateStore } = await import("../server/purchasing-store");
+    mutateStore((s) => { s.boughtUsedChecks = (s.boughtUsedChecks ?? []).map((c) => ({ ...c, gap: 10 })); });
+    expect(snapshotFor(U("u-fnb")).seedInvestigations[BOUGHT_STORY_EXCEPTION_ID].status).toBe("new");
+    const view = boughtUsedFor(U("u-fnb"), "lis");
+    if (!view.ok) throw new Error(view.error);
+    const coke = view.rows.find((x) => x.ingredientId === "coke")!;
+    expect(coke.check).toBeNull();
+    expect(coke.earlierCheck?.id).toBe(r.check.id);
+    expect(view.summary.checkedFlagged).toBe(0);
+    expect(clearCheck(U("u-fnb"), { id: r.check.id }).ok).toBe(true);
   });
 
   it("is cleared by a stock reset", () => {

@@ -1,7 +1,7 @@
 "use client";
 // Charts share one restrained style: ink for the current period, silver for the comparison.
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, ComposedChart, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { useState, type CSSProperties } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { Maximize2 } from "lucide-react";
 import { OUTLET_TONE } from "./theme";
 import { Drawer, OutletDot, cn } from "./ui";
@@ -107,7 +107,7 @@ export function ColumnChart({ data, format, axisFormat, height = 220, summary, n
 }
 
 /** A ranked list with proportional bars. Rows can be clicked to drill in. */
-export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; label: string; sub?: string; value: number; onClick?: () => void; outletId?: string }[]; format: (n: number) => string; tone?: "ink" | "warn" }) {
+export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; label: string; sub?: string; value: number; onClick?: () => void; outletId?: string; /** Drawn in the comparison grey: shown for scale, not part of the finding. */ muted?: boolean }[]; format: (n: number) => string; tone?: "ink" | "warn" }) {
   const max = Math.max(...rows.map((r) => Math.abs(r.value)), 1e-9);
   return (
     <ul className="space-y-1">
@@ -119,7 +119,7 @@ export function BarList({ rows, format, tone = "ink" }: { rows: { key: string; l
               <span className="num shrink-0 text-sm text-ink">{format(r.value)}</span>
             </div>
             <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-hair">
-              <div className={cn("h-full rounded-full", tone === "warn" ? "bg-warn" : "bg-accent", r.outletId && "outlet-bar")} style={{ width: `${(Math.abs(r.value) / max) * 100}%`, ...(r.outletId && OUTLET_TONE[r.outletId] ? ({ "--outlet": `var(--color-outlet-${OUTLET_TONE[r.outletId].mark})` } as CSSProperties) : {}) }} />
+              <div className={cn("h-full rounded-full", r.muted ? "bg-[var(--chart-b)]" : tone === "warn" ? "bg-warn" : "bg-accent", r.outletId && "outlet-bar")} style={{ width: `${(Math.abs(r.value) / max) * 100}%`, ...(r.outletId && OUTLET_TONE[r.outletId] ? ({ "--outlet": `var(--color-outlet-${OUTLET_TONE[r.outletId].mark})` } as CSSProperties) : {}) }} />
             </div>
           </>
         );
@@ -343,7 +343,7 @@ function TrendExplorer({ open, onClose, title, explain, series, predicted }: { o
 }
 
 /** The trend at the top of a page: one line in the section colour, with the period and unit said in words. Predicted days are dashed. Open makes it large, with more lines to switch on. */
-export function StripTrend({ title, points, format, summary, note, series = [], explain, goodWhen = "none", height = 76 }: { title: string; points: StripPoint[]; format: (n: number) => string; summary: string; note?: string; series?: TrendSeries[]; explain?: string; goodWhen?: "up" | "down" | "none"; height?: number }) {
+export function StripTrend({ title, points, format, summary, note, series = [], explain, goodWhen = "none", height = 76, footer }: { title: string; points: StripPoint[]; format: (n: number) => string; summary: string; note?: string; series?: TrendSeries[]; explain?: string; goodWhen?: "up" | "down" | "none"; height?: number; /** For a running total, where a daily average means nothing: what the line ends on, in words. */ footer?: ReactNode }) {
   const [open, setOpen] = useState(false);
   const main: TrendSeries = { id: "main", label: title.replace(/, last \d+ days$/, ""), points: points.map((p) => ({ date: p.date, value: p.value })), format, axis: "main", explain: explain ?? summary, on: true, goodWhen };
   const verdict = trendVerdict(main.points, goodWhen);
@@ -375,7 +375,7 @@ export function StripTrend({ title, points, format, summary, note, series = [], 
       </div>
       {/* The small line has no scale, so the footer says what it means in words: a typical day. */}
       <div className="mt-0.5 flex justify-between whitespace-nowrap text-xs text-steel" aria-hidden><span>{first}</span><span>{last}</span></div>
-      <p className="mt-1 text-xs text-steel">{average !== null ? <>Average <span className="num font-medium text-graphite">{format(average)}</span> a day{verdict && <>, <span className={verdict.good === null ? "text-graphite" : verdict.good ? "text-pos" : "text-warn"}>{verdict.direction === "flat" ? "flat" : verdict.direction === "up" ? "trending up" : "trending down"}</span></>}</> : note}</p>
+      <p className="mt-1 text-xs text-steel">{footer !== undefined ? footer : average !== null ? <>Average <span className="num font-medium text-graphite">{format(average)}</span> a day{verdict && <>, <span className={verdict.good === null ? "text-graphite" : verdict.good ? "text-pos" : "text-warn"}>{verdict.direction === "flat" ? "flat" : verdict.direction === "up" ? "trending up" : "trending down"}</span></>}</> : note}</p>
       {open && <TrendExplorer open={open} onClose={() => setOpen(false)} title={title} explain={explain ?? summary} series={[main, ...series]} predicted={hasPrediction ? points : undefined} />}
     </figure>
   );

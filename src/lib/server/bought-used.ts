@@ -42,6 +42,15 @@ function latestChecks(propertyId: string, s: Shape): Map<string, BoughtUsedCheck
   return out;
 }
 
+/** Outcomes that settle a gap. "Not found" is looked at, not settled. */
+export const settles = (c: Pick<BoughtUsedCheck, "outcome"> | null | undefined) => !!c && c.outcome !== "not_found";
+
+/**
+ * Does an earlier check still answer today's gap? Only while the gap has grown by no more than one delivery since: more
+ * than that is new stock nobody has looked at, so the flag starts again and the check is shown as history.
+ */
+export const checkHolds = (c: BoughtUsedCheck, r: Pick<BoughtUsedRow, "gap" | "lastDelivery">) => r.gap <= c.gap + r.lastDelivery + 1e-9;
+
 /** The state a flag starts from: a check that settles the gap closes it, "not found" keeps it in review. */
 export function stateFromCheck(c: BoughtUsedCheck | undefined): InvestigationState {
   if (!c) return { status: "new", notes: [], confirmedLoss: 0, recovered: 0 };
@@ -58,7 +67,8 @@ export function boughtUsedCases(propertyIds: readonly string[], s: Shape = loadS
     const checks = latestChecks(pid, s);
     for (const e of boughtUsedExceptions(checkRows(pid, s))) {
       exceptions.push(e);
-      seed[e.id] = stateFromCheck(checks.get(e.ingredientId!));
+      const c = checks.get(e.ingredientId!);
+      seed[e.id] = stateFromCheck(c && checkHolds(c, e.boughtUsed!) ? c : undefined);
     }
   }
   return { exceptions, seed };
@@ -67,7 +77,10 @@ export function boughtUsedCases(propertyIds: readonly string[], s: Shape = loadS
 export interface BoughtUsedRowOut extends Omit<BoughtUsedRow, "byDay"> {
   /** The flag raised for this item today, when the gap is large enough. */
   flagId: string | null;
+  /** The check that answers today's gap. */
   check: BoughtUsedCheck | null;
+  /** A check made when the gap was smaller by more than a delivery: history, no longer an answer. */
+  earlierCheck: BoughtUsedCheck | null;
 }
 
 export interface BoughtUsedView {
@@ -77,7 +90,10 @@ export interface BoughtUsedView {
   rules: typeof BOUGHT_USED_RULES;
   rows: BoughtUsedRowOut[];
   summary: BoughtUsedSummary & { checkedFlagged: number };
-  /** The flagged items' gap building up over the period, in money, with the largest item on its own. */
+  /**
+   * The flagged items' gap building up over the period, in money, with the largest item on its own. Each item's latest
+   * delivery is left out, as it may still be on the shelf, so the line ends on the flags' total.
+   */
   trend: { date: string; value: number; top: number }[];
   topId: string | null;
   outcomes: { value: BoughtUsedOutcome; label: string }[];
@@ -97,11 +113,12 @@ export function boughtUsedFor(user: User, propertyId: unknown): Result<BoughtUse
   const { from, to } = boughtUsedPeriod();
   const flagged = rows.filter((r) => r.flagged);
   const top = flagged[0] ?? null;
-  // Running total of bought less used for the flagged items, valued at the price paid, one point a day.
+  // Running total of bought less used for the flagged items, valued at the price paid, one point a day. The latest
+  // delivery is the allowance for stock still on the shelf, so it is left out and the line ends where the flags do.
   let run = 0, runTop = 0;
   const trend = eachDay({ from, to }).map((date) => {
     for (const r of flagged) {
-      const v = (r.byDay[date] ?? 0) * r.unitCost;
+      const v = ((r.byDay[date] ?? 0) - (date === r.lastDeliveryDate ? r.lastDelivery : 0)) * r.unitCost;
       run += v;
       if (r === top) runTop += v;
     }
@@ -110,15 +127,19 @@ export function boughtUsedFor(user: User, propertyId: unknown): Result<BoughtUse
   const out: BoughtUsedRowOut[] = rows.map((full) => {
     const r: Omit<BoughtUsedRow, "byDay"> & { byDay?: unknown } = { ...full };
     delete r.byDay;
+    const c = checks.get(r.ingredientId);
+    const holds = !!c && checkHolds(c, r);
     return {
-    ...r,
-    flagId: r.flagged ? boughtUsedFlagId(propertyId, r.ingredientId, to) : null,
-    check: checks.get(r.ingredientId) ?? null,
+      ...r,
+      flagId: r.flagged ? boughtUsedFlagId(propertyId, r.ingredientId, to) : null,
+      check: holds ? c! : null,
+      earlierCheck: c && !holds ? c : null,
     };
   });
   return {
     ok: true, propertyId, from, to, rules: BOUGHT_USED_RULES, rows: out,
-    summary: { ...summarise(rows), checkedFlagged: out.filter((r) => r.flagged && r.check).length },
+    // Checked means settled: counted on the shelf or used with no recipe. "Not found" is still to check.
+    summary: { ...summarise(rows), checkedFlagged: out.filter((r) => r.flagged && settles(r.check)).length },
     trend, topId: top?.ingredientId ?? null,
     outcomes: OUTCOMES.map((value) => ({ value, label: OUTCOME_LABEL[value] })),
   };
@@ -138,7 +159,7 @@ export function markChecked(user: User, body: Record<string, unknown>): Result<{
     const c: BoughtUsedCheck = {
       id: `BUC-${propertyId.toUpperCase()}-${nextNumber(s, `bu-${propertyId}`)}`, propertyId, ingredientId, date: DEMO_TODAY,
       outcome: outcome as BoughtUsedOutcome, ...(note ? { note } : {}), by: user.id, role: user.role, at: new Date().toISOString(),
-      gap: round2(row.gap), gapValue: row.gapValue,
+      gap: round2(row.gap), gapValue: row.excessValue,
     };
     s.boughtUsedChecks = [...(s.boughtUsedChecks ?? []).filter((x) => !(x.propertyId === propertyId && x.ingredientId === ingredientId)), c];
     return c;

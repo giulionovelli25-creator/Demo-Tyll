@@ -75,8 +75,11 @@ export default function MoneyPage() {
   ];
   const inSel = useMemo(() => investigations.filter((i) => exceptionInSel(i, sel)), [investigations, sel]);
   const valueOf = (i: (typeof inSel)[number]) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency);
-  const flagDaily = byDay(inSel, (i) => i.date, valueOf);
-  const newFlags = weekSums(inSel, (i) => i.date, () => 1);
+  // A 30 day bought against used check is raised again each day and did not happen on a day, so the per day chart and
+  // New this week count only flags with a day of their own. It still counts in Open flags and Value at risk.
+  const dated = inSel.filter((i) => i.type !== "bought_not_used");
+  const flagDaily = byDay(dated, (i) => i.date, valueOf);
+  const newFlags = weekSums(dated, (i) => i.date, () => 1);
   const pastDeadline = inSel.filter((i) => i.status !== "closed" && i.deadline && i.deadline < DEMO_TODAY).length;
   const weekOutlets = useMemo(() => totalsByOutlet(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
   const best = [...weekOutlets].sort((x, y) => y.now.net - x.now.net)[0];
@@ -110,7 +113,7 @@ export default function MoneyPage() {
             { label: "New this week", value: newFlags.now, compare: versus(newFlags.now, newFlags.before, "down"), href: "/investigations?status=all" },
             { label: "Recovered", value: money(sum(inSel.filter((i) => i.status === "closed"), (i) => i.recovered * fxRate(propertyById[i.propertyId].currency, sel.currency)), { compact: true }), tone: "pos", compare: { text: "All time, as on the Money Back List", good: null }, href: "/investigations?status=closed" },
           ]}
-          trend={<StripTrend goodWhen="down" title="Flagged value per day, last 30 days" points={flagDaily} format={(n) => money(n)} explain="The value of transactions that broke a rule, by the day they happened." series={[{ id: "count", label: "Flags raised", axis: "count", goodWhen: "down", format: (n) => `${Math.round(n)}`, points: byDay(inSel, (i) => i.date, () => 1), explain: "How many transactions were flagged each day." }]} summary={`Value of flagged transactions by the day they happened. Open now ${money(flagValue)}.`} note="by the day it happened" />}
+          trend={<StripTrend goodWhen="down" title="Flagged value per day, last 30 days" points={flagDaily} format={(n) => money(n)} explain="The value of transactions that broke a rule, by the day they happened." series={[{ id: "count", label: "Flags raised", axis: "count", goodWhen: "down", format: (n) => `${Math.round(n)}`, points: byDay(dated, (i) => i.date, () => 1), explain: "How many transactions were flagged each day." }]} summary={`Value of flagged transactions by the day they happened. Open now ${money(flagValue)}.`} note="by the day it happened" />}
           action={<Link href="/investigations" className={linkButton("primary")}>Review {flags.length} flags</Link>}
         />
       ) : tab === "outlets" ? (
@@ -137,7 +140,7 @@ export default function MoneyPage() {
       )}
       {onFlags ? (
         <>
-          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds, removed items and room charges" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
+          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds, removed items and room charges" summary={`${flags.length} ${flags.length === 1 ? "flag" : "flags"}, ${money(flagValue)} at risk`}>
             <Mistakes />
           </Section>
           <SectionLink href="/money?tab=cash" title="Cash on hand against cash sales" summary="Each outlet's drawer at the end of the shift against the bills paid in cash. Card payments are reconciled by the payment provider." />
@@ -230,7 +233,7 @@ function Mistakes() {
             <li>Refunds above {Math.round(POLICY.refundMaxShare * 100)}% of a bill, late, or unexplained.</li>
             <li>Whole orders cancelled after they were sent to the kitchen or bar.</li>
             <li>Room charges missing from the guest bill, posted more than once, for a different amount, to the wrong room or after check-out.</li>
-            <li>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use and {money(BOUGHT_USED_RULES.minValue)}. An estimate until a count.</li>
+            <li>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use, and {money(BOUGHT_USED_RULES.minValue)} beyond the last delivery, which is the amount at risk. An estimate until a count.</li>
           </ul>
         </Panel>
       </div>

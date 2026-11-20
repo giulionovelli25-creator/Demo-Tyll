@@ -4,7 +4,7 @@
 import { ingredientById, itemById, outletById, propertyById } from "../data/catalog";
 import type { DayItem, Delivery, Exception, Transfer, WasteLog } from "../types";
 import { DEMO_TODAY, addDays, fmtDate, fxRate, round2 } from "../util";
-import { qtyWords } from "./variance";
+import { BOTTLE_L, qtyWords } from "./variance";
 import { wasteQuantities } from "./inventory";
 
 /** Thresholds a hotel would agree with Tyll. Money in euros, converted for other currencies. */
@@ -13,7 +13,7 @@ export const BOUGHT_USED_RULES = {
   days: 30,
   /** A gap smaller than this share of what was used is within normal stock movement. */
   minShare: 0.1,
-  /** A gap worth less than this is not worth a manager's time. */
+  /** A gap beyond the last delivery worth less than this is not worth a manager's time. */
   minValue: 100,
 };
 
@@ -50,16 +50,22 @@ export interface BoughtUsedRow {
   sold: number;
   /** Logged waste, spoilage and breakage. */
   waste: number;
+  /** Transfers with someone outside the hotel's own outlets (a sister hotel, the staff restaurant). Moves between the
+   * hotel's outlets are left out: the check covers the whole hotel, so they change nothing. */
   movedIn: number;
   movedOut: number;
   /** Sold plus waste plus moved out. */
   used: number;
   /** Bought plus moved in, less used. Positive means more came in than went out. */
   gap: number;
+  /** The part of the gap beyond what the last delivery could leave on the shelf. Never below zero. */
+  excess: number;
   /** Average price paid per unit over the period, or the standard cost when nothing was invoiced. */
   unitCost: number;
-  /** The gap valued at the price paid. An estimate. */
+  /** The whole gap valued at the price paid. An estimate. */
   gapValue: number;
+  /** The gap beyond the last delivery, valued at the price paid: what a flag puts at risk. An estimate. */
+  excessValue: number;
   /** Gap as a share of use. */
   share: number;
   flagged: boolean;
@@ -86,16 +92,22 @@ export const boughtUsedPeriod = (to = DEMO_TODAY) => ({ from: addDays(to, -(BOUG
 
 const inside = (date: string, from: string, to: string) => date >= from && date <= to;
 
-/** Is a row's gap large enough to flag? More than the last delivery could leave on the shelf, a share of use, and money. */
-export function gapFlagged(r: Pick<BoughtUsedRow, "gap" | "gapValue" | "share" | "lastDelivery" | "propertyId">): boolean {
+/**
+ * Is a row's gap large enough to flag? More than the last delivery could leave on the shelf, a share of use, and the
+ * part beyond the last delivery worth the money threshold.
+ */
+export function gapFlagged(r: Pick<BoughtUsedRow, "gap" | "excessValue" | "share" | "lastDelivery" | "propertyId">): boolean {
   const minValue = BOUGHT_USED_RULES.minValue * fxRate("EUR", propertyById[r.propertyId].currency);
-  return r.gap > r.lastDelivery + 1e-9 && r.share >= BOUGHT_USED_RULES.minShare && r.gapValue >= minValue;
+  return r.gap > r.lastDelivery + 1e-9 && r.share >= BOUGHT_USED_RULES.minShare && r.excessValue >= minValue;
 }
 
-/** Every recipe ingredient of a hotel: bought, used and the gap, largest gap in money first. */
+/** Is a transfer a move between the hotel's own outlets? Then the hotel's stock did not change. */
+export const internalTransfer = (t: Pick<Transfer, "outletId">, propertyId: string) => !!t.outletId && outletById[t.outletId]?.propertyId === propertyId;
+
+/** Every recipe ingredient of a hotel: bought, used and the gap, largest gap beyond the last delivery in money first. */
 export function boughtAgainstUsed(inp: BoughtUsedInputs): BoughtUsedRow[] {
   const { propertyId, from, to } = inp;
-  const rows = new Map<string, Omit<BoughtUsedRow, "used" | "gap" | "unitCost" | "gapValue" | "share" | "flagged" | "uses"> & { uses: Map<string, UseLine>; invoiced: number }>();
+  const rows = new Map<string, Omit<BoughtUsedRow, "used" | "gap" | "excess" | "unitCost" | "gapValue" | "excessValue" | "share" | "flagged" | "uses"> & { uses: Map<string, UseLine>; invoiced: number }>();
   const row = (ingredientId: string) => {
     let r = rows.get(ingredientId);
     if (!r) rows.set(ingredientId, (r = { ingredientId, propertyId, from, to, bought: 0, boughtValue: 0, invoiced: 0, deliveries: 0, lastDelivery: 0, lastDeliveryDate: null, sold: 0, waste: 0, movedIn: 0, movedOut: 0, uses: new Map(), byDay: {} }));
@@ -145,7 +157,7 @@ export function boughtAgainstUsed(inp: BoughtUsedInputs): BoughtUsedRow[] {
     }
   }
   for (const t of inp.transfers) {
-    if (t.propertyId !== propertyId || !inside(t.date, from, to) || !counted(t.ingredientId)) continue;
+    if (t.propertyId !== propertyId || !inside(t.date, from, to) || !counted(t.ingredientId) || internalTransfer(t, propertyId)) continue;
     const r = row(t.ingredientId);
     move(r, t.date, t.direction === "in" ? t.qty : -t.qty);
     if (t.direction === "in") r.movedIn += t.qty;
@@ -157,20 +169,22 @@ export function boughtAgainstUsed(inp: BoughtUsedInputs): BoughtUsedRow[] {
     const gap = r.bought + r.movedIn - used;
     const unitCost = invoiced > 0 ? r.boughtValue / invoiced : inp.standardCost(r.ingredientId);
     const gapValue = round2(gap * unitCost);
+    const excess = Math.max(0, gap - r.lastDelivery);
+    const excessValue = round2(excess * unitCost);
     const share = used > 0 ? gap / used : gap > 0 ? 1 : 0;
     const out: BoughtUsedRow = {
-      ...r, boughtValue: round2(r.boughtValue), used, gap, unitCost, gapValue, share, flagged: false,
+      ...r, boughtValue: round2(r.boughtValue), used, gap, excess, unitCost, gapValue, excessValue, share, flagged: false,
       uses: [...uses.values()].sort((a, b) => b.qty - a.qty),
     };
     out.flagged = gapFlagged(out);
     return out;
-  }).sort((a, b) => b.gapValue - a.gapValue || a.ingredientId.localeCompare(b.ingredientId));
+  }).sort((a, b) => b.excessValue - a.excessValue || b.gapValue - a.gapValue || a.ingredientId.localeCompare(b.ingredientId));
 }
 
 export interface BoughtUsedSummary {
   checked: number;
   flagged: number;
-  /** Value of the flagged gaps. */
+  /** Value of the flagged gaps beyond the last delivery: the sum of the flags' exposure. */
   flaggedValue: number;
   boughtValue: number;
   /** Items where more was used than bought: stock was drawn down. Not flagged here; a count shows those. */
@@ -182,10 +196,22 @@ export function summarise(rows: readonly BoughtUsedRow[]): BoughtUsedSummary {
   return {
     checked: rows.length,
     flagged: flagged.length,
-    flaggedValue: round2(flagged.reduce((s, r) => s + r.gapValue, 0)),
+    flaggedValue: round2(flagged.reduce((s, r) => s + r.excessValue, 0)),
     boughtValue: round2(rows.reduce((s, r) => s + r.boughtValue, 0)),
     drawnDown: rows.filter((r) => r.gap < 0).length,
   };
+}
+
+/**
+ * A quantity on this check. A month of wine reads in litres and bottles ("34.8 L, about 46 bottles"); the millilitres
+ * of the pour level stories stay for a glass or two. Everything else as staff count it.
+ */
+export function boughtQty(qty: number, ingredientId: string): string {
+  const a = Math.abs(qty);
+  if (ingredientId !== "wine" || a < 1) return qtyWords(qty, ingredientId);
+  const litres = (Math.round(a * 10) / 10).toLocaleString("en-US");
+  const bottles = Math.round(a / BOTTLE_L);
+  return `${litres} L, about ${bottles.toLocaleString("en-US")} ${bottles === 1 ? "bottle" : "bottles"}`;
 }
 
 /** The product as people say it, with a capital where the catalogue name starts one. */
@@ -204,10 +230,11 @@ export function boughtUsedExceptions(rows: readonly BoughtUsedRow[]): Exception[
     date: r.to,
     min: 6 * 60,
     ingredientId: r.ingredientId,
-    exposure: r.gapValue,
-    headline: `${itemWords(r.ingredientId)}: ${qtyWords(r.gap, r.ingredientId)} more bought than used in 30 days`,
-    comparedWith: `Compared with sales and waste: ${qtyWords(r.bought, r.ingredientId)} received from suppliers against ${qtyWords(r.used, r.ingredientId)} used by the recipes of what was sold, logged waste and transfers, over the 30 days to ${fmtDate(r.to)}.`,
+    // What is at risk is the part beyond what the last delivery could leave on the shelf, not the whole gap.
+    exposure: r.excessValue,
+    headline: `${itemWords(r.ingredientId)}: ${boughtQty(r.gap, r.ingredientId)} more bought than used in 30 days`,
+    comparedWith: `Compared with sales and waste: ${boughtQty(r.bought, r.ingredientId)} received from suppliers against ${boughtQty(r.used, r.ingredientId)} used by the recipes of what was sold, logged waste and transfers, over the 30 days to ${fmtDate(r.to)}.`,
     basis: "estimate" as const,
-    boughtUsed: { from: r.from, to: r.to, bought: r.bought, deliveries: r.deliveries, lastDelivery: r.lastDelivery, sold: r.sold, waste: r.waste, movedIn: r.movedIn, movedOut: r.movedOut, used: r.used, gap: r.gap, unitCost: r.unitCost, share: r.share },
+    boughtUsed: { from: r.from, to: r.to, bought: r.bought, deliveries: r.deliveries, lastDelivery: r.lastDelivery, lastDeliveryDate: r.lastDeliveryDate, sold: r.sold, waste: r.waste, movedIn: r.movedIn, movedOut: r.movedOut, used: r.used, gap: r.gap, excess: r.excess, unitCost: r.unitCost, share: r.share },
   }));
 }
