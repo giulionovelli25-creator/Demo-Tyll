@@ -419,3 +419,50 @@ describe("Menu sync and new dishes", () => {
     void plusDays;
   });
 });
+
+const IP = await import("../server/ingredient-prices");
+const FIN = await import("../server/finance");
+const REC = await import("../server/records");
+
+describe("Ingredient prices from approved supplier invoices", () => {
+  it("the price is the weighted average of approved invoices: quantity times price, over quantity", () => {
+    const s = loadStore();
+    const lines = FIN.approvedInvoiceLines(s, "lis").filter((l) => l.ingredientId === "salmon" && l.date >= plusDays(TODAY, -IP.PRICE_WINDOW_DAYS));
+    expect(lines.length).toBeGreaterThan(1);
+    const want = Math.round((lines.reduce((t, l) => t + l.qty * l.price, 0) / lines.reduce((t, l) => t + l.qty, 0)) * 100) / 100;
+    const p = IP.priceTable(s, "lis").find((x) => x.ingredientId === "salmon")!;
+    expect(p.wac).toBe(want);
+    expect(p.basis).toBe("invoices");
+    expect(p.effective).toBe(want);
+    expect(p.last?.price).toBe(Math.round(lines.at(-1)!.price * 100) / 100);
+    expect(p.contract?.price).toBeGreaterThan(0);
+  });
+  it("only approved or recorded invoices count: one still to check does not", () => {
+    const all = FIN.invoicesFor(userById["u-fc"], "lis");
+    if (!all.ok) throw new Error(all.error);
+    const toCheck = all.invoices.filter((i) => i.status === "to_check");
+    expect(toCheck.length).toBeGreaterThan(0);
+    const refs = new Set(FIN.approvedInvoiceLines(loadStore(), "lis").map((l) => l.ref));
+    for (const i of toCheck) expect(refs.has(i.id)).toBe(false);
+  });
+  it("a price typed by hand is an override with who, when and why; it can be taken back", () => {
+    expect(REC.applyRecord(userById["u-fnb"], { op: { kind: "price.override", ingredientId: "salmon", cost: 30, reason: "" } }).ok).toBe(false);
+    expect(REC.applyRecord(userById["u-buy"], { op: { kind: "price.override", ingredientId: "salmon", cost: 30, reason: "New season price" } }).ok).toBe(false);
+    const ok = REC.applyRecord(userById["u-fnb"], { op: { kind: "price.override", ingredientId: "salmon", cost: 30, reason: "Supplier raised prices from Monday, invoice not in yet" } });
+    expect(ok.ok).toBe(true);
+    let p = IP.priceTable(loadStore(), "lis").find((x) => x.ingredientId === "salmon")!;
+    expect(p).toMatchObject({ basis: "override", effective: 30, override: { price: 30, by: "u-fnb", role: "fnb_director", reason: "Supplier raised prices from Monday, invoice not in yet" } });
+    expect(p.wac).not.toBe(30);
+    expect(REC.applyRecord(userById["u-fnb"], { op: { kind: "price.clear", ingredientId: "salmon" } }).ok).toBe(true);
+    p = IP.priceTable(loadStore(), "lis").find((x) => x.ingredientId === "salmon")!;
+    expect(p.basis).toBe("invoices");
+    expect(p.override).toBeNull();
+  });
+  it("Recipes and Stock levels say how stock is valued", () => {
+    expect(IP.PRICE_BASIS).toBe("Valued at weighted average cost from supplier invoices");
+    const r = IP.ingredientPricesFor(userById["u-chef"], "lis");
+    if (!r.ok) throw new Error(r.error);
+    expect(r.basis).toBe(IP.PRICE_BASIS);
+    expect(r.mayEdit).toBe(false);
+  });
+});

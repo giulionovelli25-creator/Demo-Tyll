@@ -85,6 +85,8 @@ interface Actions {
   /** The expected quantity and how a difference is shared between outlets both come from the server's stock figures. */
   recordCount(input: { propertyId: string; ingredientId: string; counted: number; expected: number; allocation: Record<string, number> }): Result;
   setIngredientPrice(ingredientId: string, cost: number): Result;
+  overrideIngredientPrice(ingredientId: string, cost: number, reason: string): Result;
+  clearIngredientPrice(ingredientId: string): Result;
   approvePurchases(propertyId: string, lines: { ingredientId: string; qty: number; cost: number }[]): Result;
   withdrawApproval(id: string): Result;
   setForecastInputs(propertyId: string, inputs: ForecastInputs): void;
@@ -346,6 +348,12 @@ export const useDemo = create<DemoState>()(
         },
         setIngredientPrice(ingredientId, cost) {
           return run({ kind: "price.set", ingredientId, cost });
+        },
+        overrideIngredientPrice(ingredientId, cost, reason) {
+          return run({ kind: "price.override", ingredientId, cost, reason });
+        },
+        clearIngredientPrice(ingredientId) {
+          return run({ kind: "price.clear", ingredientId });
         },
         approvePurchases(propertyId, lines) {
           return run({ kind: "purchase.approve", propertyId, lines });

@@ -134,6 +134,11 @@
 "Una differenza è un invito a controllare il conto dell'ospite, non la prova di un errore. Con un account reale diventano segnalazioni come quelle del controllo addebiti in camera.",
 "الفرق دعوة لمراجعة فاتورة النزيل، وليس دليلًا على خطأ أحد. مع حساب فعلي تصبح هذه تنبيهات لرسوم الغرف مثل تلك الموجودة في فحص رسوم الغرف."
 ],
+"A different price can be set by hand, with the reason.": [
+"Ein anderer Preis kann von Hand gesetzt werden, mit Begründung.",
+"Un prezzo diverso può essere impostato a mano, con il motivo.",
+"يمكن تحديد سعر مختلف يدويًا مع ذكر السبب."
+],
 "A dish was sent back after payment and taken off without asking a manager.": [
 "Ein Gericht wurde nach der Zahlung zurückgegeben und ohne Rücksprache mit einem Manager entfernt.",
 "Un piatto è stato rimandato indietro dopo il pagamento e tolto senza chiedere a un responsabile.",
@@ -1198,6 +1203,11 @@
 "Durchschnittsrechnung, {0} Tage",
 "Scontrino medio, {0} giorni",
 "متوسط الفاتورة، {0} أيام"
+],
+"Average, invoices": [
+"Durchschnitt, Rechnungen",
+"Media, fatture",
+"المتوسط، الفواتير"
 ],
 "Averages over the {0} nights before each morning. A guest beyond those registered on a rate with breakfast is counted as not included. The in-house list, the breakfast list and the bills are simulated.": [
 "Durchschnitte über die {0} Nächte vor jedem Morgen. Ein Gast über die gemeldeten hinaus gilt bei einer Rate mit Frühstück als nicht enthalten. Gästeliste, Frühstücksliste und Rechnungen sind simuliert.",
@@ -3144,6 +3154,11 @@
 "Consideralo solo dopo aver verificato le altre spiegazioni.",
 "لا تنظر فيه إلا بعد التحقق من التفسيرات الأخرى."
 ],
+"Contract": [
+"Vertrag",
+"Contratto",
+"العقد"
+],
 "Cookies": [
 "Cookies",
 "Cookie",
@@ -3218,6 +3233,11 @@
 "Kosten pro Portion zu heutigen Zutatenpreisen, in der Gruppenpreisliste (Euro).",
 "Costo per porzione ai prezzi di oggi, nel listino di gruppo (euro).",
 "تكلفة الحصة بأسعار المكونات اليوم، بقائمة أسعار المجموعة (باليورو)."
+],
+"Cost per portion at today's ingredient prices, valued at weighted average cost from supplier invoices, against the selling price. Choose a recipe to see what goes into it.": [
+"Kosten pro Portion zu den heutigen Zutatenpreisen, bewertet zum gewichteten Durchschnittspreis aus Lieferantenrechnungen, gegenüber dem Verkaufspreis. Wählen Sie ein Rezept, um die Zutaten zu sehen.",
+"Costo per porzione ai prezzi di oggi, valorizzato al costo medio ponderato dalle fatture dei fornitori, rispetto al prezzo di vendita. Scegli una ricetta per vedere cosa contiene.",
+"تكلفة الحصة بأسعار المكونات اليوم، مقيّمة بمتوسط التكلفة المرجّح من فواتير الموردين، مقابل سعر البيع. اختر وصفة لترى مكوناتها."
 ],
 "Cost to {0}": [
 "Kosten bis {0}",
@@ -6524,6 +6544,11 @@
 "Ultimo conteggio completo, {0}",
 "آخر جرد كامل، {0}"
 ],
+"Last invoice": [
+"Letzte Rechnung",
+"Ultima fattura",
+"آخر فاتورة"
+],
 "Last invoiced": [
 "Zuletzt berechnet",
 "Ultimo fatturato",
@@ -7263,6 +7288,11 @@
 "Lisbon, alle Outlets",
 "Lisbon, tutti i punti vendita",
 "لشبونة، جميع المنافذ"
+],
+"List price, no invoice": [
+"Listenpreis, keine Rechnung",
+"Prezzo di listino, nessuna fattura",
+"سعر القائمة، لا فاتورة"
 ],
 "Live calls made": [
 "Live-Abrufe",
@@ -8529,6 +8559,11 @@
 "Ancora nessun ingrediente.",
 "لا توجد مكونات بعد."
 ],
+"No invoice": [
+"Keine Rechnung",
+"Nessuna fattura",
+"لا فاتورة"
+],
 "No item stands out": [
 "Kein Artikel fällt auf",
 "Nessun articolo si distingue",
@@ -9339,6 +9374,11 @@
 "Solo consegne con differenza",
 "التوريدات التي بها فرق فقط"
 ],
+"Only invoices approved or recorded as an expense count; one still to check does not. Every override is kept with the person, the time and the reason.": [
+"Nur freigegebene oder als Aufwand erfasste Rechnungen zählen; eine noch zu prüfende nicht. Jeder manuelle Preis wird mit Person, Zeit und Grund gespeichert.",
+"Contano solo le fatture approvate o registrate come costo; una ancora da controllare no. Ogni prezzo manuale resta con la persona, l'ora e il motivo.",
+"تُحتسب الفواتير المعتمدة أو المسجلة كمصروف فقط؛ ولا تُحتسب التي لم تُراجع بعد. يُحفظ كل سعر يدوي مع الشخص والوقت والسبب."
+],
 "Only orders whose bill differs from the order": [
 "Nur Bestellungen, deren Rechnung abweicht",
 "Solo ordini con conto diverso dall'ordine",
@@ -10113,6 +10153,11 @@
 "Über dem Limit von {0} für das Senden ohne Freigabe.",
 "Oltre il limite di {0} per l'invio senza approvazione.",
 "فوق حد {0} للإرسال دون موافقة."
+],
+"Override": [
+"Manueller Preis",
+"Prezzo manuale",
+"سعر يدوي"
 ],
 "Overview": [
 "Übersicht",
@@ -12259,6 +12304,11 @@
 "Salva nuovo conteggio",
 "احفظ إعادة الجرد"
 ],
+"Save the override": [
+"Manuellen Preis speichern",
+"Salva il prezzo manuale",
+"احفظ السعر اليدوي"
+],
 "Save the prep plan": [
 "Vorbereitungsplan speichern",
 "Salva il piano di preparazione",
@@ -12868,6 +12918,11 @@
 "Eingenommene Servicegebühr",
 "Costo di servizio raccolto",
 "رسوم الخدمة المحصلة"
+],
+"Set a different price": [
+"Anderen Preis setzen",
+"Imposta un prezzo diverso",
+"حدد سعرًا مختلفًا"
 ],
 "Set it once, in the order you walk. Everyone counting here uses it.": [
 "Einmal festlegen, in Ihrer Laufreihenfolge. Alle Zählenden hier nutzen sie.",
@@ -15854,6 +15909,11 @@
 "Consumo nell'ultima settimana",
 "الاستخدام في الأسبوع الماضي"
 ],
+"Use the invoice price": [
+"Rechnungspreis verwenden",
+"Usa il prezzo della fattura",
+"استخدم سعر الفاتورة"
+],
 "Use the records explain": [
 "Durch Daten erklärter Verbrauch",
 "Consumo spiegato dai dati",
@@ -15878,6 +15938,11 @@
 "Für etwas ohne Rezept in der Kasse verwendet",
 "Usato per qualcosa senza ricetta in cassa",
 "استُخدم لشيء بلا وصفة في نقطة البيع"
+],
+"Used in costs": [
+"In den Kosten verwendet",
+"Usato nei costi",
+"مستخدم في التكاليف"
 ],
 "Used more than bought": [
 "Mehr verbraucht als gekauft",
@@ -16003,6 +16068,26 @@
 "Bewertet mit dem Umsatz pro Gast bei diesem Service in den {0} Tagen davor, {1}. Das Reservierungsbuch und die Rechnungen sind simuliert.",
 "Valutato alla spesa per ospite di questo servizio nei {0} giorni precedenti, {1}. Il libro prenotazioni e i conti sono simulati.",
 "مقدّرة بمتوسط إنفاق الضيف في هذه الخدمة خلال {0} يومًا السابقة، {1}. سجل الحجوزات والفواتير محاكاة."
+],
+"Valued at weighted average cost from supplier invoices": [
+"Bewertet zum gewichteten Durchschnittspreis aus Lieferantenrechnungen",
+"Valorizzato al costo medio ponderato dalle fatture dei fornitori",
+"مُقيّم بمتوسط التكلفة المرجّح من فواتير الموردين"
+],
+"Valued at weighted average cost from supplier invoices.": [
+"Bewertet zum gewichteten Durchschnittspreis aus Lieferantenrechnungen.",
+"Valorizzato al costo medio ponderato dalle fatture dei fornitori.",
+"مُقيّم بمتوسط التكلفة المرجّح من فواتير الموردين."
+],
+"Valued at weighted average cost from supplier invoices: approved invoices of the last {0} days. A different price can be set by hand, with the reason.": [
+"Bewertet zum gewichteten Durchschnittspreis aus Lieferantenrechnungen: freigegebene Rechnungen der letzten {0} Tage. Ein anderer Preis kann von Hand gesetzt werden, mit Begründung.",
+"Valorizzato al costo medio ponderato dalle fatture dei fornitori: fatture approvate degli ultimi {0} giorni. Un prezzo diverso può essere impostato a mano, con il motivo.",
+"مُقيّم بمتوسط التكلفة المرجّح من فواتير الموردين: الفواتير المعتمدة في آخر {0} يومًا. يمكن تحديد سعر مختلف يدويًا مع ذكر السبب."
+],
+"Valued at weighted average cost from supplier invoices: approved invoices of the last {0} days. Your role can view prices but not change them.": [
+"Bewertet zum gewichteten Durchschnittspreis aus Lieferantenrechnungen: freigegebene Rechnungen der letzten {0} Tage. Ihre Rolle kann Preise sehen, aber nicht ändern.",
+"Valorizzato al costo medio ponderato dalle fatture dei fornitori: fatture approvate degli ultimi {0} giorni. Il tuo ruolo può vedere i prezzi ma non cambiarli.",
+"مُقيّم بمتوسط التكلفة المرجّح من فواتير الموردين: الفواتير المعتمدة في آخر {0} يومًا. يمكن لدورك رؤية الأسعار دون تغييرها."
 ],
 "Vanilla ice cream": [
 "Vanilleeis",
@@ -16789,6 +16874,11 @@
 "Perché rifiutare? Il fornitore viene informato.",
 "لماذا الرفض؟ سيُبلَّغ المورد."
 ],
+"Why does it differ from the invoices?": [
+"Warum weicht er von den Rechnungen ab?",
+"Perché è diverso dalle fatture?",
+"لماذا يختلف عن الفواتير؟"
+],
 "Why recount?": [
 "Warum nachzählen?",
 "Perché ricontare?",
@@ -17113,6 +17203,11 @@
 "Freigabe:",
 "approvazione:",
 "الموافقة:"
+],
+"approved invoices of the last {0} days": [
+"freigegebene Rechnungen der letzten {0} Tage",
+"fatture approvate degli ultimi {0} giorni",
+"الفواتير المعتمدة في آخر {0} يومًا"
 ],
 "ask the front office whether {0} breakfast can go on the card on file, with the guest's agreement.": [
 "fragen Sie den Empfang, ob {0} Frühstück mit Einverständnis des Gastes auf die hinterlegte Karte gehen kann.",
@@ -19043,6 +19138,11 @@
 "{0} bleibt außen vor: Getränke werden dort als Pakete pro Veranstaltung verkauft, nicht von einer Servicekraft am Tisch.",
 "{0} è escluso: lì le bevande si vendono a pacchetto per evento, non da un cameriere al tavolo.",
 "يُستبعد {0}: تُباع المشروبات هناك كباقات لكل مناسبة، لا من نادل على الطاولة."
+],
+"{0} is now {1}, an override. Recipe costs and margins are updated.": [
+"{0} kostet jetzt {1}, ein manueller Preis. Rezeptkosten und Margen sind aktualisiert.",
+"{0} ora costa {1}, un prezzo manuale. Costi delle ricette e margini sono aggiornati.",
+"{0} الآن {1}، سعر يدوي. تم تحديث تكاليف الوصفات والهوامش."
 ],
 "{0} is often late after public holidays.": [
 "{0} liefert nach Feiertagen oft zu spät.",
@@ -21363,6 +21463,11 @@
 "{0}: Umsatz pro Tag in den letzten {1} Tagen gegen das, was die Gäste im Haus dort üblicherweise ausgeben.",
 "{0}: vendite al giorno negli ultimi {1} giorni rispetto a quanto spendono di solito gli ospiti in casa.",
 "{0}: المبيعات اليومية خلال آخر {1} يومًا مقابل ما ينفقه النزلاء المقيمون عادةً هناك."
+],
+"{0}: the supplier invoice price applies again.": [
+"{0}: der Rechnungspreis des Lieferanten gilt wieder.",
+"{0}: si applica di nuovo il prezzo della fattura del fornitore.",
+"{0}: يُطبق سعر فاتورة المورد مجددًا."
 ],
 "{0}: {1} L more bought than used": [
 "{0}: {1} L mehr gekauft als verbraucht",

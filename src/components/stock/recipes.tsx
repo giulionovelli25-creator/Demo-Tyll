@@ -2,46 +2,43 @@
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { Badge, Button, Delta, Note, Panel, TableWrap, Td, Th, cn, report, rowClass } from "@/components/ui";
-import { INGREDIENTS, MENU_ITEMS, ingredientById, supplierById } from "@/lib/data/catalog";
-import { can } from "@/lib/domain/access";
+import { Delta, Note, Panel, TableWrap, Td, Th, cn, rowClass } from "@/components/ui";
+import { MENU_ITEMS, ingredientById } from "@/lib/data/catalog";
 import { basePriceAt, ingredientCostAt, itemCostAt, recipeBreakdown } from "@/lib/domain/pricing";
-import { useCtx, useUser } from "@/lib/hooks";
-import { useDemo } from "@/lib/store";
+import { useCtx } from "@/lib/hooks";
 import { DATA_START, DEMO_TODAY, fmtMoney, fmtPct, fmtQty } from "@/lib/util";
 import { MenuSyncLine, Modifiers, NewDishes, useMenu } from "./menu-sync";
+import { IngredientPrices, useIngredientPrices } from "./ingredient-prices";
 
 const aed = (n: number) => fmtMoney(n, "EUR", { decimals: true });
 
 export function Recipes() {
   const ctx = useCtx();
-  const user = useUser()!;
-  const setPrice = useDemo((s) => s.setIngredientPrice);
   const [open, setOpen] = useState<string | null>("burger");
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const mayEdit = can(user, "stock.editPrices");
   const { menu } = useMenu();
   const recipes = MENU_ITEMS.filter((m) => m.recipe && !menu?.archived[m.id]);
-  const ingredients = INGREDIENTS.filter((g) => g.dept !== "glassware");
   // The till's price where the morning sync found a change; otherwise the group list price.
   const priceOf = (id: string) => menu?.prices[id] ?? basePriceAt(id, DEMO_TODAY);
+  // Ingredient prices: an override where one is set, else the weighted average of approved supplier invoices.
+  const prices = useIngredientPrices();
+  const unit = (g: string) => ctx.overrides.find((o) => o.id === g)?.value ?? prices?.prices.find((p) => p.ingredientId === g)?.wac ?? ingredientCostAt(g, DEMO_TODAY, ctx.overrides);
 
   return (
     <div className="space-y-5">
     {menu && <MenuSyncLine menu={menu} />}
     {menu && <NewDishes menu={menu} />}
     <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.25fr_1fr]">
-      <Panel title="Recipes for the top 20 items" description="Cost per portion at today's ingredient prices, against the group list price. Choose a recipe to see what goes into it." flush>
+      <Panel title="Recipes for the top 20 items" description="Cost per portion at today's ingredient prices, valued at weighted average cost from supplier invoices, against the selling price. Choose a recipe to see what goes into it." flush>
         <TableWrap>
           <table className="w-full min-w-[640px] text-sm">
             <thead><tr><Th>Item</Th><Th align="right">Recipe cost</Th><Th align="right">Selling price</Th><Th align="right">Gross profit</Th><Th align="right">Margin</Th><Th align="right">Cost change</Th></tr></thead>
             <tbody>
               {recipes.map((item) => {
-                const cost = itemCostAt(item.id, DEMO_TODAY, ctx.overrides);
+                const cost = (item.recipe ?? []).reduce((t, l) => t + l.qty * unit(l.ingredientId), 0);
                 const start = itemCostAt(item.id, DATA_START, ctx.overrides);
                 const price = priceOf(item.id);
                 const isOpen = open === item.id;
-                const lines = recipeBreakdown(item, DEMO_TODAY, ctx.overrides);
+                const lines = recipeBreakdown(item, DEMO_TODAY, ctx.overrides).map((l) => ({ ...l, unitCost: unit(l.ingredientId), cost: l.qty * unit(l.ingredientId) }));
                 return [
                   <tr key={item.id} className={cn(rowClass, "cursor-pointer", isOpen && "bg-cloud")} onClick={() => setOpen(isOpen ? null : item.id)}>
                     <Td>
@@ -82,40 +79,7 @@ export function Recipes() {
         <Note className="px-6 py-4">Shown in the group price list (euros). Each outlet applies its own price level and each property its own cost level, which Menu performance on the Overview takes into account. The other six menu items use a standard cost until their recipes are built.</Note>
       </Panel>
 
-      <Panel title="Ingredient prices" description={mayEdit ? "Change a price and every recipe cost, margin and forecast that uses it updates from today." : "Your role can view prices but not change them."} flush>
-        <div className="scroll-thin max-h-[760px] overflow-y-auto">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10 bg-paper"><tr><Th>Ingredient</Th><Th align="right">Price per unit (€)</Th>{mayEdit && <Th> </Th>}</tr></thead>
-            <tbody>
-              {ingredients.map((g) => {
-                const current = ingredientCostAt(g.id, DEMO_TODAY, ctx.overrides);
-                const changed = ctx.overrides.some((o) => o.id === g.id);
-                const draft = drafts[g.id];
-                const dirty = draft !== undefined && draft !== "" && Number(draft) !== current;
-                const used = recipes.filter((m) => m.recipe!.some((l) => l.ingredientId === g.id)).length;
-                return (
-                  <tr key={g.id} className={rowClass}>
-                    <Td>
-                      <span className="text-ink">{g.name}</span>{changed && <Badge tone="ink" className="ms-2 !py-0">changed today</Badge>}
-                      <span className="block text-xs text-steel">{supplierById[g.supplierId].name} · per {g.unit === "each" ? "unit" : g.unit} · in {used} recipe{used === 1 ? "" : "s"}</span>
-                    </Td>
-                    <Td align="right">
-                      {mayEdit ? (
-                        <input aria-label={`Price of ${g.name}`} type="number" min="0.01" step="0.01" inputMode="decimal" value={draft ?? current} onChange={(e) => setDrafts((d) => ({ ...d, [g.id]: e.target.value }))} className="num h-9 w-24 rounded-lg border border-line px-2 text-end hover:border-fog" />
-                      ) : aed(current)}
-                    </Td>
-                    {mayEdit && (
-                      <Td align="right">
-                        <Button size="sm" variant={dirty ? "primary" : "secondary"} disabled={!dirty} onClick={() => { if (report(setPrice(g.id, Number(draft)), `${g.name} is now €${Number(draft).toFixed(2)}. Recipe costs and margins are updated.`)) setDrafts((d) => Object.fromEntries(Object.entries(d).filter(([k]) => k !== g.id))); }}>Save</Button>
-                      </Td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
+      <IngredientPrices />
     </div>
     {menu && <Modifiers menu={menu} />}
     </div>

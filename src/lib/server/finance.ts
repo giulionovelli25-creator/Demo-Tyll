@@ -93,6 +93,22 @@ function datasetInvoices(s: Shape, props: Set<string>): InvoiceView[] {
   });
 }
 
+/** Lines of approved supplier invoices (approved or recorded as an expense), the dataset's and those recorded in Tyll,
+ * with corrections applied. What ingredient prices are worked out from. */
+export function approvedInvoiceLines(s: Shape, propertyId: string): { date: string; ingredientId: string; supplierId: string; qty: number; price: number; ref: string }[] {
+  const ok = (st: InvoiceStatus) => st === "approved" || st === "posted";
+  const out: { date: string; ingredientId: string; supplierId: string; qty: number; price: number; ref: string }[] = [];
+  for (const i of datasetInvoices(s, new Set([propertyId]))) {
+    if (!ok(i.status)) continue;
+    for (const l of i.lines) if (l.invoiced > 0) out.push({ date: i.date, ingredientId: l.ingredientId, supplierId: i.supplierId, qty: l.invoiced, price: l.invoicePrice, ref: i.id });
+  }
+  for (const i of s.finance.invoices) {
+    if (i.propertyId !== propertyId || !ok(i.status)) continue;
+    for (const l of i.lines) if (l.qty > 0) out.push({ date: i.date, ingredientId: l.ingredientId, supplierId: i.supplierId, qty: l.qty, price: l.unitPrice, ref: i.id });
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date) || a.ref.localeCompare(b.ref));
+}
+
 /** Quantity of an item already invoiced on an order by invoices recorded before this one. */
 const invoicedBefore = (s: Shape, requestId: string, ingredientId: string, beforeId?: string) => {
   let q = 0;

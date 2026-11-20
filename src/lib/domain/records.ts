@@ -34,6 +34,10 @@ export interface PriceLogEntry {
   by: string;
   role: Role;
   at: string;
+  /** Why the price differs from the supplier invoices (an explained override). Older entries have none. */
+  reason?: string;
+  /** Set when the override was taken back and the invoice price applies again. */
+  cleared?: boolean;
 }
 
 /** Resolve or snooze on Alerts, kept per person. `on` is the business date it was set: a snooze lasts until the next day. */
@@ -88,6 +92,9 @@ export type RecordOp =
   | { kind: "recipe.standard"; itemId: string; ingredientId: string; qty: number; from: string; reason: string }
   | { kind: "delivery.receipt"; deliveryId: string; ingredientId: string; received: number; reason: string }
   | { kind: "price.set"; ingredientId: string; cost: number }
+  /** A price that differs from the supplier invoices, with the reason: it replaces the invoice average until cleared. */
+  | { kind: "price.override"; ingredientId: string; cost: number; reason: string }
+  | { kind: "price.clear"; ingredientId: string }
   | { kind: "purchase.approve"; propertyId: string; lines: { ingredientId: string; qty: number; cost: number }[] }
   | { kind: "purchase.withdraw"; id: string }
   | { kind: "forecast.inputs"; propertyId: string; inputs: ForecastInputs }
@@ -98,7 +105,7 @@ export type RecordOp =
 
 export const OP_KINDS: RecordOp["kind"][] = [
   "investigation.assign", "investigation.note", "investigation.review", "investigation.close", "investigation.reopen", "case.fromCount", "case.fromPeriod",
-  "stock.recount", "recipe.standard", "delivery.receipt", "price.set", "purchase.approve", "purchase.withdraw", "forecast.inputs", "flow.status", "alert.dismiss", "alert.state",
+  "stock.recount", "recipe.standard", "delivery.receipt", "price.set", "price.override", "price.clear", "purchase.approve", "purchase.withdraw", "forecast.inputs", "flow.status", "alert.dismiss", "alert.state",
 ];
 
 /** What the rules need to know about the world, supplied by the browser or the server from their own data. */
@@ -358,6 +365,28 @@ export function applyRecordOp(prev: Records, op: RecordOp, env: RecordEnv): OpRe
         rec.priceOverrides = [...rec.priceOverrides.filter((p) => p.id !== op.ingredientId), { id: op.ingredientId, from: env.today, value }];
         rec.priceLog = [{ id: `PC-${nextSeq()}`, ingredientId: op.ingredientId, value, from: env.today, by: u.id, role: u.role, at: env.now }, ...rec.priceLog].slice(0, 200);
         audit("Ingredient price changed", `${ingredientById[op.ingredientId].name} to €${value.toFixed(2)} from ${fmtDate(env.today)}`);
+        return { ok: true, rec };
+      });
+    case "price.override":
+      return guarded("stock.editPrices", undefined, (u) => {
+        if (!ingredientById[op.ingredientId]) return fail("Unknown ingredient.");
+        const cost = Number(op.cost);
+        if (!Number.isFinite(cost) || cost <= 0) return fail("Enter a price above zero.");
+        if (cost > 100000) return fail("That price looks too high. Check the amount.");
+        const reason = typeof op.reason === "string" ? op.reason.trim().slice(0, 200) : "";
+        if (reason.length < 3) return fail("Say why this price differs from the supplier invoices.");
+        const value = Math.round(cost * 100) / 100;
+        rec.priceOverrides = [...rec.priceOverrides.filter((p) => p.id !== op.ingredientId), { id: op.ingredientId, from: env.today, value }];
+        rec.priceLog = [{ id: `PC-${nextSeq()}`, ingredientId: op.ingredientId, value, from: env.today, by: u.id, role: u.role, at: env.now, reason }, ...rec.priceLog].slice(0, 200);
+        audit("Ingredient price overridden", `${ingredientById[op.ingredientId].name} at €${value.toFixed(2)} from ${fmtDate(env.today)}: ${reason}`);
+        return { ok: true, rec };
+      });
+    case "price.clear":
+      return guarded("stock.editPrices", undefined, (u) => {
+        if (!rec.priceOverrides.some((p) => p.id === op.ingredientId)) return fail("This ingredient has no override.");
+        rec.priceOverrides = rec.priceOverrides.filter((p) => p.id !== op.ingredientId);
+        rec.priceLog = [{ id: `PC-${nextSeq()}`, ingredientId: op.ingredientId, value: 0, from: env.today, by: u.id, role: u.role, at: env.now, cleared: true }, ...rec.priceLog].slice(0, 200);
+        audit("Ingredient price override taken back", `${ingredientById[op.ingredientId].name}: the supplier invoice price applies again`);
         return { ok: true, rec };
       });
     case "purchase.approve":

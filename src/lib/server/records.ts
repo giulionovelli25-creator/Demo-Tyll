@@ -27,6 +27,8 @@ export const OP_PERMISSION: Record<RecordOp["kind"], Permission | null> = {
   "recipe.standard": "stock.editPrices",
   "delivery.receipt": "stock.count",
   "price.set": "stock.editPrices",
+  "price.override": "stock.editPrices",
+  "price.clear": "stock.editPrices",
   "purchase.approve": "forecast.approve",
   "purchase.withdraw": "forecast.approve",
   "forecast.inputs": "forecast.approve",
