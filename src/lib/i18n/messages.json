@@ -899,6 +899,11 @@
 "Approvati o consegnati, non ancora spesa registrata.",
 "معتمدة أو مسلّمة، وليست مصروفًا مسجلًا بعد."
 ],
+"Approved purchase orders": [
+"Freigegebene Bestellungen",
+"Ordini di acquisto approvati",
+"أوامر الشراء المعتمدة"
+],
 "Approved, not sent": [
 "Genehmigt, nicht gesendet",
 "Approvato, non inviato",
@@ -1123,6 +1128,11 @@
 "Autobestellung",
 "Ordine auto",
 "طلب تلقائي"
+],
+"Automatic": [
+"Automatisch",
+"Automatico",
+"تلقائي"
 ],
 "Automatic ordering": [
 "Automatische Bestellung",
@@ -3489,6 +3499,11 @@
 "Differenza di consegna registrata",
 "سُجّل فرق في التسليم"
 ],
+"Delivery {0}": [
+"Lieferung {0}",
+"Consegna {0}",
+"التوصيل {0}"
+],
 "Demo PIN: {0}": [
 "Demo-PIN: {0}",
 "PIN demo: {0}",
@@ -4574,6 +4589,11 @@
 "Campo",
 "الحقل"
 ],
+"Fields": [
+"Felder",
+"Campi",
+"الحقول"
+],
 "Fields, and what is left to confirm": [
 "Felder, und was noch zu bestätigen ist",
 "Campi, e cosa resta da confermare",
@@ -4874,6 +4894,11 @@
 "Per esempio: {0} casse nel magazzino principale, ordine fisso ridotto",
 "مثال: {0} صندوقًا في المخزن الرئيسي، تم تقليص الطلب الدائم"
 ],
+"For the group's procurement or accounting system.": [
+"Für das Einkaufs- oder Buchhaltungssystem der Gruppe.",
+"Per il sistema acquisti o contabile del gruppo.",
+"لنظام المشتريات أو المحاسبة في المجموعة."
+],
 "For you": [
 "Für Sie",
 "Per te",
@@ -5133,6 +5158,11 @@
 "Der Wareneingang erfasst jede Ankunft mit einem Tipp auf dem Telefon. Ist der Lieferwagen da, jetzt erfassen.",
 "Il ricevimento merci registra ogni arrivo con un tocco sul telefono. Se il furgone è qui, registralo ora.",
 "يسجّل الاستلام كل وصول بلمسة واحدة على الهاتف. إذا وصلت الشاحنة، سجّل ذلك الآن."
+],
+"Goods receipts": [
+"Wareneingänge",
+"Ricevimenti merce",
+"استلامات البضائع"
 ],
 "Grey: covered, not flagged. The rest is to check. {0} breakfasts are on their own bills, in the room charge check.": [
 "Grau: gedeckt, nicht markiert. Der Rest ist zu prüfen. {0}-Frühstücke stehen auf eigenen Rechnungen, in der Zimmerbelastungsprüfung.",
@@ -6038,6 +6068,11 @@
 "Nachzubestellende Artikel",
 "Articoli da riordinare",
 "أصناف لإعادة الطلب"
+],
+"JSON": [
+"JSON",
+"JSON",
+"JSON"
 ],
 "Joined another booking": [
 "Einer anderen Reservierung angeschlossen",
@@ -7294,6 +7329,11 @@
 "Principale",
 "الرئيسية"
 ],
+"Main store": [
+"Hauptlager",
+"Magazzino centrale",
+"المخزن الرئيسي"
+],
 "Mains": [
 "Hauptgerichte",
 "Secondi",
@@ -8294,6 +8334,11 @@
 "Nessuno",
 "لا يوجد"
 ],
+"None at your step": [
+"Keine bei Ihrem Schritt",
+"Nessuno al suo passaggio",
+"لا شيء عند خطوتك"
+],
 "None at your step:": [
 "Keine bei Ihrem Schritt:",
 "Nessuno al suo passaggio:",
@@ -8898,6 +8943,11 @@
 "Eine Buchung je Rechnung, mit der Belegnummer der Kasse",
 "Una registrazione per conto, con il numero di scontrino della cassa",
 "قيد واحد لكل فاتورة، وعليه رقم إيصال الصندوق"
+],
+"One row per line in CSV;": [
+"Eine Zeile pro Position im CSV;",
+"Una riga per voce nel CSV;",
+"صف لكل بند في CSV؛"
 ],
 "One thing needs you today.": [
 "Eine Sache braucht heute Ihre Aufmerksamkeit.",
@@ -10053,6 +10103,21 @@
 "Ausschankkontrolle, {0}",
 "Controllo versamenti, {0}",
 "مراقبة السكب، {0}"
+],
+"Poured but not billed in the last {0} days, none last week either.": [
+"In den letzten {0} Tagen ausgeschenkt, aber nicht berechnet, auch letzte Woche nichts.",
+"Versato ma non addebitato negli ultimi {0} giorni, nulla anche la settimana scorsa.",
+"سُكب ولم يُحسب خلال آخر {0} أيام، ولا شيء في الأسبوع الماضي أيضا."
+],
+"Poured but not billed in the last {0} days, none last week.": [
+"In den letzten {0} Tagen ausgeschenkt, aber nicht berechnet, letzte Woche nichts.",
+"Versato ma non addebitato negli ultimi {0} giorni, nulla la settimana scorsa.",
+"سُكب ولم يُحسب خلال آخر {0} أيام، ولا شيء في الأسبوع الماضي."
+],
+"Poured but not billed in the last {0} days, same as last week.": [
+"In den letzten {0} Tagen ausgeschenkt, aber nicht berechnet, gleich wie letzte Woche.",
+"Versato ma non addebitato negli ultimi {0} giorni, come la settimana scorsa.",
+"سُكب ولم يُحسب خلال آخر {0} أيام، مثل الأسبوع الماضي."
 ],
 "Poured but not billed in the last {0} days, {1} less than last week.": [
 "In den letzten {0} Tagen ausgeschenkt, aber nicht berechnet, {1} weniger als letzte Woche.",
@@ -16594,6 +16659,26 @@
 "scarti in più",
 "هدر أكثر"
 ],
+"most wait for Accounting.": [
+"die meisten warten auf die Buchhaltung.",
+"la maggior parte attende la Contabilità.",
+"معظمها بانتظار المحاسبة."
+],
+"most wait for Purchasing.": [
+"die meisten warten auf den Einkauf.",
+"la maggior parte attende gli Acquisti.",
+"معظمها بانتظار المشتريات."
+],
+"most wait for the F&B director.": [
+"die meisten warten auf den F&B Director.",
+"la maggior parte attende il direttore F&B.",
+"معظمها بانتظار مدير الأغذية والمشروبات."
+],
+"most wait for the general manager.": [
+"die meisten warten auf den General Manager.",
+"la maggior parte attende il direttore generale.",
+"معظمها بانتظار المدير العام."
+],
 "need {0}": [
 "Bedarf {0}",
 "serve {0}",
@@ -16703,6 +16788,11 @@
 "eine Belastung über {0} an der Kasse, {1} Buchungen im Folio.",
 "un addebito di {0} alla cassa, {1} registrazioni nel folio.",
 "رسوم واحدة بقيمة {0} في الكاشير، {1} ترحيلات في الحساب."
+],
+"one record per document, with its lines, in JSON.": [
+"ein Datensatz pro Beleg, mit seinen Positionen, im JSON.",
+"un record per documento, con le sue voci, nel JSON.",
+"سجل لكل مستند مع بنوده في JSON."
 ],
 "open item, menu {0}": [
 "freier Artikel, Karte {0}",
@@ -18233,6 +18323,11 @@
 "{0} Artikel zu prüfen, eine Schätzung",
 "{0} articolo da controllare, una stima",
 "{0} صنف للتحقق، تقديري"
+],
+"{0} item to order by then": [
+"{0} Artikel bis dahin zu bestellen",
+"{0} articolo da ordinare entro allora",
+"صنف {0} للطلب قبل ذلك"
 ],
 "{0} items": [
 "{0} Artikel",
@@ -20248,6 +20343,11 @@
 "{0}, {1}, Ausgabeschein {2}",
 "{0}, {1}, bolla {2}",
 "{0}، {1}، إشعار صرف {2}"
+],
+"{0}, {1}, {2} more": [
+"{0}, {1}, {2} weitere",
+"{0}, {1}, altri {2}",
+"{0}، {1}، و{2} أخرى"
 ],
 "{0}, {1}, {2} take no table bookings, so there is nothing to compare. Breakfast is hotel guests walking in.": [
 "{0}, {1}, {2} nehmen keine Tischreservierungen an, daher gibt es nichts zu vergleichen. Zum Frühstück kommen Hotelgäste ohne Reservierung.",

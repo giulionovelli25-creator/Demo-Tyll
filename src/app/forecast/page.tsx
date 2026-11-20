@@ -50,21 +50,20 @@ export default function ForecastPage() {
   // Ordering is one menu item (simplify pass): what to order, items below their minimum, automatic ordering, the prep and
   // the next 7 days, each a tab of the same page, shown to the roles that may use it.
   const planTabs = (here: Tab | null) => {
-    const parts: { id: Tab | null; also?: Tab; href: string; label: string }[] = [
+    const parts: { id: Tab | null; href: string; label: string }[] = [
       { id: null, href: "/forecast", label: "What to order" },
-      ...(tabs.includes("toorder") ? [{ id: "toorder" as Tab, also: "pars" as Tab, href: "/forecast?tab=toorder", label: LABEL.toorder }] : []),
+      ...(tabs.includes("toorder") ? [{ id: "toorder" as Tab, href: "/forecast?tab=toorder", label: LABEL.toorder }] : []),
+      ...(tabs.includes("pars") ? [{ id: "pars" as Tab, href: "/forecast?tab=pars", label: LABEL.pars }] : []),
       ...(tabs.includes("auto") ? [{ id: "auto" as Tab, href: "/forecast?tab=auto", label: LABEL.auto }] : []),
       ...(tabs.includes("prep") ? [{ id: "prep" as Tab, href: "/forecast?tab=prep", label: LABEL.prep }] : []),
       ...(tabs.includes("outlook") ? [{ id: "outlook" as Tab, href: "/forecast?tab=outlook", label: LABEL.outlook }] : []),
     ];
-    return parts.length > 1 && predicts ? <PageTabs tabs={parts.map((p) => ({ href: p.href, label: p.label, active: p.id === here || (!!p.also && p.also === here) }))} /> : null;
+    return parts.length > 1 && predicts ? <PageTabs tabs={parts.map((p) => ({ href: p.href, label: p.label, active: p.id === here }))} /> : null;
   };
   if (tab === null) return <Predictions tabs={planTabs(null)} />;
   if (tab === "auto") return <AutoOrdering tabs={planTabs("auto")} />;
-  // Below minimum and Par levels are one tab with its own two parts; Suppliers and the catalogue another item.
-  const sub = (a: Tab, b: Tab) => <PageTabs tabs={[{ href: `/forecast?tab=${a}`, label: LABEL[a], active: tab === a }, { href: `/forecast?tab=${b}`, label: LABEL[b], active: tab === b }]} />;
-  if (tab === "toorder") return <ToOrder tabs={<>{planTabs("toorder")}{sub("toorder", "pars")}</>} />;
-  if (tab === "pars") return <ParLevels tabs={<>{planTabs("pars")}{sub("toorder", "pars")}</>} />;
+  if (tab === "toorder") return <ToOrder tabs={planTabs("toorder")} />;
+  if (tab === "pars") return <ParLevels tabs={planTabs("pars")} />;
   // Suppliers, the catalogue and reliability are one item: who we buy from, at what price, and how well they deliver.
   const supplierTabs = <PageTabs tabs={(["suppliers", "catalogue", "reliability"] as Tab[]).filter((t) => tabs.includes(t)).map((t) => ({ href: `/forecast?tab=${t}`, label: LABEL[t], active: tab === t }))} />;
   if (tab === "suppliers" || tab === "catalogue") return <SupplierDirectory view={tab} tabs={supplierTabs} />;

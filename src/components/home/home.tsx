@@ -205,7 +205,8 @@ export function Home() {
   const ordersOnWay = (orders ?? []).filter(awaitingDelivery);
   const ordersLate = ordersOnWay.filter((r) => orderStage(r) === "late");
   const STEP_WHO: Record<string, string> = { purchasing: "Purchasing", accounting: "Accounting", fnb: "the F&B director", manager: "the general manager" };
-  const waitingWho = Object.entries(STEP_WHO).map(([st, who]) => [who, ordersWaiting.filter((r) => r.status === st).length] as const).filter(([, n]) => n > 0).map(([who, n]) => `${who} ${n}`).join(", ");
+  // The step most of them wait at, named once: one short sentence, the same in every language.
+  const waitingMost = Object.entries(STEP_WHO).map(([st, who]) => [who, ordersWaiting.filter((r) => r.status === st).length] as const).sort((x, y) => y[1] - x[1])[0]?.[0] ?? "";
   const items = plan?.items ?? [];
   const critical = items.filter((i) => i.health === "critical");
   const low = items.filter((i) => i.health === "low");
@@ -292,7 +293,7 @@ export function Home() {
         <Card
           module="forecast" title="Orders" picture={<Split parts={[{ n: ordersMine.length, className: "bg-money" }, { n: ordersWaiting.length - ordersMine.length, className: "bg-money/50" }, { n: ordersOnWay.length, className: "bg-money/20" }]} />}
           number={ordersMine.length ? `${ordersMine.length} to approve` : `${ordersWaiting.length} waiting`} tone={ordersMine.length ? "warn" : undefined} loading={!orders}
-          line={`${ordersMine.length ? `Waiting for your approval, ${ordersWaiting.length} in all.` : ordersWaiting.length ? `None at your step: ${waitingWho}.` : "Nothing waiting for approval."} ${ordersOnWay.length} on the way${ordersLate.length ? `, ${ordersLate.length} late` : ""}.`}
+          line={`${ordersMine.length ? `Waiting for your approval, ${ordersWaiting.length} in all.` : ordersWaiting.length ? `None at your step; most wait for ${waitingMost}.` : "Nothing waiting for approval."} ${ordersOnWay.length} on the way${ordersLate.length ? `, ${ordersLate.length} late` : ""}.`}
           cta={approves && ordersMine.length ? "Review orders" : "See orders"} href={`/forecast?tab=approvals${approves && myQueue ? `&queue=${myQueue}` : ""}`}
         />
         {featureOn("overviewRevenue") ? (
