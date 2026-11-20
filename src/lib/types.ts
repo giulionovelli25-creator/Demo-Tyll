@@ -243,7 +243,6 @@ export interface Exception {
 /** What a manager found when they checked a bought against used gap. */
 export type BoughtUsedOutcome = "on_shelf" | "no_recipe" | "not_found";
 
-/** A bought against used gap marked checked, saved on the demo server with who did it. */
 /** What a manager did after looking at a waiter's drinks per guest. */
 export type CoachingOutcome = "coached" | "bar_check" | "no_change";
 
@@ -266,8 +265,13 @@ export interface WaiterCoaching {
   rate: number | null;
   peerRate: number | null;
   days: number;
+  /** Set when the note was taken back: it stays on record and is no longer shown. */
+  withdrawnBy?: string;
+  withdrawnRole?: Role;
+  withdrawnAt?: string;
 }
 
+/** A bought against used gap marked checked, saved on the demo server with who did it. */
 export interface BoughtUsedCheck {
   id: string;
   propertyId: string;

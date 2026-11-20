@@ -14,8 +14,8 @@ const { WAITER_STORY, HERO_ORDER_ID, ROOM_STORY_ORDER_ID } = await import("../da
 const { waitersFor, recordCoaching, clearCoaching, mayNameWaiters } = await import("../server/waiters");
 const { resetDemo } = await import("../server/demo");
 const { loadStore } = await import("../server/purchasing-store");
-const { STAFF, userById } = await import("../data/catalog");
-const { can } = await import("../domain/access");
+const { STAFF, USERS, userById } = await import("../data/catalog");
+const { can, canOpen } = await import("../domain/access");
 const { activeItem } = await import("../nav");
 const { shiftOf } = await import("../domain/pour");
 const { DEMO_TODAY, addDays, eachDay } = await import("../util");
@@ -47,6 +47,9 @@ describe("what a bill tells about drinks", () => {
     expect(g).toMatchObject({ drinks: 3, noDrink: false, drinkValue: 15 });
     // The breakfast buffet includes coffee and juice: never a table without drinks.
     expect(billFacts(bill("MER-S1", 2, 0, { openMin: 8 * 60, lines: [line("breakfast", 2)] }))).toMatchObject({ food: false, noDrink: false, shift: "day" });
+    // A buffet with other food on the same bill still has its drinks included, at any hour.
+    expect(billFacts(bill("MER-S1", 2, 0, { lines: [line("breakfast"), line("burger")] }))).toMatchObject({ food: true, noDrink: false, drinks: 0 });
+    expect(billFacts(bill("MER-S1", 2, 0, { openMin: 8 * 60, lines: [line("breakfast"), line("caesar"), line("fries")] }))).toMatchObject({ food: true, noDrink: false });
   });
 
   it("leaves out voided bills and banquet bills", () => {
@@ -158,6 +161,39 @@ describe("the demo story", () => {
     expect(count(after)).toEqual(count(before));
   });
 
+  it("leaves every bill and every flag as it would be without the story, apart from the login", async () => {
+    // The same dataset built with the story switched off, set against the real one.
+    vi.resetModules();
+    vi.doMock("../data/constants", async (orig) => {
+      const real = await orig<typeof import("../data/constants")>();
+      return { ...real, WAITER_STORY: { ...real.WAITER_STORY, share: 0 } };
+    });
+    const plain = (await import("../data/generate")).getDataset();
+    vi.doUnmock("../data/constants");
+    vi.resetModules();
+    const real = getDataset();
+    expect(real.orders.map((o) => o.id)).toEqual(plain.orders.map((o) => o.id));
+    const moved = new Set<string>();
+    real.orders.forEach((o, i) => {
+      const p = plain.orders[i];
+      expect({ ...o, staffId: p.staffId }).toEqual(p);
+      if (o.staffId !== p.staffId) {
+        moved.add(o.id);
+        expect(o.outletId).toBe(WAITER_STORY.outletId);
+        expect(shiftOf(o.openMin)).toBe(WAITER_STORY.shift);
+        expect(o.lines.every((l) => l.state === "kept") && !o.voided && !o.refund && !o.discountPct).toBe(true);
+        expect(o.lines.some((l) => l.itemId === "breakfast") && !!billFacts(o)?.noDrink).toBe(false);
+      }
+    });
+    expect(moved.size).toBeGreaterThan(40);
+    // Flags, room charges and sales roll ups are identical, and no flag sits on a bill that changed login.
+    expect(real.exceptions).toEqual(plain.exceptions);
+    expect(real.roomCharges).toEqual(plain.roomCharges);
+    expect(real.dayOutlets).toEqual(plain.dayOutlets);
+    expect(real.dayItems).toEqual(plain.dayItems);
+    expect(real.exceptions.filter((e) => e.orderId && moved.has(e.orderId))).toEqual([]);
+  });
+
   it("shows Rahul Okafor at Mercado on evening shifts, and nobody else, to coach over 30 days", () => {
     const outlets = compareWaiters(getDataset().orders, { outletIds: ["lis-terrace", "lis-lobby", "lis-ird"], from: addDays(DEMO_TODAY, -29), to: DEMO_TODAY });
     const coach = outlets.flatMap((o) => o.waiters.filter((w) => w.status === "coach"));
@@ -171,6 +207,17 @@ describe("the demo story", () => {
     expect(ev.noDrink).toBeGreaterThan(ev.expectedNoDrink * 1.6);
     expect(ev.shortfallValue).toBeGreaterThan(300);
     expect(ev.shortfallValue).toBeLessThan(700);
+    // Pinned after the buffet rule (any bill with the buffet has its drinks): 0.51 against 0.73, 60 of 169 against about 15.
+    expect(ev.rate!).toBeGreaterThan(0.45);
+    expect(ev.rate!).toBeLessThan(0.56);
+    expect(ev.noDrink).toBeGreaterThan(50);
+    expect(ev.noDrink).toBeLessThan(75);
+    expect(ev.noDrink).toBeGreaterThan(ev.expectedNoDrink * 3);
+    // The drill down shows evening tables with food and no drink, and never a breakfast buffet.
+    const out = outlets.find((o) => o.outletId === WAITER_STORY.outletId)!;
+    const tables = noDrinkTables(getDataset().orders, { outletId: out.outletId, staffId: r.staffId, from: addDays(DEMO_TODAY, -29), to: DEMO_TODAY, shift: "evening" }, out.drinkPrice);
+    expect(tables).toHaveLength(ev.noDrink);
+    expect(tables.filter((t) => t.foodItems.includes("breakfast"))).toEqual([]);
   });
 
   it("holds on every business day of a week", async () => {
@@ -235,19 +282,23 @@ describe("who sees what", () => {
     }
   });
 
-  it("names waiters only for the roles that coach them", () => {
-    expect(["u-owner", "u-gm", "u-fnb", "u-rm"].every((id) => mayNameWaiters(U(id)))).toBe(true);
-    expect(mayNameWaiters(U("u-fc"))).toBe(false);
+  it("names waiters by the Over pouring rule, the same for every role that opens the page", () => {
+    // Over pouring names people for managers who see cases by person, never for staff; this page uses the same rule.
+    for (const u of USERS) expect(mayNameWaiters(u), u.id).toBe(canOpen(u, "investigations") && u.role !== "employee");
+    // Every role that may open the page may see names, so no answer has to hide a name that a bill would show anyway.
+    for (const u of USERS) if (can(u, "waiters.view") && canOpen(u, "money")) expect(mayNameWaiters(u), u.id).toBe(true);
     const fnb = waitersFor(U("u-fnb"), {});
     const fc = waitersFor(U("u-fc"), {});
     if (!fnb.ok || !fc.ok) throw new Error("expected both to load");
     expect(fnb.outlets[0].waiters[0]).toMatchObject({ key: "MER-S1", name: "Rahul Okafor", status: "coach" });
-    // The controller sees the same figures under a label, with no name and no till login anywhere in the answer.
-    expect(fc.outlets[0].waiters[0]).toMatchObject({ name: "Server 1", status: "coach", shortfallValue: fnb.outlets[0].waiters[0].shortfallValue });
-    const text = json(fc);
-    expect(text).not.toMatch(/\b[A-Z]{3}-S\d\b/);
-    for (const s of STAFF.filter((x) => ["lis-terrace", "lis-lobby", "lis-ird"].includes(x.outletId))) expect(text, s.name).not.toContain(s.name);
+    // The controller sees the same figures and names, as on Over pouring and All transactions, and cannot coach.
+    expect(fc.outlets[0].waiters[0]).toMatchObject({ key: "MER-S1", name: "Rahul Okafor", status: "coach", shortfallValue: fnb.outlets[0].waiters[0].shortfallValue });
+    expect(json(fc.outlets)).toBe(json(fnb.outlets));
     expect(fc.mayCoach).toBe(false);
+    expect(fnb.mayCoach).toBe(true);
+    // Staff never see the page, names or not.
+    expect(waitersFor(U("u-emp"), {})).toMatchObject({ ok: false, status: 403 });
+    expect(json(waitersFor(U("u-emp"), {}))).not.toContain("Rahul Okafor");
   });
 
   it("keeps a restaurant manager to their own outlet and leaves banquets out", () => {
@@ -275,7 +326,7 @@ describe("who sees what", () => {
     if (!r.ok) throw new Error(r.error);
     expect(r.coaching).toMatchObject({ by: "u-rm", role: "restaurant_manager", shift: "evening", note: "Suggest a drink with the order", date: DEMO_TODAY, days: 30 });
     expect(r.coaching.rate!).toBeLessThan(r.coaching.peerRate!);
-    // Everyone who sees the waiter sees the note, the controller under the label.
+    // Everyone who sees the waiter sees the note.
     const fnb = waitersFor(U("u-fnb"), {});
     const fc = waitersFor(U("u-fc"), {});
     if (!fnb.ok || !fc.ok) throw new Error("expected both to load");
@@ -283,13 +334,32 @@ describe("who sees what", () => {
     expect(fc.outlets[0].waiters[0].coaching?.id).toBe(r.coaching.id);
     expect(clearCoaching(U("u-fc"), { id: r.coaching.id })).toMatchObject({ ok: false, status: 403 });
     expect(clearCoaching(U("u-fnb"), { id: r.coaching.id })).toMatchObject({ ok: true });
-    expect(loadStore().waiterCoaching).toEqual([]);
+    // Taken back: no longer shown, but kept on record with who took it back, as corrections are.
+    const after = waitersFor(U("u-fnb"), {});
+    if (!after.ok) throw new Error("expected to load");
+    expect(after.outlets[0].waiters[0].coaching).toBeUndefined();
+    expect(loadStore().waiterCoaching).toEqual([expect.objectContaining({ id: r.coaching.id, by: "u-rm", note: "Suggest a drink with the order", withdrawnBy: "u-fnb", withdrawnRole: "fnb_director" })]);
+    expect(loadStore().waiterCoaching?.[0].withdrawnAt).toBeTruthy();
+    // It cannot be taken back twice.
+    expect(clearCoaching(U("u-fnb"), { id: r.coaching.id })).toMatchObject({ ok: false, status: 404 });
+  });
+
+  it("shows the note before when the latest is taken back", () => {
+    const first = recordCoaching(U("u-fnb"), { outletId: "lis-terrace", staffId: "MER-S2", outcome: "no_change" });
+    const second = recordCoaching(U("u-fnb"), { outletId: "lis-terrace", staffId: "MER-S2", outcome: "bar_check" });
+    if (!first.ok || !second.ok) throw new Error("expected both to save");
+    const shown = () => { const v = waitersFor(U("u-fnb"), {}); if (!v.ok) throw new Error(v.error); return v.outlets.find((o) => o.outletId === "lis-terrace")!.waiters.find((w) => w.key === "MER-S2")!.coaching?.id; };
+    expect(shown()).toBe(second.coaching.id);
+    expect(clearCoaching(U("u-fnb"), { id: second.coaching.id }).ok).toBe(true);
+    expect(shown()).toBe(first.coaching.id);
+    expect(clearCoaching(U("u-fnb"), { id: first.coaching.id }).ok).toBe(true);
+    expect(shown()).toBeUndefined();
   });
 
   it("clears coaching notes with the stock reset", () => {
     const r = recordCoaching(U("u-fnb"), { outletId: "lis-lobby", staffId: "AZU-S2", outcome: "no_change" });
     expect(r.ok).toBe(true);
-    expect(loadStore().waiterCoaching).toHaveLength(1);
+    expect(loadStore().waiterCoaching?.filter((c) => !c.withdrawnAt)).toHaveLength(1);
     expect(resetDemo(U("u-gm"), "stock").ok).toBe(true);
     expect(loadStore().waiterCoaching).toEqual([]);
   });

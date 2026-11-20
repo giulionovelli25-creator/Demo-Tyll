@@ -281,6 +281,8 @@ export function waiterStory(orders: Order[]): void {
     const r = rng(`waiter-story|${date}`);
     const shuffle = <T,>(xs: T[]) => xs.map((x) => ({ x, k: r.next() })).sort((a, b) => a.k - b.k).map((y) => y.x);
     const his = shuffle(list.filter((o) => { const f = billFacts(o); return o.staffId === S.staffId && !!f && f.food && f.drinks > 0; }));
+    // A colleague's bill with food and no drink. `noDrink` already leaves out any bill with the breakfast buffet (it includes
+    // coffee and juice), so no buffet bill reaches the story waiter's evening tables.
     const theirs = shuffle(list.filter((o) => o.staffId !== S.staffId && !!billFacts(o)?.noDrink));
     const k = Math.min(theirs.length, Math.floor(his.length * S.share + r.next()));
     for (const mine of his.slice(0, k)) {

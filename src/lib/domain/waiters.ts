@@ -19,7 +19,7 @@ export const WAITER_RULES = {
 /** Banquet drinks are sold as packages per event, not by a waiter at the table, so Banquets and Events is left out. */
 export const waiterOutlet = (outletId: string) => !!outletById[outletId] && outletById[outletId].kind !== "Banquets and events";
 
-/** The breakfast buffet includes coffee and juice, so a bill with only the buffet is not a table without drinks. */
+/** The breakfast buffet includes coffee and juice, so a bill with the buffet on it is never a table without drinks. */
 const DRINKS_INCLUDED = new Set(["breakfast"]);
 
 export interface BillFacts {
@@ -38,7 +38,7 @@ export interface BillFacts {
   foodValue: number;
   /** Food on the bill other than the breakfast buffet. */
   food: boolean;
-  /** Food on the bill and no drink billed. */
+  /** Food on the bill, no drink billed and no breakfast buffet, which includes coffee and juice. */
   noDrink: boolean;
   foodItems: string[];
 }
@@ -51,10 +51,11 @@ export function billFacts(o: Order): BillFacts | null {
   const foodLines = kept.filter((l) => itemById[l.itemId]?.dept === "food");
   const drinks = drinkLines.reduce((n, l) => n + l.qty, 0);
   const food = foodLines.some((l) => !DRINKS_INCLUDED.has(l.itemId));
+  const included = foodLines.some((l) => DRINKS_INCLUDED.has(l.itemId));
   return {
     orderId: o.id, outletId: o.outletId, date: o.date, shift: shiftOf(o.openMin), staffId: o.staffId, table: o.table, openMin: o.openMin,
     guests: o.covers, drinks, drinkValue: round2(drinkLines.reduce((n, l) => n + l.qty * l.unitPrice, 0)),
-    foodValue: round2(foodLines.reduce((n, l) => n + l.qty * l.unitPrice, 0)), food, noDrink: food && drinks === 0,
+    foodValue: round2(foodLines.reduce((n, l) => n + l.qty * l.unitPrice, 0)), food, noDrink: food && drinks === 0 && !included,
     foodItems: [...new Set(foodLines.map((l) => l.itemId))],
   };
 }

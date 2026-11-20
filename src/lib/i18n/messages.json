@@ -1584,6 +1584,11 @@
 "Il coaching è registrato dai responsabili del punto vendita, gli unici a vedere i nomi qui.",
 "يسجّل التوجيهَ مديرو المنفذ، وهم وحدهم من يرى الأسماء هنا."
 ],
+"Coaching is recorded by the outlet’s managers.": [
+"Coaching wird von den Führungskräften des Outlets erfasst.",
+"Il coaching è registrato dai responsabili del punto vendita.",
+"يسجّل التوجيهَ مديرو المنفذ."
+],
 "Coaching recorded on {0}.": [
 "Coaching erfasst am {0}.",
 "Coaching registrato il {0}.",
@@ -7444,6 +7449,11 @@
 "Salvato nei registri dell'hotel.",
 "حُفظ في سجلات الفندق."
 ],
+"Saved on the hotel’s records with your name.": [
+"Mit Ihrem Namen in den Unterlagen des Hotels gespeichert.",
+"Salvato nei registri dell'hotel con il tuo nome.",
+"حُفظ في سجلات الفندق باسمك."
+],
 "Saved on the hotel’s records with your name. A manager confirms counted and no recipe before the flag closes; not found keeps it open.": [
 "Mit Ihrem Namen in den Unterlagen des Hotels gespeichert. Gezählt und ohne Rezeptur bestätigt eine Führungskraft, bevor die Markierung schließt; nicht gefunden lässt sie offen.",
 "Salvato nei registri dell'hotel con il tuo nome. Contato e senza ricetta vengono confermati da un responsabile prima che la segnalazione si chiuda; non trovato la lascia aperta.",
@@ -7938,6 +7948,11 @@
 "Die fünf mit den meisten zeigen",
 "Mostra i cinque con più tavoli",
 "اعرض الخمسة الأعلى"
+],
+"Show the top five": [
+"Die ersten fünf zeigen",
+"Mostra i primi cinque",
+"اعرض أعلى خمسة"
 ],
 "Show this hotel": [
 "Dieses Hotel anzeigen",
@@ -8653,6 +8668,11 @@
 "Der Betrag ist, was die Kollegen in derselben Schicht an Getränken pro Gast verkauften, zum durchschnittlichen Getränkepreis: eine Schätzung. Ein Tisch ohne Getränk ist meist ein Gast, der keines wollte. Wurden an diesen Tischen Getränke serviert, fragen Sie die Bar, ob sie gebucht wurden.",
 "L'importo è quanto i colleghi dello stesso turno hanno venduto in bevande per ospite, al prezzo medio delle bevande: una stima. Un tavolo senza bevande è quasi sempre un ospite che non ne voleva. Se a questi tavoli sono state servite bevande, chiedi al bar se sono state battute.",
 "المبلغ هو ما باعه الزملاء في الوردية نفسها من مشروبات لكل ضيف، بمتوسط سعر المشروب: تقدير. الطاولة دون مشروب غالبًا ضيف لم يرغب فيه. إذا قُدّمت مشروبات على هذه الطاولات، فاسأل البار هل سُجّلت."
+],
+"The amount is what colleagues on the same shift sold in drinks per guest, at the average drink price: an estimate. Each amount is one table at colleagues’ pace, so they do not add up to the estimate for the shift, which counts every table, with drinks or without. A table with no drink is most often a guest who did not want one. If drinks were served at these tables, ask the bar whether they were rung.": [
+"Der Betrag ist, was die Kollegen in derselben Schicht an Getränken pro Gast verkauften, zum durchschnittlichen Getränkepreis: eine Schätzung. Jeder Betrag ist ein Tisch im Tempo der Kollegen, daher ergeben sie zusammen nicht die Schätzung für die Schicht, die jeden Tisch zählt, mit oder ohne Getränke. Ein Tisch ohne Getränk ist meist ein Gast, der keines wollte. Wurden an diesen Tischen Getränke serviert, fragen Sie die Bar, ob sie gebucht wurden.",
+"L'importo è quanto i colleghi dello stesso turno hanno venduto in bevande per ospite, al prezzo medio delle bevande: una stima. Ogni importo è un tavolo al ritmo dei colleghi, quindi sommati non danno la stima del turno, che conta ogni tavolo, con o senza bevande. Un tavolo senza bevande è quasi sempre un ospite che non ne voleva. Se a questi tavoli sono state servite bevande, chiedi al bar se sono state battute.",
+"المبلغ هو ما باعه الزملاء في الوردية نفسها من مشروبات لكل ضيف، بمتوسط سعر المشروب: تقدير. كل مبلغ هو طاولة واحدة بوتيرة الزملاء، لذا لا يساوي مجموعها تقدير الوردية الذي يحسب كل الطاولات، بمشروبات أو بدونها. الطاولة دون مشروب غالبًا ضيف لم يرغب فيه. إذا قُدّمت مشروبات على هذه الطاولات، فاسأل البار هل سُجّلت."
 ],
 "The app takes the colour of the outlet you pick": [
 "Die App übernimmt die Farbe des gewählten Outlets",

@@ -75,7 +75,7 @@ export type Permission =
   | "stock.boughtUsed"
   /** See drinks per guest by waiter and tables with food and no drink, for the outlets the user holds. */
   | "waiters.view"
-  /** Record coaching on a waiter. Also the only roles that see waiters' names on that page. */
+  /** Record coaching on a waiter. */
   | "waiters.coach";
 
 const MODULES: Record<Role, ModuleId[]> = {
@@ -127,6 +127,8 @@ export const MODULE_PATH: Record<ModuleId, string> = {
 export const modulesFor = (user: User): ModuleId[] => MODULES[user.role];
 export const canOpen = (user: User, module: ModuleId) => MODULES[user.role].includes(module);
 export const can = (user: User, permission: Permission) => PERMISSIONS[user.role].includes(permission);
+/** Who may see the team by name on Over pouring and Drinks per guest by waiter: managers who already see cases by person, never staff. */
+export const mayNameStaff = (user: User) => canOpen(user, "investigations") && user.role !== "employee";
 /** Whether a role holds a permission, for records that keep the role of the person who made them. */
 export const roleCan = (role: Role, permission: Permission) => PERMISSIONS[role].includes(permission);
 /** In the public demo, whether this role can do a module's main job. If not, opening it switches role, which needs a full page load. */

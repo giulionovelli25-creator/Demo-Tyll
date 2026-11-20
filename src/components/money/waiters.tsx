@@ -1,7 +1,8 @@
 "use client";
 // Drinks per guest by waiter: who needs coaching, and where drinks may be going missing. Each waiter is set against the
 // colleagues who worked the same outlet on the same days and shift. The figures come from the server
-// (/api/money/waiters), which strips names for roles that do not coach the team. Coaching notes are saved there too.
+// (/api/money/waiters), which opens only for the managers allowed to see the team by name, as on Over pouring. Coaching
+// notes are saved there too.
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -82,8 +83,10 @@ export function DrinksByWaiter() {
   const onShift = outlet.waiters.map((w) => ({ w, s: w.shifts.find((x) => x.shift === shift) })).filter((x): x is { w: WaiterOut; s: NonNullable<typeof x.s> } => !!x.s)
     // Whoever is to coach first, then lowest to highest, so the bars read from the question to the answer.
     .sort((a, b) => Number(b.s.status === "coach") - Number(a.s.status === "coach") || Number(a.s.status === "too_few") - Number(b.s.status === "too_few") || (a.s.rate ?? 99) - (b.s.rate ?? 99));
-  // Tables with food and no drink on this shift, most above what colleagues' share would give first.
-  const byTables = [...onShift].sort((a, b) => (b.s.noDrink - b.s.expectedNoDrink) - (a.s.noDrink - a.s.expectedNoDrink));
+  // Tables with food and no drink on this shift, by money: the drinks not sold on a shift marked to coach (an estimate),
+  // then the most tables above what colleagues' share would give.
+  const atStake = (s: (typeof onShift)[number]["s"]) => (s.status === "coach" ? s.shortfallValue : 0);
+  const byTables = [...onShift].sort((a, b) => atStake(b.s) - atStake(a.s) || (b.s.noDrink - b.s.expectedNoDrink) - (a.s.noDrink - a.s.expectedNoDrink));
   const shownTables = allTables ? byTables : byTables.slice(0, TOP);
   const open = (w: WaiterOut, o: OutletOut) => setParam({ waiter: w.key, outlet: o.outletId });
   const period = days === 7 ? "the 7 days before" : "the 30 days before";
@@ -130,7 +133,7 @@ export function DrinksByWaiter() {
             summary={`Drinks per guest for each waiter on the ${SHIFT_LABEL[shift].toLowerCase()} shift at ${outletLabel(outlet.outletId)}, against the team average of ${per(team.rate)}.`}
             rows={onShift.map(({ w, s }) => ({
               key: w.key,
-              label: data.mayName ? `${w.name}, ${(ROLE_WORD[w.role] ?? w.role).toLowerCase()}` : w.name,
+              label: `${w.name}, ${(ROLE_WORD[w.role] ?? w.role).toLowerCase()}`,
               value: s.rate,
               tone: s.status === "coach" ? "warn" : s.status === "too_few" ? "muted" : "ink",
               sub: s.peerRate === null ? `${fmtNum(s.guests)} guests` : `Colleagues on the same shifts ${per(s.peerRate)} · ${fmtNum(s.comparedGuests)} guests`,
@@ -141,7 +144,6 @@ export function DrinksByWaiter() {
               onClick: () => open(w, outlet),
             }))}
           />
-          {!data.mayName && <Note className="mt-4">Names are shown only to the managers who coach the team.</Note>}
         </Panel>
         <Panel title="How Tyll compares" description="A low figure is a prompt to coach, not proof of anything else.">
           <ul className="space-y-3 text-sm text-graphite">
@@ -167,6 +169,7 @@ export function DrinksByWaiter() {
                     </span>
                     <span className="flex shrink-0 items-center gap-3">
                       {extra > 0 && s.status === "coach" ? <Badge tone="warn">{`${fmtNum(extra)} more than colleagues`}</Badge> : extra > 0 ? <span className="num text-xs text-graphite">{`${fmtNum(extra)} more`}</span> : <span className="text-xs text-graphite">In line</span>}
+                      {s.status === "coach" && <span className="num text-sm text-ink">{money(s.shortfallValue)}</span>}
                       <span className={textLink}>See tables</span>
                     </span>
                   </button>
@@ -174,7 +177,7 @@ export function DrinksByWaiter() {
               );
             })}
           </ul>
-          {byTables.length > TOP && <div className="border-t border-hair px-6 py-3"><button type="button" onClick={() => setAllTables((v) => !v)} className={textLink}>{allTables ? "Show the five with most" : `Show all ${byTables.length} waiters`}</button></div>}
+          {byTables.length > TOP && <div className="border-t border-hair px-6 py-3"><button type="button" onClick={() => setAllTables((v) => !v)} className={textLink}>{allTables ? "Show the top five" : `Show all ${byTables.length} waiters`}</button></div>}
         </Panel>
       </div>
 
@@ -313,10 +316,10 @@ function WaiterDetail({ o, w, days, view, onSaved, mayDrinks, money }: { o: Outl
           </div>
           <TextArea label="Note (optional)" value={note} maxLength={300} onChange={(e) => setNote(e.target.value)} placeholder="For example: suggest a drink when taking the food order" />
           <Button variant="primary" className="w-full" disabled={busy} onClick={() => post({ action: "coach", outletId: o.outletId, staffId: w.key, outcome, note, days }, "Saved on the hotel's records.")}>{busy ? "Saving…" : "Record coaching"}</Button>
-          <Note>Saved on the hotel&rsquo;s records with your name. Only the managers who coach the team see names on this page.</Note>
+          <Note>Saved on the hotel&rsquo;s records with your name.</Note>
         </fieldset>
       )) : (
-        <Note>{w.coaching ? `Coaching recorded on ${fmtDate(w.coaching.date, true)}. ` : ""}Coaching is recorded by the outlet&rsquo;s managers, who are the only ones to see names here.</Note>
+        <Note>{w.coaching ? `Coaching recorded on ${fmtDate(w.coaching.date, true)}. ` : ""}Coaching is recorded by the outlet&rsquo;s managers.</Note>
       )}
 
       <div>
@@ -342,7 +345,7 @@ function WaiterDetail({ o, w, days, view, onSaved, mayDrinks, money }: { o: Outl
           </ul>
         )}
         {list.length > TOP && <button type="button" onClick={() => setEveryTable((v) => !v)} className={cn(textLink, "mt-2")}>{everyTable ? "Show the five largest" : `Show all ${list.length} tables`}</button>}
-        <Note className="mt-3">The amount is what colleagues on the same shift sold in drinks per guest, at the average drink price: an estimate. A table with no drink is most often a guest who did not want one. If drinks were served at these tables, ask the bar whether they were rung.</Note>
+        <Note className="mt-3">The amount is what colleagues on the same shift sold in drinks per guest, at the average drink price: an estimate. Each amount is one table at colleagues&rsquo; pace, so they do not add up to the estimate for the shift, which counts every table, with drinks or without. A table with no drink is most often a guest who did not want one. If drinks were served at these tables, ask the bar whether they were rung.</Note>
         {mayDrinks && <Link prefetch={false} href="/drinks" className={cn(textLink, "mt-2")}>Drinks poured and not billed are on Over pouring</Link>}
       </div>
     </div>

@@ -1,6 +1,6 @@
 // Pour Control figures for the outlets a person may see. No staff names at any level.
 import { outletById, propertyById, staffById } from "../data/catalog";
-import { allowedOutlets, allowedProperties, canOpen } from "../domain/access";
+import { allowedOutlets, allowedProperties, mayNameStaff } from "../domain/access";
 import { POUR_RULES, POUR_SKUS, SHIFTS, figures, flagLine, perBottle, pourLog, pourReasons, pourSellsAt, weekdayOf, type PourEntry, type PourFamily, type PourFigures, type PourFlag, type PourTeam, type Shift } from "../domain/pour";
 import type { User } from "../types";
 import { DEMO_TODAY, addDays, fmtMoney } from "../util";
@@ -105,7 +105,7 @@ export function pourFor(user: User, propertyId: string, asked?: readonly string[
   const currency = propertyById[propertyId].currency;
   const money = (n: number) => fmtMoney(n, currency);
   // Names of the team only for managers who already see cases by person. Staff and the bar team never see them.
-  const mayName = canOpen(user, "investigations") && user.role !== "employee";
+  const mayName = mayNameStaff(user);
   const familyOut = (family: PourFamily): PourFamilyOut => {
     const skus = POUR_SKUS.filter((s) => s.family === family);
     const ids = new Set(skus.map((s) => s.id));
