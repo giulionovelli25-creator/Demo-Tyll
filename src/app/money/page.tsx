@@ -319,9 +319,14 @@ function Orders() {
   // A tag only where there is a case to open.
   const investigations = useInvestigations();
   const cases = useMemo(() => new Set(investigations.map((i) => i.id)), [investigations]);
-  const { sel } = useView();
+  const { sel, user } = useView();
+  const params = useSearchParams();
   // A link can name a day (`&date=`, from hotel guests against outlet charges): it opens on that day, even outside the period.
-  const asked = useSearchParams().get("date");
+  const asked = params.get("date");
+  // ...and an outlet (`&outlet=`): the list opens on that outlet's bills only, when this role may see it.
+  const askedOutlet = params.get("outlet");
+  const [only, setOnly] = useState<string | null>(askedOutlet && canSeeOutlet(user, askedOutlet) ? askedOutlet : null);
+  const fromGuests = params.get("from") === "guests";
   const wanted = asked && /^\d{4}-\d{2}-\d{2}$/.test(asked) && asked >= DATA_START && asked <= DEMO_TODAY ? asked : null;
   const days = useMemo(() => {
     const list = eachDay(sel.range).reverse();
@@ -337,11 +342,11 @@ function Orders() {
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
     return (fetched?.orders ?? [])
-      .filter((o) => sel.outletIds.includes(o.outletId))
+      .filter((o) => (only ? o.outletId === only : sel.outletIds.includes(o.outletId)))
       .map((o) => ({ o, t: orderTotals(o), flag: detectOrderException(o) }))
       .filter(({ o, t }) => (!onlyChanged || o.voided || t.original - t.net > 0.005) && (!term || `${o.id} ${o.table} ${staffById[o.staffId]?.name ?? ""}`.toLowerCase().includes(term)))
       .sort((a, b) => b.o.openMin - a.o.openMin);
-  }, [fetched, sel.outletIds, onlyChanged, q]);
+  }, [fetched, sel.outletIds, only, onlyChanged, q]);
   return (
     <Panel title="Order history" description="The complete record of each order: created, items entered, tickets sent, changes, final bill and payment." flush>
       <div className="flex flex-wrap items-end gap-2 px-5 pb-4 sm:px-6">
@@ -355,6 +360,13 @@ function Orders() {
           <Search size={15} className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-steel" aria-hidden />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Order number, table or login" aria-label="Search orders" className="h-10 w-full rounded-full border border-line bg-paper ps-9 pe-3 text-sm placeholder:text-fog hover:border-fog" />
         </div>
+        {(only || fromGuests) && (
+          <p className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-steel">
+            {only && <span>{`${outletLabel(only)} only.`}</span>}
+            {only && <button type="button" className={textLink} onClick={() => { setOnly(null); setShown(40); }}>Show every outlet</button>}
+            {fromGuests && <Link prefetch={false} href="/money?tab=guests" className={textLink}>Back to hotel guests against outlet charges</Link>}
+          </p>
+        )}
       </div>
       {fetched === undefined ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Loading orders" /></div> : list.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No orders match">Clear the search, or untick the filter to see every order of the day.</EmptyState></div> : (
         <>

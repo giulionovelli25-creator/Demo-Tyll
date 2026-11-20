@@ -11,6 +11,7 @@ import { BarList, StripTrend, TrendChart } from "@/components/charts";
 import { Section } from "@/components/disclosure";
 import { Badge, Button, EmptyState, Note, Panel, Segmented, Skeleton, SummaryBar, TableWrap, Td, Th, WidgetError, cn, linkButton, rowClass, textLink } from "@/components/ui";
 import { outletLabel } from "@/lib/data/catalog";
+import { canSeeOutlet } from "@/lib/domain/access";
 import { rateName } from "@/lib/domain/guests";
 import { exceptionInSel } from "@/lib/domain/metrics";
 import { versus } from "@/lib/domain/trends";
@@ -38,7 +39,7 @@ function shareVersus(now: number, before: number | null, period: string): { text
 export function HotelGuests() {
   const router = useRouter();
   const params = useSearchParams();
-  const { sel, money } = useView();
+  const { sel, money, user } = useView();
   const all = useInvestigations();
   const days = params.get("days") === "7" ? 7 : 30;
   const { data, error } = useApi<GuestsCheck>(`/api/money/guests?days=${days}&outlets=${sel.outletIds.join(",")}`);
@@ -157,7 +158,7 @@ export function HotelGuests() {
               <ul className="space-y-3 text-sm text-graphite">
                 <li>Each room the breakfast host ticks in is read against last night&rsquo;s in-house list in the PMS: the rate, and the guests registered.</li>
                 <li>Breakfast in the rate covers every registered guest, so those guests are never flagged. A guest beyond them is to charge.</li>
-                <li>{`To charge is covered by breakfasts on a bill charged to the room that morning, or a breakfast bill paid at the table from ${R.paidBefore} minutes before the tick to ${R.paidAfter} minutes after, one bill per room.`}</li>
+                <li>{`To charge is covered by breakfasts on a bill charged to the room that morning, or by breakfast bills paid at the table from ${R.paidBefore} minutes before the tick to ${R.paidAfter} minutes after, each bill counted for one room only.`}</li>
                 <li>Whatever is left is flagged, at the breakfast price that morning.</li>
               </ul>
             </Panel>
@@ -194,7 +195,9 @@ export function HotelGuests() {
           </div>
         </>
       ) : (
-        <EmptyState title="Breakfast is served at Mercado">Choose Mercado in the outlet selector to see the breakfast list against the rooms&rsquo; rates. Outlet sales against the guests in house are below.</EmptyState>
+        canSeeOutlet(user, R.breakfastOutletId)
+          ? <EmptyState title={`Breakfast is served at ${outletLabel(R.breakfastOutletId)}`}>{`Choose ${outletLabel(R.breakfastOutletId)} in the outlet selector to see the breakfast list against the rooms’ rates. Outlet sales against the guests in house are below.`}</EmptyState>
+          : <EmptyState title={`Breakfast is checked at ${outletLabel(R.breakfastOutletId)}`}>Outlet sales against the guests in house are below.</EmptyState>
       )}
 
       {compared.length > 0 && (
@@ -234,7 +237,7 @@ export function HotelGuests() {
                   {belowShown.map((d) => (
                     <li key={`${d.outletId}-${d.date}`} className="flex flex-col gap-1 py-2.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
                       <span className="min-w-0 text-sm text-ink">{`${outletLabel(d.outletId)}, ${fmtDate(d.date, true)}: ${money(d.sales)} against about ${money(d.expected ?? 0)} for ${guests(d.guests)} in house`}</span>
-                      <Link prefetch={false} href={`/money?tab=orders&date=${d.date}`} className={cn(textLink, "shrink-0")}>See the bills</Link>
+                      <Link prefetch={false} href={`/money?tab=orders&date=${d.date}&outlet=${d.outletId}&from=guests`} className={cn(textLink, "shrink-0")}>See the bills</Link>
                     </li>
                   ))}
                 </ul>
@@ -247,7 +250,7 @@ export function HotelGuests() {
       )}
 
       <div id="guests-rates" className="scroll-mt-24">
-        <Section id="guests.rates" forceOpen={params.get("open") === "rates"} flush title="Rooms by rate" summary={`${fmtNum(ln.withBreakfast)} of ${rooms(ln.rooms)} last night on a rate with breakfast, which Tyll never flags.`}>
+        <Section id="guests.rates" forceOpen={params.get("open") === "rates"} flush title="Rooms by rate" summary={`${fmtNum(ln.withBreakfast)} of ${rooms(ln.rooms)} last night on a rate with breakfast. Tyll never flags their registered guests.`}>
           <ul className="divide-y divide-hair sm:hidden">
             {data.rates.map((r) => (
               <li key={r.code} className="px-5 py-3.5">

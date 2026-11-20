@@ -56,7 +56,7 @@ export interface RateRow {
 
 export interface OutletRow {
   outletId: string;
-  /** Sales in the period and the period before, and the guest nights they are set against. */
+  /** Sales in the period and the period before (from the first day with sales on record at the earliest), and the guest nights they are set against. */
   sales: number;
   guestNights: number;
   salesBefore: number;
@@ -75,6 +75,8 @@ export interface GuestsCheck {
   /** Outlet days in the period, whole days to last night. */
   outletFrom: string;
   outletTo: string;
+  /** The first outlet day of the period before: the same length earlier, never before the first day with sales on record. */
+  outletBeforeFrom: string;
   /** The breakfast outlet, when it is in view. */
   breakfastOutlet: string | null;
   lastNight: { date: string; rooms: number; guests: number; occupancy: number; withBreakfast: number; guestsWithBreakfast: number };
@@ -177,7 +179,10 @@ export function guestsCheckFor(user: User, q: { days?: string | null; outlets?: 
   const outletTrend = outletDays(d.orders, d.stays, compared, eachDay({ from: addDays(outletTo, -29), to: outletTo }));
   const span = (a: string, b: string) => outletDays(d.orders, d.stays, compared, eachDay({ from: a, to: b }));
   const now = span(outletFrom, outletTo);
-  const was = span(addDays(outletFrom, -days), addDays(outletFrom, -1));
+  // The period before starts no earlier than the first day with sales on record: the in-house list holds the night before
+  // the data starts, which has guests and no bills, and would pull the earlier sales per guest down.
+  const wasFrom = addDays(outletFrom, -days) < DATA_START ? DATA_START : addDays(outletFrom, -days);
+  const was = span(wasFrom, addDays(outletFrom, -1));
   const outletRows: OutletRow[] = compared.map((outletId) => {
     const a = now.filter((x) => x.outletId === outletId);
     const b = was.filter((x) => x.outletId === outletId);
@@ -186,5 +191,5 @@ export function guestsCheckFor(user: User, q: { days?: string | null; outlets?: 
   });
   const belowDays = now.filter((x) => x.below).sort((a, b) => (b.expected! - b.sales) - (a.expected! - a.sales));
 
-  return { ok: true, days, from, to, outletFrom, outletTo, breakfastOutlet, lastNight, total, before, unlisted, trend, rates, cases: rowsOut, story, outlets: outletRows, outletTrend, belowDays, rules: GUEST_RULES };
+  return { ok: true, days, from, to, outletFrom, outletTo, outletBeforeFrom: wasFrom, breakfastOutlet, lastNight, total, before, unlisted, trend, rates, cases: rowsOut, story, outlets: outletRows, outletTrend, belowDays, rules: GUEST_RULES };
 }

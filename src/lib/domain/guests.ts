@@ -89,7 +89,8 @@ const toCharge = (v: BreakfastVisit, stay: InHouseRoom | undefined) => {
  * Matches every room ticked in at breakfast with the room's rate and the breakfast bills of that morning, in a fixed order:
  * guests the rate covers, then breakfasts charged to the room, then a bill paid at the table (no room) opened near the
  * tick: a bill for exactly the breakfasts still to charge first, then more, then fewer, the nearest first within each,
- * each bill serving one room. Whatever is left was not charged. A room that is not on last night's
+ * each bill serving one room. A room with breakfasts still to charge then takes further bills no room took (guests of
+ * one room paying separately). Whatever is left was not charged. A room that is not on last night's
  * list has no rate, so every guest is to charge.
  */
 export function matchBreakfast(visits: readonly BreakfastVisit[], stays: readonly InHouseRoom[], orders: readonly Order[]): Map<string, BreakfastMatch> {
@@ -143,6 +144,26 @@ export function matchBreakfast(visits: readonly BreakfastVisit[], stays: readonl
       m.paid = paid;
       m.bills.push(o.id);
       left.set(v.id, left.get(v.id)! - paid);
+    }
+    // Guests of one room may pay separately: a room with breakfasts still to charge takes further bills paid at the table
+    // in its window that no room took, in the same order (exact fit for what is left first, then nearest), so a room is
+    // flagged only for what no bill covers. No bill taken above changes hands.
+    for (;;) {
+      let best: { v: BreakfastVisit; o: Order; fit: number; gap: number } | null = null;
+      for (const { v, o } of pairs) {
+        const need = left.get(v.id)!;
+        if (!need || taken.has(o.id)) continue;
+        const units = breakfastUnits(o);
+        const c = { v, o, fit: units === need ? 0 : units > need ? 1 : 2, gap: Math.abs(o.openMin - v.min) };
+        if (!best || c.fit < best.fit || (c.fit === best.fit && c.gap < best.gap)) best = c;
+      }
+      if (!best) break;
+      taken.add(best.o.id);
+      const m = out.get(best.v.id)!;
+      const paid = Math.min(left.get(best.v.id)!, breakfastUnits(best.o));
+      m.paid += paid;
+      m.bills.push(best.o.id);
+      left.set(best.v.id, left.get(best.v.id)! - paid);
     }
     for (const v of list) out.get(v.id)!.notCharged = left.get(v.id)!;
   }
@@ -213,7 +234,9 @@ export function nearbyBreakfastFact(e: Pick<BreakfastEvidence, "nearby" | "notCh
   const taken = e.nearby.filter((b) => b.matchedTo).length;
   const opened = `${n} breakfast ${n === 1 ? "bill was" : "bills were"} paid at the table ${window}`;
   if (taken === n) return `${opened}, ${n === 1 ? "and it is" : "and all of them are"} matched to another room on the breakfast list.`;
-  return `${opened}: ${taken} matched to another room on the breakfast list, the others for fewer breakfasts than this room had.`;
+  // A room still to charge takes every bill in its window that no room took, so the others are matched too. Kept so a
+  // sentence never claims more than the evidence holds.
+  return `${opened}: ${taken} matched to another room on the breakfast list.`;
 }
 
 /** One flag per room with breakfasts not charged, valued at the breakfast price that morning. */

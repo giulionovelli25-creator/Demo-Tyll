@@ -1044,6 +1044,11 @@
 "Torna a Scorte",
 "العودة إلى المخزون"
 ],
+"Back to hotel guests against outlet charges": [
+"Zurück zu Hotelgäste und Outlet-Belastungen",
+"Torna a Ospiti dell'hotel e addebiti dei punti vendita",
+"العودة إلى نزلاء الفندق مقابل رسوم المنافذ"
+],
 "Back to the count": [
 "Zurück zur Zählung",
 "Torna al conteggio",
@@ -1563,6 +1568,11 @@
 "Frühstück in der Zimmerrate",
 "Colazione nella tariffa della camera",
 "الإفطار مشمول في سعر الغرفة"
+],
+"Breakfast is checked at {0}": [
+"Das Frühstück wird im {0} geprüft",
+"La colazione è controllata al {0}",
+"يُراجَع الإفطار في {0}"
 ],
 "Breakfast is in the rate for {0} guest, so {1} breakfast to charge.": [
 "Frühstück ist für {0} Gast in der Rate enthalten, also ist {1} Frühstück zu berechnen.",
@@ -7804,6 +7814,11 @@
 "Vendite dei punti vendita rispetto agli ospiti in casa",
 "مبيعات المنافذ مقابل النزلاء المقيمين"
 ],
+"Outlet sales against the guests in house are below.": [
+"Der Outlet-Umsatz gegen die Gäste im Haus steht unten.",
+"Le vendite rispetto agli ospiti in casa sono qui sotto.",
+"مبيعات المنافذ مقابل النزلاء المقيمين أدناه."
+],
 "Outlet to investigate": [
 "Zu prüfendes Outlet",
 "Punto vendita da verificare",
@@ -10254,6 +10269,11 @@
 "Mostra tutti i {0} camerieri",
 "اعرض كل النُدُل الـ{0}"
 ],
+"Show every outlet": [
+"Alle Outlets zeigen",
+"Mostra tutti i punti vendita",
+"عرض كل المنافذ"
+],
 "Show items": [
 "Artikel anzeigen",
 "Mostra articoli",
@@ -12014,10 +12034,10 @@
 "Da addebitare",
 "للاحتساب"
 ],
-"To charge is covered by breakfasts on a bill charged to the room that morning, or a breakfast bill paid at the table from {0} minutes before the tick to {1} minutes after, one bill per room.": [
-"Zu Berechnendes ist gedeckt durch Frühstücke auf einer an diesem Morgen aufs Zimmer gebuchten Rechnung oder durch eine am Tisch bezahlte Frühstücksrechnung von {0} Minuten vor dem Abhaken bis {1} Minuten danach, eine Rechnung pro Zimmer.",
-"Il da addebitare è coperto da colazioni su un conto addebitato alla camera quella mattina, o da un conto della colazione pagato al tavolo da {0} minuti prima della registrazione a {1} minuti dopo, un conto per camera.",
-"يُغطّى ما يجب احتسابه بوجبات إفطار على فاتورة محتسبة على الغرفة ذلك الصباح، أو بفاتورة إفطار مدفوعة على الطاولة من {0} دقائق قبل التسجيل إلى {1} دقيقة بعده، فاتورة واحدة لكل غرفة."
+"To charge is covered by breakfasts on a bill charged to the room that morning, or by breakfast bills paid at the table from {0} minutes before the tick to {1} minutes after, each bill counted for one room only.": [
+"Zu Berechnendes ist gedeckt durch Frühstücke auf einer an diesem Morgen aufs Zimmer gebuchten Rechnung oder durch am Tisch bezahlte Frühstücksrechnungen von {0} Minuten vor dem Abhaken bis {1} Minuten danach, jede Rechnung nur für ein Zimmer.",
+"Il da addebitare è coperto da colazioni su un conto addebitato alla camera quella mattina, o da conti della colazione pagati al tavolo da {0} minuti prima della registrazione a {1} minuti dopo, ogni conto per una sola camera.",
+"يُغطّى ما يجب احتسابه بوجبات إفطار على فاتورة محتسبة على الغرفة ذلك الصباح، أو بفواتير إفطار مدفوعة على الطاولة من {0} دقائق قبل التسجيل إلى {1} دقيقة بعده، وتُحتسب كل فاتورة لغرفة واحدة فقط."
 ],
 "To check": [
 "Zu prüfen",
@@ -15399,10 +15419,10 @@
 "{0} segnato pronto",
 "أُشير إلى جاهزية {0}"
 ],
-"{0} matched to another room on the breakfast list, the others for fewer breakfasts than this room had.": [
-"{0} einem anderen Zimmer der Frühstücksliste zugeordnet, die übrigen für weniger Frühstücke, als dieses Zimmer hatte.",
-"{0} abbinati a un'altra camera della lista, gli altri per meno colazioni di quante ne avesse questa camera.",
-"{0} مطابقة لغرفة أخرى في قائمة الإفطار، والباقي لعدد إفطار أقل مما تناولته هذه الغرفة."
+"{0} matched to another room on the breakfast list.": [
+"{0} einem anderen Zimmer der Frühstücksliste zugeordnet.",
+"{0} abbinati a un'altra camera della lista.",
+"{0} مطابقة لغرفة أخرى في قائمة الإفطار."
 ],
 "{0} measures": [
 "{0} Maße",
@@ -15664,10 +15684,10 @@
 "{0} su {1} prezzi inseriti in cassa",
 "{0} من {1} أسعار حُددت عند الصندوق"
 ],
-"{0} of {1} rooms last night on a rate with breakfast, which Tyll never flags.": [
-"{0} von {1} Zimmern letzte Nacht mit einer Rate mit Frühstück, die Tyll nie markiert.",
-"{0} di {1} camere la notte scorsa con una tariffa con colazione, che Tyll non segnala mai.",
-"{0} من {1} غرف ليلة أمس بسعر يشمل الإفطار، ولا يعلّمها Tyll أبدًا."
+"{0} of {1} rooms last night on a rate with breakfast. Tyll never flags their registered guests.": [
+"{0} von {1} Zimmern letzte Nacht mit einer Rate mit Frühstück. Tyll markiert die dort registrierten Gäste nie.",
+"{0} di {1} camere la notte scorsa con una tariffa con colazione. Tyll non segnala mai i loro ospiti registrati.",
+"{0} من {1} غرف ليلة أمس بسعر يشمل الإفطار. لا يعلّم Tyll النزلاء المسجّلين فيها أبدًا."
 ],
 "{0} of {1} tables with food": [
 "{0} von {1} Tischen mit Essen",
@@ -15713,6 +15733,11 @@
 "{0} unterwegs",
 "{0} in arrivo",
 "{0} في الطريق"
+],
+"{0} only.": [
+"Nur {0}.",
+"Solo {0}.",
+"{0} فقط."
 ],
 "{0} open": [
 "{0} offen",

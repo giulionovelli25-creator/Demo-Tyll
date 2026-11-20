@@ -23,7 +23,7 @@ const { snapshotFor } = await import("../server/snapshot");
 const { OUTLETS, PROPERTIES, userById } = await import("../data/catalog");
 const { can } = await import("../domain/access");
 const { activeItem } = await import("../nav");
-const { DEMO_TODAY, addDays, eachDay, rel } = await import("../util");
+const { DATA_START, DEMO_TODAY, addDays, eachDay, rel } = await import("../util");
 type Order = import("../types").Order;
 type InHouseRoom = import("../types").InHouseRoom;
 type BreakfastVisit = import("../types").BreakfastVisit;
@@ -91,6 +91,22 @@ describe("the breakfast rule", () => {
     expect(two.get("BF-MER-T-002")).toMatchObject({ paid: 0, notCharged: 2 });
   });
 
+  it("lets guests of one room pay separately: two bills for 1 paid at the table cover a room of 2", () => {
+    const one = (id: string, openMin: number) => bill({ id, payment: "card", room: undefined, openMin, units: 1 });
+    const m = match([visit()], [stay()], [one("MER-T-001", T(8, 2)), one("MER-T-002", T(8, 6))]);
+    expect(m).toMatchObject({ paid: 2, notCharged: 0 });
+    expect([...m.bills].sort()).toEqual(["MER-T-001", "MER-T-002"]);
+    expect(G.detectBreakfastNotCharged([visit()], [stay()], [one("MER-T-001", T(8, 2)), one("MER-T-002", T(8, 6))])).toEqual([]);
+    // A bill another room needed exactly stays with that room: the second guest is flagged, and the bill is named as matched.
+    const rooms = [visit(), visit({ id: "BF-MER-T-002", room: "1610", guests: 1, min: T(8, 6) })];
+    const both = G.matchBreakfast(rooms, [stay(), stay({ room: "1610", guests: 1 })], [one("MER-T-001", T(8, 1)), one("MER-T-002", T(8, 6))]);
+    expect(both.get("BF-MER-T-002")).toMatchObject({ paid: 1, notCharged: 0, bills: ["MER-T-002"] });
+    expect(both.get("BF-MER-T-001")).toMatchObject({ paid: 1, notCharged: 1, bills: ["MER-T-001"] });
+    const flag = G.detectBreakfastNotCharged(rooms, [stay(), stay({ room: "1610", guests: 1 })], [one("MER-T-001", T(8, 1)), one("MER-T-002", T(8, 6))]);
+    expect(flag.map((e) => e.id)).toEqual(["EX-BF-MER-T-001"]);
+    expect(G.nearbyBreakfastFact(flag[0].breakfast!)).toBe("1 breakfast bill was paid at the table from 7:50 AM to 8:30 AM, and it is matched to another room on the breakfast list.");
+  });
+
   it("gives a bill for exactly the breakfasts left before a nearer one for a different number", () => {
     const rooms = [visit({ guests: 1 }), visit({ id: "BF-MER-T-002", room: "1610", guests: 2, min: T(8, 2) })];
     const bills = [bill({ id: "MER-T-001", payment: "card", room: undefined, openMin: T(8, 3), units: 2 }), bill({ id: "MER-T-002", payment: "card", room: undefined, openMin: T(8, 9), units: 1 })];
@@ -112,6 +128,12 @@ describe("the breakfast rule", () => {
     expect(match([visit()], [stay({ room: "1999" })], [])).toMatchObject({ rate: null, included: 0, notCharged: 2 });
     // Tonight's list is not last night's.
     expect(match([visit()], [stay({ date: DAY, rate: "BAR-BB" })], [])).toMatchObject({ rate: null, notCharged: 2 });
+  });
+
+  it("leaves no bill paid at the table near a flagged room that no room took", () => {
+    for (const e of d0.exceptions.filter((x) => x.type === "breakfast_not_charged")) {
+      expect(e.breakfast!.nearby.every((b) => !!b.matchedTo), e.id).toBe(true);
+    }
   });
 
   it("adds up: guests at breakfast are in the rate, charged, paid or not charged", () => {
@@ -353,6 +375,30 @@ describe("outlet sales against the guests in house", () => {
       expect(o.below).toBe(rows.filter((x) => x.below).length);
     }
     expect(r.belowDays.every((x) => x.below && x.date >= r.outletFrom)).toBe(true);
+  });
+
+  it("compares with the 30 days before from the first day with sales on record, never the empty night before it", () => {
+    const r = guestsCheckFor(fnb, {});
+    if (!r.ok) throw new Error(r.error);
+    expect(addDays(r.outletFrom, -30) < DATA_START).toBe(true);
+    expect(r.outletBeforeFrom).toBe(DATA_START);
+    const before = eachDay({ from: DATA_START, to: addDays(r.outletFrom, -1) });
+    // The in-house list holds the night before the data starts, with guests and no bills: it is left out.
+    expect(G.guestsOn(d0.stays, addDays(DATA_START, -1))).toBeGreaterThan(0);
+    expect(d0.orders.some((o) => o.date < DATA_START)).toBe(false);
+    for (const o of r.outlets) {
+      const rows = G.outletDays(d0.orders, d0.stays, [o.outletId], before);
+      expect(rows.every((x) => x.sales > 0), o.outletId).toBe(true);
+      expect(o.guestNightsBefore).toBe(rows.reduce((t, x) => t + x.guests, 0));
+      expect(o.salesBefore).toBeCloseTo(rows.reduce((t, x) => t + x.sales, 0), 2);
+    }
+    // Bar Azulejo sold a little less per guest in house than in the 30 days before; counting the empty night read as up.
+    const bar = r.outlets.find((o) => o.outletId === "lis-lobby")!;
+    expect(bar.sales / bar.guestNights).toBeLessThan(bar.salesBefore / bar.guestNightsBefore);
+    // The 7 day view is the same length before, well inside the data.
+    const w = guestsCheckFor(fnb, { days: "7" });
+    if (!w.ok) throw new Error(w.error);
+    expect(w.outletBeforeFrom).toBe(addDays(w.outletFrom, -7));
   });
 });
 
