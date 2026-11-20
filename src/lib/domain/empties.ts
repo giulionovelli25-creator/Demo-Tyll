@@ -131,16 +131,26 @@ export function scanningFrom(scans: readonly EmptyScan[], today = DEMO_TODAY): M
 
 const keyOf = (x: { date: string; outletId: string; shift: Shift; skuId: string }) => `${x.date}|${x.outletId}|${x.shift}|${x.skuId}`;
 
+/** The day an outlet in SCANNING started scanning, where the simulated history and the open bottle both start. */
+const startedOn = (outletId: string, today: string) => {
+  const x = SCANNING.find((s) => s.outletId === outletId);
+  return x ? addDays(today, x.fromDay) : undefined;
+};
+
 /**
  * The open bottle of each label, counted to a tenth at close: how much more (+) or less (−) of it was poured than at the
- * start of the shift, in bottles. Simulated from the same pouring as the rest of Over pouring, from the day the outlet started scanning.
+ * start of the shift, in bottles. Simulated from the same pouring as the rest of Over pouring. It runs from the day the
+ * outlet started scanning, as the simulated scans do, even when its scans count from a later day (no empty on the first
+ * days), so empties plus the open bottle always add up to what was poured.
  */
 export function openBottleChange(log: readonly PourEntry[], from: ReadonlyMap<string, string>, today = DEMO_TODAY): Map<string, number> {
   const out = new Map<string, number>();
   const runs = new Map<string, PourEntry[]>();
   for (const e of log) {
     const f = from.get(e.outletId);
-    if (!f || e.date < f || e.date > today) continue;
+    if (!f) continue;
+    const start = [f, startedOn(e.outletId, today)].filter((d): d is string => !!d).sort()[0];
+    if (e.date < start || e.date > today) continue;
     const k = `${e.outletId}|${e.skuId}`;
     const run = runs.get(k);
     if (run) run.push(e);
@@ -152,7 +162,7 @@ export function openBottleChange(log: readonly PourEntry[], from: ReadonlyMap<st
     let open = openAtStart(outletId, skuId);
     for (const e of entries.sort((a, b) => a.date.localeCompare(b.date) || ORDER[a.shift] - ORDER[b.shift])) {
       const after = open + e.ml / sku.bottleMl;
-      out.set(keyOf(e), (after % 1) - (open % 1));
+      if (e.date >= from.get(outletId)!) out.set(keyOf(e), (after % 1) - (open % 1));
       open = after;
     }
   }

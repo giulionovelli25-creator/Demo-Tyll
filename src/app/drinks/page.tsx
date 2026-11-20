@@ -26,7 +26,7 @@ export default function DrinksPage() {
   const missing = useMissingDrinks();
   const params = useSearchParams();
   const askedForMissing = params.get("tab") === "missing";
-  // A link can open the empty bottle scans, such as the one under the scan flow on Waste and breakage.
+  // ?open=empties opens the empty bottle scans with the largest shift's scans shown (used by the screenshots and a salesperson's demo link).
   const askedForEmpties = params.get("open") === "empties";
   useEffect(() => { if (askedForMissing) document.getElementById("missing")?.scrollIntoView({ block: "center" }); }, [askedForMissing]);
   useEffect(() => { if (askedForEmpties) document.getElementById("sec-empties")?.scrollIntoView({ block: "start" }); }, [askedForEmpties]);
@@ -119,7 +119,7 @@ export default function DrinksPage() {
       <div id="sec-spirits" className="scroll-mt-24"><Section id="drinks.spirits" forceOpen={opened === "sec-spirits"} title="Spirits" summary={line("spirits", "measures")} flush><PourByItem family="spirits" /></Section></div>
       <Section id="drinks.where" title="Where and when" summary={`By outlet and shift, with no names. ${below} wine ${below === 1 ? "shift" : "shifts"} below the threshold this week`} flush><PourWhere /></Section>
       <div id="sec-patterns" className="scroll-mt-24"><Section id="drinks.patterns" forceOpen={opened === "sec-patterns"} title="All patterns" summary={`${pour?.wine.flags.length ?? 0} wine and ${pour?.spirits.flags.length ?? 0} spirit patterns over the last 4 weeks`} flush><PourPatterns /></Section></div>
-      <p className="px-1 text-xs text-steel">Glasses sold come from the till. Bottles come from the empty bottle scans where an outlet scans every empty before it goes in the bin: the empties scanned plus the open bottle counted at close, so a shift can use fewer bottles than it scanned when the open bottle ends fuller. Elsewhere bottles opened are simulated, because the till does not record them. In this demo the scans are simulated too, and the one house wine is shared across labels. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.</p>
+      <p className="px-1 text-xs text-steel">Glasses sold come from the till. Bottles come from the empty bottle scans where an outlet scans every empty before it goes in the bin: the empties scanned plus the open bottle counted at close, so a shift can use fewer bottles than it scanned when the open bottle ends fuller. Elsewhere bottles opened are simulated, because the till does not record them. In this demo the scans are simulated too, and the one house wine is shared across labels. Patterns and who was on use closed days only, up to yesterday, so a shift still running never moves them. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.</p>
     </div>
   );
 }

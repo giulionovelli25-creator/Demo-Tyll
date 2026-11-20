@@ -83,6 +83,21 @@ describe("bottles from scans", () => {
     }
   });
 
+  it("adds up even when an outlet's first scan falls after the day it started scanning", () => {
+    const log = pourLog(getDataset().orders);
+    const start = addDays(DEMO_TODAY, E.SCANNING.find((x) => x.outletId === "lis-lobby")!.fromDay);
+    // No empty at Bar Azulejo on its first two days: it counts from the third, with the open bottle as it stood then.
+    const scans = S.seededScans().filter((s) => !(s.outletId === "lis-lobby" && s.date <= addDays(start, 1)));
+    expect(E.scanningFrom(scans).get("lis-lobby")).toBe(addDays(start, 2));
+    const covered = E.withScans(log, scans).filter((e) => e.scanned !== undefined && e.outletId === "lis-lobby");
+    expect(covered.length).toBeGreaterThan(50);
+    const byKey = new Map(log.map((e) => [`${e.date}|${e.outletId}|${e.shift}|${e.skuId}`, e]));
+    for (const e of covered) {
+      const bottleMl = POUR_SKUS.find((s) => s.id === e.skuId)!.bottleMl;
+      expect(e.scanned! + e.part!).toBeCloseTo(byKey.get(`${e.date}|${e.outletId}|${e.shift}|${e.skuId}`)!.ml / bottleMl, 9);
+    }
+  });
+
   it("keeps the simulated history's figures: the same flags and the same money as before scans existed", () => {
     const log = pourLog(getDataset().orders);
     const before = figures(log);
@@ -153,6 +168,19 @@ describe("the simulated scan history and the story", () => {
       expect(top.skuId).toBe("red");
       expect(top.shift).toBe("late");
       expect(top.figures.gapValue).toBeGreaterThan(250);
+      // Each outlet's seeded scans start on the day it started scanning, and empties plus the open bottle add up to what was poured.
+      const D = await import("../data/generate");
+      const PL = await import("../domain/pour");
+      const EE = await import("../domain/empties");
+      const SS = await import("../server/empties");
+      const U2 = await import("../util");
+      const seeded = SS.seededScans();
+      for (const x of EE.SCANNING) expect(seeded.filter((s) => s.outletId === x.outletId).map((s) => s.date).sort()[0], `${x.outletId} ${process.env.TYLL_DEMO_DATE}`).toBe(U2.addDays(U2.DEMO_TODAY, x.fromDay));
+      const log = PL.pourLog(D.getDataset().orders);
+      const ml = new Map(log.map((e) => [`${e.date}|${e.outletId}|${e.shift}|${e.skuId}`, e.ml]));
+      for (const e of EE.withScans(log, seeded).filter((x) => x.scanned !== undefined)) {
+        expect(e.scanned! + e.part!).toBeCloseTo(ml.get(`${e.date}|${e.outletId}|${e.shift}|${e.skuId}`)! / PL.POUR_SKUS.find((s) => s.id === e.skuId)!.bottleMl, 9);
+      }
       // Only shifts below the threshold with real money are listed; the rest are noise.
       for (const s of r.pour.empties.shifts) expect(s.figures.flagged && s.figures.gapValue >= P.SCANNED_SHIFT_MIN).toBe(true);
     }
@@ -272,6 +300,25 @@ describe("a new scan on Over pouring", () => {
     expect(E.scanningFrom([scan({ outletId: "lis-ird", date: addDays(DEMO_TODAY, -3) })]).has("lis-ird")).toBe(false);
     const log = [entry({ outletId: "lis-ird", date: addDays(DEMO_TODAY, -1), sold: 4, ml: 3000 })];
     expect(E.withScans(log, [scan({ outletId: "lis-ird", date: addDays(DEMO_TODAY, -3) })])).toEqual(log);
+    resetDemo(U("u-gm"), "stock");
+  });
+
+  it("leaves who stands out and every pattern unchanged: they are built from closed days, so a tap today never moves them", () => {
+    resetDemo(U("u-gm"), "stock");
+    const before = pour();
+    ok(S.logEmpty(U("u-fnb"), { outletId: "lis-lobby", skuId: "red" }));
+    ok(S.logEmpty(U("u-fnb"), { outletId: "lis-lobby", skuId: "red" }));
+    const after = pour();
+    // The tap shows today, where it belongs.
+    expect(after.wine.totals.today.scanned).toBe(before.wine.totals.today.scanned + 2);
+    // Who was on, day by day, and who stands out against the rota.
+    expect(after.staff).toEqual(before.staff);
+    const standing = (p: typeof before) => (p.staff ?? []).flatMap((v) => v.people.filter((x) => x.z >= 3).map((x) => `${v.outletId}:${x.staffId}`));
+    expect(standing(after)).toEqual(standing(before));
+    for (const v of after.staff ?? []) expect(v.days.every((d) => d.date < DEMO_TODAY)).toBe(true);
+    // The patterns, which also feed Alerts and the Overview.
+    expect(after.wine.flags).toEqual(before.wine.flags);
+    expect(after.spirits.flags).toEqual(before.spirits.flags);
     resetDemo(U("u-gm"), "stock");
   });
 

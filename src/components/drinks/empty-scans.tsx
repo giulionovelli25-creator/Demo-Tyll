@@ -3,7 +3,7 @@
 // Then the scanned shifts where the empties show the most not billed. Who scanned is never shown, not even by job: staff on
 // shift scan, and binning a bottle is not pouring it.
 import { ChevronDown } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { Badge, Note, OutletDot, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { useAlertFeed } from "@/lib/alert-feed";
 import { outletById } from "@/lib/data/catalog";
@@ -35,11 +35,11 @@ function Source({ o }: { o: PourEmpties["outlets"][number] }) {
   return o.from ? <Badge tone="pos">Scans since {fmtDate(o.from)}</Badge> : <Badge>Simulated</Badge>;
 }
 
-/** The scans behind one shift, by time. */
+/** The scans behind one shift, by time: down the first column, then down the second, so the times read in order. */
 function ScanList({ s }: { s: ScannedShift }) {
   return (
     <div className="rounded-[var(--radius-control)] bg-cloud p-4 text-[13px]">
-      <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
+      <ul className="grid max-w-[520px] gap-x-8 gap-y-1 sm:grid-flow-col sm:grid-cols-2 sm:grid-rows-[repeat(var(--rows),auto)]" style={{ "--rows": Math.max(1, Math.ceil(s.scans.length / 2)) } as CSSProperties}>
         {s.scans.map((x, i) => <li key={i} className="flex gap-3"><span className="num w-[72px] shrink-0 text-ink">{fmtTime(x.min)}</span><span className="text-steel">{x.method === "scan" ? "scanned" : "picked from the list"}</span></li>)}
       </ul>
       <p className="mt-2 text-xs text-steel">Scanned by staff on shift. Who scanned a bottle is not who poured it. A prompt to check, not proof.</p>

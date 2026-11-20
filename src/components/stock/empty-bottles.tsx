@@ -80,9 +80,9 @@ export function EmptyBottleFlow({ wide }: { wide?: boolean }) {
           {canCamera && <Button type="button" onClick={() => setCamera(true)} aria-label="Scan with the camera"><Camera size={16} aria-hidden /></Button>}
         </form>
         {outlets.length > 1 && (
-          <label className="flex items-center gap-2 text-[13px] text-steel">
+          <label className="order-first flex basis-full items-center gap-2 text-[13px] text-steel sm:order-none sm:basis-auto">
             <span className="sr-only sm:not-sr-only">Outlet</span>
-            <select value={outletId} onChange={(e) => setPicked(e.target.value)} aria-label="Outlet" className="h-10 max-w-[180px] rounded-full border border-line bg-paper px-3 text-[13px] text-ink">
+            <select value={outletId} onChange={(e) => setPicked(e.target.value)} aria-label="Outlet" className="h-10 w-full rounded-full border border-line bg-paper px-3 text-[13px] text-ink sm:w-auto sm:max-w-[180px]">
               {outlets.map((o) => <option key={o} value={o}>{outletById[o].name}</option>)}
             </select>
           </label>

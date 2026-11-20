@@ -14,6 +14,13 @@ export type PourPeriod = "today" | "week" | "month";
 // "month" is the last 30 days; "lastMonth" the 30 days before, for the pace comparison.
 const LAST_MONTH = addDays(DEMO_TODAY, -59);
 const FROM: Record<PourPeriod, string> = { today: DEMO_TODAY, week: addDays(DEMO_TODAY, -6), month: addDays(DEMO_TODAY, -29) };
+/**
+ * The patterns and "who was on" look at the last four weeks of closed days, today left out: today's shifts are still
+ * running and their open bottles are not counted yet, so a part day never moves a pattern or who stands out, and an
+ * empty scanned today shows in today's figures only.
+ */
+const CLOSED_DAYS = Array.from({ length: 28 }, (_, i) => addDays(DEMO_TODAY, i - 28));
+const CLOSED_FROM = CLOSED_DAYS[0];
 
 export interface PourFamilyOut {
   family: PourFamily;
@@ -71,9 +78,9 @@ export interface PourOut {
   spirits: PourFamilyOut;
 }
 
-/** Who was rostered on one weekday and shift at one outlet over the last four weeks. Being on shift is not proof of who poured. */
+/** Who was rostered on one weekday and shift at one outlet over the last four weeks of closed days. Being on shift is not proof of who poured. */
 function teamOn(outletId: string, weekday: number, shift: Shift, mayName: boolean): PourTeam {
-  const dates = Array.from({ length: 28 }, (_, i) => addDays(DEMO_TODAY, i - 27)).filter((d) => weekdayOf(d) === weekday);
+  const dates = CLOSED_DAYS.filter((d) => weekdayOf(d) === weekday);
   const byDate = dates.map((d) => rostered(outletId, d, shift));
   const counts = new Map<string, number>();
   for (const ids of byDate) for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
@@ -84,11 +91,11 @@ function teamOn(outletId: string, weekday: number, shift: Shift, mayName: boolea
 }
 
 /**
- * Who was on each day at one outlet, set against what was not billed that day, over the last four weeks.
+ * Who was on each day at one outlet, set against what was not billed that day, over the last four weeks of closed days.
  * Compares each person's days with the days they were off, so someone who simply works a lot does not stand out for that alone.
  */
 function staffView(outletId: string, log: readonly PourEntry[]): PourStaffView {
-  const dates = Array.from({ length: 28 }, (_, i) => addDays(DEMO_TODAY, i - 27));
+  const dates = CLOSED_DAYS;
   const here = log.filter((e) => e.outletId === outletId);
   // One unit per shift that sold drinks: what it did not bill, and who was rostered.
   const shifts = dates.flatMap((date) => SHIFTS.map((sh) => {
@@ -161,9 +168,9 @@ export function pourFor(user: User, propertyId: string, asked?: readonly string[
     const skus = POUR_SKUS.filter((s) => s.family === family);
     const ids = new Set(skus.map((s) => s.id));
     const entries = log.filter((e) => ids.has(e.skuId));
-    // Where and when it keeps happening: each weekday and shift at each outlet, over the last four weeks.
+    // Where and when it keeps happening: each weekday and shift at each outlet, over the last four weeks of closed days.
     const flags: PourFlag[] = [];
-    const recent = entries.filter((e) => e.date >= addDays(DEMO_TODAY, -27));
+    const recent = entries.filter((e) => e.date >= CLOSED_FROM && e.date < DEMO_TODAY);
     const keys = new Set(recent.map((e) => `${e.outletId}|${weekdayOf(e.date)}|${e.shift}`));
     for (const k of keys) {
       const [outletId, day, shift] = k.split("|") as [string, string, Shift];
