@@ -1,6 +1,6 @@
 "use client";
 // Log an empty bottle: scan its barcode or tap the bottle, before it goes in the bin. One tap saves it; Undo is in the toast.
-// Saved on the server with the person and role. Over pouring counts it as a bottle used where the outlet scans its empties.
+// Saved on the server with the person and role. Offered only at outlets that scan their empties, where Over pouring counts it as a bottle used.
 import { Camera, Martini, ScanLine, Wine } from "lucide-react";
 import { useCallback, useState } from "react";
 import { CameraScan } from "@/components/stock/take-count";
@@ -9,7 +9,7 @@ import { api } from "@/lib/api";
 import { useEmptiesVersion } from "@/lib/empties-version";
 import { outletById } from "@/lib/data/catalog";
 import { allowedOutlets } from "@/lib/domain/access";
-import { mayLogEmpty, pourOutlets } from "@/lib/domain/empties";
+import { emptyOutlets, mayLogEmpty } from "@/lib/domain/empties";
 import { useApi, useView } from "@/lib/hooks";
 import type { EmptiesView, MyScan } from "@/lib/server/empties";
 import { fmtTime } from "@/lib/util";
@@ -32,7 +32,7 @@ export function EmptyBottleFlow({ wide }: { wide?: boolean }) {
   const v = useEmptiesVersion((s) => s.v);
   const bump = useEmptiesVersion((s) => s.bump);
   const { data } = useApi<EmptiesView & { ok: true }>(`/api/stock/empties?v=${v}`);
-  const outlets = pourOutlets(allowedOutlets(user));
+  const outlets = emptyOutlets(allowedOutlets(user));
   const [picked, setPicked] = useState<string | null>(null);
   const outletId = picked ?? firstOutlet(outlets, sel.outletIds);
   const [code, setCode] = useState("");
@@ -53,10 +53,12 @@ export function EmptyBottleFlow({ wide }: { wide?: boolean }) {
     setBusy(true);
     try { localStorage.setItem(LAST_OUTLET, outletId); } catch { /* private window */ }
     try {
-      const r = await api<{ scan: { id: string; skuId: string } }>("/api/stock/empties", { method: "POST", body: { outletId, ...body, clientId: `empty-${Date.now()}` } });
+      const r = await api<{ scan: { id: string; skuId: string }; counted: boolean }>("/api/stock/empties", { method: "POST", body: { outletId, ...body, clientId: `empty-${Date.now()}` } });
       bump();
       setCode("");
-      toast.done(`Empty bottle logged: ${nameOf(r.scan.skuId)}, ${outletById[outletId].name}. Over pouring counts it.`, { label: "Undo", run: () => undo(r.scan.id) });
+      // Say it counts only when the server says the outlet's bottles come from scans.
+      const where = `${nameOf(r.scan.skuId)}, ${outletById[outletId].name}`;
+      toast.done(r.counted ? `Empty bottle logged: ${where}. Over pouring counts it.` : `Empty bottle logged: ${where}. This outlet's bottles are still simulated.`, { label: "Undo", run: () => undo(r.scan.id) });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "That was not saved. Try again.");
     } finally {

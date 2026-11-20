@@ -15,7 +15,7 @@ const { getDataset } = await import("../data/generate");
 const { pourFor } = await import("../server/pour");
 const S = await import("../server/empties");
 const { resetDemo } = await import("../server/demo");
-const { loadStore } = await import("../server/purchasing-store");
+const { loadStore, mutateStore } = await import("../server/purchasing-store");
 const { STAFF, USERS, userById } = await import("../data/catalog");
 const { can } = await import("../domain/access");
 const { DEMO_TODAY, DEMO_NOW_MIN, addDays, sum } = await import("../util");
@@ -160,11 +160,24 @@ describe("the simulated scan history and the story", () => {
     process.env.TYLL_DEMO_DATE = "2026-10-13";
   });
 
-  it("never names who scanned on Over pouring, only the job", () => {
+  it("never says who scanned on Over pouring, not by name and not by job", () => {
     const text = JSON.stringify(pour().empties);
     for (const s of STAFF) expect(text).not.toContain(s.name);
     for (const u of USERS) expect(text).not.toContain(u.name);
-    expect(pour().empties.shifts[0].scans.every((x) => /^(Bartender|Supervisor|Steward|Server|Manager)$/.test(x.who))).toBe(true);
+    // One supervisor on a bar shift is as good as a name, so the job is left out too, for every role.
+    for (const id of ["u-fnb", "u-gm", "u-fc", "u-owner", "u-lby"]) {
+      const p = pour(id);
+      expect(JSON.stringify(p.empties)).not.toMatch(/Bartender|Supervisor|Steward|Server|Manager|AZU-S|MER-S|"by"/);
+      for (const sh of p.empties.shifts) for (const x of sh.scans) expect(Object.keys(x).sort()).toEqual(["method", "min"]);
+    }
+  });
+
+  it("lists every scanned shift that qualifies, not only the first dozen", () => {
+    const from = addDays(DEMO_TODAY, -29);
+    const qualifying = E.withScans(pourLog(getDataset().orders), S.seededScans())
+      .filter((e) => e.scanned !== undefined && e.date >= from && e.date <= DEMO_TODAY)
+      .filter((e) => { const f = figures([e], 1); return f.flagged && f.gapValue >= 50; });
+    expect(pour().empties.shifts).toHaveLength(qualifying.length);
   });
 });
 
@@ -190,6 +203,15 @@ describe("saving a scan on the server", () => {
     // A restaurant manager logs at their own outlet only.
     expect(S.logEmpty(U("u-rm"), { outletId: "lis-lobby", skuId: "red" })).toMatchObject({ ok: false, status: 403 });
     expect(S.logEmpty(U("u-maid"), { outletId: "lis-terrace", skuId: "red" })).toMatchObject({ ok: false, status: 403 });
+    // In-Room Dining pours wine but does not scan its empties: nobody can log one there, so nobody is told it counts.
+    expect(S.logEmpty(U("u-fnb"), { outletId: "lis-ird", skuId: "red" })).toMatchObject({ ok: false, status: 409 });
+    expect(ok(S.emptiesFor(U("u-fnb"))).outlets.sort()).toEqual(["lis-lobby", "lis-terrace"]);
+  });
+
+  it("tells the person Over pouring counts the scan only when it does", () => {
+    resetDemo(U("u-gm"), "stock");
+    expect(ok(S.logEmpty(U("u-fnb"), { outletId: "lis-lobby", skuId: "red" })).counted).toBe(true);
+    expect(ok(S.logEmpty(U("u-emp"), { outletId: "lis-terrace", skuId: "vodka" })).counted).toBe(true);
   });
 
   it("lets only the person who scanned take it back, once, and keeps it on record", () => {
@@ -232,13 +254,25 @@ describe("a new scan on Over pouring", () => {
     expect(after.wine.daily.at(-1)!.gapValue).toBeGreaterThan(before.wine.daily.at(-1)!.gapValue);
   });
 
-  it("changes nothing yet at an outlet that starts scanning today, and says it counts from tomorrow", () => {
+  it("leaves an outlet that does not scan simulated, even with a stray scan on record that the store moved a day on", () => {
     resetDemo(U("u-gm"), "stock");
     const before = pour();
-    ok(S.logEmpty(U("u-fnb"), { outletId: "lis-ird", skuId: "red" }));
+    const ird = (p: typeof before) => p.wine.outlets.find((o) => o.outletId === "lis-ird")!.periods;
+    // A scan at In-Room Dining saved before logging there was refused, then the store moved one business day forward.
+    const yesterday = addDays(DEMO_TODAY, -1);
+    mutateStore((x) => { x.emptyScans = [scan({ id: "ES-IRD-1", outletId: "lis-ird", date: yesterday, byUser: "u-fnb", role: "fnb_director", at: `${yesterday}T20:55:00.000Z` })]; x.businessDate = yesterday; });
+    expect(loadStore().emptyScans![0].date).toBe(DEMO_TODAY);
     const after = pour();
+    expect(ird(after)).toEqual(ird(before));
     expect(after.wine.totals).toEqual(before.wine.totals);
-    expect(after.empties.outlets.find((o) => o.outletId === "lis-ird")).toMatchObject({ from: null, startsTomorrow: true, today: 1 });
+    const row = after.empties.outlets.find((o) => o.outletId === "lis-ird")!;
+    expect(row.from).toBeNull();
+    expect(row).not.toHaveProperty("startsTomorrow");
+    // Even dated before today it never switches the outlet to scans: one stray empty would otherwise wipe its bottles.
+    expect(E.scanningFrom([scan({ outletId: "lis-ird", date: addDays(DEMO_TODAY, -3) })]).has("lis-ird")).toBe(false);
+    const log = [entry({ outletId: "lis-ird", date: addDays(DEMO_TODAY, -1), sold: 4, ml: 3000 })];
+    expect(E.withScans(log, [scan({ outletId: "lis-ird", date: addDays(DEMO_TODAY, -3) })])).toEqual(log);
+    resetDemo(U("u-gm"), "stock");
   });
 
   it("stops counting a scan that was taken back", () => {
@@ -263,5 +297,6 @@ describe("who logs empties", () => {
     for (const id of ["u-buy", "u-chef", "u-fc", "u-store", "u-maid", "u-bell", "u-sales"]) expect(E.mayLogEmpty(U(id)), id).toBe(false);
     expect(can(U("u-emp"), "stock.logEmpty")).toBe(true);
     expect(E.pourOutlets(["lis-terrace", "lis-lobby", "lis-ird", "lis-banquets"])).toContain("lis-lobby");
+    expect(E.emptyOutlets(["lis-terrace", "lis-lobby", "lis-ird", "lis-banquets"]).sort()).toEqual(["lis-lobby", "lis-terrace"]);
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 // Over pouring, where the bottles come from: empty bottle scans where an outlet scans them, simulated elsewhere.
-// Then the scanned shifts where the empties show the most not billed. Who scanned is shown by job only: binning a bottle is not pouring it.
+// Then the scanned shifts where the empties show the most not billed. Who scanned is never shown, not even by job: staff on
+// shift scan, and binning a bottle is not pouring it.
 import { ChevronDown } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Badge, Note, OutletDot, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
@@ -29,20 +30,19 @@ export function emptiesSummary(e: PourEmpties | undefined): ReactNode {
   );
 }
 
-/** Where an outlet's bottles come from: its scans, or simulated (and when new scans start to count). */
+/** Where an outlet's bottles come from: its scans, or simulated. */
 function Source({ o }: { o: PourEmpties["outlets"][number] }) {
-  if (o.from) return <Badge tone="pos">Scans since {fmtDate(o.from)}</Badge>;
-  return <><Badge>Simulated</Badge>{o.startsTomorrow && <span className="ms-2 text-xs text-steel">Scans count from tomorrow</span>}</>;
+  return o.from ? <Badge tone="pos">Scans since {fmtDate(o.from)}</Badge> : <Badge>Simulated</Badge>;
 }
 
-/** The scans behind one shift, by time, with who by job. */
+/** The scans behind one shift, by time. */
 function ScanList({ s }: { s: ScannedShift }) {
   return (
     <div className="rounded-[var(--radius-control)] bg-cloud p-4 text-[13px]">
       <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
-        {s.scans.map((x, i) => <li key={i} className="flex gap-3"><span className="num w-[72px] shrink-0 text-ink">{fmtTime(x.min)}</span><span className="text-steel"><span>{x.who}</span> · <span>{x.method === "scan" ? "scanned" : "picked from the list"}</span></span></li>)}
+        {s.scans.map((x, i) => <li key={i} className="flex gap-3"><span className="num w-[72px] shrink-0 text-ink">{fmtTime(x.min)}</span><span className="text-steel">{x.method === "scan" ? "scanned" : "picked from the list"}</span></li>)}
       </ul>
-      <p className="mt-2 text-xs text-steel">Who scanned a bottle is not who poured it. A prompt to check, not proof.</p>
+      <p className="mt-2 text-xs text-steel">Scanned by staff on shift. Who scanned a bottle is not who poured it. A prompt to check, not proof.</p>
     </div>
   );
 }

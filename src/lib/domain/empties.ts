@@ -47,17 +47,22 @@ export const skuByBarcode = (code: string): PourSku | undefined => POUR_SKUS.fin
 /** Outlets that pour wine or spirits by the glass, the only places an empty can be logged. */
 export const pourOutlets = (outletIds: readonly string[]) => outletIds.filter((o) => pourSellsAt(o, "wine") || pourSellsAt(o, "spirits"));
 
-/** Who may log empties: the permission, and at least one outlet of theirs that pours. */
-export const mayLogEmpty = (user: User) => can(user, "stock.logEmpty") && pourOutlets(allowedOutlets(user)).length > 0;
-
 /**
- * The simulated history: Bar Azulejo has scanned every empty since 17 days ago, Mercado since 9 days ago.
- * In-Room Dining and Banquets and Events do not scan, so their bottles stay simulated.
+ * The outlets that scan their empties, and the day they started (a hotel setting in a live system): Bar Azulejo has
+ * scanned every empty since 17 days ago, Mercado since 9 days ago. In-Room Dining and Banquets and Events do not scan,
+ * so their bottles stay simulated and nobody can log an empty there.
  */
 export const SCANNING: { outletId: string; fromDay: number }[] = [
   { outletId: "lis-lobby", fromDay: -17 },
   { outletId: "lis-terrace", fromDay: -9 },
 ];
+export const scansEmpties = (outletId: string) => SCANNING.some((x) => x.outletId === outletId);
+
+/** Outlets where an empty can be logged: they pour wine or spirits and scan their empties. */
+export const emptyOutlets = (outletIds: readonly string[]) => pourOutlets(outletIds).filter(scansEmpties);
+
+/** Who may log empties: the permission, and at least one outlet of theirs that scans its empties. */
+export const mayLogEmpty = (user: User) => can(user, "stock.logEmpty") && emptyOutlets(allowedOutlets(user)).length > 0;
 
 /** How full the open bottle of each label was when the outlet started scanning, as a share of a bottle. Simulated. */
 const openAtStart = (outletId: string, skuId: string) => rng(`empties|${outletId}|${skuId}`).next();
@@ -114,20 +119,21 @@ export function seedEmptyScans(log: readonly PourEntry[]): EmptyScan[] {
 const live = (scans: readonly EmptyScan[]) => scans.filter((s) => !s.withdrawnAt);
 
 /**
- * The first day each outlet's bottles come from scans. An outlet counts from the day it started scanning, once that day
- * has closed: an outlet that starts today keeps simulated bottles until tomorrow, so a part day never counts as a whole one.
+ * The first day each outlet's bottles come from scans. Only outlets that scan their empties (SCANNING) ever switch, so a
+ * stray scan elsewhere stays on record and never turns an outlet's bottles into scans. An outlet counts from the day it
+ * started scanning, once that day has closed, so a part day never counts as a whole one.
  */
 export function scanningFrom(scans: readonly EmptyScan[], today = DEMO_TODAY): Map<string, string> {
   const first = new Map<string, string>();
-  for (const s of live(scans)) if (!first.has(s.outletId) || s.date < first.get(s.outletId)!) first.set(s.outletId, s.date);
+  for (const s of live(scans)) if (scansEmpties(s.outletId) && (!first.has(s.outletId) || s.date < first.get(s.outletId)!)) first.set(s.outletId, s.date);
   return new Map([...first].filter(([, d]) => d < today));
 }
 
 const keyOf = (x: { date: string; outletId: string; shift: Shift; skuId: string }) => `${x.date}|${x.outletId}|${x.shift}|${x.skuId}`;
 
 /**
- * The open bottle of each label, counted to a tenth at close: how much fuller (+) or emptier (−) it is than at the start
- * of the shift, in bottles. Simulated from the same pouring as the rest of Over pouring, from the day the outlet started scanning.
+ * The open bottle of each label, counted to a tenth at close: how much more (+) or less (−) of it was poured than at the
+ * start of the shift, in bottles. Simulated from the same pouring as the rest of Over pouring, from the day the outlet started scanning.
  */
 export function openBottleChange(log: readonly PourEntry[], from: ReadonlyMap<string, string>, today = DEMO_TODAY): Map<string, number> {
   const out = new Map<string, number>();

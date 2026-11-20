@@ -2629,6 +2629,11 @@
 "Bottiglia vuota registrata: {0}, {1}. Mescita eccessiva la conta.",
 "تم تسجيل زجاجة فارغة: {0}، {1}. صفحة السكب الزائد تحسبها."
 ],
+"Empty bottle logged: {0}, {1}. This outlet's bottles are still simulated.": [
+"Leere Flasche erfasst: {0}, {1}. Die Flaschen dieses Outlets sind noch simuliert.",
+"Bottiglia vuota registrata: {0}, {1}. Le bottiglie di questo punto vendita sono ancora simulate.",
+"تم تسجيل زجاجة فارغة: {0}، {1}. زجاجات هذا المنفذ لا تزال محاكاة."
+],
 "Empty bottle scans": [
 "Scans leerer Flaschen",
 "Scansioni delle bottiglie vuote",
@@ -3364,10 +3369,10 @@
 "I calici venduti vengono dal POS. Le bottiglie aperte sono simulate in questa demo, perché il POS non le registra, e l'unico vino della casa è qui diviso su più etichette. Una resa bassa di solito indica versamenti generosi, calici gratuiti non registrati o rotture. Controlla prima dosi e misure. Non dice nulla sulle singole persone.",
 "الكؤوس المبيعة من نظام نقاط البيع. والزجاجات المفتوحة محاكاة هنا لأن النظام لا يسجلها، ونبيذ البيت الوحيد موزع هنا على عدة علامات. يعني الناتج المنخفض عادة سكبًا سخيًا أو كؤوسًا مجانية غير مسجلة أو كسرًا. تحقق أولًا من حجم السكب والمقاييس. ولا يقول شيئًا عن أي شخص."
 ],
-"Glasses sold come from the till. Bottles come from the empty bottle scans where an outlet scans every empty before it goes in the bin: the empties scanned plus the open bottle counted at close. An outlet that starts scanning today counts its scans from tomorrow, so a part day is never read as a whole one. Elsewhere bottles opened are simulated, because the till does not record them. In this demo the scans are simulated too, and the one house wine is shared across labels. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.": [
-"Verkaufte Gläser stammen aus der Kasse. Flaschen stammen aus den Scans leerer Flaschen, wo ein Outlet jede leere Flasche vor dem Wegwerfen scannt: die gescannten leeren Flaschen plus die offene Flasche, gezählt bei Schichtende. Ein Outlet, das heute mit dem Scannen beginnt, zählt seine Scans ab morgen, damit ein halber Tag nie als ganzer gilt. Anderswo sind geöffnete Flaschen simuliert, weil die Kasse sie nicht erfasst. In dieser Demo sind auch die Scans simuliert, und der eine Hauswein wird auf mehrere Etiketten verteilt. Eine Lücke bedeutet großzügiges Einschenken, nicht gebuchte Gläser oder Bruch. Tyll sagt nie, was davon.",
-"I bicchieri venduti vengono dalla cassa. Le bottiglie vengono dalle scansioni dei vuoti dove un punto vendita scansiona ogni vuoto prima di buttarlo: i vuoti scansionati più la bottiglia aperta contata a fine turno. Un punto vendita che inizia a scansionare oggi conta le scansioni da domani, così una giornata parziale non vale mai come intera. Altrove le bottiglie aperte sono simulate, perché la cassa non le registra. In questa demo anche le scansioni sono simulate, e l'unico vino della casa è diviso tra più etichette. Uno scarto indica versate abbondanti, bicchieri non battuti o rotture. Tyll non dice mai quale.",
-"الكؤوس المبيعة تأتي من نظام نقاط البيع. الزجاجات تأتي من مسح الزجاجات الفارغة حيث يمسح المنفذ كل زجاجة فارغة قبل رميها: الزجاجات الفارغة الممسوحة مضافًا إليها الزجاجة المفتوحة المعدودة عند الإغلاق. المنفذ الذي يبدأ المسح اليوم يحتسب مسوحاته من الغد، حتى لا يُقرأ جزء من يوم كيوم كامل. في غير ذلك الزجاجات المفتوحة محاكاة، لأن نظام نقاط البيع لا يسجلها. في هذا العرض المسوحات محاكاة أيضًا، ونبيذ البيت الواحد موزع على عدة ملصقات. الفجوة تعني سكبًا سخيًا أو كؤوسًا غير مسجلة أو كسرًا. Tyll لا يقول أبدًا أيها."
+"Glasses sold come from the till. Bottles come from the empty bottle scans where an outlet scans every empty before it goes in the bin: the empties scanned plus the open bottle counted at close, so a shift can use fewer bottles than it scanned when the open bottle ends fuller. Elsewhere bottles opened are simulated, because the till does not record them. In this demo the scans are simulated too, and the one house wine is shared across labels. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.": [
+"Verkaufte Gläser stammen aus der Kasse. Flaschen stammen aus den Scans leerer Flaschen, wo ein Outlet jede leere Flasche vor dem Wegwerfen scannt: die gescannten leeren Flaschen plus die offene Flasche, gezählt bei Schichtende. Eine Schicht kann daher weniger Flaschen verbrauchen, als sie gescannt hat, wenn die offene Flasche voller endet. Anderswo sind geöffnete Flaschen simuliert, weil die Kasse sie nicht erfasst. In dieser Demo sind auch die Scans simuliert, und der eine Hauswein wird auf mehrere Etiketten verteilt. Eine Lücke bedeutet großzügiges Einschenken, nicht gebuchte Gläser oder Bruch. Tyll sagt nie, was davon.",
+"I bicchieri venduti vengono dalla cassa. Le bottiglie vengono dalle scansioni dei vuoti dove un punto vendita scansiona ogni vuoto prima di buttarlo: i vuoti scansionati più la bottiglia aperta contata a fine turno, quindi un turno può usare meno bottiglie di quante ne ha scansionate quando la bottiglia aperta finisce più piena. Altrove le bottiglie aperte sono simulate, perché la cassa non le registra. In questa demo anche le scansioni sono simulate, e l'unico vino della casa è diviso tra più etichette. Uno scarto indica versate abbondanti, bicchieri non battuti o rotture. Tyll non dice mai quale.",
+"الكؤوس المبيعة تأتي من نظام نقاط البيع. الزجاجات تأتي من مسح الزجاجات الفارغة حيث يمسح المنفذ كل زجاجة فارغة قبل رميها: الزجاجات الفارغة الممسوحة مضافًا إليها الزجاجة المفتوحة المعدودة عند الإغلاق، لذا قد تستخدم المناوبة زجاجات أقل مما مسحت عندما تنتهي الزجاجة المفتوحة أكثر امتلاءً. في غير ذلك الزجاجات المفتوحة محاكاة، لأن نظام نقاط البيع لا يسجلها. في هذا العرض المسوحات محاكاة أيضًا، ونبيذ البيت الواحد موزع على عدة ملصقات. الفجوة تعني سكبًا سخيًا أو كؤوسًا غير مسجلة أو كسرًا. Tyll لا يقول أبدًا أيها."
 ],
 "Glassware": [
 "Gläser",
@@ -7669,10 +7674,10 @@
 "Scansiona con la fotocamera",
 "امسح بالكاميرا"
 ],
-"Scans count from tomorrow": [
-"Scans zählen ab morgen",
-"Le scansioni contano da domani",
-"المسوحات تُحتسب من الغد"
+"Scanned by staff on shift. Who scanned a bottle is not who poured it. A prompt to check, not proof.": [
+"Gescannt vom Team der Schicht. Wer eine Flasche scannt, hat sie nicht unbedingt ausgeschenkt. Ein Anlass zu prüfen, kein Beweis.",
+"Scansionate dal personale di turno. Chi scansiona una bottiglia non è chi l'ha versata. Uno spunto per verificare, non una prova.",
+"مسحها الموظفون في المناوبة. من مسح الزجاجة ليس بالضرورة من سكبها. تنبيه للتحقق، وليس دليلًا."
 ],
 "Scans since {0}": [
 "Scans seit {0}",
@@ -10294,11 +10299,6 @@
 "Chi ha bisogno di coaching, e dove si perdono le bevande?",
 "من يحتاج إلى توجيه، وأين تضيع المشروبات؟"
 ],
-"Who scanned a bottle is not who poured it. A prompt to check, not proof.": [
-"Wer eine Flasche scannt, hat sie nicht unbedingt ausgeschenkt. Ein Anlass zu prüfen, kein Beweis.",
-"Chi scansiona una bottiglia non è chi l'ha versata. Uno spunto per verificare, non una prova.",
-"من مسح الزجاجة ليس بالضرورة من سكبها. تنبيه للتحقق، وليس دليلًا."
-],
 "Who was on, day by day": [
 "Wer im Dienst war, Tag für Tag",
 "Chi era in turno, giorno per giorno",
@@ -10738,6 +10738,11 @@
 "ein minus aus",
 "entrate meno uscite",
 "الوارد ناقص الصادر"
+],
+"includes scans": [
+"inkl. Scans",
+"include scansioni",
+"يشمل المسوحات"
 ],
 "invoice {0}": [
 "Rechnung {0}",
@@ -11379,6 +11384,11 @@
 "Sconto {0}, oltre il limite di {1}",
 "خصم {0}، فوق حد السياسة {1}"
 ],
+"{0} does not scan its empties. Its bottles on Over pouring are simulated.": [
+"{0} scannt seine leeren Flaschen nicht. Seine Flaschen unter Überausschank sind simuliert.",
+"{0} non scansiona i suoi vuoti. Le sue bottiglie in Mescita eccessiva sono simulate.",
+"{0} لا يمسح زجاجاته الفارغة. زجاجاته في صفحة السكب الزائد محاكاة."
+],
 "{0} drinks per guest, colleagues {1}": [
 "{0} Getränke pro Gast, Kollegen {1}",
 "{0} bevande per ospite, colleghi {1}",
@@ -11494,10 +11504,10 @@
 "{0} coperti previsti, {1} evento, consumi delle ultime {2} settimane. Affidabilità alta.",
 "{0} زبونًا متوقعًا، {1} فعالية، استخدام آخر {2} أسابيع. الثقة عالية."
 ],
-"{0} glasses from {1} bottles, {2} scanned empty": [
-"{0} Gläser aus {1} Flaschen, {2} leer gescannt",
-"{0} bicchieri da {1} bottiglie, {2} scansionate vuote",
-"{0} كأسًا من {1} زجاجات، {2} ممسوحة فارغة"
+"{0} glasses from {1} bottles, counted with empty bottle scans": [
+"{0} Gläser aus {1} Flaschen, gezählt mit Scans leerer Flaschen",
+"{0} bicchieri da {1} bottiglie, contate con le scansioni dei vuoti",
+"{0} كأسًا من {1} زجاجات، محسوبة بمسح الزجاجات الفارغة"
 ],
 "{0} glasses not billed, {1}": [
 "{0} Gläser nicht abgerechnet, {1}",
@@ -11699,10 +11709,10 @@
 "{0} segnato pronto",
 "أُشير إلى جاهزية {0}"
 ],
-"{0} measures from {1} bottles, {2} scanned empty": [
-"{0} Portionen aus {1} Flaschen, {2} leer gescannt",
-"{0} misure da {1} bottiglie, {2} scansionate vuote",
-"{0} جرعة من {1} زجاجات، {2} ممسوحة فارغة"
+"{0} measures from {1} bottles, counted with empty bottle scans": [
+"{0} Portionen aus {1} Flaschen, gezählt mit Scans leerer Flaschen",
+"{0} dosi da {1} bottiglie, contate con le scansioni dei vuoti",
+"{0} جرعة من {1} زجاجات، محسوبة بمسح الزجاجات الفارغة"
 ],
 "{0} min": [
 "{0} Min.",
@@ -11968,11 +11978,6 @@
 "{0} geht zuerst aus, {1}. Eine spätere Bestellung kommt zu spät.",
 "{0} finisce per primo, {1}. Un ordine più tardi arriva troppo tardi.",
 "ينفد {0} أولًا، {1}. الطلب اللاحق يصل متأخرًا."
-],
-"{0} scanned empty": [
-"{0} leer gescannt",
-"{0} scansionate vuote",
-"{0} ممسوحة فارغة"
 ],
 "{0} sent to bar": [
 "{0} an die Bar geschickt",

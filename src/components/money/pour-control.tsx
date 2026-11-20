@@ -65,7 +65,7 @@ export function PourByItem({ family }: { family: Family }) {
                     return (
                       <tr key={r.skuId} className={rowClass}>
                         <Td><span className="text-ink">{r.name}</span>{f.flagged && <StatusPill rag="amber" className="ms-2 !py-0">Over pouring</StatusPill>}</Td>
-                        <Td align="right">{fmtBottles(f.opened)}{f.scanned > 0 && <span className="block text-xs text-steel">{fmtNum(f.scanned)} scanned empty</span>}</Td>
+                        <Td align="right">{fmtBottles(f.opened)}{f.scanned > 0 && <span className="block text-xs text-steel">includes scans</span>}</Td>
                         <Td align="right">{fmtNum(f.sold)}</Td>
                         <Td align="right">{r.perBottle}</Td>
                         <Td align="right"><YieldCell f={f} /></Td>

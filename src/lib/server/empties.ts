@@ -1,10 +1,10 @@
 // Empty bottle scans on the server: the simulated history (lib/domain/empties.ts) plus the scans people save here,
 // in the shared demo store with the user and role that made them. Over pouring reads both through emptyScans().
 import { getDataset } from "../data/generate";
-import { outletById, staffById } from "../data/catalog";
+import { outletById } from "../data/catalog";
 import { allowedOutlets, can } from "../domain/access";
 import { POUR_SKUS, pourLog } from "../domain/pour";
-import { BOTTLE_BARCODE, pourOutlets, scanMoment, seedEmptyScans, skuByBarcode, type EmptyScan } from "../domain/empties";
+import { BOTTLE_BARCODE, emptyOutlets, pourOutlets, scanMoment, scanningFrom, scansEmpties, seedEmptyScans, skuByBarcode, type EmptyScan } from "../domain/empties";
 import type { Order, Role, User } from "../types";
 import { DEMO_TODAY } from "../util";
 import { loadStore, mutateStore, nextNumber } from "./purchasing-store";
@@ -29,20 +29,9 @@ export function emptyScans(propertyId: string): EmptyScan[] {
   return [...seededScans(), ...(loadStore().emptyScans ?? [])].filter((s) => s.propertyId === propertyId);
 }
 
-const ROLE_WORD: Record<string, string> = {
-  server: "Server", bartender: "Bartender", supervisor: "Supervisor", manager: "Manager", chef: "Chef", steward: "Steward",
-  owner: "Owner", gm: "General manager", controller: "Financial controller", fnb_director: "F&B director", restaurant_manager: "Restaurant manager",
-};
-/** Who scanned, by job only. Who scanned a bottle is not who poured it, so Over pouring never names anyone here. */
-export function scannedByWord(s: Pick<EmptyScan, "by" | "role">): string {
-  const staff = staffById[s.by];
-  if (staff) return ROLE_WORD[staff.role] ?? "Staff";
-  return ROLE_WORD[s.role] ?? "Staff";
-}
-
 export interface MyScan { id: string; outletId: string; skuId: string; min: number; method: "scan" | "pick" }
 export interface EmptiesView {
-  /** Outlets this person may log empties at: theirs, where wine or spirits are poured. */
+  /** Outlets this person may log empties at: theirs, where wine or spirits are poured and empties are scanned. */
   outlets: string[];
   bottles: { id: string; name: string; family: "wine" | "spirits"; barcode: string }[];
   /** This person's scans today, newest first, taken back ones left out. */
@@ -57,24 +46,29 @@ const myScans = (user: User): MyScan[] => (loadStore().emptyScans ?? [])
 export function emptiesFor(user: User): Result<EmptiesView> {
   if (!can(user, "stock.logEmpty")) return fail(403, "Your role does not log empty bottles.");
   return {
-    ok: true, outlets: pourOutlets(allowedOutlets(user)),
+    ok: true, outlets: emptyOutlets(allowedOutlets(user)),
     bottles: POUR_SKUS.map((s) => ({ id: s.id, name: s.name, family: s.family, barcode: BOTTLE_BARCODE[s.id] })),
     mine: myScans(user),
   };
 }
 
-/** Saves one empty bottle, by barcode or picked from the list, for the business day and the demo's clock. */
-export function logEmpty(user: User, body: Record<string, unknown>): Result<{ scan: EmptyScan; mine: MyScan[] }> {
+/**
+ * Saves one empty bottle, by barcode or picked from the list, for the business day and the demo's clock. `counted` says
+ * whether Over pouring counts it now (the outlet's bottles come from scans), so the person is never told it counts when it does not.
+ */
+export function logEmpty(user: User, body: Record<string, unknown>): Result<{ scan: EmptyScan; mine: MyScan[]; counted: boolean }> {
   if (!can(user, "stock.logEmpty")) return fail(403, "Your role does not log empty bottles.");
   const outletId = String(body.outletId ?? "");
   if (!pourOutlets(allowedOutlets(user)).includes(outletId)) return fail(403, "You cannot log empty bottles for this outlet.");
+  if (!scansEmpties(outletId)) return fail(409, `${outletById[outletId].name} does not scan its empties. Its bottles on Over pouring are simulated.`);
   const code = typeof body.barcode === "string" ? body.barcode.trim() : "";
   const sku = code ? skuByBarcode(code) : POUR_SKUS.find((s) => s.id === body.skuId);
   if (code && !sku) return fail(404, `No bottle has the barcode ${code.slice(0, 20)}. Tap the bottle instead.`);
   if (!sku) return fail(400, "Choose the bottle.");
   const clientKey = typeof body.clientId === "string" && body.clientId.length < 60 ? `${user.id}:${body.clientId}` : undefined;
   const dup = clientKey && (loadStore().emptyScans ?? []).find((s) => s.clientKey === clientKey);
-  if (dup) return { ok: true, scan: dup, mine: myScans(user) };
+  const counted = () => scanningFrom(emptyScans(outletById[outletId].propertyId)).has(outletId);
+  if (dup) return { ok: true, scan: dup, mine: myScans(user), counted: counted() };
   const scan = mutateStore((x) => {
     const n = nextNumber(x, "ES");
     const s: EmptyScan = {
@@ -84,7 +78,7 @@ export function logEmpty(user: User, body: Record<string, unknown>): Result<{ sc
     x.emptyScans = [...(x.emptyScans ?? []), s];
     return s;
   });
-  return { ok: true, scan, mine: myScans(user) };
+  return { ok: true, scan, mine: myScans(user), counted: counted() };
 }
 
 /** Takes back one of your own scans from today. It stays on record, marked, and stops counting. */

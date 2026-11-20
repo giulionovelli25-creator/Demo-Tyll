@@ -83,7 +83,7 @@ export default function DrinksPage() {
                       <div className="grid grid-cols-[96px_1fr_auto] items-center gap-3">
                         <dt className="text-steel">Expected</dt>
                         <dd className="h-2.5 rounded-full bg-hair" aria-hidden><span className="block h-full rounded-full bg-accent-ink" style={{ width: `${(f.figures.expected / max) * 100}%` }} /></dd>
-                        <dd className="num text-end text-ink">{fmtNum(f.figures.expected)} {noun} from {fmtNum(f.figures.opened, 1)} bottles{f.figures.scanned > 0 ? `, ${fmtNum(f.figures.scanned)} scanned empty` : ""}</dd>
+                        <dd className="num text-end text-ink">{fmtNum(f.figures.expected)} {noun} from {fmtNum(f.figures.opened, 1)} bottles{f.figures.scanned > 0 ? ", counted with empty bottle scans" : ""}</dd>
                       </div>
                       <div className="grid grid-cols-[96px_1fr_auto] items-center gap-3">
                         <dt className="text-steel">Billed</dt>
@@ -119,7 +119,7 @@ export default function DrinksPage() {
       <div id="sec-spirits" className="scroll-mt-24"><Section id="drinks.spirits" forceOpen={opened === "sec-spirits"} title="Spirits" summary={line("spirits", "measures")} flush><PourByItem family="spirits" /></Section></div>
       <Section id="drinks.where" title="Where and when" summary={`By outlet and shift, with no names. ${below} wine ${below === 1 ? "shift" : "shifts"} below the threshold this week`} flush><PourWhere /></Section>
       <div id="sec-patterns" className="scroll-mt-24"><Section id="drinks.patterns" forceOpen={opened === "sec-patterns"} title="All patterns" summary={`${pour?.wine.flags.length ?? 0} wine and ${pour?.spirits.flags.length ?? 0} spirit patterns over the last 4 weeks`} flush><PourPatterns /></Section></div>
-      <p className="px-1 text-xs text-steel">Glasses sold come from the till. Bottles come from the empty bottle scans where an outlet scans every empty before it goes in the bin: the empties scanned plus the open bottle counted at close. An outlet that starts scanning today counts its scans from tomorrow, so a part day is never read as a whole one. Elsewhere bottles opened are simulated, because the till does not record them. In this demo the scans are simulated too, and the one house wine is shared across labels. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.</p>
+      <p className="px-1 text-xs text-steel">Glasses sold come from the till. Bottles come from the empty bottle scans where an outlet scans every empty before it goes in the bin: the empties scanned plus the open bottle counted at close, so a shift can use fewer bottles than it scanned when the open bottle ends fuller. Elsewhere bottles opened are simulated, because the till does not record them. In this demo the scans are simulated too, and the one house wine is shared across labels. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.</p>
     </div>
   );
 }

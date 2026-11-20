@@ -7,7 +7,7 @@ import { DEMO_TODAY, addDays, fmtMoney } from "../util";
 import { getDataset } from "../data/generate";
 import { rostered } from "../domain/rota";
 import { pourOutlets, scanningFrom, withScans, type EmptyScan } from "../domain/empties";
-import { emptyScans, scannedByWord } from "./empties";
+import { emptyScans } from "./empties";
 
 export type PourPeriod = "today" | "week" | "month";
 
@@ -50,13 +50,13 @@ export interface ScannedShift {
   name: string;
   family: PourFamily;
   figures: PourFigures;
-  /** Each empty: the time, how it was logged and who by job (never by name). */
-  scans: { min: number; method: "scan" | "pick"; who: string }[];
+  /** Each empty: the time and how it was logged. Never who: staff on shift scan, and binning a bottle is not pouring it. */
+  scans: { min: number; method: "scan" | "pick" }[];
 }
 
 export interface PourEmpties {
   /** Every outlet in view that pours: the first day its bottles come from scans (null while simulated), and empties scanned. */
-  outlets: { outletId: string; from: string | null; startsTomorrow: boolean; today: number; week: number; month: number }[];
+  outlets: { outletId: string; from: string | null; today: number; week: number; month: number }[];
   /** Scanned shifts of the last 30 days whose bottles gave under the threshold, with at least SCANNED_SHIFT_MIN not billed, most first. */
   shifts: ScannedShift[];
 }
@@ -127,10 +127,7 @@ function emptiesView(outletIds: readonly string[], scans: readonly EmptyScan[], 
   const since = (d: string) => counted.filter((x) => x.date >= d && x.date <= DEMO_TODAY);
   const outlets = pourOutlets(outletIds).map((outletId) => {
     const here = (d: string) => since(d).filter((x) => x.outletId === outletId).length;
-    return {
-      outletId, from: from.get(outletId) ?? null, startsTomorrow: !from.has(outletId) && counted.some((x) => x.outletId === outletId && x.date === DEMO_TODAY),
-      today: here(DEMO_TODAY), week: here(FROM.week), month: here(FROM.month),
-    };
+    return { outletId, from: from.get(outletId) ?? null, today: here(DEMO_TODAY), week: here(FROM.week), month: here(FROM.month) };
   });
   const shifts: ScannedShift[] = [];
   for (const e of log) {
@@ -139,10 +136,10 @@ function emptiesView(outletIds: readonly string[], scans: readonly EmptyScan[], 
     if (!f.flagged || f.gapValue < SCANNED_SHIFT_MIN) continue;
     const sku = POUR_SKUS.find((x) => x.id === e.skuId)!;
     const mine = counted.filter((x) => x.date === e.date && x.outletId === e.outletId && x.shift === e.shift && x.skuId === e.skuId).sort((a, b) => a.min - b.min);
-    shifts.push({ id: `${e.date}|${e.outletId}|${e.shift}|${e.skuId}`, date: e.date, outletId: e.outletId, shift: e.shift, skuId: e.skuId, name: sku.name, family: sku.family, figures: f, scans: mine.map((x) => ({ min: x.min, method: x.method, who: scannedByWord(x) })) });
+    shifts.push({ id: `${e.date}|${e.outletId}|${e.shift}|${e.skuId}`, date: e.date, outletId: e.outletId, shift: e.shift, skuId: e.skuId, name: sku.name, family: sku.family, figures: f, scans: mine.map((x) => ({ min: x.min, method: x.method })) });
   }
   shifts.sort((a, b) => b.figures.gapValue - a.figures.gapValue || b.date.localeCompare(a.date));
-  return { outlets, shifts: shifts.slice(0, 12) };
+  return { outlets, shifts };
 }
 
 type Result = { ok: true; pour: PourOut } | { ok: false; status: number; error: string };
