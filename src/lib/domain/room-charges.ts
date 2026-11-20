@@ -12,7 +12,7 @@ export const ROOM_STATUS_LABEL: Record<RoomChargeStatus, string> = {
   matched: "Posted correctly",
   missing: "Missing from the guest bill",
   wrong_amount: "Different amount",
-  duplicate: "Posted twice",
+  duplicate: "Posted more than once",
   wrong_room: "Posted to the wrong room",
   after_checkout: "Posted after check-out",
 };

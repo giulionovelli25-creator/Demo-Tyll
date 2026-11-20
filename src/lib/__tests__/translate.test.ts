@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Translator, type Messages } from "../i18n/translate";
+import real from "../i18n/messages.json";
+import { ALL_ITEMS, SECTIONS } from "../nav";
 
 const messages: Messages = {
   Stock: ["Bestand", "Scorte", "المخزون"],
@@ -38,5 +40,13 @@ describe("translation", () => {
     const de = t("de");
     expect(de.translate("Nothing like this 4")).toBe("Nothing like this 4");
     expect([...de.missing]).toEqual(["Nothing like this {}"]);
+  });
+  it("has every sidebar label, short label and section title in every language", () => {
+    const words = [...SECTIONS.map((x) => x.title), ...ALL_ITEMS.flatMap((i) => [i.label, i.short ?? i.label])];
+    for (const lang of ["de", "it", "ar"] as const) {
+      const tr = new Translator(lang, real as unknown as Messages, { items: [], names: [] });
+      for (const w of words) tr.translate(w);
+      expect([...tr.missing], lang).toEqual([]);
+    }
   });
 });

@@ -509,6 +509,11 @@
 "Registro di controllo",
 "سجل التدقيق"
 ],
+"Auto order": [
+"Autobestellung",
+"Ordine auto",
+"طلب تلقائي"
+],
 "Automatic ordering": [
 "Automatische Bestellung",
 "Ordini automatici",
@@ -2429,6 +2434,11 @@
 "In scadenza",
 "ينتهي قريباً"
 ],
+"Expiry": [
+"Ablauf",
+"Scadenze",
+"الصلاحية"
+],
 "Export CSV": [
 "CSV exportieren",
 "Esporta CSV",
@@ -2563,6 +2573,11 @@
 "Markierte Buchungen",
 "Registrazioni segnalate",
 "الترحيلات المشار إليها"
+],
+"Flagged transactions": [
+"Markierte Buchungen",
+"Transazioni segnalate",
+"المعاملات المُعلَّمة"
 ],
 "Flagged when a bottle gives under {0} of what it should.": [
 "Markiert, wenn eine Flasche unter {0} des Solls ergibt.",
@@ -2883,6 +2898,11 @@
 "Gästefolios, Zimmernummern und Check-out-Zeiten sind simuliert, ebenso das PMS, aus dem sie stammen. Minibar-, Spa- und Wäschebuchungen umfassen die letzten {0} Tage.",
 "Folio degli ospiti, numeri di camera e orari di check-out sono simulati, come il PMS da cui provengono. Gli addebiti di minibar, spa e lavanderia coprono gli ultimi {0} giorni.",
 "حسابات النزلاء وأرقام الغرف وأوقات المغادرة محاكاة، وكذلك نظام إدارة الفندق الذي تأتي منه. تغطي ترحيلات الميني بار والسبا والغسيل آخر {0} يومًا."
+],
+"Guest folios, room numbers and check-out times are simulated, as is the PMS they come from. Minibar, spa and laundry postings cover the last {0} days. Room-damage charge verification is planned and not part of this demo.": [
+"Gästefolios, Zimmernummern und Check-out-Zeiten sind simuliert, ebenso das PMS, aus dem sie stammen. Minibar-, Spa- und Wäschebuchungen umfassen die letzten {0} Tage. Die Prüfung von Zimmerschäden ist geplant und nicht Teil dieser Demo.",
+"Folio degli ospiti, numeri di camera e orari di check-out sono simulati, come il PMS da cui provengono. Gli addebiti di minibar, spa e lavanderia coprono gli ultimi {0} giorni. La verifica dei danni in camera è prevista e non fa parte della demo.",
+"حسابات النزلاء وأرقام الغرف وأوقات المغادرة محاكاة، وكذلك نظام إدارة الفندق الذي تأتي منه. تغطي ترحيلات الميني بار والسبا والغسيل آخر {0} يومًا. التحقق من رسوم أضرار الغرف مخطط له وليس ضمن هذه النسخة."
 ],
 "Guest orders a burger and a Coke": [
 "Gast bestellt Burger und Cola",
@@ -5039,6 +5059,11 @@
 "Altri costi operativi",
 "تكاليف تشغيلية أخرى"
 ],
+"Other tools": [
+"Weitere Tools",
+"Altri strumenti",
+"أدوات أخرى"
+],
 "Other, such as a tasting": [
 "Sonstiges, etwa eine Verkostung",
 "Altro, ad esempio una degustazione",
@@ -5324,6 +5349,11 @@
 "Costo del lavoro registrato, spese generali, profitto contabile",
 "تكلفة العمالة المرحلة والنفقات العامة والربح المحاسبي"
 ],
+"Posted more than once": [
+"Mehrfach gebucht",
+"Registrato più volte",
+"رُحّلت أكثر من مرة"
+],
 "Posted to the wrong room": [
 "Auf das falsche Zimmer gebucht",
 "Addebitato alla camera sbagliata",
@@ -5393,6 +5423,11 @@
 "Größere Mengen als das Standardmaß",
 "Versamenti oltre la misura standard",
 "سكب أكبر من المقياس المعياري"
+],
+"Predict": [
+"Prognose",
+"Previsioni",
+"التوقع"
 ],
 "Predicted": [
 "Prognose",
@@ -6194,6 +6229,16 @@
 "Addebito sulla camera sbagliata · {0}",
 "رسوم على الغرفة الخطأ · {0}"
 ],
+"Room charge posted more than once": [
+"Zimmerbelastung mehrfach gebucht",
+"Addebito camera registrato più volte",
+"رسوم غرفة مرحّلة أكثر من مرة"
+],
+"Room charge posted more than once · {0}": [
+"Zimmerbelastung mehrfach gebucht · {0}",
+"Addebito camera registrato più volte · {0}",
+"رسوم غرفة مرحّلة أكثر من مرة · {0}"
+],
 "Room charge tolerance": [
 "Toleranz Zimmerbelastung",
 "Tolleranza addebito camera",
@@ -6203,6 +6248,11 @@
 "Zimmerbelastungen",
 "Addebiti in camera",
 "رسوم الغرف"
+],
+"Room charges missing from the guest bill, posted more than once, for a different amount, to the wrong room or after check-out.": [
+"Zimmerbelastungen, die auf der Gästerechnung fehlen, mehrfach, mit anderem Betrag, auf das falsche Zimmer oder nach dem Check-out gebucht sind.",
+"Addebiti in camera mancanti sul conto, registrati più volte, con importo diverso, sulla camera sbagliata o dopo il check-out.",
+"رسوم غرف مفقودة من فاتورة النزيل، أو مرحّلة أكثر من مرة، أو بمبلغ مختلف، أو على الغرفة الخطأ، أو بعد المغادرة."
 ],
 "Room charges missing from the guest bill, posted twice, for a different amount, to the wrong room or after check-out.": [
 "Zimmerbelastungen, die auf der Gästerechnung fehlen, doppelt, mit anderem Betrag, auf das falsche Zimmer oder nach dem Check-out gebucht sind.",
@@ -8248,6 +8298,16 @@
 "Stornos, Erstattungen und entfernte Artikel",
 "Annullamenti, rimborsi e articoli rimossi",
 "الإلغاءات والمبالغ المستردة والأصناف المحذوفة"
+],
+"Voids, refunds, discounts, items removed from bills and room charges that broke a rule. A flag is a prompt to check, not a finding. Simulated data.": [
+"Stornos, Erstattungen, Rabatte, von Rechnungen entfernte Artikel und Zimmerbelastungen, die gegen eine Regel verstoßen. Ein Hinweis ist ein Anlass zur Prüfung, kein Befund. Simulierte Daten.",
+"Annullamenti, rimborsi, sconti, articoli rimossi dai conti e addebiti in camera che hanno violato una regola. Una segnalazione invita a verificare, non è una conclusione. Dati simulati.",
+"الإلغاءات والمبالغ المستردة والخصومات والأصناف المحذوفة من الفواتير ورسوم الغرف التي خالفت قاعدة. الإشارة دعوة للتحقق وليست نتيجة. بيانات محاكاة."
+],
+"Voids, refunds, removed items and room charges": [
+"Stornos, Erstattungen, entfernte Artikel und Zimmerbelastungen",
+"Annullamenti, rimborsi, articoli rimossi e addebiti in camera",
+"الإلغاءات والمبالغ المستردة والأصناف المحذوفة ورسوم الغرف"
 ],
 "Vs usual": [
 "Ggü. üblich",

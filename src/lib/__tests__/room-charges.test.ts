@@ -8,11 +8,11 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tyll-rc-"));
 process.env.TYLL_AUTH_STORE = path.join(dir, "auth.json");
 process.env.TYLL_PURCHASING_STORE = path.join(dir, "purchasing.json");
 
-const { POLICY, ROOM_TYPES, classifyRoomCharge, detectExceptions, detectRoomChargeException } = await import("../domain/detect");
-const { roomChargesByDay, roomChargesBySource, summariseRoomCharges } = await import("../domain/room-charges");
+const { POLICY, ROOM_STATUS_TYPE, ROOM_TYPES, TYPE_LABEL, classifyRoomCharge, detectExceptions, detectRoomChargeException } = await import("../domain/detect");
+const { ROOM_STATUS_LABEL, roomChargesByDay, roomChargesBySource, summariseRoomCharges } = await import("../domain/room-charges");
 const { explain } = await import("../domain/explain");
 const { getDataset } = await import("../data/generate");
-const { demoCases } = await import("../data/demo-cases");
+const { demoCases, demoRoomCheckFrom } = await import("../data/demo-cases");
 const { ROOM_STORY, ROOM_STORY_CHARGE_ID, ROOM_STORY_EXCEPTION_ID, ROOM_STORY_ORDER_ID } = await import("../data/constants");
 const { roomCheckFor } = await import("../server/room-charges");
 const { snapshotFor } = await import("../server/snapshot");
@@ -20,7 +20,7 @@ const { userById } = await import("../data/catalog");
 const { can } = await import("../domain/access");
 const { activeItem } = await import("../nav");
 const { orderTotals } = await import("../domain/orders");
-const { DEMO_TODAY, addDays, eachDay, rel } = await import("../util");
+const { DATA_START, DEMO_TODAY, addDays, eachDay, rel } = await import("../util");
 type RoomCharge = import("../types").RoomCharge;
 
 const charge: RoomCharge = { id: "RC-T", propertyId: "lis", outletId: "lis-terrace", date: DEMO_TODAY, min: 20 * 60, room: "1412", source: "restaurant", description: "Mercado check T", orderId: "MER-T", expected: 120, posted: [120], postedMin: 20 * 60 + 1 };
@@ -57,6 +57,12 @@ describe("room charge rules", () => {
     expect(classifyRoomCharge({ ...charge, posted: [120, 120], folioRoom: "1421" })).toBe("wrong_room");
     expect(classifyRoomCharge({ ...charge, posted: [120, 120], checkoutMin: 19 * 60 })).toBe("after_checkout");
     expect(ROOM_TYPES).toEqual(expect.arrayContaining(["room_charge_wrong_room", "room_charge_after_checkout"]));
+  });
+
+  it("names a charge posted more than once the same way on the check and in the flags, whatever the number of postings", () => {
+    expect(ROOM_STATUS_LABEL.duplicate).toBe("Posted more than once");
+    expect(TYPE_LABEL[ROOM_STATUS_TYPE.duplicate]).toBe("Room charge posted more than once");
+    expect(classifyRoomCharge({ ...charge, posted: [120, 120, 120] })).toBe("duplicate");
   });
 });
 
@@ -118,6 +124,17 @@ describe("room charge data and totals", () => {
     for (const e of roomCases.filter((x) => d.seedInvestigations[x.id].status !== "closed")) expect(kept.has(e.id)).toBe(true);
   });
 
+  it("keeps minibar check-outs in normal hours: the guest leaves between 7 AM and noon, before the late posting", () => {
+    const late = d.roomCharges.filter((c) => c.source === "minibar" && classifyRoomCharge(c) === "after_checkout");
+    expect(late.length).toBeGreaterThan(0);
+    for (const c of late) {
+      expect(c.min).toBeLessThan(13 * 60);
+      expect(c.checkoutMin!).toBeGreaterThanOrEqual(7 * 60);
+      expect(c.checkoutMin!).toBeLessThanOrEqual(12 * 60);
+      expect(c.checkoutMin!).toBeLessThan(c.postedMin!);
+    }
+  });
+
   it("closes older differences as the night audit would, with the right note for each kind", () => {
     for (const e of roomCases.filter((x) => x.date < DEMO_TODAY && x.id !== ROOM_STORY_EXCEPTION_ID)) expect(d.seedInvestigations[e.id].status).toBe("closed");
     const moved = roomCases.find((e) => e.type === "room_charge_wrong_room" && d.seedInvestigations[e.id].outcome === "recovered");
@@ -127,6 +144,7 @@ describe("room charge data and totals", () => {
 
 describe("room charge check on the server", () => {
   const fnb = userById["u-fnb"];
+  const d0 = getDataset();
   const all = () => {
     const r = roomCheckFor(fnb, { from: addDays(DEMO_TODAY, -29), to: DEMO_TODAY });
     if (!r.ok) throw new Error(r.error);
@@ -169,6 +187,39 @@ describe("room charge check on the server", () => {
     if (!ird.ok) throw new Error(ird.error);
     expect(ird.bySource.map((x) => x.source)).toEqual(["room_service"]);
     expect(roomCheckFor(fnb, { from: DEMO_TODAY, to: addDays(DEMO_TODAY, -3) })).toMatchObject({ ok: false, status: 400 });
+  });
+
+  it("agrees with the flags in the public demo: every difference counted has its case, the same count and money by type", () => {
+    const was = process.env.TYLL_PUBLIC_DEMO;
+    process.env.TYLL_PUBLIC_DEMO = "on";
+    try {
+      const kept = demoCases(d0.exceptions, d0.seedInvestigations);
+      const keptIds = new Set(kept.map((e) => e.id));
+      for (const [from, to] of [[addDays(DEMO_TODAY, -29), DEMO_TODAY], [addDays(DEMO_TODAY, -6), DEMO_TODAY], [addDays(DEMO_TODAY, -1), addDays(DEMO_TODAY, -1)], [DEMO_TODAY, DEMO_TODAY]]) {
+        const r = roomCheckFor(fnb, { from, to });
+        if (!r.ok) throw new Error(r.error);
+        for (const row of r.rows) expect(keptIds.has(row.caseId)).toBe(true);
+        // "Flagged by type" on the flags page, for the room types, over the same period.
+        const flagged = kept.filter((e) => ROOM_TYPES.includes(e.type) && e.date >= from && e.date <= to);
+        for (const s of r.summary.byStatus.filter((x) => x.status !== "matched")) {
+          const ofType = flagged.filter((e) => e.type === ROOM_STATUS_TYPE[s.status as keyof typeof ROOM_STATUS_TYPE]);
+          expect(ofType).toHaveLength(s.n);
+          expect(ofType.reduce((t, e) => t + e.exposure, 0)).toBeCloseTo(s.value, 2);
+        }
+        expect(flagged).toHaveLength(r.summary.mismatched);
+      }
+      // The check reaches no further back than the cases the public demo keeps.
+      const far = roomCheckFor(fnb, { from: DATA_START, to: DEMO_TODAY });
+      expect(far.ok && far.from).toBe(demoRoomCheckFrom());
+      // Closed room cases have their own rule, so twelve other closed cases per hotel stay too.
+      expect(kept.filter((e) => !ROOM_TYPES.includes(e.type) && d0.seedInvestigations[e.id].status === "closed").length).toBe(12);
+    } finally {
+      if (was === undefined) delete process.env.TYLL_PUBLIC_DEMO;
+      else process.env.TYLL_PUBLIC_DEMO = was;
+    }
+    // Outside the public demo the check still reaches back to the start of the data.
+    const full = roomCheckFor(fnb, { from: DATA_START, to: DEMO_TODAY });
+    expect(full.ok && full.from).toBe(DATA_START);
   });
 
   it("is reached from Flagged transactions in the sidebar", () => {

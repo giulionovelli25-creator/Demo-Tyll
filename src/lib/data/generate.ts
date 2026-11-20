@@ -283,9 +283,11 @@ function withFolio(c: RoomCharge): RoomCharge {
   if (!clean) return { ...c, postedMin, checkoutMin };
   // A room number keyed by hand at an outlet till, one key off.
   if (c.source === "restaurant" && r.chance(0.0025)) return { ...c, postedMin, checkoutMin, folioRoom: neighbourRoom(c.room, r) };
-  if (c.source === "minibar" && r.chance(0.03)) {
-    // Housekeeping found the minibar used when servicing a departure room, after the guest had gone.
-    checkoutMin = Math.max(6 * 60, c.min - r.int(15, 150));
+  if (c.source === "minibar" && c.min < 13 * 60 && r.chance(0.07)) {
+    // Housekeeping found the minibar used when servicing a departure room, after the guest had gone. Rooms are serviced
+    // late morning, and guests leave between 7 AM and noon, so only charges recorded before 1 PM can arrive this way.
+    // Charges start at 8 AM, so check-out is always at least 15 minutes before the posting.
+    checkoutMin = Math.min(12 * 60, Math.max(7 * 60, c.min - r.int(15, 150)));
   } else if ((c.source === "restaurant" || c.source === "room_service") && c.min < 11 * 60 && r.chance(0.006)) {
     // A breakfast posting held in the interface queue while the guest checked out.
     postedMin = c.min + r.int(75, 200);

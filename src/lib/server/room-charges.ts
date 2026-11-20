@@ -3,6 +3,7 @@
 // "roomcharge.view" receive them, and only for the outlets and hotels they hold. Each difference is also a flag, raised by
 // the same rule (detectRoomChargeException), so the check and the flags list always agree.
 import { ROOM_STORY_CHARGE_ID, ROOM_STORY_EXCEPTION_ID } from "../data/constants";
+import { demoRoomCheckFrom } from "../data/demo-cases";
 import { outletById } from "../data/catalog";
 import { getDataset } from "../data/generate";
 import { allowedOutlets, can, hasWholeProperty } from "../domain/access";
@@ -11,6 +12,7 @@ import { roomChargesByDay, roomChargesBySource, summariseRoomCharges, type RoomC
 import { SOURCE_LABEL } from "../labels";
 import type { ChargeSource, InvestigationStatus, RoomCharge, User } from "../types";
 import { DATA_START, DEMO_TODAY, addDays, eachDay, round2 } from "../util";
+import { publicDemo } from "./auth";
 
 type Fail = { ok: false; status: number; error: string };
 const fail = (status: number, error: string): Fail => ({ ok: false, status, error });
@@ -88,7 +90,11 @@ function toRow(c: RoomCharge): RoomCheckRow | null {
 export function roomCheckFor(user: User, q: { from?: string | null; to?: string | null; outlets?: string | null; whole?: string | null }): RoomCheck | Fail {
   if (!can(user, "roomcharge.view")) return fail(403, "Your role cannot see room charges.");
   const to = q.to && ISO.test(q.to) ? (q.to > DEMO_TODAY ? DEMO_TODAY : q.to) : DEMO_TODAY;
-  const from = q.from && ISO.test(q.from) ? (q.from < DATA_START ? DATA_START : q.from) : addDays(to, -29);
+  // The public demo keeps the room charge cases of the last 30 days (demoCases), so the check reaches no further back:
+  // every difference it counts then has its case on the flags page and the Money Back List.
+  const earliest = publicDemo() ? demoRoomCheckFrom() : DATA_START;
+  const asked = q.from && ISO.test(q.from) ? q.from : addDays(to, -29);
+  const from = asked < earliest ? earliest : asked;
   if (from > to) return fail(400, "The period starts after it ends.");
   const mine = allowedOutlets(user);
   const outlets = new Set((list(q.outlets) ?? mine).filter((id) => mine.includes(id)));

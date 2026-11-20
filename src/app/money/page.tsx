@@ -100,7 +100,7 @@ export default function MoneyPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={tab === "outlets" ? "Outlet performance" : onFlags ? "Flagged transactions" : "Revenue"} question={onFlags ? "Where is money going missing?" : tab === "outlets" ? "Which outlets are doing better or worse?" : "How much did we make?"} lead={onFlags ? "Voids, refunds, discounts and items removed from bills that broke a rule. A flag is a prompt to check, not a finding. Simulated data." : "Last 7 days against the 7 before. Profit is an estimate. Simulated data."} />
+      <PageHeader title={tab === "outlets" ? "Outlet performance" : onFlags ? "Flagged transactions" : "Revenue"} question={onFlags ? "Where is money going missing?" : tab === "outlets" ? "Which outlets are doing better or worse?" : "How much did we make?"} lead={onFlags ? "Voids, refunds, discounts, items removed from bills and room charges that broke a rule. A flag is a prompt to check, not a finding. Simulated data." : "Last 7 days against the 7 before. Profit is an estimate. Simulated data."} />
       {onFlags ? (
         <SummaryBar
           items={[
@@ -136,7 +136,7 @@ export default function MoneyPage() {
       )}
       {onFlags ? (
         <>
-          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds and removed items" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
+          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds, removed items and room charges" summary={`${flags.length} flagged transactions, ${money(flagValue)} at risk`}>
             <Mistakes />
           </Section>
           <SectionLink href="/money?tab=cash" title="Cash on hand against cash sales" summary="Each outlet's drawer at the end of the shift against the bills paid in cash. Card payments are reconciled by the payment provider." />
@@ -228,7 +228,7 @@ function Mistakes() {
             <li>Complimentary items above {POLICY.compMaxValue} per order, or with no reason.</li>
             <li>Refunds above {Math.round(POLICY.refundMaxShare * 100)}% of a bill, late, or unexplained.</li>
             <li>Whole orders cancelled after they were sent to the kitchen or bar.</li>
-            <li>Room charges missing from the guest bill, posted twice, for a different amount, to the wrong room or after check-out.</li>
+            <li>Room charges missing from the guest bill, posted more than once, for a different amount, to the wrong room or after check-out.</li>
           </ul>
         </Panel>
       </div>

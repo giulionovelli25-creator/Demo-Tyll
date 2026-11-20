@@ -170,7 +170,7 @@ export function RoomChargeCheck() {
           {data.bySource.length === 0 ? <div className="p-6"><EmptyState title="No room charges in this selection">Minibar, spa and laundry charges belong to the whole hotel. Choose all outlets to see them.</EmptyState></div> : (
             <TableWrap>
               <table className="w-full min-w-[900px] text-sm">
-                <thead><tr><Th>Source</Th><Th align="right">Charges</Th><Th align="right">Charged</Th><Th align="right">Posted</Th><Th align="right">Posted correctly</Th><Th align="right">Missing</Th><Th align="right">Different amount</Th><Th align="right">Posted twice</Th><Th align="right">Wrong room</Th><Th align="right">After check-out</Th></tr></thead>
+                <thead><tr><Th>Source</Th><Th align="right">Charges</Th><Th align="right">Charged</Th><Th align="right">Posted</Th><Th align="right">Posted correctly</Th><Th align="right">Missing</Th><Th align="right">Different amount</Th><Th align="right">Posted more than once</Th><Th align="right">Wrong room</Th><Th align="right">After check-out</Th></tr></thead>
                 <tbody>
                   {data.bySource.map((r) => (
                     <tr key={r.source} className={rowClass}>
@@ -188,7 +188,7 @@ export function RoomChargeCheck() {
           )}
           <div className="space-y-2 px-6 py-4">
             <Note className="max-w-[95ch]">Revenue is counted once. Restaurant and room service charges are already inside outlet sales; posting them to a room moves them to the guest bill, and settling the bill at check-out clears it. Neither step adds revenue.</Note>
-            <Note className="max-w-[95ch]">Guest folios, room numbers and check-out times are simulated, as is the PMS they come from. Minibar, spa and laundry postings cover the last 21 days.</Note>
+            <Note className="max-w-[95ch]">Guest folios, room numbers and check-out times are simulated, as is the PMS they come from. Minibar, spa and laundry postings cover the last 21 days. Room-damage charge verification is planned and not part of this demo.</Note>
           </div>
         </Section>
       </div>

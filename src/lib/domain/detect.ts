@@ -26,7 +26,7 @@ export const TYPE_LABEL: Record<ExceptionType, string> = {
   unusual_refund: "Unusual refund",
   unexplained_void: "Unexplained void",
   room_charge_missing: "Room charge missing",
-  room_charge_duplicate: "Room charge duplicated",
+  room_charge_duplicate: "Room charge posted more than once",
   room_charge_incorrect: "Room charge amount differs",
   room_charge_wrong_room: "Room charge on the wrong room",
   room_charge_after_checkout: "Room charge after check-out",
