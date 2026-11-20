@@ -1029,10 +1029,20 @@
 "Arrivata alle {0}",
 "وصلت {0}"
 ],
+"Arrives tomorrow": [
+"Kommt morgen",
+"Arriva domani",
+"يصل غدًا"
+],
 "Arrives tomorrow at {0}.": [
 "Ankunft morgen um {0}.",
 "Arriva domani alle {0}.",
 "يصل غدًا الساعة {0}."
+],
+"Arrives {0}": [
+"Kommt {0}",
+"Arriva {0}",
+"يصل {0}"
 ],
 "As ordered": [
 "Wie bestellt",
@@ -1143,6 +1153,11 @@
 "Beim Frühstück",
 "A colazione",
 "عند الإفطار"
+],
+"At last count": [
+"Bei der letzten Zählung",
+"All'ultimo conteggio",
+"عند آخر عدّ"
 ],
 "At risk": [
 "Gefährdet",
@@ -2459,6 +2474,11 @@
 "Cambia quantità o fornitori nella tabella sopra. Ogni modifica richiede un motivo.",
 "غيّر الكميات أو الموردين في الجدول أعلاه. كل تغيير يحتاج إلى سبب."
 ],
+"Change the rules": [
+"Regeln ändern",
+"Cambia le regole",
+"غيّر القواعد"
+],
 "Change the standard": [
 "Standard ändern",
 "Cambia lo standard",
@@ -3478,6 +3498,11 @@
 "Frischkäse",
 "Formaggio spalmabile",
 "جبن كريمي"
+],
+"Create {0} purchase orders": [
+"{0} Bestellungen anlegen",
+"Crea {0} ordini d'acquisto",
+"أنشئ {0} أوامر شراء"
 ],
 "Created automatically": [
 "Automatisch erstellt",
@@ -4724,6 +4749,16 @@
 "Ogni mattina alle {0} Tyll ordina gli articoli in scadenza quel giorno o il successivo",
 "كل صباح الساعة {0} يطلب Tyll الأصناف المستحقة في ذلك اليوم أو اليوم التالي"
 ],
+"Every morning at {0} Tyll orders what the prediction says must be ordered today or tomorrow, one order per supplier. Small orders go straight to the supplier; the rest wait for approval. Simulated data: nothing is sent to a supplier.": [
+"Jeden Morgen um {0} bestellt Tyll, was laut Prognose heute oder morgen bestellt werden muss, eine Bestellung je Lieferant. Kleine Bestellungen gehen direkt an den Lieferanten; der Rest wartet auf Freigabe. Simulierte Daten: Nichts wird an einen Lieferanten gesendet.",
+"Ogni mattina alle {0} Tyll ordina ciò che secondo la previsione va ordinato oggi o domani, un ordine per fornitore. I piccoli ordini vanno subito al fornitore; gli altri attendono l'approvazione. Dati simulati: nulla viene inviato a un fornitore.",
+"كل صباح الساعة {0} يطلب Tyll ما يقول التوقع إنه يجب طلبه اليوم أو غدًا، طلب واحد لكل مورد. الطلبات الصغيرة تذهب مباشرة إلى المورد؛ والباقي ينتظر الموافقة. بيانات محاكاة: لا يُرسل شيء إلى أي مورد."
+],
+"Every morning at {0}, after last night’s sales, today’s bookings and events are in.": [
+"Jeden Morgen um {0}, wenn die Verkäufe von gestern Abend, die heutigen Reservierungen und Events vorliegen.",
+"Ogni mattina alle {0}, dopo le vendite di ieri sera, le prenotazioni e gli eventi di oggi.",
+"كل صباح الساعة {0}، بعد مبيعات الليلة الماضية وحجوزات اليوم وفعالياته."
+],
 "Every outlet and shift is pouring close to standard.": [
 "Alle Outlets und Schichten schenken nahe am Standard aus.",
 "Ogni punto vendita e turno versa vicino allo standard.",
@@ -5424,6 +5459,11 @@
 "Da ogni piano evento. Stime, non spese registrate; i costi reali si registrano solo alla fattura.",
 "من كل خطة فعالية. تقديرات وليست مصروفات مسجلة؛ تُسجل التكاليف الفعلية عند الفوترة فقط."
 ],
+"From par levels and stock on hand, less what is already on order. Simulated data.": [
+"Aus Mindestbeständen und Bestand, abzüglich bereits Bestelltem. Simulierte Daten.",
+"Dai livelli minimi e dalle scorte, meno quanto già ordinato. Dati simulati.",
+"من مستويات الحد الأدنى والمخزون المتوفر، ناقص ما هو مطلوب بالفعل. بيانات محاكاة."
+],
 "From sales and recipes": [
 "Aus Verkäufen und Rezepten",
 "Da vendite e ricette",
@@ -5453,6 +5493,11 @@
 "Vom Etikett",
 "Dall'etichetta",
 "من الملصق"
+],
+"From the main store, see below": [
+"Aus dem Hauptlager, siehe unten",
+"Dal magazzino centrale, vedi sotto",
+"من المخزن الرئيسي، انظر أدناه"
 ],
 "From the same sales and cost records as the Overview.": [
 "Aus denselben Verkaufs- und Kostendaten wie die Übersicht.",
@@ -5638,6 +5683,11 @@
 "Gruppe",
 "Gruppo",
 "المجموعة"
+],
+"Grouped by supplier, the way orders are placed. Quantities are in the supplier's packs; untick a line to leave it out.": [
+"Nach Lieferant gruppiert, wie bestellt wird. Mengen in den Gebinden des Lieferanten; eine Zeile abwählen, um sie wegzulassen.",
+"Raggruppato per fornitore, come si fanno gli ordini. Quantità nelle confezioni del fornitore; togli la spunta per escludere una riga.",
+"مجمّعة حسب المورد، كما تُرسل الطلبات. الكميات بعبوات المورد؛ ألغِ تحديد سطر لاستبعاده."
 ],
 "Guest": [
 "Gast",
@@ -6044,6 +6094,11 @@
 "Quanto resta, con in alto ciò che sta per finire. Avvia conteggio percorre il magazzino in ordine.",
 "كم تبقى، وما يوشك على النفاد في الأعلى. ويمر بدء الجرد بالمخزن بالترتيب."
 ],
+"How much of each item should each location keep?": [
+"Wie viel von jedem Artikel soll jeder Ort vorrätig haben?",
+"Quanto di ogni articolo deve tenere ogni sede?",
+"كم يجب أن يحتفظ كل موقع من كل صنف؟"
+],
 "How much stock is left?": [
 "Wie viel Bestand ist noch da?",
 "Quante scorte restano?",
@@ -6259,6 +6314,16 @@
 "Servizio in camera",
 "تناول الطعام في الغرفة"
 ],
+"Include": [
+"Einschließen",
+"Includi",
+"أدرج"
+],
+"Include {0}": [
+"{0} einschließen",
+"Includi {0}",
+"أدرج {0}"
+],
 "Incorrect physical count": [
 "Falsche Inventur",
 "Conteggio fisico errato",
@@ -6444,6 +6509,11 @@
 "Problema",
 "المشكلة"
 ],
+"Issue these from the main store before service. The main store’s own levels above decide what is bought.": [
+"Diese vor dem Service aus dem Hauptlager ausgeben. Die Bestände des Hauptlagers oben bestimmen, was gekauft wird.",
+"Preleva questi dal magazzino centrale prima del servizio. I livelli del magazzino centrale qui sopra decidono cosa si compra.",
+"اصرف هذه من المخزن الرئيسي قبل الخدمة. مستويات المخزن الرئيسي أعلاه تحدد ما يُشترى."
+],
 "It does not conclude why.": [
 "Es schließt nicht auf den Grund.",
 "Non ne deduce il motivo.",
@@ -6578,6 +6648,11 @@
 "Artikel, deren Bestelldatum auf dem Reiter Was bestellen heute oder morgen ist, in der dort gezeigten Menge, beim üblichen Lieferanten.",
 "Articoli la cui data d'ordine nella scheda Cosa ordinare è oggi o domani, nella quantità indicata, dal fornitore abituale.",
 "الأصناف التي يكون تاريخ طلبها في تبويب ما يجب طلبه اليوم أو غدا، بالكمية المعروضة، من المورد المعتاد."
+],
+"Items with a par level": [
+"Artikel mit Mindestbestand",
+"Articoli con livello minimo",
+"أصناف لها مستوى حد أدنى"
 ],
 "JSON": [
 "JSON",
@@ -7584,6 +7659,11 @@
 "Prezzo di listino, nessuna fattura",
 "سعر القائمة، لا فاتورة"
 ],
+"Listed in To order": [
+"In Zu bestellen gelistet",
+"Elencati in Da ordinare",
+"مدرجة في للطلب"
+],
 "Live calls made": [
 "Live-Abrufe",
 "Chiamate reali effettuate",
@@ -7688,6 +7768,11 @@
 "Hummerschwanz",
 "Coda di aragosta",
 "كركند"
+],
+"Location": [
+"Ort",
+"Sede",
+"الموقع"
 ],
 "Lock now": [
 "Jetzt sperren",
@@ -8089,6 +8174,11 @@
 "Massimo",
 "الحد الأقصى"
 ],
+"Maximum of {0}": [
+"Maximum von {0}",
+"Massimo di {0}",
+"الحد الأقصى لـ{0}"
+],
 "May be late, stock covers it": [
 "Vielleicht verspätet, Bestand reicht",
 "Possibile ritardo, le scorte bastano",
@@ -8239,6 +8329,11 @@
 "Latte",
 "حليب"
 ],
+"Min / max": [
+"Min. / Max.",
+"Min / max",
+"الحد الأدنى / الأقصى"
+],
 "Minibar": [
 "Minibar",
 "Minibar",
@@ -8258,6 +8353,16 @@
 "Minimum",
 "Minimo",
 "الحد الأدنى"
+],
+"Minimum and maximum per item and location. Below the minimum, an item goes to To order with the quantity back to the maximum. Simulated data.": [
+"Minimum und Maximum je Artikel und Ort. Unter dem Minimum kommt ein Artikel auf Zu bestellen, mit der Menge zurück zum Maximum. Simulierte Daten.",
+"Minimo e massimo per articolo e sede. Sotto il minimo, un articolo va in Da ordinare con la quantità che riporta al massimo. Dati simulati.",
+"الحد الأدنى والأقصى لكل صنف وموقع. تحت الحد الأدنى ينتقل الصنف إلى للطلب بكمية تعيده إلى الحد الأقصى. بيانات محاكاة."
+],
+"Minimum of {0}": [
+"Minimum von {0}",
+"Minimo di {0}",
+"الحد الأدنى لـ{0}"
 ],
 "Minimum order": [
 "Mindestbestellwert",
@@ -8724,6 +8829,11 @@
 "Mai in ritardo",
 "لم يتأخر قط"
 ],
+"Never ordered automatically": [
+"Nie automatisch bestellt",
+"Mai ordinato automaticamente",
+"لا يُطلب تلقائيًا أبدًا"
+],
 "New": [
 "Neu",
 "Nuovo",
@@ -8783,6 +8893,11 @@
 "Nächste Bestellung {0}.",
 "Prossimo ordine {0}.",
 "الطلب التالي {0}."
+],
+"Next run": [
+"Nächster Lauf",
+"Prossima esecuzione",
+"التشغيل التالي"
 ],
 "Next step": [
 "Nächster Schritt",
@@ -9634,6 +9749,11 @@
 "Olio d'oliva",
 "زيت زيتون"
 ],
+"On": [
+"An",
+"Attivo",
+"مفعّل"
+],
 "On every scanned shift the empties match the glasses sold.": [
 "In jeder gescannten Schicht passen die leeren Flaschen zu den verkauften Gläsern.",
 "In ogni turno scansionato i vuoti corrispondono ai bicchieri venduti.",
@@ -9648,6 +9768,31 @@
 "Der Bestand ist eine Schätzung aus letzter Zählung, Lieferungen und Verkäufen. Kritisch heißt: Eine heutige Bestellung käme zu spät.",
 "La giacenza è una stima da ultimo conteggio, consegne e vendite. Critico significa che un ordine di oggi arriverebbe troppo tardi.",
 "المتوفر تقدير من آخر جرد والتوريدات والمبيعات. وتعني حرج أن الطلب الذي يُرسل اليوم سيصل متأخرًا."
+],
+"On hand {0} L, minimum {1}, maximum {2}, {3} on order.": [
+"Bestand {0} L, Minimum {1}, Maximum {2}, {3} bestellt.",
+"In giacenza {0} L, minimo {1}, massimo {2}, {3} in ordine.",
+"المتوفر {0} لتر، الحد الأدنى {1}، الأقصى {2}، {3} قيد الطلب."
+],
+"On hand {0} L, minimum {1}, maximum {2}.": [
+"Bestand {0} L, Minimum {1}, Maximum {2}.",
+"In giacenza {0} L, minimo {1}, massimo {2}.",
+"المتوفر {0} لتر، الحد الأدنى {1}، الأقصى {2}."
+],
+"On hand {0} units, minimum {1}, maximum {2}.": [
+"Bestand {0} Einheiten, Minimum {1}, Maximum {2}.",
+"In giacenza {0} unità, minimo {1}, massimo {2}.",
+"المتوفر {0} وحدات، الحد الأدنى {1}، الأقصى {2}."
+],
+"On hand {0}, minimum {1}, maximum {2}, {3} on order.": [
+"Bestand {0}, Minimum {1}, Maximum {2}, {3} bestellt.",
+"In giacenza {0}, minimo {1}, massimo {2}, {3} in ordine.",
+"المتوفر {0}، الحد الأدنى {1}، الأقصى {2}، {3} قيد الطلب."
+],
+"On hand {0}, minimum {1}, maximum {2}.": [
+"Bestand {0}, Minimum {1}, Maximum {2}.",
+"In giacenza {0}, minimo {1}, massimo {2}.",
+"المتوفر {0}، الحد الأدنى {1}، الأقصى {2}."
 ],
 "On order": [
 "Bestellt",
@@ -9764,6 +9909,11 @@
 "Una bottiglia aperta può sempre essere in parte usata, quindi uno scarto sotto le due bottiglie non viene mai segnalato. Bottiglie consegnate e conti sono simulati.",
 "قد تكون زجاجة مفتوحة مستخدمة جزئيًا دائمًا، لذا لا يُشار أبدًا إلى فرق أقل من زجاجتين. الزجاجات المصروفة والفواتير بيانات محاكاة."
 ],
+"One order per supplier, at the quantities on Predictions.": [
+"Eine Bestellung je Lieferant, in den Mengen aus den Prognosen.",
+"Un ordine per fornitore, con le quantità delle Previsioni.",
+"طلب واحد لكل مورد، بالكميات الواردة في التوقعات."
+],
 "One order per supplier.": [
 "Eine Bestellung pro Lieferant.",
 "Un ordine per fornitore.",
@@ -9803,6 +9953,11 @@
 "Nur eine Führungskraft, die Markierungen schließen darf, kann eine Prüfung bestätigen.",
 "Solo un responsabile che può chiudere le segnalazioni può confermare un controllo.",
 "لا يؤكد الفحص إلا مدير يحق له إغلاق التنبيهات."
+],
+"Only below minimum": [
+"Nur unter Minimum",
+"Solo sotto il minimo",
+"تحت الحد الأدنى فقط"
 ],
 "Only deliveries with a difference": [
 "Nur Lieferungen mit Differenz",
@@ -10419,6 +10574,11 @@
 "Ordinato dal fornitore di riserva",
 "طُلب من المورد البديل"
 ],
+"Ordered this morning": [
+"Heute Morgen bestellt",
+"Ordinato stamattina",
+"طُلب هذا الصباح"
+],
 "Ordering": [
 "Bestellen",
 "Ordini",
@@ -10443,6 +10603,16 @@
 "Bestellungen auf dem Weg durch Küche und Bar.",
 "Ordini in movimento tra cucina e bar.",
 "الطلبات أثناء مرورها بالمطبخ والبار."
+],
+"Orders of {0} or less where no item needs a manager’s review.": [
+"Bestellungen bis {0}, bei denen kein Artikel eine Prüfung durch eine Führungskraft braucht.",
+"Ordini fino a {0} in cui nessun articolo richiede la revisione di un responsabile.",
+"الطلبات بقيمة {0} أو أقل التي لا يحتاج أي صنف فيها إلى مراجعة مدير."
+],
+"Orders over {0}, or with an item that is more than {1} times its last {2} weeks of use, a fresh item that covers more days than it keeps, or a month with low forecast confidence. These go to purchasing like any other order.": [
+"Bestellungen über {0} oder mit einem Artikel über dem {1}-Fachen des Verbrauchs der letzten {2} Wochen, einem Frischartikel für mehr Tage als seine Haltbarkeit, oder in einem Monat mit geringer Prognosesicherheit. Diese gehen wie jede andere Bestellung an den Einkauf.",
+"Ordini oltre {0}, o con un articolo oltre {1} volte il consumo delle ultime {2} settimane, un fresco che copre più giorni di quanti ne dura, o un mese con previsione poco affidabile. Questi vanno all'ufficio acquisti come ogni altro ordine.",
+"الطلبات فوق {0}، أو التي فيها صنف يزيد على {1} أضعاف استهلاك آخر {2} أسابيع، أو صنف طازج يغطي أيامًا أكثر من صلاحيته، أو شهر بثقة توقع منخفضة. تذهب هذه إلى المشتريات مثل أي طلب آخر."
 ],
 "Orders sized to the forecast instead of to par: {0} of {1} purchases in {2} days.": [
 "Bestellungen nach Prognose statt nach Sollbestand: {0} von {1} Einkauf in {2} Tagen.",
@@ -10578,6 +10748,11 @@
 "Auffüllungen der Outlets",
 "Rifornimenti dei punti vendita",
 "تزويد المنافذ"
+],
+"Outlet working stock against each outlet's own par level, from the last count at close.": [
+"Arbeitsbestand der Outlets gegen den eigenen Mindestbestand, aus der letzten Zählung bei Schließung.",
+"Scorte operative dei punti vendita rispetto al loro livello minimo, dall'ultimo conteggio alla chiusura.",
+"مخزون التشغيل في المنافذ مقابل مستوى الحد الأدنى لكل منفذ، من آخر عدّ عند الإغلاق."
 ],
 "Outlets": [
 "Outlets",
@@ -11259,6 +11434,11 @@
 "Prezzi e differenze di consegna",
 "الأسعار وفروق التوريد"
 ],
+"Prices are the agreed catalogue prices, before VAT. A supplier’s minimum order and delivery days are checked when the drafts are made. Nothing goes to a supplier until a draft is approved and sent.": [
+"Preise sind die vereinbarten Katalogpreise, ohne MwSt. Mindestbestellwert und Liefertage des Lieferanten werden beim Anlegen der Entwürfe geprüft. Nichts geht an einen Lieferanten, bevor ein Entwurf freigegeben und gesendet ist.",
+"I prezzi sono quelli di catalogo concordati, IVA esclusa. Ordine minimo e giorni di consegna del fornitore si controllano quando si creano le bozze. Nulla va a un fornitore finché una bozza non è approvata e inviata.",
+"الأسعار هي أسعار الكتالوج المتفق عليها، قبل الضريبة. يُتحقق من الحد الأدنى للطلب وأيام التسليم عند إنشاء المسودات. لا يذهب شيء إلى المورد قبل الموافقة على المسودة وإرسالها."
+],
 "Print or save as PDF": [
 "Drucken oder als PDF speichern",
 "Stampa o salva in PDF",
@@ -11388,6 +11568,11 @@
 "Einkauf {0}",
 "Acquisti {0}",
 "المشتريات {0}"
+],
+"Purchasing, for each order that waits. The storekeeper, for each delivery on its way.": [
+"Der Einkauf, für jede wartende Bestellung. Der Lagerverwalter, für jede Lieferung unterwegs.",
+"L'ufficio acquisti, per ogni ordine in attesa. Il magazziniere, per ogni consegna in arrivo.",
+"المشتريات، لكل طلب ينتظر. وأمين المخزن، لكل تسليم في الطريق."
 ],
 "Purchasing, the head chef and the restaurant manager were told this evening, and are told again at {0} if nobody has handled it.": [
 "Einkauf, Küchenchef und Restaurantleitung wurden heute Abend informiert und erneut um {0}, falls niemand reagiert hat.",
@@ -13389,6 +13574,11 @@
 "Inviato in preparazione, poi rimosso o annullato",
 "أُرسل للتحضير ثم حُذف أو أُلغي"
 ],
+"Sent to suppliers": [
+"An Lieferanten gesendet",
+"Inviato ai fornitori",
+"أُرسل إلى الموردين"
+],
 "Sent to the guest bill in the PMS": [
 "An die Gästerechnung im PMS gesendet",
 "Inviato al conto dell'ospite nel PMS",
@@ -13403,6 +13593,16 @@
 "An {0} gesendet (simuliert)",
 "Inviato a {0} (simulato)",
 "أُرسل إلى {0} (محاكاة)"
+],
+"Sent without approval": [
+"Ohne Freigabe gesendet",
+"Inviato senza approvazione",
+"أُرسل دون موافقة"
+],
+"Sent without waiting: Under {0}, usual supplier, nothing to review.": [
+"Ohne Warten gesendet: Unter {0}, üblicher Lieferant, nichts zu prüfen.",
+"Inviato senza attendere: sotto {0}, fornitore abituale, niente da rivedere.",
+"أُرسل دون انتظار: أقل من {0}، المورد المعتاد، لا شيء للمراجعة."
 ],
 "Sent {0} at {1}, with {2}.pdf. Expected {3}.": [
 "Gesendet {0} um {1}, mit {2}.pdf. Erwartet {3}.",
@@ -13463,6 +13663,21 @@
 "Anderen Preis setzen",
 "Imposta un prezzo diverso",
 "حدد سعرًا مختلفًا"
+],
+"Set by": [
+"Gesetzt von",
+"Impostato da",
+"حدده"
+],
+"Set by hand": [
+"Von Hand gesetzt",
+"Impostato a mano",
+"محدد يدويًا"
+],
+"Set by {0}. The same rules every morning, written out so anyone can check them.": [
+"Gesetzt von {0}. Jeden Morgen dieselben Regeln, ausgeschrieben, damit jeder sie prüfen kann.",
+"Impostato da {0}. Le stesse regole ogni mattina, scritte perché chiunque possa controllarle.",
+"حددها {0}. القواعد نفسها كل صباح، مكتوبة ليتمكن أي شخص من مراجعتها."
 ],
 "Set it once, in the order you walk. Everyone counting here uses it.": [
 "Einmal festlegen, in Ihrer Laufreihenfolge. Alle Zählenden hier nutzen sie.",
@@ -13748,6 +13963,11 @@
 "Die drei größten zeigen",
 "Mostra i primi tre",
 "عرض أكبر ثلاثة"
+],
+"Show them": [
+"Anzeigen",
+"Mostrali",
+"اعرضها"
 ],
 "Show this hotel": [
 "Dieses Hotel anzeigen",
@@ -14128,6 +14348,11 @@
 "Vorspeisen",
 "Antipasti",
 "المقبلات"
+],
+"Starting level": [
+"Ausgangsniveau",
+"Livello iniziale",
+"المستوى الابتدائي"
 ],
 "Statement": [
 "Abrechnung",
@@ -15449,6 +15674,11 @@
 "La regola considera {0} o più di un articolo con più di {1} per ospite.",
 "تنظر القاعدة في {0} أو أكثر من صنف واحد بأكثر من {1} لكل ضيف."
 ],
+"The rules": [
+"Die Regeln",
+"Le regole",
+"القواعد"
+],
 "The rules behind Finance's flags. A hotel agrees these during onboarding. They are fixed in this demo.": [
 "Die Regeln hinter den Finanzhinweisen. Ein Hotel vereinbart sie beim Onboarding. In dieser Demo sind sie fest.",
 "Le regole dietro le segnalazioni finanziarie. L'hotel le concorda all'avvio. In questa demo sono fisse.",
@@ -15523,6 +15753,11 @@
 "Die Bestandsprognose konnte nicht geladen werden. Die anderen Zahlen sind aktuell.",
 "Non è stato possibile caricare la previsione. Gli altri dati sono aggiornati.",
 "تعذر تحميل توقع المخزون. الأرقام الأخرى ما زالت محدثة."
+],
+"The suggestion comes from the prediction: average daily use over four weeks, times the supplier’s lead time plus one day of safety for the minimum, plus one delivery cycle for the maximum. Outlets: one day of use, topped up to two and a half. Par levels work on their own; the suggestion changes nothing until someone uses it.": [
+"Der Vorschlag stammt aus der Prognose: durchschnittlicher Tagesverbrauch über vier Wochen, mal Lieferzeit des Lieferanten plus ein Tag Sicherheit für das Minimum, plus ein Lieferzyklus für das Maximum. Outlets: ein Tag Verbrauch, aufgefüllt auf zweieinhalb. Mindestbestände wirken für sich; der Vorschlag ändert nichts, bis jemand ihn übernimmt.",
+"Il suggerimento viene dalla previsione: consumo medio giornaliero su quattro settimane, per i giorni di consegna del fornitore più un giorno di sicurezza per il minimo, più un ciclo di consegna per il massimo. Punti vendita: un giorno di consumo, riportato a due e mezzo. I livelli minimi funzionano da soli; il suggerimento non cambia nulla finché qualcuno non lo usa.",
+"يأتي الاقتراح من التوقع: متوسط الاستهلاك اليومي على أربعة أسابيع، مضروبًا في مهلة توريد المورد زائد يوم أمان للحد الأدنى، وزائد دورة تسليم للحد الأقصى. المنافذ: استهلاك يوم، يُكمَّل إلى يومين ونصف. تعمل مستويات الحد الأدنى بمفردها؛ ولا يغيّر الاقتراح شيئًا حتى يستخدمه أحد."
 ],
 "The supplier's ordering system ({0})": [
 "Das Bestellsystem des Lieferanten ({0})",
@@ -15733,6 +15968,11 @@
 "Heute Morgen im {0}: Zimmer {1}, Frühstück nicht berechnet",
 "Stamattina da {0}: camera {1}, colazione non addebitata",
 "هذا الصباح في {0}: الغرفة {1}، إفطار غير محتسب"
+],
+"This morning's orders, {0} at {1}": [
+"Heutige Bestellungen, {0} um {1}",
+"Ordini di stamattina, {0} alle {1}",
+"طلبات هذا الصباح، {0} الساعة {1}"
 ],
 "This morning's stock take waits for you: expected against counted, the difference in units and euros, a likely reason for each, large ones highlighted. Approve it, or send it back.": [
 "Die heutige Inventur wartet auf Sie: erwartet gegen gezählt, die Differenz in Einheiten und Euro, ein wahrscheinlicher Grund für jede, große markiert. Freigeben oder zurückschicken.",
@@ -15988,6 +16228,11 @@
 "Morgen {0} bis {1}",
 "Domani dalle {0} alle {1}",
 "غدا من {0} إلى {1}"
+],
+"Tomorrow, {0}": [
+"Morgen, {0}",
+"Domani, {0}",
+"غدًا، {0}"
 ],
 "Tonight": [
 "Heute Nacht",
@@ -16594,6 +16839,11 @@
 "Consumo nell'ultima settimana",
 "الاستخدام في الأسبوع الماضي"
 ],
+"Use suggested levels for these {0}": [
+"Vorgeschlagene Bestände für diese {0} übernehmen",
+"Usa i livelli suggeriti per questi {0}",
+"استخدم المستويات المقترحة لهذه {0}"
+],
 "Use the invoice price": [
 "Rechnungspreis verwenden",
 "Usa il prezzo della fattura",
@@ -16954,6 +17204,16 @@
 "Aspettare costa denaro",
 "الانتظار أطول يكلف مالًا"
 ],
+"Waits because: Over the {0} limit for sending without approval.": [
+"Wartet, weil: Über dem Limit von {0} für das Senden ohne Freigabe.",
+"Attende perché: oltre il limite di {0} per l'invio senza approvazione.",
+"ينتظر لأن: فوق حد {0} للإرسال دون موافقة."
+],
+"Waits for approval": [
+"Wartet auf Freigabe",
+"Attende l'approvazione",
+"ينتظر الموافقة"
+],
 "Walk in fridge, dry store, cellar and bar store counted before the deliveries.": [
 "Kühlraum, Trockenlager, Keller und Barlager vor den Lieferungen gezählt.",
 "Cella frigorifera, dispensa, cantina e magazzino bar contati prima delle consegne.",
@@ -17164,6 +17424,11 @@
 "Cosa potrebbe spiegarlo",
 "ما الذي قد يفسره"
 ],
+"What did Tyll order for me this morning?": [
+"Was hat Tyll heute Morgen für mich bestellt?",
+"Cosa ha ordinato Tyll per me stamattina?",
+"ماذا طلب Tyll لي هذا الصباح؟"
+],
 "What did each stock take find, and is it approved?": [
 "Was hat jede Inventur ergeben, und ist sie freigegeben?",
 "Cosa ha trovato ogni inventario, ed è approvato?",
@@ -17284,6 +17549,11 @@
 "Cosa è in ordine e cosa richiede ancora una decisione?",
 "ما المطلوب حاليًا، وما الذي يحتاج إلى قرار؟"
 ],
+"What is ordered": [
+"Was bestellt wird",
+"Cosa viene ordinato",
+"ما يُطلب"
+],
 "What it reads": [
 "Was es liest",
 "Cosa legge",
@@ -17373,6 +17643,11 @@
 "Was vor dem Ausgehen zu bestellen ist, aus Verkäufen, Reservierungen und Belegung, und welche Lieferungen zu spät kommen könnten.",
 "Cosa ordinare prima che finisca, da vendite, prenotazioni e occupazione, e quali consegne potrebbero arrivare tardi.",
 "ما يجب طلبه قبل نفاده، من المبيعات والحجوزات والإشغال، وأي التوصيلات قد تتأخر."
+],
+"What to order before it runs out, worked out by Tyll's own model from sales, bookings, events and hotel occupancy, with the reasoning beside every quantity. No AI chooses a quantity. Deliveries likely to come too late show here too.": [
+"Was vor dem Ausgehen zu bestellen ist, berechnet von Tylls eigenem Modell aus Verkäufen, Reservierungen, Events und Hotelbelegung, mit der Begründung neben jeder Menge. Keine KI wählt eine Menge. Lieferungen, die wahrscheinlich zu spät kommen, stehen auch hier.",
+"Cosa ordinare prima che finisca, calcolato dal modello di Tyll da vendite, prenotazioni, eventi e occupazione dell'hotel, con il ragionamento accanto a ogni quantità. Nessuna IA sceglie una quantità. Qui compaiono anche le consegne che potrebbero arrivare troppo tardi.",
+"ما يجب طلبه قبل نفاده، يحسبه نموذج Tyll من المبيعات والحجوزات والفعاليات وإشغال الفندق، مع الشرح بجانب كل كمية. لا يختار أي ذكاء اصطناعي الكمية. وتظهر هنا أيضًا التسليمات المرجح تأخرها."
 ],
 "What to prep": [
 "Was vorbereiten",
@@ -17588,6 +17863,11 @@
 "Wer in welchem Zimmer wohnt, An- und Abreisezeiten, Gäste je Zimmer",
 "Chi è in quale camera, orari di check-in e check-out, ospiti per camera",
 "من يقيم في أي غرفة، وأوقات الوصول والمغادرة، وعدد النزلاء في كل غرفة"
+],
+"Who is told": [
+"Wer informiert wird",
+"Chi viene avvisato",
+"من يُبلَّغ"
 ],
 "Who needs coaching, and where are drinks going missing?": [
 "Wer braucht Coaching, und wo gehen Getränke verloren?",
@@ -18764,6 +19044,11 @@
 "sotto {0}.",
 "أقل من {0}."
 ],
+"units": [
+"Einheiten",
+"unità",
+"وحدات"
+],
 "up to the closing count": [
 "bis zur Endzählung",
 "fino al conteggio finale",
@@ -18893,6 +19178,11 @@
 "{0} allein, die größte markierte Lücke.",
 "{0} da solo, il divario segnalato più grande.",
 "{0} وحده، أكبر فرق مُعلَّم."
+],
+"{0} already covered by open orders": [
+"{0} bereits durch offene Bestellungen gedeckt",
+"{0} già coperti da ordini aperti",
+"{0} مغطاة بالفعل بطلبات مفتوحة"
 ],
 "{0} and others need an order in the next few days.": [
 "{0} und weitere brauchen in den nächsten Tagen eine Bestellung.",
@@ -19729,6 +20019,11 @@
 "{0} coperti previsti, {1} evento, consumi delle ultime {2} settimane. Affidabilità alta.",
 "{0} زبونًا متوقعًا، {1} فعالية، استخدام آخر {2} أسابيع. الثقة عالية."
 ],
+"{0} from the prediction's suggestion": [
+"{0} aus dem Vorschlag der Prognose",
+"{0} dal suggerimento della previsione",
+"{0} من اقتراح التوقع"
+],
 "{0} from {1}, {2} before VAT": [
 "{0} von {1}, {2} ohne MwSt.",
 "{0} da {1}, {2} IVA esclusa",
@@ -20069,6 +20364,16 @@
 "{0} articoli non sono ancora abbinati al menu. Restano sul conto e sono elencati per l'avvio.",
 "{0} أصناف لم تُطابق بعد مع قائمة الطعام. تبقى على الفاتورة وتُدرج لمرحلة الإعداد."
 ],
+"{0} items due, about {1}": [
+"{0} Artikel fällig, etwa {1}",
+"{0} articoli in scadenza, circa {1}",
+"{0} أصناف مستحقة، نحو {1}"
+],
+"{0} items from {1} suppliers, before VAT": [
+"{0} Artikel von {1} Lieferanten, ohne MwSt.",
+"{0} articoli da {1} fornitori, IVA esclusa",
+"{0} أصناف من {1} موردين، قبل الضريبة"
+],
 "{0} items from {1} suppliers, {2}. Nothing is sent until it is approved.": [
 "{0} Artikel von {1} Lieferanten, {2}. Nichts wird vor der Freigabe gesendet.",
 "{0} articoli da {1} fornitori, {2}. Nulla viene inviato prima dell'approvazione.",
@@ -20383,6 +20688,11 @@
 "{0} mehr kam herein, als Kasse und Abfallprotokoll erklären. Tyll markiert es, weil die Lücke größer ist, als die letzte Lieferung im Regal hinterlassen könnte.",
 "Sono arrivati {0} in più di quanto spieghino cassa e registro sprechi. Tyll lo segnala perché il divario supera quanto l'ultima consegna potrebbe lasciare sullo scaffale.",
 "ورد {0} أكثر مما تفسره نقطة البيع وسجل الهدر. يُعلِّمه Tyll لأن الفرق أكبر مما قد يتركه آخر توريد على الرف."
+],
+"{0} more items are below the minimum but already covered by open orders.": [
+"{0} weitere Artikel liegen unter dem Minimum, sind aber bereits durch offene Bestellungen gedeckt.",
+"Altri {0} articoli sono sotto il minimo ma già coperti da ordini aperti.",
+"{0} أصناف أخرى تحت الحد الأدنى لكنها مغطاة بالفعل بطلبات مفتوحة."
 ],
 "{0} more low.": [
 "{0} weitere niedrig.",
@@ -20773,6 +21083,11 @@
 "{0} offene Hinweise, bis geprüft",
 "{0} segnalazioni aperte, fino alla verifica",
 "{0} تنبيهات مفتوحة حتى التحقق"
+],
+"{0} orders at {1}": [
+"{0} Bestellungen um {1}",
+"{0} ordini alle {1}",
+"{0} طلبات الساعة {1}"
 ],
 "{0} orders, {1}.": [
 "{0} Bestellungen, {1}.",
@@ -21609,6 +21924,11 @@
 "{0} con più acquistato che usato, {1} con più usato che acquistato. Prima il divario maggiore.",
 "{0} بمشتريات أكثر من الاستخدام، و{1} باستخدام أكثر من المشتريات. الأكبر فرقًا أولًا."
 ],
+"{0} with purchasing": [
+"{0} beim Einkauf",
+"{0} presso l'ufficio acquisti",
+"{0} لدى المشتريات"
+],
 "{0} with {1}": [
 "{0} mit {1}",
 "{0} con {1}",
@@ -21678,6 +21998,21 @@
 "{0} · pro Einheit · in {1} Rezepten",
 "{0} · per unità · in {1} ricette",
 "{0} · للوحدة · في {1} وصفات"
+],
+"{0} × Case of {1} ({2} units)": [
+"{0} × Kiste mit {1} ({2} Einheiten)",
+"{0} × Cassa da {1} ({2} unità)",
+"{0} × صندوق من {1} ({2} وحدات)"
+],
+"{0} × Pack of {1} ({2})": [
+"{0} × Packung {1} ({2})",
+"{0} × Confezione da {1} ({2})",
+"{0} × عبوة {1} ({2})"
+],
+"{0} × Per kg ({1})": [
+"{0} × Pro kg ({1})",
+"{0} × Al kg ({1})",
+"{0} × لكل كغ ({1})"
 ],
 "{0} × {1} (breakage) at {2}": [
 "{0} × {1} (Bruch) in {2}",
@@ -22014,6 +22349,11 @@
 "{0}, barista",
 "{0}، ساقي البار"
 ],
+"{0}, case of {1}": [
+"{0}, Kiste mit {1}",
+"{0}, cassa da {1}",
+"{0}، صندوق من {1}"
+],
 "{0}, check {1}": [
 "{0}, Rechnung {1}",
 "{0}, conto {1}",
@@ -22043,6 +22383,11 @@
 "{0}, Abendessen · {1}, {2}",
 "{0}, cena · {1}, {2}",
 "{0}، العشاء · {1}، {2}"
+],
+"{0}, drum of {1}": [
+"{0}, Fass mit {1}",
+"{0}, fusto da {1}",
+"{0}، برميل {1}"
 ],
 "{0}, evening shift": [
 "{0}, Abendschicht",
@@ -22074,6 +22419,11 @@
 "{0}, calici addebitati",
 "{0}، الكؤوس المحسوبة"
 ],
+"{0}, keg of {1}": [
+"{0}, Fass mit {1}",
+"{0}, fusto da {1}",
+"{0}، برميل {1}"
+],
 "{0}, late night shift": [
 "{0}, Spätschicht",
 "{0}, turno di notte",
@@ -22099,10 +22449,25 @@
 "{0}, responsabile",
 "{0}، مدير"
 ],
+"{0}, no one had to approve": [
+"{0}, ohne nötige Freigabe",
+"{0}, nessuno ha dovuto approvare",
+"{0}، لم يكن على أحد الموافقة"
+],
 "{0}, no reason, no approval": [
 "{0}, kein Grund, keine Freigabe",
 "{0}, nessun motivo, nessuna approvazione",
 "{0}، دون سبب ودون موافقة"
+],
+"{0}, pack of {1}": [
+"{0}, Packung {1}",
+"{0}, confezione da {1}",
+"{0}، عبوة {1}"
+],
+"{0}, per kg": [
+"{0}, pro kg",
+"{0}, al kg",
+"{0}، لكل كغ"
 ],
 "{0}, prepared": [
 "{0}, zubereitet",

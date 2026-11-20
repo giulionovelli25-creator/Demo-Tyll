@@ -47,7 +47,7 @@ import { PILOT_URL } from "@/lib/pilot";
 const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }> = {
   overview: { label: "Overview", icon: LayoutDashboard },
   stock: { label: "Stock levels", icon: Package },
-  forecast: { label: "Ordering", icon: ShoppingCart },
+  forecast: { label: "Predictions", icon: ShoppingCart },
   money: { label: "Revenue", icon: Banknote },
   drinks: { label: "Over pouring", short: "Pouring", icon: Wine },
   waste: { label: "Log waste", icon: Trash2 },
@@ -507,7 +507,7 @@ function PhoneBar({ user }: { user: User }) {
     { item: find("overview"), lit: pathname === "/", tone: "indigo" },
     { item: find("stock"), lit: section === "stock" && pathname !== "/waste", tone: "teal" },
     { item: find("waste"), lit: pathname === "/waste", tone: "teal" },
-    { item: find("ordering"), lit: section === "purchasing", tone: "blue" },
+    { item: find("predictions"), lit: section === "purchasing", tone: "blue" },
     { item: find("revenue"), lit: section === "revenue", tone: "violet" },
   ].filter((s) => may(s.item));
   const cell = "relative flex h-16 w-full flex-col items-center justify-center gap-1 text-xs text-steel transition-colors duration-150";

@@ -263,7 +263,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Ordering" question="What do I need to order?" lead="Tyll's own forecasting model works out every quantity from sales history, bookings, events, hotel occupancy and current stock. No AI chooses a quantity. Simulated data." />
+      <PageHeader title="Predictions" question="What do I need to order?" lead="Tyll's own forecasting model works out every quantity from sales history, bookings, events, hotel occupancy and current stock. No AI chooses a quantity. Simulated data." />
       {error ? <WidgetError>The stock prediction could not load.</WidgetError> : !plan ? (
         <div className="space-y-4" aria-busy><Skeleton className="h-24 w-full" /><Skeleton className="h-64 w-full" /></div>
       ) : (
@@ -286,7 +286,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
           {tabs}
           {autoOrder?.settings.on && (
             <p className="rounded-panel border border-line bg-paper px-5 py-3 text-[13px] text-graphite shadow-panel sm:px-6">
-              <span className="font-medium text-ink">Automatic ordering is on.</span> Every morning at {autoOrder.settings.time} Tyll orders the items due that day or the next{autoOrder.orders.length ? `; this morning it placed ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, so they no longer show here` : ""}. They are on the Automatic ordering tab.
+              <span className="font-medium text-ink">Automatic ordering is on.</span> Every morning at {autoOrder.settings.time} Tyll orders the items due that day or the next{autoOrder.orders.length ? `; this morning it placed ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, so they no longer show here` : ""}. Find them under Automatic ordering in the menu.
             </p>
           )}
           <DeliveriesAtRisk plan={plan} />

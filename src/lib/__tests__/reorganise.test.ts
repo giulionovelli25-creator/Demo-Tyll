@@ -22,10 +22,11 @@ describe("sidebar in three sections", () => {
     const hrefs = ALL_ITEMS.flatMap((i) => [i.href, ...(i.also ?? [])]);
     expect(new Set(hrefs).size).toBe(hrefs.length);
     expect(SECTIONS.map((s) => s.title)).toEqual(["Stock and waste", "Purchasing", "Revenue and reconciliation"]);
-    // Simplify pass (20 November 2026): Purchasing is Ordering, Orders, Suppliers, Deliveries and invoices; every section
-    // has at most four items. Expiring soon and Other tools only return when switched on in lib/features.ts.
-    for (const s of SECTIONS) expect(s.items.length).toBeLessThanOrEqual(4 + (s.id === "stock" && FEATURES.expiry ? 1 : 0));
-    expect(SECTIONS.find((s) => s.id === "purchasing")!.items.map((i) => i.label)).toEqual(["Ordering", "Orders", "Suppliers", "Deliveries and invoices"]);
+    // Purchasing is the flow hotels save most time in, and predictions are the main selling point (owner, 19 and 20
+    // November 2026): To order, Automatic ordering, Predictions, Orders, Suppliers, Deliveries and invoices, as on the live
+    // demo. The other sections keep four; Expiring soon and Other tools only return when switched on in lib/features.ts.
+    for (const s of SECTIONS) expect(s.items.length).toBeLessThanOrEqual(s.id === "purchasing" ? 6 : 4 + (s.id === "stock" && FEATURES.expiry ? 1 : 0));
+    expect(SECTIONS.find((s) => s.id === "purchasing")!.items.map((i) => i.label)).toEqual(["To order", "Automatic ordering", "Predictions", "Orders", "Suppliers", "Deliveries and invoices"]);
     for (const href of ["/", "/alerts", "/stock", "/waste", "/drinks", "/forecast", "/deliveries", "/money", "/reports", "/settings"]) expect(hrefs).toContain(href);
     expect(hrefs.includes("/more")).toBe(FEATURES.otherTools);
     expect(hrefs.includes("/stock?tab=expiry")).toBe(FEATURES.expiry);
@@ -40,9 +41,10 @@ describe("sidebar in three sections", () => {
     expect(activeItem("/stock", "counts")?.label).toBe("Stock takes and missing stock");
     expect(activeItem("/stock", "takes")?.label).toBe("Stock takes and missing stock");
     if (FEATURES.expiry) expect(activeItem("/stock", "expiry")?.label).toBe("Expiring soon");
-    expect(activeItem("/forecast", "pars")?.label).toBe("Ordering");
-    expect(activeItem("/forecast", "auto")?.label).toBe("Ordering");
-    expect(activeItem("/forecast", null)?.label).toBe("Ordering");
+    expect(activeItem("/forecast", "pars")?.label).toBe("To order");
+    expect(activeItem("/forecast", "auto")?.label).toBe("Automatic ordering");
+    expect(activeItem("/forecast", null)?.label).toBe("Predictions");
+    expect(activeItem("/forecast", "outlook")?.label).toBe("Predictions");
     expect(activeItem("/forecast", "catalogue")?.label).toBe("Suppliers");
     expect(activeItem("/money", "cash")?.label).toBe("Flagged transactions");
     expect(activeItem("/forecast", "buy")?.label).toBe("Orders");

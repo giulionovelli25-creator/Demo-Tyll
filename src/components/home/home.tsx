@@ -2,7 +2,7 @@
 // Overview: money lost and saved this month with its trend, the three things that need you today, and one row of small doors into each area. Nothing else.
 import { orderStage } from "@/lib/domain/order-stage";
 import { awaitingDelivery } from "@/lib/domain/procurement";
-import { useRequests } from "@/lib/plan-hooks";
+import { useAutoOrder, useRequests } from "@/lib/plan-hooks";
 import { featureOn } from "@/lib/features";
 import Link from "next/link";
 import { OrderNowButton } from "@/components/stock/order-now";
@@ -20,7 +20,7 @@ import { topAlerts } from "@/lib/domain/top-alerts";
 import { inBillsLedger, isEstimateFlag } from "@/lib/domain/detect";
 import { can, type ModuleId } from "@/lib/domain/access";
 import { useCtx, useInvestigations, useView } from "@/lib/hooks";
-import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, fmtDate, fmtPct, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
+import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, fmtDate, fmtMoney, fmtPct, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
 
 
 type Tone = "neg" | "warn" | "pos" | "money" | undefined;
@@ -131,6 +131,8 @@ export function Home() {
   const { user, sel, money, propertyId } = useView();
   const ctx = useCtx();
   const { plan, open, pour, error, loading } = useAlertFeed();
+  // What automatic ordering placed this morning, for the Predictions card. Only for roles that order.
+  const autoOrder = useAutoOrder(can(user, "purchase.create") && plan ? plan.propertyId : null).data?.auto;
   const investigations = useInvestigations();
   const checks = useDeliveryChecks(plan?.propertyId ?? propertyId ?? "lis");
   // What automatic ordering placed this morning, for the Predictions card. Only for roles that order.
@@ -210,6 +212,13 @@ export function Home() {
   // The step most of them wait at, named once: one short sentence, the same in every language.
   const waitingMost = Object.entries(STEP_WHO).map(([st, who]) => [who, ordersWaiting.filter((r) => r.status === st).length] as const).sort((x, y) => y[1] - x[1])[0]?.[0] ?? "";
   const items = plan?.items ?? [];
+  // Predictions: what Tyll's model says to buy to month end, and when each part is due (the Predictions card).
+  const toOrder = items.filter((i) => i.orderQty > 0);
+  const nextDate = toOrder.map((i) => i.orderBy ?? "").filter(Boolean).sort()[0];
+  const dueToday = sum(toOrder.filter((i) => i.orderBy === DEMO_TODAY), (i) => i.cost);
+  const dueWeek = sum(toOrder.filter((i) => i.orderBy && i.orderBy > DEMO_TODAY && i.orderBy <= addDays(DEMO_TODAY, 7)), (i) => i.cost);
+  const dueLater = sum(toOrder, (i) => i.cost) - dueToday - dueWeek;
+  const local = (n: number) => fmtMoney(n, propertyById[plan?.propertyId ?? "lis"].currency, { compact: true });
   const critical = items.filter((i) => i.health === "critical");
   const low = items.filter((i) => i.health === "low");
   const net = week.now.net;
@@ -281,7 +290,7 @@ export function Home() {
       </div>
 
       {/* Four cards, each one thing to act on, in plain words. Revenue reporting stays on Revenue and Reports. */}
-      <div data-tour="kpis" className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+      <div data-tour="kpis" className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5">
         <Card
           module="stock" title="Stock levels" picture={<Split parts={[{ n: critical.length, className: "bg-neg" }, { n: low.length, className: "bg-warn" }, { n: items.length - critical.length - low.length, className: "bg-pos" }]} />} number={critical.length ? `${critical.length} critical` : "Nothing urgent"} tone={critical.length ? "neg" : "pos"} loading={!plan && loading}
           line={critical.length ? `${critical.length === 1 ? "Runs" : "Run"} out before a later order could arrive${critical.every((i) => i.nextQty === 0 && i.incoming > 0) ? ", already on order" : ""}. ${low.length} more low.` : `${low.length} low and ${items.length - low.length} fine.`}
@@ -292,6 +301,13 @@ export function Home() {
           module="drinks" title="Drinks not billed" picture={<Bars values={pourDaily.slice(-7).map((d) => d.value)} />} number={money(lostWeek.drinks, { compact: true })}
           line={`Poured but not billed in the last 7 days, ${versus(lostWeek.drinks, lostWeek.drinksBefore, "down").text.toLowerCase()}. An estimate.`}
           cta="See over pouring" href="/drinks"
+        />
+        <Card
+          module="forecast" title="Predictions" picture={<Split parts={[{ n: dueToday, className: "bg-money" }, { n: dueWeek, className: "bg-money/50" }, { n: dueLater, className: "bg-money/20" }]} />} number={local(sum(toOrder, (i) => i.cost))} loading={!plan && loading}
+          line={autoOrder?.run && autoOrder.orders.length
+            ? `Ordered automatically at ${autoOrder.run.time}: ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, ${local(sum(autoOrder.orders, (r) => sum(r.lines, (l) => l.qty * l.unitPrice)))}. ${autoOrder.orders.filter((r) => r.auto?.decision === "held").length} waiting for approval.`
+            : `Buying planned to ${plan ? fmtDate(plan.period.to) : "month end"}: ${toOrder.length} items.${nextDate ? ` Next order ${nextDate === DEMO_TODAY ? "today" : fmtDate(nextDate, true)}.` : ""}`}
+          cta={autoOrder?.run && autoOrder.orders.length ? "See automatic orders" : "See what to order"} href={autoOrder?.run && autoOrder.orders.length ? "/forecast?tab=auto" : "/forecast"}
         />
         <Card
           module="forecast" title="Orders" picture={<Split parts={[{ n: ordersMine.length, className: "bg-money" }, { n: ordersWaiting.length - ordersMine.length, className: "bg-money/50" }, { n: ordersOnWay.length, className: "bg-money/20" }]} />}

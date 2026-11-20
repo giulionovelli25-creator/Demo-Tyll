@@ -31,6 +31,7 @@ export function WhatsNew({ open, onClose }: { open: boolean; onClose: () => void
  * to money recovered, and supplier invoices. Each stop shows its point at the top of the page, without scrolling.
  */
 export const GUIDED_PATH = [
+  { href: "/forecast", userId: "u-fnb", title: "Predictions", text: "What to order before it runs out, worked out by Tyll's own model from sales, bookings, events and hotel occupancy, with the reasoning beside every quantity. No AI chooses a quantity. Deliveries likely to come too late show here too." },
   { href: "/stock", userId: "u-chef", title: "Critical stock, then Order now", text: "What runs out before a later order could arrive. Items already on this morning's order say On order; for a low item, press Order now: the suggested quantity from the usual supplier, sent for approval." },
   { href: "/forecast?tab=approvals", userId: "u-buy", title: "Approval, sending and the supplier's answer", text: "Approve an order as purchasing; the controller and the F&B director sign their steps. Once fully approved it goes to the supplier on its own, by email or its ordering system. Douro Cellars' system times out once and a retry is safe; Mercearia Lusa answers with less chocolate, for you to accept." },
   { href: "/stock?tab=takes", userId: "u-fnb", title: "Stock count review", text: "This morning's stock take waits for you: expected against counted, the difference in units and euros, a likely reason for each, large ones highlighted. Approve it, or send it back." },

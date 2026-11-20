@@ -1,7 +1,7 @@
 // The sidebar, grouped into the three sections of tyll.ai. One list, read by the sidebar, the phone menu, the page colour and the Back button.
 // Each page appears once. Similar pages are merged into one item and reached by the tabs on that page.
 import {
-  Banknote, Bell, CalendarX, ClipboardCheck, Store, FileText, Flag, LayoutDashboard, LayoutGrid, Package, Settings, ShoppingCart, Trash2, Truck, ClipboardList, Wine, type LucideIcon,
+  Banknote, Bell, CalendarClock, CalendarX, ClipboardCheck, ListChecks, Store, FileText, Flag, LayoutDashboard, LayoutGrid, Package, Settings, ShoppingCart, Trash2, Truck, ClipboardList, Wine, type LucideIcon,
 } from "lucide-react";
 import { moduleOfPath, type ModuleId, type Permission } from "./domain/access";
 import { featureOn } from "./features";
@@ -48,8 +48,11 @@ export const SECTIONS: NavSection[] = [
   {
     id: "purchasing", title: "Purchasing", icon: ShoppingCart, tone: "blue",
     items: [
-      // Four items (simplify pass, 20 November 2026): what to order, predictions and automatic ordering are one page.
-      { id: "ordering", label: "Ordering", short: "Ordering", href: "/forecast", icon: ShoppingCart, also: ["/forecast?tab=toorder", "/forecast?tab=pars", "/forecast?tab=auto", "/forecast?tab=prep", "/forecast?tab=outlook"] },
+      // Predictions are Tyll's main selling point: To order, Automatic ordering and Predictions are menu items of their
+      // own, as on the live demo (restored 20 November 2026 at the owner's request).
+      { id: "toorder", label: "To order", short: "To order", href: "/forecast?tab=toorder", icon: ListChecks, also: ["/forecast?tab=pars"], needs: ["purchase.create"] },
+      { id: "auto", label: "Automatic ordering", short: "Auto order", href: "/forecast?tab=auto", icon: CalendarClock, needs: ["purchase.create"] },
+      { id: "predictions", label: "Predictions", short: "Predict", href: "/forecast", icon: ShoppingCart, also: ["/forecast?tab=prep", "/forecast?tab=outlook"] },
       { id: "orders", label: "Orders", href: "/forecast?tab=approvals", icon: ClipboardList, also: ["/forecast?tab=buy"] },
       { id: "suppliers", label: "Suppliers", href: "/forecast?tab=suppliers", icon: Store, also: ["/forecast?tab=catalogue", "/forecast?tab=reliability"], needs: ["purchase.create"] },
       { id: "deliveries", label: "Deliveries and invoices", short: "Deliveries", href: "/deliveries", icon: Truck, also: ["/deliveries?tab=invoices", "/finance?tab=approvals", "/finance?tab=reports"] },

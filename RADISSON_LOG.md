@@ -169,3 +169,14 @@ Five steps in `components/shell/early-access.tsx`: critical stock and Order now 
 | 8 | Speed and reliability | 8 | 9 | The hosted cold start cannot be measured here |
 | 9 | Clarity | 9 | 9 | Recipes and costs now holds more sections |
 | 10 | Polish | 9 | 8 | Older order and supplier screens still mix in English names and terms; wide tables scroll sideways on a phone |
+
+## Predictions restored (owner's request, 20 November 2026)
+
+The simplify pass had folded To order, Automatic ordering and Predictions into one menu item called "Ordering", taken the Predictions card off the Overview, and the Radisson guided path had no predictions step. Predictions are the main selling point, so they are back as on the live demo (demo.tyll.ai), with nothing added by this build removed:
+- **Menu:** Purchasing is To order, Automatic ordering, Predictions, Orders, Suppliers, Deliveries and invoices; the phone bar says Predict.
+- **Predictions page:** titled Predictions again, with its own tabs (What to order, Plan the prep, Next 7 days). To order (with Par levels) and Automatic ordering are their own pages again. Deliveries at risk and the worked example stay on Predictions.
+- **Overview:** the Predictions card is back (the recommended order value to month end, this morning's automatic orders and how many wait for approval), a fifth card beside Stock levels, Drinks not billed, Orders and Supplier invoices.
+- **Guided path:** six steps, Predictions first.
+- **Names:** "Ordering" is "Predictions" again in Settings, the tour, the order detail and supplier reliability.
+- **Tests:** the three menu tests the simplify pass changed are back to what they said before it (the six Purchasing items, the right item lit for To order, Automatic ordering and Predictions, and the visit path).
+- **Arabic:** To order, Par levels and Automatic ordering translated (they were English on the live demo as well).

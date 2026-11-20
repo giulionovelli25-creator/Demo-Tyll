@@ -21,7 +21,7 @@ import type { Role } from "@/lib/types";
 
 // Roles and modules that only belong to parts switched off in lib/features.ts are left out of the table.
 const ROLES: Role[] = (["owner", "gm", "controller", "fnb_director", "restaurant_manager", "event_manager", "purchasing", "chef", "front_office", "housekeeping_manager", "concierge", "bell_captain", "employee"] as Role[]).filter(roleShown);
-const MODULE_ROWS: [ModuleId, string][] = ([["overview", "Overview"], ["money", "Revenue"], ["stock", "Stock"], ["forecast", "Ordering"], ["flow", "Flow"], ["rooms", "Rooms"], ["investigations", "Flagged transactions"], ["reports", "Reports"]] as [ModuleId, string][]).filter(([m]) => moduleShown(m));
+const MODULE_ROWS: [ModuleId, string][] = ([["overview", "Overview"], ["money", "Revenue"], ["stock", "Stock"], ["forecast", "Predictions"], ["flow", "Flow"], ["rooms", "Rooms"], ["investigations", "Flagged transactions"], ["reports", "Reports"]] as [ModuleId, string][]).filter(([m]) => moduleShown(m));
 /**
  * Every permission in the matrix, with the row it shows as in Roles and permissions, or null for steps that belong to a
  * workflow of their own (purchasing approvals, housekeeping, sales). A Record, so a new permission does not build until

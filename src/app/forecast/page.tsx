@@ -25,7 +25,7 @@ import { awaitingDelivery, awaitingSend } from "@/lib/domain/procurement";
 
 type Tab = "approvals" | "buy" | "prep" | "outlook" | "auto" | "toorder" | "pars" | "suppliers" | "catalogue" | "reliability";
 
-const LABEL: Record<Tab, string> = { approvals: "Orders", buy: "Order by hand", prep: "Plan the prep", outlook: "Next 7 days", auto: "Automatic ordering", toorder: "Below minimum", pars: "Par levels", suppliers: "Suppliers", catalogue: "Catalogue and prices", reliability: "Reliability" };
+const LABEL: Record<Tab, string> = { approvals: "Orders", buy: "Order by hand", prep: "Plan the prep", outlook: "Next 7 days", auto: "Automatic ordering", toorder: "To order", pars: "Par levels", suppliers: "Suppliers", catalogue: "Catalogue and prices", reliability: "Reliability" };
 const WAITING: PurchaseRequest["status"][] = ["purchasing", "accounting", "manager"];
 
 /** Predictions come first. Orders is a page of its own, with its own filters. */
@@ -47,23 +47,18 @@ export default function ForecastPage() {
     can(user, "purchase.create") && can(user, "deliveries.view") && "reliability",
   ].filter(Boolean) as Tab[]);
   const [tab, setTab] = useSection<Tab>("/forecast", tabs, predicts ? null : "approvals");
-  // Ordering is one menu item (simplify pass): what to order, items below their minimum, automatic ordering, the prep and
-  // the next 7 days, each a tab of the same page, shown to the roles that may use it.
+  // Predictions, Plan the prep and Next 7 days are one item: what is coming and what to buy for it. To order (with Par
+  // levels) and Automatic ordering are menu items of their own, as on the live demo (restored 20 November 2026).
   const planTabs = (here: Tab | null) => {
-    const parts: { id: Tab | null; href: string; label: string }[] = [
-      { id: null, href: "/forecast", label: "What to order" },
-      ...(tabs.includes("toorder") ? [{ id: "toorder" as Tab, href: "/forecast?tab=toorder", label: LABEL.toorder }] : []),
-      ...(tabs.includes("pars") ? [{ id: "pars" as Tab, href: "/forecast?tab=pars", label: LABEL.pars }] : []),
-      ...(tabs.includes("auto") ? [{ id: "auto" as Tab, href: "/forecast?tab=auto", label: LABEL.auto }] : []),
-      ...(tabs.includes("prep") ? [{ id: "prep" as Tab, href: "/forecast?tab=prep", label: LABEL.prep }] : []),
-      ...(tabs.includes("outlook") ? [{ id: "outlook" as Tab, href: "/forecast?tab=outlook", label: LABEL.outlook }] : []),
-    ];
+    const parts = [{ id: null, href: "/forecast", label: "What to order" }, ...(tabs.includes("prep") ? [{ id: "prep", href: "/forecast?tab=prep", label: LABEL.prep }] : []), ...(tabs.includes("outlook") ? [{ id: "outlook", href: "/forecast?tab=outlook", label: LABEL.outlook }] : [])];
     return parts.length > 1 && predicts ? <PageTabs tabs={parts.map((p) => ({ href: p.href, label: p.label, active: p.id === here }))} /> : null;
   };
   if (tab === null) return <Predictions tabs={planTabs(null)} />;
-  if (tab === "auto") return <AutoOrdering tabs={planTabs("auto")} />;
-  if (tab === "toorder") return <ToOrder tabs={planTabs("toorder")} />;
-  if (tab === "pars") return <ParLevels tabs={planTabs("pars")} />;
+  if (tab === "auto") return <AutoOrdering />;
+  // To order and Par levels are one item; Suppliers and the catalogue another.
+  const sub = (a: Tab, b: Tab) => <PageTabs tabs={[{ href: `/forecast?tab=${a}`, label: LABEL[a], active: tab === a }, { href: `/forecast?tab=${b}`, label: LABEL[b], active: tab === b }]} />;
+  if (tab === "toorder") return <ToOrder tabs={sub("toorder", "pars")} />;
+  if (tab === "pars") return <ParLevels tabs={sub("toorder", "pars")} />;
   // Suppliers, the catalogue and reliability are one item: who we buy from, at what price, and how well they deliver.
   const supplierTabs = <PageTabs tabs={(["suppliers", "catalogue", "reliability"] as Tab[]).filter((t) => tabs.includes(t)).map((t) => ({ href: `/forecast?tab=${t}`, label: LABEL[t], active: tab === t }))} />;
   if (tab === "suppliers" || tab === "catalogue") return <SupplierDirectory view={tab} tabs={supplierTabs} />;
