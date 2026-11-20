@@ -894,10 +894,20 @@
 "Approvazione registrata:",
 "الموافقة المسجلة:"
 ],
+"Approval, sending and the supplier's answer": [
+"Freigabe, Versand und Antwort des Lieferanten",
+"Approvazione, invio e risposta del fornitore",
+"الموافقة والإرسال ورد المورد"
+],
 "Approvals": [
 "Freigaben",
 "Approvazioni",
 "الموافقات"
+],
+"Approve an order as purchasing; the controller and the F&B director sign their steps. Once fully approved it goes to the supplier on its own, by email or its ordering system. Douro Cellars' system times out once and a retry is safe; Mercearia Lusa answers with less chocolate, for you to accept.": [
+"Eine Bestellung als Einkauf freigeben; Controller und F&B-Direktor zeichnen ihre Schritte. Vollständig freigegeben geht sie von selbst an den Lieferanten, per E-Mail oder über sein Bestellsystem. Das System von Douro Cellars antwortet einmal nicht und ein neuer Versuch ist sicher; Mercearia Lusa antwortet mit weniger Schokolade, zur Annahme.",
+"Approva un ordine come ufficio acquisti; il controller e il direttore F&B firmano i loro passaggi. Approvato del tutto, va al fornitore da solo, via email o il suo sistema ordini. Il sistema di Douro Cellars non risponde una volta e riprovare è sicuro; Mercearia Lusa risponde con meno cioccolato, da accettare.",
+"وافق على طلب بصفتك المشتريات؛ ويوقّع المراقب المالي ومدير الأغذية والمشروبات خطواتهما. بعد اكتمال الموافقات يذهب إلى المورد تلقائيًا، بالبريد أو عبر نظام طلباته. لا يرد نظام Douro Cellars مرة وإعادة المحاولة آمنة؛ وترد Mercearia Lusa بكمية شوكولاتة أقل لتقبلها."
 ],
 "Approve and adjust stock": [
 "Freigeben und Bestand anpassen",
@@ -3403,6 +3413,11 @@
 "Kritische Artikel",
 "Articoli critici",
 "الأصناف الحرجة"
+],
+"Critical stock, then Order now": [
+"Kritischer Bestand, dann Jetzt bestellen",
+"Scorte critiche, poi Ordina ora",
+"مخزون حرج، ثم اطلب الآن"
 ],
 "Critical {0}": [
 "Kritisch {0}",
@@ -7898,6 +7913,11 @@
 "Menü",
 "Menu",
 "القائمة"
+],
+"Menu from Simphony": [
+"Menü aus Simphony",
+"Menu da Simphony",
+"القائمة من Simphony"
 ],
 "Menu item and units, through the item list agreed at onboarding": [
 "Menüartikel und Menge, über die beim Onboarding vereinbarte Artikelliste",
@@ -12594,6 +12614,11 @@
 "Filetto di branzino",
 "فيليه قاروص"
 ],
+"Sea bass from a cancelled lunch expires tomorrow. Make it tonight's special, move it to another outlet, or log it as waste: the restaurant manager is told.": [
+"Wolfsbarsch von einem abgesagten Mittagessen läuft morgen ab. Als heutiges Tagesgericht, in ein anderes Outlet verlegen oder als Abfall erfassen: die Restaurantleitung wird informiert.",
+"Il branzino di un pranzo annullato scade domani. Fallo diventare il piatto di stasera, spostalo in un altro punto vendita o registralo come scarto: il responsabile del ristorante viene informato.",
+"قاروص من غداء أُلغي تنتهي صلاحيته غدًا. اجعله طبق الليلة الخاص، أو انقله إلى منفذ آخر، أو سجّله كهدر: يُبلَّغ مدير المطعم."
+],
 "Search": [
 "Suchen",
 "Cerca",
@@ -13779,6 +13804,11 @@
 "Non è stato possibile caricare le scorte.",
 "تعذر تحميل المخزون."
 ],
+"Stock count review": [
+"Prüfung der Inventur",
+"Revisione dell'inventario",
+"مراجعة الجرد"
+],
 "Stock counted": [
 "Bestand gezählt",
 "Magazzino contato",
@@ -14078,6 +14108,11 @@
 "Liefert",
 "Fornisce",
 "يوفر"
+],
+"Synced at 06:00: two new dishes, a price change and a dish taken off. Check the suggested recipe for a new dish and confirm it. Until then it carries a standard cost.": [
+"Um 06:00 synchronisiert: zwei neue Gerichte, eine Preisänderung und ein gestrichenes Gericht. Das vorgeschlagene Rezept für ein neues Gericht prüfen und bestätigen. Bis dahin gelten Standardkosten.",
+"Sincronizzato alle 06:00: due nuovi piatti, una variazione di prezzo e un piatto tolto. Controlla la ricetta suggerita per un nuovo piatto e confermala. Fino ad allora ha un costo standard.",
+"مزامنة الساعة 06:00: طبقان جديدان، وتغيير سعر، وطبق محذوف. راجع الوصفة المقترحة لطبق جديد وأكّدها. حتى ذلك الحين يحمل تكلفة قياسية."
 ],
 "System": [
 "System",
@@ -15243,6 +15278,11 @@
 "Heute Morgen im {0}: Zimmer {1}, Frühstück nicht berechnet",
 "Stamattina da {0}: camera {1}, colazione non addebitata",
 "هذا الصباح في {0}: الغرفة {1}، إفطار غير محتسب"
+],
+"This morning's stock take waits for you: expected against counted, the difference in units and euros, a likely reason for each, large ones highlighted. Approve it, or send it back.": [
+"Die heutige Inventur wartet auf Sie: erwartet gegen gezählt, die Differenz in Einheiten und Euro, ein wahrscheinlicher Grund für jede, große markiert. Freigeben oder zurückschicken.",
+"L'inventario di stamattina ti aspetta: previsto contro contato, la differenza in unità ed euro, un motivo probabile per ciascuna, le grandi evidenziate. Approvalo o rimandalo indietro.",
+"جرد هذا الصباح بانتظارك: المتوقع مقابل المعدود، والفرق بالوحدات واليورو، وسبب مرجح لكل فرق، مع تظليل الكبيرة. وافق عليه أو أعده."
 ],
 "This morning, room {0} checks out": [
 "Heute Morgen reist Zimmer {0} ab",
@@ -16718,6 +16758,11 @@
 "Was muss entschieden werden?",
 "Cosa richiede una decisione?",
 "ما الذي يحتاج إلى قرار؟"
+],
+"What runs out before a later order could arrive. Items already on this morning's order say On order; for a low item, press Order now: the suggested quantity from the usual supplier, sent for approval.": [
+"Was ausgeht, bevor eine spätere Bestellung ankommen könnte. Artikel auf der heutigen Morgenbestellung zeigen Bestellt; bei einem niedrigen Artikel Jetzt bestellen drücken: die vorgeschlagene Menge beim üblichen Lieferanten, zur Freigabe gesendet.",
+"Cosa finisce prima che un ordine successivo possa arrivare. Gli articoli già nell'ordine di stamattina dicono In ordine; per un articolo basso, premi Ordina ora: la quantità suggerita dal fornitore abituale, inviata per l'approvazione.",
+"ما ينفد قبل أن يصل أي طلب لاحق. الأصناف الموجودة في طلب هذا الصباح تظهر قيد الطلب؛ ولصنف منخفض اضغط اطلب الآن: الكمية المقترحة من المورد المعتاد، مرسلة للموافقة."
 ],
 "What should be left based on sales, against what was counted. Highlighted when the gap is over {0} and worth at least {1}. {2} highlighted, {3} in total.": [
 "Was laut Verkäufen übrig sein sollte, im Vergleich zur Zählung. Markiert, wenn die Lücke über {0} liegt und mindestens {1} wert ist. {2} markiert, {3} insgesamt.",
