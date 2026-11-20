@@ -21,6 +21,7 @@ import { usePilot } from "@/lib/pilot";
 import { useAutoOrder, usePlanDrafts } from "@/lib/plan-hooks";
 import { useMyPlanEdits } from "@/lib/plan-edits";
 import { reviewReason } from "@/lib/domain/auto-order";
+import { DeliveriesAtRisk } from "@/components/prediction/deliveries-at-risk";
 export { reviewReason };
 import type { MonthPlanOut, PlanItem } from "@/lib/server/purchasing";
 import type { PurchaseRequest } from "@/lib/types";
@@ -106,6 +107,7 @@ function Notes({ r, x }: { r: PlanItem; x: ReturnType<typeof useRec> }) {
   return (
     <>
       {x.edited !== undefined && x.edited !== x.suggested && <p className="mt-1 text-xs text-steel">Changed from the suggested {fmtQty(x.suggested, r.unit)}. <button type="button" onClick={() => setQty(r.ingredientId, null)} className="font-medium text-accent-ink underline-offset-4 hover:underline">Use the suggestion</button></p>}
+      {r.leadBuffer && <p className="mt-1 text-xs text-steel">{r.leadBuffer.why}</p>}
       {x.review && <p className="mt-1 flex items-start gap-1.5 text-xs text-warn"><AlertTriangle size={13} className="mt-px shrink-0" aria-hidden /><span><span className="font-medium">Manager review:</span> {x.review}.</span></p>}
     </>
   );
@@ -119,7 +121,7 @@ function RecTr({ r, plan, edit }: { r: PlanItem; plan: MonthPlanOut; edit: boole
       <Td><span className="text-ink">{name(r)}</span><span className="block text-xs text-steel">Order by <OrderBy r={r} /></span><Notes r={r} x={x} /></Td>
       <Td align="right">{fmtQty(x.avg, r.unit)}</Td>
       <Td align="right">{fmtQty(r.onHand, r.unit)}{r.incoming > 0 && <span className="block text-xs text-steel">{fmtQty(r.incoming, r.unit)} coming</span>}</Td>
-      <Td align="right">{fmtDate(x.arrives, true)}</Td>
+      <Td align="right">{fmtDate(x.arrives, true)}{r.leadBuffer && <span className="block text-xs text-steel">A day early</span>}</Td>
       <Td align="right">{x.covers === null ? "Not used lately" : `${fmtNum(x.covers, x.covers < 10 ? 1 : 0)} days`}</Td>
       <Td align="right">{edit ? <QtyEditor r={r} qty={x.qty} step={x.step} /> : <span className="font-medium text-ink">{fmtQty(x.qty, r.unit)}</span>}</Td>
       <Td align="right"><span className="text-ink">{money(x.qty * r.unitPrice)}</span></Td>
@@ -287,6 +289,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
               <span className="font-medium text-ink">Automatic ordering is on.</span> Every morning at {autoOrder.settings.time} Tyll orders the items due that day or the next{autoOrder.orders.length ? `; this morning it placed ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, so they no longer show here` : ""}. Find them under Automatic ordering in the menu.
             </p>
           )}
+          <DeliveriesAtRisk plan={plan} />
           <section id="order" className="scroll-mt-24">
             <Panel title={dueToday.length ? `Order today: ${dueToday.length} ${dueToday.length === 1 ? "item" : "items"}, ${local(sum(dueToday, (r) => r.nextCost))}` : "Order these first"} flush>
               {rows.length === 0 ? <div className="px-4 pb-6 sm:px-6"><EmptyState title="Nothing to order">Stock covers the month.</EmptyState></div> : (

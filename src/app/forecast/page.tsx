@@ -8,6 +8,7 @@ import { Outlook } from "@/components/prediction/outlook";
 import { AutoOrdering } from "@/components/prediction/auto-order";
 import { ParLevels, ToOrder } from "@/components/purchasing/to-order";
 import { SupplierDirectory } from "@/components/purchasing/supplier-directory";
+import { SupplierReliability } from "@/components/purchasing/supplier-reliability";
 import { Predictions } from "@/components/prediction/predictions";
 import { PageHeader, PageTabs, SummaryBar, Tabs, linkButton } from "@/components/ui";
 import type { ReactNode } from "react";
@@ -22,9 +23,9 @@ import { fmtMoney, sum } from "@/lib/util";
 import { orderStage } from "@/lib/domain/order-stage";
 import { awaitingDelivery, awaitingSend } from "@/lib/domain/procurement";
 
-type Tab = "approvals" | "buy" | "prep" | "outlook" | "auto" | "toorder" | "pars" | "suppliers" | "catalogue";
+type Tab = "approvals" | "buy" | "prep" | "outlook" | "auto" | "toorder" | "pars" | "suppliers" | "catalogue" | "reliability";
 
-const LABEL: Record<Tab, string> = { approvals: "Orders", buy: "Order by hand", prep: "Plan the prep", outlook: "Next 7 days", auto: "Automatic ordering", toorder: "To order", pars: "Par levels", suppliers: "Suppliers", catalogue: "Catalogue and prices" };
+const LABEL: Record<Tab, string> = { approvals: "Orders", buy: "Order by hand", prep: "Plan the prep", outlook: "Next 7 days", auto: "Automatic ordering", toorder: "To order", pars: "Par levels", suppliers: "Suppliers", catalogue: "Catalogue and prices", reliability: "Reliability" };
 const WAITING: PurchaseRequest["status"][] = ["purchasing", "accounting", "manager"];
 
 /** Predictions come first. Orders is a page of its own, with its own filters. */
@@ -43,6 +44,7 @@ export default function ForecastPage() {
     can(user, "purchase.create") && "pars",
     can(user, "purchase.create") && "suppliers",
     can(user, "purchase.create") && "catalogue",
+    can(user, "purchase.create") && can(user, "deliveries.view") && "reliability",
   ].filter(Boolean) as Tab[]);
   const [tab, setTab] = useSection<Tab>("/forecast", tabs, predicts ? null : "approvals");
   // Predictions, Plan the prep and Next 7 days are one item: what is coming and what to buy for it.
@@ -56,7 +58,10 @@ export default function ForecastPage() {
   const sub = (a: Tab, b: Tab) => <PageTabs tabs={[{ href: `/forecast?tab=${a}`, label: LABEL[a], active: tab === a }, { href: `/forecast?tab=${b}`, label: LABEL[b], active: tab === b }]} />;
   if (tab === "toorder") return <ToOrder tabs={sub("toorder", "pars")} />;
   if (tab === "pars") return <ParLevels tabs={sub("toorder", "pars")} />;
-  if (tab === "suppliers" || tab === "catalogue") return <SupplierDirectory view={tab} tabs={sub("suppliers", "catalogue")} />;
+  // Suppliers, the catalogue and reliability are one item: who we buy from, at what price, and how well they deliver.
+  const supplierTabs = <PageTabs tabs={(["suppliers", "catalogue", "reliability"] as Tab[]).filter((t) => tabs.includes(t)).map((t) => ({ href: `/forecast?tab=${t}`, label: LABEL[t], active: tab === t }))} />;
+  if (tab === "suppliers" || tab === "catalogue") return <SupplierDirectory view={tab} tabs={supplierTabs} />;
+  if (tab === "reliability") return <SupplierReliability tabs={supplierTabs} />;
   return <Orders tab={tab} tabs={tabs} setTab={setTab} predicts={predicts} planTabs={planTabs(tab)} />;
 }
 

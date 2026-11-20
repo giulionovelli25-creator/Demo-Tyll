@@ -418,13 +418,61 @@ function ReceiveMobile() {
   if (id) return <ReceiveOrder id={id} />;
   return (
     <Screen title="Deliveries">
-      <p className="-mt-2 text-[15px] text-steel">Approved orders expected at your hotel.</p>
+      <ArrivalsToday />
+      <p className="text-[15px] text-steel">Approved orders expected at your hotel.</p>
       {!data ? <p className="text-steel">Loading</p> : orders.length === 0 ? <EmptyState title="No deliveries expected" /> : (
         <ul className="space-y-2">
           {orders.map((r) => <li key={r.id}><button type="button" onClick={() => router.push(`/staff?do=receive&order=${r.id}`)} className="flex min-h-16 w-full items-center gap-3 rounded-2xl border border-line bg-paper px-4 py-3 text-start"><span className="flex-1"><span className="block text-[17px] text-ink">{r.poNumber}</span><span className="block text-[13px] text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"} · {r.lines.map((l) => ingredientById[l.ingredientId].name).slice(0, 2).join(", ")}</span></span><Badge className="!py-0">Expected</Badge></button></li>)}
         </ul>
       )}
     </Screen>
+  );
+}
+
+type GoodsIn = { key: string; supplier: string; date: string; window: { from: string; to: string }; items: { ingredientId: string; qty: number }[]; arrival?: { at: string; complete: boolean; missing?: string } };
+
+/** One tap when a supplier's van arrives: the time is recorded now, which is what the late delivery prediction learns from. */
+function ArrivalsToday() {
+  const mutate = useMutate();
+  const { data } = useLiveGet<{ rows: GoodsIn[] }>("/api/deliveries");
+  const [missingFor, setMissingFor] = useState<string | null>(null);
+  const [missing, setMissing] = useState("");
+  const [busy, setBusy] = useState(false);
+  const rows = data?.rows ?? [];
+  if (!data || rows.length === 0) return null;
+  const record = async (key: string, complete: boolean) => {
+    setBusy(true);
+    const res = await mutate("/api/deliveries", { action: "arrived", key, complete, missing });
+    setBusy(false);
+    if (!res.ok) return toast.error(res.error);
+    toast.done(complete ? "Arrival recorded at this time." : "Arrival recorded, with what is missing.");
+    setMissingFor(null);
+    setMissing("");
+  };
+  const when = (r: GoodsIn) => `${r.date === DEMO_TODAY ? "Today" : "Tomorrow"} ${r.window.from} to ${r.window.to}`;
+  return (
+    <section className="-mt-2 space-y-2">
+      <p className="text-[15px] text-steel">Supplier deliveries. Tap Received when the van arrives.</p>
+      <ul className="space-y-2">
+        {rows.map((r) => (
+          <li key={r.key} className="rounded-2xl border border-line bg-paper px-4 py-3">
+            <div className="flex items-center gap-3">
+              <span className="flex-1"><span className="block text-[17px] text-ink">{r.supplier}</span><span className="block text-[13px] text-steel">{when(r)} · {r.items.slice(0, 2).map((l) => ingredientById[l.ingredientId]?.name).filter(Boolean).join(", ")}</span></span>
+              {r.arrival ? <Badge tone="pos" className="!py-0">Arrived {r.arrival.at.slice(11, 16)}</Badge> : <Button variant="primary" size="lg" disabled={busy} onClick={() => void record(r.key, true)}>Received</Button>}
+            </div>
+            {!r.arrival && (missingFor === r.key ? (
+              <div className="mt-3 space-y-2">
+                <Field label="What is missing?" value={missing} onChange={(e) => setMissing(e.target.value)} placeholder="For example: 2 kg of Wagyu" />
+                <Big disabled={busy || missing.trim().length < 2} onClick={() => void record(r.key, false)}>Received, something missing</Big>
+              </div>
+            ) : (
+              <button type="button" onClick={() => { setMissingFor(r.key); setMissing(""); }} className="mt-2 text-[13px] font-medium text-accent-ink underline-offset-4 hover:underline">Something missing?</button>
+            ))}
+            {r.arrival && !r.arrival.complete && <p className="mt-1 text-[13px] text-steel">Missing: {r.arrival.missing}</p>}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

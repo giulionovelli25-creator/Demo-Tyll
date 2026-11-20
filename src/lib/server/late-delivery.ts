@@ -65,7 +65,7 @@ export function ensureDeliveryStory(propertyId = "lis") {
   const wastes = s.stockLog.waste.filter((w) => w.id.startsWith(STORY_WASTE_PREFIX));
   if (receipts.length === 1 && receipts[0].id === rid && receipts[0].deliveryId === d.id && lateOf(s).storyDay === day && wastes.every((w) => w.id === wid)) return;
   const morning = `${DEMO_TODAY}T07:52:00.000Z`, afternoon = `${DEMO_TODAY}T15:40:00.000Z`;
-  const receipt = { id: rid, deliveryId: d.id, propertyId, ingredientId: line.ingredientId, received: 0, reason: STORY_REASON, by: "u-store", role: "storekeeper" as const, at: morning, seq: 0 };
+  const receipt = { id: rid, deliveryId: d.id, propertyId, ingredientId: line.ingredientId, received: 0, reason: STORY_REASON, by: "u-store", role: "storekeeper" as const, at: morning, seq: 1 };
   // Tonight's Wagyu without the story's spoiled entry, then the spoiled quantity that leaves the story's 2.4 kg.
   const gm = USERS.find((u) => u.role === "gm" && allowedProperties(u).includes(propertyId))!;
   const spoiledNow = wastes.reduce((t, w) => t + w.qty, 0);
@@ -74,6 +74,8 @@ export function ensureDeliveryStory(propertyId = "lis") {
   mutateStore((x) => {
     if (!x.records) return;
     x.records.receiptCorrections = [...x.records.receiptCorrections.filter((c) => !c.id.startsWith(STORY_RECEIPT_PREFIX)), receipt];
+    // Corrections people make later number from 2, so a later one on the same line wins over the story's.
+    x.records.recordSeq = Math.max(x.records.recordSeq, 1);
     if (!x.records.audit.some((a) => a.ref === d.id && a.action === "Delivery difference recorded" && a.at === morning)) {
       x.records.audit = [{ at: morning, userId: "u-store", role: "storekeeper", action: "Delivery difference recorded", detail: `${d.id}: ${ingredientById[line.ingredientId].name} received 0, recorded ${line.delivered}. ${STORY_REASON}`, ref: d.id }, ...x.records.audit];
     }

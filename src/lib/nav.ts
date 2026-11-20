@@ -51,7 +51,7 @@ export const SECTIONS: NavSection[] = [
       { id: "auto", label: "Automatic ordering", short: "Auto order", href: "/forecast?tab=auto", icon: CalendarClock, needs: ["purchase.create"] },
       { id: "predictions", label: "Predictions", short: "Predict", href: "/forecast", icon: ShoppingCart, also: ["/forecast?tab=prep", "/forecast?tab=outlook"] },
       { id: "orders", label: "Orders", href: "/forecast?tab=approvals", icon: ClipboardList, also: ["/forecast?tab=buy"] },
-      { id: "suppliers", label: "Suppliers", href: "/forecast?tab=suppliers", icon: Store, also: ["/forecast?tab=catalogue"], needs: ["purchase.create"] },
+      { id: "suppliers", label: "Suppliers", href: "/forecast?tab=suppliers", icon: Store, also: ["/forecast?tab=catalogue", "/forecast?tab=reliability"], needs: ["purchase.create"] },
       { id: "deliveries", label: "Deliveries and invoices", short: "Deliveries", href: "/stock?tab=suppliers", icon: Truck, also: ["/finance?tab=invoices", "/finance?tab=approvals", "/finance?tab=reports"] },
     ],
   },

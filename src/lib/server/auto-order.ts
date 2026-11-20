@@ -73,18 +73,21 @@ export function ensureAutoRun(propertyId: string, entries: SessionEntries): Auto
         ? `${reviews.map((x) => `${ingredientById[x.i.ingredientId].name}: ${x.why}`).join("; ")}.`
         : total > limit ? `Over the ${money(limit)} limit for sending without approval.`
         : `Under ${money(limit)}, usual supplier, nothing to review.`;
+      // An unreliable supplier gets the order a day early, and the order says so (lib/domain/late-delivery.ts).
+      const early = items.find((i) => i.leadBuffer)?.leadBuffer?.why;
+      const whyAll = early ? `${why} ${early}` : why;
       const r: PurchaseRequest = {
         id, propertyId, outletIds: outletsOfProperty(propertyId).map((o) => o.id), period: plan.period, createdBy: owner.id, createdAt: stamp, updatedAt: stamp,
         status: held ? "purchasing" : "approved", lines, supplierId, deliveryDate, costCentre,
         comment: `Automatic order from the prediction: items due today or tomorrow from ${supplierName(supplierId)}.`,
-        auto: { runAt, decision: held ? "held" : "sent", why },
+        auto: { runAt, decision: held ? "held" : "sent", why: whyAll },
         history: [{ at: stamp, by: owner.id, action: `Created by automatic ordering at ${set.time}`, status: "draft" }],
       };
       if (held) {
-        r.history.push({ at: stamp, by: owner.id, action: "Submitted to purchasing by automatic ordering", status: "purchasing", comment: why });
+        r.history.push({ at: stamp, by: owner.id, action: "Submitted to purchasing by automatic ordering", status: "purchasing", comment: whyAll });
       } else {
         r.poNumber = `PO-${id.slice(3)}`;
-        r.history.push({ at: stamp, by: owner.id, action: "Approved by the automatic ordering rule", status: "approved", comment: why });
+        r.history.push({ at: stamp, by: owner.id, action: "Approved by the automatic ordering rule", status: "approved", comment: whyAll });
         toSend.push(id);
       }
       s.requests.push(r);

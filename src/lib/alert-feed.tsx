@@ -17,7 +17,8 @@ import type { PourOut } from "./server/pour";
 import { useEmptiesVersion } from "./empties-version";
 import type { MonthPlanOut } from "./server/purchasing";
 import { useDemo } from "./store";
-import { DEMO_TODAY, fmtDate, fxRate } from "./util";
+import { DEMO_TODAY, addDays, fmtDate, fmtTime, fxRate } from "./util";
+import { minOf } from "./domain/late-delivery";
 
 export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier" | "delivery" | "expiry";
 export type AlertState = AlertStateName;
@@ -37,8 +38,10 @@ export interface FeedAlert {
   next: { label: string; href: string };
   /** A second way to act, such as ordering from a backup supplier. */
   also?: { label: string; href: string };
-  /** A money case closes on its own page, so its outcome is recorded. */
+  /** A money case closes on its own page, so its outcome is recorded. A delivery at risk is handled on Predictions. */
   caseHref?: string;
+  /** Handled for the whole team (a delivery at risk someone acted on): resolved for everyone, whoever opens Alerts. */
+  teamResolved?: boolean;
 }
 
 /** Before feature 8 resolve and snooze were kept in this browser under this key. They are dropped, not uploaded: they
@@ -137,6 +140,24 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
         out.push({ id: f.id, kind: "pour", rag: "amber", what: `Check pouring at ${outletById[f.outletId].name}, ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][f.weekday]} ${f.shift} shift`, why: f.text, where: outletById[f.outletId].name, outletId: f.outletId, amount: f.figures.gapValue * rate, amountWord: "not billed", next: { label: "See over pouring", href: "/drinks" } });
       }
     }
+    // A delivery likely to be late that would leave a service short (lib/server/late-delivery.ts). A prediction, labelled so.
+    for (const r of plan?.risk?.rows ?? []) {
+      if (r.status !== "alert" && r.status !== "handled") continue;
+      const i = r.items.find((x) => x.shortfall);
+      if (!i?.shortfall) continue;
+      const rate = fxRate(propertyById[plan!.propertyId].currency, sel.currency);
+      const href = `/forecast?risk=${encodeURIComponent(r.key)}`;
+      const when = r.date === DEMO_TODAY ? "today" : r.date === addDays(DEMO_TODAY, 1) ? "tomorrow" : fmtDate(r.date, true);
+      out.push({
+        id: `risk-${r.key}`, kind: "delivery", rag: r.severity === "red" ? "red" : "amber",
+        what: `${r.supplier} delivery ${when} ${fmtTime(minOf(r.window.from))} likely late`,
+        why: `${i.name} runs short before ${i.shortfall.service}${i.outletIds.length ? ` at ${i.outletIds.map((o) => outletById[o]?.name).join(" and ")}` : ""}. ${r.prediction.sentence} A prediction from the supplier's record.`,
+        where: i.outletIds.map((o) => outletById[o]?.name).join(", ") || propertyById[plan!.propertyId].name, outletId: i.outletIds[0], amount: r.valueAtRisk * rate, amountWord: "sales at risk, an estimate",
+        next: { label: r.backup ? "Order from backup supplier" : "See the delivery", href },
+        also: { label: "Call supplier", href },
+        caseHref: href, teamResolved: r.status === "handled",
+      });
+    }
     // A delivery that has not arrived puts tonight's menu at risk, so it goes first.
     for (const r of (orders ?? []).filter((x) => orderStage(x) === "late" && (!pid || x.propertyId === pid))) {
       const supplierId = r.lines[0]?.supplierId ?? "";
@@ -166,7 +187,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
     // Most urgent first, then the most money inside each level.
     const RANK = { red: 0, amber: 1, green: 2 } as const;
     out.sort((a, b) => RANK[a.rag as keyof typeof RANK] - RANK[b.rag as keyof typeof RANK] || Number(b.kind === "delivery") - Number(a.kind === "delivery") || (b.amount ?? -1) - (a.amount ?? -1));
-    const state = (a: FeedAlert): AlertState => alertStateOf(memory[a.id], DEMO_TODAY);
+    const state = (a: FeedAlert): AlertState => (a.teamResolved ? "resolved" : alertStateOf(memory[a.id], DEMO_TODAY));
     return {
       alerts: out, open: out.filter((a) => state(a) === "open"), snoozed: out.filter((a) => state(a) === "snoozed"), resolved: out.filter((a) => state(a) === "resolved"),
       loading: planned.loading, error: planned.error, plan, pour, propertyId: pid,

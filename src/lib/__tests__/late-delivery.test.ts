@@ -24,7 +24,7 @@ function rec(supplierId: string, date: string, late: number | null, value = 400)
   return { id: `${supplierId}-${date}`, propertyId: "lis", supplierId, date, orderedAt: `${addDays(date, -1)}T12:00`, window: { from: "07:00", to: "08:00" }, arrivedAt: late === null ? `${date}T07:40` : D.stamp(date, 8 * 60 + late), complete: true, value, items: [], source: "simulated" };
 }
 /** Daily deliveries for `days` days before today. */
-const daily = (supplierId: string, days: number, late: (date: string, i: number) => number | null, value = (_: string) => 400) =>
+const daily = (supplierId: string, days: number, late: (date: string, i: number) => number | null, value: (date: string) => number = () => 400) =>
   Array.from({ length: days }, (_, i) => addDays(DEMO_TODAY, -1 - i)).map((date, i) => rec(supplierId, date, late(date, i), value(date)));
 const coming = (supplierId: string, date = tomorrow, value = 400) => ({ supplierId, date, window: { from: "07:00", to: "08:00" }, value });
 
@@ -187,6 +187,12 @@ describe("the demo story", () => {
     const s = loadStore();
     expect(s.records!.receiptCorrections.find((r) => r.id.startsWith(L.STORY_RECEIPT_PREFIX))).toMatchObject({ received: 0, by: "u-store", role: "storekeeper" });
     expect(s.stockLog.waste.find((w) => w.id.startsWith(L.STORY_WASTE_PREFIX))).toMatchObject({ ingredientId: "wagyu", reason: "spoilage", byUser: "u-chef" });
+  });
+
+  it("the story's goods in record passes the server's check of what a browser sends", async () => {
+    const { cleanEntries } = await import("../server/stock");
+    const kept = cleanEntries(U("u-fnb"), { receipts: loadStore().records!.receiptCorrections });
+    expect(kept.receipts.map((r) => r.id)).toEqual([`${L.STORY_RECEIPT_PREFIX}${DEMO_TODAY.replace(/-/g, "")}`]);
   });
 
   it("setting up the story twice changes nothing", () => {

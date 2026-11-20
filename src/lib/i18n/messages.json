@@ -19,6 +19,11 @@
 ", una stima dalle bottiglie consegnate",
 "، تقدير من الزجاجات المصروفة"
 ],
+", then record it here.": [
+", dann hier festhalten.",
+", poi registralo qui.",
+"، ثم سجّل ذلك هنا."
+],
 ", weekly check": [
 ", wöchentliche Prüfung",
 ", controllo settimanale",
@@ -93,6 +98,11 @@
 "Eine Prüfung bestätigt jemand anderes als die Person, die sie gemacht hat.",
 "Un controllo viene confermato da una persona diversa da chi lo ha fatto.",
 "يؤكد الفحص شخص غير الذي أجراه."
+],
+"A day early": [
+"Einen Tag früher",
+"Un giorno prima",
+"قبل يوم"
 ],
 "A delivery recorded for more than arrived": [
 "Eine Lieferung, die mit mehr erfasst wurde, als ankam",
@@ -179,6 +189,36 @@
 "Un addebito arrivato sul conto dopo il check-out dell'ospite.",
 "ترحيل وصل إلى الفاتورة بعد مغادرة النزيل."
 ],
+"A prediction from the supplier's record, not a promise. Simulated data.": [
+"Eine Vorhersage aus den Lieferdaten, keine Zusage. Simulierte Daten.",
+"Una previsione dallo storico del fornitore, non una promessa. Dati simulati.",
+"توقع من سجل المورد، وليس وعدا. بيانات محاكاة."
+],
+"A prediction from the supplier's record.": [
+"Eine Vorhersage aus den Lieferdaten.",
+"Una previsione dallo storico del fornitore.",
+"توقع من سجل المورد."
+],
+"A prediction is a prompt to act, not proof the supplier will be late.": [
+"Eine Vorhersage ist ein Anstoß zum Handeln, kein Beweis, dass der Lieferant zu spät kommt.",
+"Una previsione è uno stimolo ad agire, non la prova che il fornitore sarà in ritardo.",
+"التوقع دعوة للتصرف، وليس دليلا على أن المورد سيتأخر."
+],
+"A prediction, high confidence.": [
+"Eine Vorhersage, Zuverlässigkeit hoch.",
+"Una previsione, affidabilità alta.",
+"توقع بثقة عالية."
+],
+"A prediction, low confidence.": [
+"Eine Vorhersage, Zuverlässigkeit niedrig.",
+"Una previsione, affidabilità bassa.",
+"توقع بثقة منخفضة."
+],
+"A prediction, medium confidence.": [
+"Eine Vorhersage, Zuverlässigkeit mittel.",
+"Una previsione, affidabilità media.",
+"توقع بثقة متوسطة."
+],
 "A preview of a planned feature. You can try the calculation here, but nothing on this tab is saved or sent to payroll.": [
 "Vorschau auf eine geplante Funktion. Sie können die Berechnung testen, aber hier wird nichts gespeichert oder an die Lohnabrechnung gesendet.",
 "Anteprima di una funzione prevista. Puoi provare il calcolo, ma nulla viene salvato o inviato alle paghe.",
@@ -239,6 +279,11 @@
 "Una settimana prima",
 "أسبوعيًا من قبل"
 ],
+"A worked example of what Tyll checks. The delivery and stock below are in tonight's records.": [
+"Ein durchgerechnetes Beispiel für Tylls Prüfung. Lieferung und Bestand stehen in den heutigen Daten.",
+"Un esempio guidato di ciò che Tyll controlla. Consegna e scorte qui sotto sono nei dati di stasera.",
+"مثال عملي على ما يفحصه Tyll. التوصيلة والمخزون أدناه في سجلات الليلة."
+],
 "A worked example of what Tyll looks for. The bill below is in last night's records.": [
 "Ein Beispiel dafür, worauf Tyll achtet. Die Rechnung unten steht in den Daten von gestern Abend.",
 "Un esempio di ciò che Tyll cerca. Il conto qui sotto è nei dati di ieri sera.",
@@ -279,6 +324,11 @@
 "Circa tante bevande per ospite quanto i colleghi negli stessi turni.",
 "مشروبات لكل ضيف بقدر الزملاء في الورديات نفسها تقريبًا."
 ],
+"About {0}": [
+"Etwa {0}",
+"Circa {0}",
+"نحو {0}"
+],
 "About {0} at risk, an estimate at the outlet's spend per guest.": [
 "Etwa {0} gefährdet, eine Schätzung nach dem Umsatz pro Gast des Outlets.",
 "Circa {0} a rischio, una stima alla spesa per ospite del punto vendita.",
@@ -313,6 +363,16 @@
 "Etwa {0} weniger Gewinn in diesem Zeitraum.",
 "Circa {0} di profitto in meno nel periodo.",
 "نحو {0} ربح أقل في هذه الفترة."
+],
+"About {0} of sales at risk, an estimate at that service’s sales per kg.": [
+"Etwa {0} Umsatz gefährdet, geschätzt nach dem Umsatz pro kg dieses Services.",
+"Circa {0} di vendite a rischio, stimate sulle vendite per kg di quel servizio.",
+"نحو {0} من المبيعات معرضة للخطر، تقدير بمبيعات تلك الخدمة لكل كغ."
+],
+"About {0} of sales at risk, an estimate at that service’s sales per unit.": [
+"Etwa {0} Umsatz gefährdet, geschätzt nach dem Umsatz pro Einheit dieses Services.",
+"Circa {0} di vendite a rischio, stimate sulle vendite per unità di quel servizio.",
+"نحو {0} من المبيعات معرضة للخطر، تقدير بمبيعات تلك الخدمة لكل وحدة."
 ],
 "About {0} of wine not billed.": [
 "Etwa {0} an Wein nicht berechnet.",
@@ -353,6 +413,11 @@
 "Prüfung Buchhaltung freigegeben",
 "Revisione contabilità approvata",
 "وافقت مراجعة المحاسبة"
+],
+"Act on a late delivery": [
+"Auf eine verspätete Lieferung reagieren",
+"Intervenire su una consegna in ritardo",
+"التصرف في توصيلة متأخرة"
 ],
 "Act today": [
 "Heute handeln",
@@ -423,6 +488,16 @@
 "Notiz hinzufügen",
 "Aggiungi nota",
 "إضافة ملاحظة"
+],
+"Adjust prep": [
+"Vorbereitung anpassen",
+"Adatta la preparazione",
+"عدّل التحضير"
+],
+"Adjusted prep": [
+"Vorbereitung angepasst",
+"Preparazione adattata",
+"تم تعديل التحضير"
 ],
 "Adjustment rate by outlet": [
 "Korrekturquote nach Outlet",
@@ -664,6 +739,11 @@
 "Già abbinato alla prenotazione {0}",
 "مطابقة بالفعل للحجز {0}"
 ],
+"Also on this delivery, covered by stock until it comes:": [
+"Ebenfalls auf dieser Lieferung, bis zur Ankunft durch Bestand gedeckt:",
+"Anche in questa consegna, coperti dalle scorte fino all'arrivo:",
+"أيضا في هذه التوصيلة، ويغطيها المخزون حتى وصولها:"
+],
 "Amount": [
 "Menge",
 "Quantità",
@@ -728,6 +808,11 @@
 "Und keine für {0} bis {1} Gäste in der Nähe eröffnet",
 "E nessuno per {0} a {1} ospiti aperto nelle vicinanze",
 "ولا فاتورة لـ {0} إلى {1} ضيوف فُتحت بالقرب"
+],
+"Another way": [
+"Anders gelöst",
+"In altro modo",
+"بطريقة أخرى"
 ],
 "Any date": [
 "Beliebiges Datum",
@@ -824,10 +909,30 @@
 "Arrivo",
 "الوصول"
 ],
+"Arrival recorded at this time.": [
+"Ankunft zu dieser Zeit erfasst.",
+"Arrivo registrato a quest'ora.",
+"سُجل الوصول في هذا الوقت."
+],
+"Arrival recorded at this time. The alert is cleared.": [
+"Ankunft zu dieser Zeit erfasst. Die Warnung ist aufgehoben.",
+"Arrivo registrato a quest'ora. L'avviso è chiuso.",
+"سُجل الوصول في هذا الوقت. أُزيل التنبيه."
+],
+"Arrival recorded, with what is missing.": [
+"Ankunft erfasst, mit dem, was fehlt.",
+"Arrivo registrato, con ciò che manca.",
+"سُجل الوصول مع ما هو ناقص."
+],
 "Arrived": [
 "Angekommen",
-"Arrivato",
-"وصل"
+"Arrivata",
+"وصلت"
+],
+"Arrived {0}": [
+"Angekommen {0}",
+"Arrivata alle {0}",
+"وصلت {0}"
 ],
 "Arrives tomorrow at {0}.": [
 "Ankunft morgen um {0}.",
@@ -1008,6 +1113,11 @@
 "Automatische Bestellung",
 "Ordini automatici",
 "الطلب التلقائي"
+],
+"Automatic ordering is on.": [
+"Automatische Bestellung ist eingeschaltet.",
+"L'ordine automatico è attivo.",
+"الطلب التلقائي مفعّل."
 ],
 "Automatic ordering, Tyll demo": [
 "Automatische Bestellung, Tyll Demo",
@@ -1248,6 +1358,11 @@
 "Vor dem Einsatz bei echten Kunden",
 "Prima dell'uso con clienti reali",
 "قبل الاستخدام مع عملاء حقيقيين"
+],
+"Before the likely arrival:": [
+"Vor der wahrscheinlichen Ankunft:",
+"Prima dell'arrivo probabile:",
+"قبل الوصول المرجح:"
 ],
 "Being looked into": [
 "Wird geprüft",
@@ -1749,10 +1864,30 @@
 "Lista della colazione, {0}",
 "قائمة الإفطار، {0}"
 ],
+"Breakfast needs about {0}": [
+"Frühstück braucht etwa {0}",
+"Colazione richiede circa {0}",
+"يحتاج الإفطار نحو {0}"
+],
+"Breakfast needs about {0} for the {1}": [
+"Frühstück braucht etwa {0} für {1}",
+"Colazione richiede circa {0} per {1}",
+"يحتاج الإفطار نحو {0} لـ{1}"
+],
 "Breakfast not charged": [
 "Frühstück nicht berechnet",
 "Colazione non addebitata",
 "إفطار غير محتسب"
+],
+"Breakfast prep from {0}": [
+"Vorbereitung Frühstück ab {0}",
+"Preparazione colazione dalle {0}",
+"تحضير الإفطار من {0}"
+],
+"Breakfast prep from {0}:": [
+"Vorbereitung Frühstück ab {0}:",
+"Preparazione colazione dalle {0}:",
+"تحضير الإفطار من {0}:"
 ],
 "Breakfast {0} to this morning. Outlet sales {1} to last night, whole days.": [
 "Frühstück {0} bis heute Morgen. Outlet-Umsatz {1} bis gestern Abend, ganze Tage.",
@@ -1819,6 +1954,11 @@
 "Crea ordine",
 "أنشئ الطلب"
 ],
+"Build orders": [
+"Bestellungen erstellen",
+"Crea ordini",
+"إنشاء الطلبات"
+],
 "Building…": [
 "Wird erstellt…",
 "Creazione…",
@@ -1858,6 +1998,11 @@
 "Butter",
 "Burro",
 "زبدة"
+],
+"Buying planned to {0}:": [
+"Geplanter Einkauf bis {0}:",
+"Acquisti pianificati fino al {0}:",
+"المشتريات المخططة حتى {0}:"
 ],
 "Buying planned to {0}: {1} items. Next order today.": [
 "Einkauf geplant bis {0}: {1} Artikel. Nächste Bestellung heute.",
@@ -1950,9 +2095,14 @@
 "احسب ما يجب شراؤه"
 ],
 "Call supplier": [
-"Lieferanten anrufen",
+"Lieferant anrufen",
 "Chiama il fornitore",
 "اتصل بالمورد"
+],
+"Called the supplier": [
+"Lieferant angerufen",
+"Chiamato il fornitore",
+"تم الاتصال بالمورد"
 ],
 "Can Tyll read our own tills and guest bills?": [
 "Kann Tyll unsere eigenen Kassen und Gästerechnungen lesen?",
@@ -1968,6 +2118,11 @@
 "Kann ein, zwei Tage warten",
 "Può aspettare un giorno o due",
 "يمكن أن ينتظر يومًا أو يومين"
+],
+"Cancel": [
+"Abbrechen",
+"Annulla",
+"إلغاء"
 ],
 "Cancelled bills": [
 "Stornierte Rechnungen",
@@ -2034,6 +2189,11 @@
 "Flûte da champagne",
 "كؤوس شمبانيا"
 ],
+"Chance it is late": [
+"Wahrscheinlichkeit einer Verspätung",
+"Probabilità di ritardo",
+"احتمال التأخير"
+],
 "Change": [
 "Änderung",
 "Variazione",
@@ -2068,6 +2228,11 @@
 "Zeitraum ändern",
 "Cambia periodo",
 "غيّر الفترة"
+],
+"Change portions or move a dish in": [
+"Portionen ändern oder ein Gericht verschieben in",
+"Cambia le porzioni o sposta un piatto in",
+"غيّر الحصص أو انقل طبقا في"
 ],
 "Change the standard": [
 "Standard ändern",
@@ -2760,7 +2925,7 @@
 "بوفيه غداء المؤتمرات"
 ],
 "Confidence": [
-"Sicherheit",
+"Zuverlässigkeit",
 "Affidabilità",
 "الثقة"
 ],
@@ -3237,7 +3402,7 @@
 "Deliveries": [
 "Lieferungen",
 "Consegne",
-"التوريدات"
+"التوصيلات"
 ],
 "Deliveries and invoices": [
 "Lieferungen und Rechnungen",
@@ -3248,6 +3413,11 @@
 "Lieferungen und Rechnungen, Tyll Demo",
 "Consegne e fatture, demo Tyll",
 "التوريدات والفواتير، عرض Tyll"
+],
+"Deliveries at risk": [
+"Lieferungen mit Risiko",
+"Consegne a rischio",
+"توصيلات معرضة للتأخير"
 ],
 "Deliveries checked": [
 "Geprüfte Lieferungen",
@@ -3272,7 +3442,7 @@
 "Delivery": [
 "Lieferung",
 "Consegna",
-"التوريد"
+"التوصيلة"
 ],
 "Delivery date": [
 "Liefertermin",
@@ -3379,10 +3549,30 @@
 "Cena",
 "العشاء"
 ],
+"Dinner needs about {0}": [
+"Abendessen braucht etwa {0}",
+"Cena richiede circa {0}",
+"يحتاج العشاء نحو {0}"
+],
+"Dinner needs about {0} for the {1}": [
+"Abendessen braucht etwa {0} für {1}",
+"Cena richiede circa {0} per {1}",
+"يحتاج العشاء نحو {0} لـ{1}"
+],
 "Dinner plates": [
 "Speiseteller",
 "Piatti piani",
 "أطباق عشاء"
+],
+"Dinner prep from {0}": [
+"Vorbereitung Abendessen ab {0}",
+"Preparazione cena dalle {0}",
+"تحضير العشاء من {0}"
+],
+"Dinner prep from {0}:": [
+"Vorbereitung Abendessen ab {0}:",
+"Preparazione cena dalle {0}:",
+"تحضير العشاء من {0}:"
 ],
 "Dinner, guests with no bill": [
 "Abendessen, Gäste ohne Rechnung",
@@ -3749,6 +3939,11 @@
 "Ogni fattura fornitore è verificata in tre modi: cosa è stato ordinato, cosa è arrivato e cosa è stato fatturato. Una differenza è un fatto da verificare, non la prova di un illecito.",
 "تُفحص كل فاتورة مورد بثلاث طرق: ما طُلب وما وصل وما فُوتر. الفرق حقيقة للتحقق وليس دليلًا على مخالفة."
 ],
+"Each supplier's on time rate, how late it is when it is late, and the weekdays it runs late. Deliveries likely to be late show on Predictions under Deliveries at risk.": [
+"Pünktlichkeit jedes Lieferanten, wie spät er kommt, wenn er spät kommt, und an welchen Wochentagen. Wahrscheinlich verspätete Lieferungen stehen in Prognosen unter Lieferungen mit Risiko.",
+"Puntualità di ogni fornitore, quanto ritarda quando ritarda, e in quali giorni. Le consegne probabilmente in ritardo sono in Previsioni, sotto Consegne a rischio.",
+"نسبة التزام كل مورد بالموعد، ومدى تأخره حين يتأخر، وأيام التأخير. التوصيلات المرجح تأخرها تظهر في التوقعات تحت توصيلات معرضة للتأخير."
+],
 "Each table seated from the reservation book against the bills at that table, per outlet and service.": [
 "Jeder aus dem Reservierungsbuch platzierte Tisch gegen die Rechnungen an diesem Tisch, je Outlet und Service.",
 "Ogni tavolo accomodato dal libro prenotazioni contro i conti di quel tavolo, per punto vendita e servizio.",
@@ -4079,6 +4274,11 @@
 "Ogni caso finanziario, aperto e chiuso.",
 "كل حالة مالية، مفتوحة ومغلقة."
 ],
+"Every morning at {0} Tyll orders the items due that day or the next;": [
+"Jeden Morgen um {0} bestellt Tyll die Artikel, die an diesem oder dem nächsten Tag fällig sind;",
+"Ogni mattina alle {0} Tyll ordina gli articoli in scadenza quel giorno o il successivo;",
+"كل صباح الساعة {0} يطلب Tyll الأصناف المستحقة في ذلك اليوم أو اليوم التالي؛"
+],
 "Every outlet and shift is pouring close to standard.": [
 "Alle Outlets und Schichten schenken nahe am Standard aus.",
 "Ogni punto vendita e turno versa vicino allo standard.",
@@ -4108,6 +4308,11 @@
 "Jeder vom Kassensystem erfasste Schritt.",
 "Ogni passaggio registrato dalla cassa.",
 "كل خطوة سجلتها نقطة البيع."
+],
+"Every supplier has a record": [
+"Jeder Lieferant hat Lieferdaten",
+"Ogni fornitore ha uno storico",
+"لكل مورد سجل"
 ],
 "Every table billed": [
 "Jeder Tisch abgerechnet",
@@ -4208,6 +4413,11 @@
 "Erwartete Gäste:",
 "Ospiti previsti:",
 "الضيوف المتوقعون:"
+],
+"Expected on time": [
+"Pünktlich erwartet",
+"Attesa in orario",
+"متوقعة في الموعد"
 ],
 "Expected per bottle": [
 "Soll pro Flasche",
@@ -4358,6 +4568,11 @@
 "Artikel suchen",
 "Trova un articolo",
 "ابحث عن صنف"
+],
+"Find them under Automatic ordering in the menu.": [
+"Sie finden sie unter Automatische Bestellung im Menü.",
+"Li trova in Ordine automatico nel menu.",
+"تجدها تحت الطلب التلقائي في القائمة."
 ],
 "Fine": [
 "In Ordnung",
@@ -4679,6 +4894,16 @@
 "Prodotti freschi, restano {0}, finisce tra {1} giorni",
 "منتجات طازجة، متبقٍ {0}، ينفد خلال {1} أيام"
 ],
+"Fri": [
+"Fr",
+"ven",
+"الجمعة"
+],
+"Fri:": [
+"Fr:",
+"ven:",
+"الجمعة:"
+],
 "From booking records": [
 "Aus Buchungsdaten",
 "Dai dati di prenotazione",
@@ -4708,6 +4933,11 @@
 "Aus dem PMS: Frühstück ist nicht in der Rate",
 "Dal PMS: la colazione non è in tariffa",
 "من نظام إدارة الفندق: الإفطار غير مشمول في السعر"
+],
+"From the arrival time goods in records for each delivery, against the window the supplier promised.": [
+"Aus der Ankunftszeit, die der Wareneingang für jede Lieferung erfasst, gegen das zugesagte Zeitfenster.",
+"Dall'orario di arrivo che il ricevimento registra per ogni consegna, rispetto alla fascia promessa dal fornitore.",
+"من وقت الوصول الذي يسجله الاستلام لكل توصيلة، مقارنة بالموعد الذي حدده المورد."
 ],
 "From the same sales and cost records as the Overview.": [
 "Aus denselben Verkaufs- und Kostendaten wie die Übersicht.",
@@ -4843,6 +5073,11 @@
 "Guten Morgen, Marco",
 "Buongiorno, Marco",
 "صباح الخير يا ماركو"
+],
+"Goods in records each arrival with one tap on a phone. If the van is here, record it now.": [
+"Der Wareneingang erfasst jede Ankunft mit einem Tipp auf dem Telefon. Ist der Lieferwagen da, jetzt erfassen.",
+"Il ricevimento merci registra ogni arrivo con un tocco sul telefono. Se il furgone è qui, registralo ora.",
+"يسجّل الاستلام كل وصول بلمسة واحدة على الهاتف. إذا وصلت الشاحنة، سجّل ذلك الآن."
 ],
 "Grey: covered, not flagged. The rest is to check. {0} breakfasts are on their own bills, in the room charge check.": [
 "Grau: gedeckt, nicht markiert. Der Rest ist zu prüfen. {0}-Frühstücke stehen auf eigenen Rechnungen, in der Zimmerbelastungsprüfung.",
@@ -5039,6 +5274,16 @@
 "Filetto di hammour",
 "فيليه هامور"
 ],
+"Handled": [
+"Erledigt",
+"Gestito",
+"تمت المعالجة"
+],
+"Handled another way": [
+"Anders gelöst",
+"Gestito in altro modo",
+"عولج بطريقة أخرى"
+],
 "Have and coming": [
 "Vorhanden und unterwegs",
 "Disponibile e in arrivo",
@@ -5070,9 +5315,14 @@
 "عالية"
 ],
 "High confidence": [
-"Hohe Sicherheit",
+"Zuverlässigkeit hoch",
 "Affidabilità alta",
 "ثقة عالية"
+],
+"High confidence, {0} deliveries": [
+"Zuverlässigkeit hoch, {0} Lieferungen",
+"Affidabilità alta, {0} consegne",
+"ثقة عالية، {0} توصيلات"
 ],
 "Highball glasses": [
 "Highball-Gläser",
@@ -5414,6 +5664,11 @@
 "In questa demo",
 "في هذه النسخة"
 ],
+"In this demo no call is made.": [
+"In dieser Demo wird kein Anruf getätigt.",
+"In questa demo non viene fatta alcuna chiamata.",
+"لا يتم أي اتصال في هذا العرض."
+],
 "In-Room Dining": [
 "Zimmerservice",
 "Servizio in camera",
@@ -5613,6 +5868,11 @@
 "Es geht in etwas ohne Rezept in der Kasse: ein Getränkepaket, ein Eventmenü, Minibars oder Personalgetränke.",
 "Finisce in qualcosa senza ricetta in cassa: un pacchetto bevande, un menu per eventi, minibar o bevande del personale.",
 "يدخل في شيء بلا وصفة في نقطة البيع: باقة مشروبات أو قائمة فعالية أو الميني بار أو مشروبات الموظفين."
+],
+"It has arrived": [
+"Ist angekommen",
+"È arrivata",
+"وصلت"
 ],
 "It has grown by more than a delivery since, so it is to check again.": [
 "Sie ist seitdem um mehr als eine Lieferung gewachsen und ist daher erneut zu prüfen.",
@@ -6019,6 +6279,21 @@
 "In ritardo",
 "متأخر"
 ],
+"Late deliveries": [
+"Verspätete Lieferungen",
+"Consegne in ritardo",
+"توصيلات متأخرة"
+],
+"Late deliveries by weekday, {0}": [
+"Verspätete Lieferungen nach Wochentag, {0}",
+"Consegne in ritardo per giorno, {0}",
+"التوصيلات المتأخرة حسب أيام الأسبوع، {0}"
+],
+"Late means more than {0} minutes after the window.": [
+"Verspätet heißt mehr als {0} Minuten nach dem Zeitfenster.",
+"In ritardo significa oltre {0} minuti dopo la fascia.",
+"التأخير يعني أكثر من {0} دقيقة بعد الموعد."
+],
 "Late night": [
 "Spätschicht",
 "Notte",
@@ -6039,10 +6314,385 @@
 "Turni di notte: {0} bevande per ospite, contro {1} dei colleghi negli stessi turni. Circa {2} bevande in meno, {3} al prezzo medio delle bevande, una stima.",
 "الورديات الليلية: {0} مشروب لكل ضيف، مقابل {1} لدى الزملاء في الورديات نفسها. نحو {2} مشروبًا أقل، {3} بمتوسط سعر المشروب، تقديرًا."
 ],
+"Late on {0} of the last {1} Fridays": [
+"Verspätet an {0} der letzten {1} Freitage",
+"In ritardo {0} degli ultimi {1} venerdì",
+"تأخر في {0} من آخر {1} أيام الجمعة"
+],
+"Late on {0} of the last {1} Fridays, {2} hour on average.": [
+"Verspätet an {0} der letzten {1} Freitage, im Schnitt {2} Stunde.",
+"In ritardo {0} degli ultimi {1} venerdì, in media {2} ora.",
+"تأخر في {0} من آخر {1} أيام الجمعة، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} Fridays, {2} hour {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Freitage, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} degli ultimi {1} venerdì, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الجمعة، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} Fridays, {2} hours on average.": [
+"Verspätet an {0} der letzten {1} Freitage, im Schnitt {2} Stunden.",
+"In ritardo {0} degli ultimi {1} venerdì, in media {2} ore.",
+"تأخر في {0} من آخر {1} أيام الجمعة، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} Fridays, {2} hours {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Freitage, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} degli ultimi {1} venerdì, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الجمعة، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} Fridays, {2} minutes on average.": [
+"Verspätet an {0} der letzten {1} Freitage, im Schnitt {2} Minuten.",
+"In ritardo {0} degli ultimi {1} venerdì, in media {2} minuti.",
+"تأخر في {0} من آخر {1} أيام الجمعة، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} Fridays.": [
+"Verspätet an {0} der letzten {1} Freitage.",
+"In ritardo {0} degli ultimi {1} venerdì.",
+"تأخر في {0} من آخر {1} أيام الجمعة."
+],
+"Late on {0} of the last {1} Mondays": [
+"Verspätet an {0} der letzten {1} Montage",
+"In ritardo {0} degli ultimi {1} lunedì",
+"تأخر في {0} من آخر {1} أيام الاثنين"
+],
+"Late on {0} of the last {1} Mondays, {2} hour on average.": [
+"Verspätet an {0} der letzten {1} Montage, im Schnitt {2} Stunde.",
+"In ritardo {0} degli ultimi {1} lunedì, in media {2} ora.",
+"تأخر في {0} من آخر {1} أيام الاثنين، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} Mondays, {2} hour {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Montage, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} degli ultimi {1} lunedì, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الاثنين، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} Mondays, {2} hours on average.": [
+"Verspätet an {0} der letzten {1} Montage, im Schnitt {2} Stunden.",
+"In ritardo {0} degli ultimi {1} lunedì, in media {2} ore.",
+"تأخر في {0} من آخر {1} أيام الاثنين، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} Mondays, {2} hours {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Montage, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} degli ultimi {1} lunedì, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الاثنين، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} Mondays, {2} minutes on average.": [
+"Verspätet an {0} der letzten {1} Montage, im Schnitt {2} Minuten.",
+"In ritardo {0} degli ultimi {1} lunedì, in media {2} minuti.",
+"تأخر في {0} من آخر {1} أيام الاثنين، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} Mondays.": [
+"Verspätet an {0} der letzten {1} Montage.",
+"In ritardo {0} degli ultimi {1} lunedì.",
+"تأخر في {0} من آخر {1} أيام الاثنين."
+],
+"Late on {0} of the last {1} Saturdays": [
+"Verspätet an {0} der letzten {1} Samstage",
+"In ritardo {0} degli ultimi {1} sabati",
+"تأخر في {0} من آخر {1} أيام السبت"
+],
+"Late on {0} of the last {1} Saturdays, {2} hour on average.": [
+"Verspätet an {0} der letzten {1} Samstage, im Schnitt {2} Stunde.",
+"In ritardo {0} degli ultimi {1} sabati, in media {2} ora.",
+"تأخر في {0} من آخر {1} أيام السبت، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} Saturdays, {2} hour {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Samstage, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} degli ultimi {1} sabati, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام السبت، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} Saturdays, {2} hours on average.": [
+"Verspätet an {0} der letzten {1} Samstage, im Schnitt {2} Stunden.",
+"In ritardo {0} degli ultimi {1} sabati, in media {2} ore.",
+"تأخر في {0} من آخر {1} أيام السبت، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} Saturdays, {2} hours {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Samstage, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} degli ultimi {1} sabati, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام السبت، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} Saturdays, {2} minutes on average.": [
+"Verspätet an {0} der letzten {1} Samstage, im Schnitt {2} Minuten.",
+"In ritardo {0} degli ultimi {1} sabati, in media {2} minuti.",
+"تأخر في {0} من آخر {1} أيام السبت، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} Saturdays.": [
+"Verspätet an {0} der letzten {1} Samstage.",
+"In ritardo {0} degli ultimi {1} sabati.",
+"تأخر في {0} من آخر {1} أيام السبت."
+],
+"Late on {0} of the last {1} Sundays": [
+"Verspätet an {0} der letzten {1} Sonntage",
+"In ritardo {0} delle ultime {1} domeniche",
+"تأخر في {0} من آخر {1} أيام الأحد"
+],
+"Late on {0} of the last {1} Sundays, {2} hour on average.": [
+"Verspätet an {0} der letzten {1} Sonntage, im Schnitt {2} Stunde.",
+"In ritardo {0} delle ultime {1} domeniche, in media {2} ora.",
+"تأخر في {0} من آخر {1} أيام الأحد، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} Sundays, {2} hour {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Sonntage, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} delle ultime {1} domeniche, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الأحد، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} Sundays, {2} hours on average.": [
+"Verspätet an {0} der letzten {1} Sonntage, im Schnitt {2} Stunden.",
+"In ritardo {0} delle ultime {1} domeniche, in media {2} ore.",
+"تأخر في {0} من آخر {1} أيام الأحد، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} Sundays, {2} hours {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Sonntage, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} delle ultime {1} domeniche, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الأحد، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} Sundays, {2} minutes on average.": [
+"Verspätet an {0} der letzten {1} Sonntage, im Schnitt {2} Minuten.",
+"In ritardo {0} delle ultime {1} domeniche, in media {2} minuti.",
+"تأخر في {0} من آخر {1} أيام الأحد، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} Sundays.": [
+"Verspätet an {0} der letzten {1} Sonntage.",
+"In ritardo {0} delle ultime {1} domeniche.",
+"تأخر في {0} من آخر {1} أيام الأحد."
+],
+"Late on {0} of the last {1} Thursdays": [
+"Verspätet an {0} der letzten {1} Donnerstage",
+"In ritardo {0} degli ultimi {1} giovedì",
+"تأخر في {0} من آخر {1} أيام الخميس"
+],
+"Late on {0} of the last {1} Thursdays, {2} hour on average.": [
+"Verspätet an {0} der letzten {1} Donnerstage, im Schnitt {2} Stunde.",
+"In ritardo {0} degli ultimi {1} giovedì, in media {2} ora.",
+"تأخر في {0} من آخر {1} أيام الخميس، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} Thursdays, {2} hour {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Donnerstage, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} degli ultimi {1} giovedì, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الخميس، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} Thursdays, {2} hours on average.": [
+"Verspätet an {0} der letzten {1} Donnerstage, im Schnitt {2} Stunden.",
+"In ritardo {0} degli ultimi {1} giovedì, in media {2} ore.",
+"تأخر في {0} من آخر {1} أيام الخميس، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} Thursdays, {2} hours {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Donnerstage, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} degli ultimi {1} giovedì, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الخميس، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} Thursdays, {2} minutes on average.": [
+"Verspätet an {0} der letzten {1} Donnerstage, im Schnitt {2} Minuten.",
+"In ritardo {0} degli ultimi {1} giovedì, in media {2} minuti.",
+"تأخر في {0} من آخر {1} أيام الخميس، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} Thursdays.": [
+"Verspätet an {0} der letzten {1} Donnerstage.",
+"In ritardo {0} degli ultimi {1} giovedì.",
+"تأخر في {0} من آخر {1} أيام الخميس."
+],
+"Late on {0} of the last {1} Tuesdays": [
+"Verspätet an {0} der letzten {1} Dienstage",
+"In ritardo {0} degli ultimi {1} martedì",
+"تأخر في {0} من آخر {1} أيام الثلاثاء"
+],
+"Late on {0} of the last {1} Tuesdays, {2} hour on average.": [
+"Verspätet an {0} der letzten {1} Dienstage, im Schnitt {2} Stunde.",
+"In ritardo {0} degli ultimi {1} martedì, in media {2} ora.",
+"تأخر في {0} من آخر {1} أيام الثلاثاء، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} Tuesdays, {2} hour {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Dienstage, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} degli ultimi {1} martedì, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الثلاثاء، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} Tuesdays, {2} hours on average.": [
+"Verspätet an {0} der letzten {1} Dienstage, im Schnitt {2} Stunden.",
+"In ritardo {0} degli ultimi {1} martedì, in media {2} ore.",
+"تأخر في {0} من آخر {1} أيام الثلاثاء، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} Tuesdays, {2} hours {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Dienstage, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} degli ultimi {1} martedì, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الثلاثاء، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} Tuesdays, {2} minutes on average.": [
+"Verspätet an {0} der letzten {1} Dienstage, im Schnitt {2} Minuten.",
+"In ritardo {0} degli ultimi {1} martedì, in media {2} minuti.",
+"تأخر في {0} من آخر {1} أيام الثلاثاء، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} Tuesdays.": [
+"Verspätet an {0} der letzten {1} Dienstage.",
+"In ritardo {0} degli ultimi {1} martedì.",
+"تأخر في {0} من آخر {1} أيام الثلاثاء."
+],
+"Late on {0} of the last {1} Wednesdays": [
+"Verspätet an {0} der letzten {1} Mittwoche",
+"In ritardo {0} degli ultimi {1} mercoledì",
+"تأخر في {0} من آخر {1} أيام الأربعاء"
+],
+"Late on {0} of the last {1} Wednesdays, {2} hour on average.": [
+"Verspätet an {0} der letzten {1} Mittwoche, im Schnitt {2} Stunde.",
+"In ritardo {0} degli ultimi {1} mercoledì, in media {2} ora.",
+"تأخر في {0} من آخر {1} أيام الأربعاء، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} Wednesdays, {2} hour {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Mittwoche, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} degli ultimi {1} mercoledì, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الأربعاء، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} Wednesdays, {2} hours on average.": [
+"Verspätet an {0} der letzten {1} Mittwoche, im Schnitt {2} Stunden.",
+"In ritardo {0} degli ultimi {1} mercoledì, in media {2} ore.",
+"تأخر في {0} من آخر {1} أيام الأربعاء، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} Wednesdays, {2} hours {3} minutes on average.": [
+"Verspätet an {0} der letzten {1} Mittwoche, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} degli ultimi {1} mercoledì, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} أيام الأربعاء، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} Wednesdays, {2} minutes on average.": [
+"Verspätet an {0} der letzten {1} Mittwoche, im Schnitt {2} Minuten.",
+"In ritardo {0} degli ultimi {1} mercoledì, in media {2} minuti.",
+"تأخر في {0} من آخر {1} أيام الأربعاء، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} Wednesdays.": [
+"Verspätet an {0} der letzten {1} Mittwoche.",
+"In ritardo {0} degli ultimi {1} mercoledì.",
+"تأخر في {0} من آخر {1} أيام الأربعاء."
+],
+"Late on {0} of the last {1} deliveries after a public holiday, {2} hour on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen nach einem Feiertag, im Schnitt {2} Stunde.",
+"In ritardo {0} delle ultime {1} consegne dopo un giorno festivo, in media {2} ora.",
+"تأخر في {0} من آخر {1} توصيلات بعد عطلة رسمية، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} deliveries after a public holiday, {2} hour {3} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen nach einem Feiertag, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} delle ultime {1} consegne dopo un giorno festivo, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} توصيلات بعد عطلة رسمية، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} deliveries after a public holiday, {2} hours on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen nach einem Feiertag, im Schnitt {2} Stunden.",
+"In ritardo {0} delle ultime {1} consegne dopo un giorno festivo, in media {2} ore.",
+"تأخر في {0} من آخر {1} توصيلات بعد عطلة رسمية، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} deliveries after a public holiday, {2} hours {3} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen nach einem Feiertag, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} delle ultime {1} consegne dopo un giorno festivo, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} توصيلات بعد عطلة رسمية، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} deliveries after a public holiday, {2} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen nach einem Feiertag, im Schnitt {2} Minuten.",
+"In ritardo {0} delle ultime {1} consegne dopo un giorno festivo, in media {2} minuti.",
+"تأخر في {0} من آخر {1} توصيلات بعد عطلة رسمية، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} deliveries after a public holiday.": [
+"Verspätet bei {0} der letzten {1} Lieferungen nach einem Feiertag.",
+"In ritardo {0} delle ultime {1} consegne dopo un giorno festivo.",
+"تأخر في {0} من آخر {1} توصيلات بعد عطلة رسمية."
+],
+"Late on {0} of the last {1} deliveries in the {2} slot, {3} hour on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen im Zeitfenster {2}, im Schnitt {3} Stunde.",
+"In ritardo {0} delle ultime {1} consegne nella fascia delle {2}, in media {3} ora.",
+"تأخر في {0} من آخر {1} توصيلات في موعد {2}، بمتوسط {3} ساعة."
+],
+"Late on {0} of the last {1} deliveries in the {2} slot, {3} hour {4} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen im Zeitfenster {2}, im Schnitt {3} Stunde {4} Minuten.",
+"In ritardo {0} delle ultime {1} consegne nella fascia delle {2}, in media {3} ora e {4} minuti.",
+"تأخر في {0} من آخر {1} توصيلات في موعد {2}، بمتوسط {3} ساعة و{4} دقيقة."
+],
+"Late on {0} of the last {1} deliveries in the {2} slot, {3} hours on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen im Zeitfenster {2}, im Schnitt {3} Stunden.",
+"In ritardo {0} delle ultime {1} consegne nella fascia delle {2}, in media {3} ore.",
+"تأخر في {0} من آخر {1} توصيلات في موعد {2}، بمتوسط {3} ساعات."
+],
+"Late on {0} of the last {1} deliveries in the {2} slot, {3} hours {4} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen im Zeitfenster {2}, im Schnitt {3} Stunden {4} Minuten.",
+"In ritardo {0} delle ultime {1} consegne nella fascia delle {2}, in media {3} ore e {4} minuti.",
+"تأخر في {0} من آخر {1} توصيلات في موعد {2}، بمتوسط {3} ساعات و{4} دقيقة."
+],
+"Late on {0} of the last {1} deliveries in the {2} slot, {3} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen im Zeitfenster {2}, im Schnitt {3} Minuten.",
+"In ritardo {0} delle ultime {1} consegne nella fascia delle {2}, in media {3} minuti.",
+"تأخر في {0} من آخر {1} توصيلات في موعد {2}، بمتوسط {3} دقيقة."
+],
+"Late on {0} of the last {1} deliveries in the {2} slot.": [
+"Verspätet bei {0} der letzten {1} Lieferungen im Zeitfenster {2}.",
+"In ritardo {0} delle ultime {1} consegne nella fascia delle {2}.",
+"تأخر في {0} من آخر {1} توصيلات في موعد {2}."
+],
+"Late on {0} of the last {1} deliveries, {2} hour on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen, im Schnitt {2} Stunde.",
+"In ritardo {0} delle ultime {1} consegne, in media {2} ora.",
+"تأخر في {0} من آخر {1} توصيلات، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} deliveries, {2} hour {3} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} delle ultime {1} consegne, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} توصيلات، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} deliveries, {2} hours on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen, im Schnitt {2} Stunden.",
+"In ritardo {0} delle ultime {1} consegne, in media {2} ore.",
+"تأخر في {0} من آخر {1} توصيلات، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} deliveries, {2} hours {3} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} delle ultime {1} consegne, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} توصيلات، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} deliveries, {2} minutes on average.": [
+"Verspätet bei {0} der letzten {1} Lieferungen, im Schnitt {2} Minuten.",
+"In ritardo {0} delle ultime {1} consegne, in media {2} minuti.",
+"تأخر في {0} من آخر {1} توصيلات، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} large orders, {2} hour on average.": [
+"Verspätet bei {0} der letzten {1} großen Bestellungen, im Schnitt {2} Stunde.",
+"In ritardo {0} degli ultimi {1} ordini grandi, in media {2} ora.",
+"تأخر في {0} من آخر {1} طلبات كبيرة، بمتوسط {2} ساعة."
+],
+"Late on {0} of the last {1} large orders, {2} hour {3} minutes on average.": [
+"Verspätet bei {0} der letzten {1} großen Bestellungen, im Schnitt {2} Stunde {3} Minuten.",
+"In ritardo {0} degli ultimi {1} ordini grandi, in media {2} ora e {3} minuti.",
+"تأخر في {0} من آخر {1} طلبات كبيرة، بمتوسط {2} ساعة و{3} دقيقة."
+],
+"Late on {0} of the last {1} large orders, {2} hours on average.": [
+"Verspätet bei {0} der letzten {1} großen Bestellungen, im Schnitt {2} Stunden.",
+"In ritardo {0} degli ultimi {1} ordini grandi, in media {2} ore.",
+"تأخر في {0} من آخر {1} طلبات كبيرة، بمتوسط {2} ساعات."
+],
+"Late on {0} of the last {1} large orders, {2} hours {3} minutes on average.": [
+"Verspätet bei {0} der letzten {1} großen Bestellungen, im Schnitt {2} Stunden {3} Minuten.",
+"In ritardo {0} degli ultimi {1} ordini grandi, in media {2} ore e {3} minuti.",
+"تأخر في {0} من آخر {1} طلبات كبيرة، بمتوسط {2} ساعات و{3} دقيقة."
+],
+"Late on {0} of the last {1} large orders, {2} minutes on average.": [
+"Verspätet bei {0} der letzten {1} großen Bestellungen, im Schnitt {2} Minuten.",
+"In ritardo {0} degli ultimi {1} ordini grandi, in media {2} minuti.",
+"تأخر في {0} من آخر {1} طلبات كبيرة، بمتوسط {2} دقيقة."
+],
+"Late on {0} of the last {1} large orders.": [
+"Verspätet bei {0} der letzten {1} großen Bestellungen.",
+"In ritardo {0} degli ultimi {1} ordini grandi.",
+"تأخر في {0} من آخر {1} طلبات كبيرة."
+],
 "Late refund": [
 "Späte Erstattung",
 "Rimborso tardivo",
 "استرداد متأخر"
+],
+"Late, breakfast runs short.": [
+"Verspätet reicht es nicht für das Frühstück.",
+"In ritardo, la colazione resta scoperta.",
+"مع التأخير، لا يكفي الإفطار."
+],
+"Late, dinner runs short.": [
+"Verspätet reicht es nicht für das Abendessen.",
+"In ritardo, la cena resta scoperta.",
+"مع التأخير، لا يكفي العشاء."
+],
+"Late, lunch runs short.": [
+"Verspätet reicht es nicht für das Mittagessen.",
+"In ritardo, il pranzo resta scoperto.",
+"مع التأخير، لا يكفي الغداء."
 ],
 "Latest flagged orders": [
 "Letzte markierte Bestellungen",
@@ -6059,10 +6709,35 @@
 "Prodotti per lavanderia (storico simulato)",
 "مواد الغسيل الكيميائية (سجل محاكاة)"
 ],
+"Learning this supplier": [
+"Lieferant wird noch gelernt",
+"Fornitore in apprendimento",
+"ما زلنا نتعرف على هذا المورد"
+],
+"Learning this supplier, {0} deliveries": [
+"Lieferant wird noch gelernt, {0} Lieferungen",
+"Fornitore in apprendimento, {0} consegne",
+"ما زلنا نتعرف على المورد، {0} توصيلات"
+],
+"Learning this supplier:": [
+"Dieser Lieferant wird noch gelernt:",
+"Fornitore ancora in apprendimento:",
+"ما زلنا نتعرف على هذا المورد:"
+],
 "Least profitable items": [
 "Am wenigsten profitable Artikel",
 "Articoli meno redditizi",
 "الأصناف الأقل ربحًا"
+],
+"Least reliable": [
+"Am wenigsten zuverlässig",
+"Meno affidabile",
+"الأقل موثوقية"
+],
+"Least reliable first": [
+"Am wenigsten zuverlässig zuerst",
+"Prima i meno affidabili",
+"الأقل موثوقية أولا"
 ],
 "Least sold": [
 "Am wenigsten verkauft",
@@ -6073,6 +6748,11 @@
 "Verlassen, Zählungen sind gespeichert",
 "Esci, i conteggi sono salvati",
 "خروج، تم حفظ العدّ"
+],
+"Left at prep": [
+"Übrig zur Vorbereitung",
+"Rimasto alla preparazione",
+"المتبقي عند التحضير"
 ],
 "Left before ordering": [
 "Vor dem Bestellen gegangen",
@@ -6138,6 +6818,21 @@
 "Lightspeed: mit einem Sandbox-Konto zu bestätigen",
 "Lightspeed: da confermare con un account sandbox",
 "Lightspeed: يجب تأكيده بحساب في بيئة تجريبية"
+],
+"Likely arrival": [
+"Wahrscheinliche Ankunft",
+"Arrivo probabile",
+"الوصول المرجح"
+],
+"Likely late": [
+"Wahrscheinlich verspätet",
+"Probabile ritardo",
+"تأخير مرجح"
+],
+"Likely late, stock covers it": [
+"Wahrscheinlich verspätet, Bestand reicht",
+"Probabile ritardo, le scorte bastano",
+"تأخير مرجح، والمخزون يكفي"
 ],
 "Limes": [
 "Limetten",
@@ -6404,6 +7099,16 @@
 "Basso",
 "منخفض"
 ],
+"Low confidence": [
+"Zuverlässigkeit niedrig",
+"Affidabilità bassa",
+"ثقة منخفضة"
+],
+"Low confidence, {0} deliveries": [
+"Zuverlässigkeit niedrig, {0} Lieferungen",
+"Affidabilità bassa, {0} consegne",
+"ثقة منخفضة، {0} توصيلات"
+],
 "Low {0}": [
 "Niedrig {0}",
 "Bassi {0}",
@@ -6413,6 +7118,26 @@
 "Mittagessen",
 "Pranzo",
 "الغداء"
+],
+"Lunch needs about {0}": [
+"Mittagessen braucht etwa {0}",
+"Pranzo richiede circa {0}",
+"يحتاج الغداء نحو {0}"
+],
+"Lunch needs about {0} for the {1}": [
+"Mittagessen braucht etwa {0} für {1}",
+"Pranzo richiede circa {0} per {1}",
+"يحتاج الغداء نحو {0} لـ{1}"
+],
+"Lunch prep from {0}": [
+"Vorbereitung Mittagessen ab {0}",
+"Preparazione pranzo dalle {0}",
+"تحضير الغداء من {0}"
+],
+"Lunch prep from {0}:": [
+"Vorbereitung Mittagessen ab {0}:",
+"Preparazione pranzo dalle {0}:",
+"تحضير الغداء من {0}:"
 ],
 "Lunch, guests with no bill": [
 "Mittagessen, Gäste ohne Rechnung",
@@ -6549,6 +7274,11 @@
 "Segna tutto come letto",
 "تعليم الكل كمقروء"
 ],
+"Mark as handled": [
+"Als erledigt markieren",
+"Segna come gestito",
+"علّم كمعالَج"
+],
 "Mark as in review": [
 "Als in Prüfung markieren",
 "Segna come in revisione",
@@ -6609,6 +7339,11 @@
 "Massimo",
 "الحد الأقصى"
 ],
+"May be late, stock covers it": [
+"Vielleicht verspätet, Bestand reicht",
+"Possibile ritardo, le scorte bastano",
+"قد تتأخر، والمخزون يكفي"
+],
 "Mayonnaise and sauces": [
 "Mayonnaise und Saucen",
 "Maionese e salse",
@@ -6648,6 +7383,16 @@
 "Fleisch und Fisch, noch {0}, reicht {1} Tage",
 "Carne e pesce, restano {0}, finisce tra {1} giorni",
 "لحوم وأسماك، متبقٍ {0}، ينفد خلال {1} أيام"
+],
+"Medium confidence": [
+"Zuverlässigkeit mittel",
+"Affidabilità media",
+"ثقة متوسطة"
+],
+"Medium confidence, {0} deliveries": [
+"Zuverlässigkeit mittel, {0} Lieferungen",
+"Affidabilità media, {0} consegne",
+"ثقة متوسطة، {0} توصيلات"
 ],
 "Menu": [
 "Speisekarte",
@@ -6764,10 +7509,25 @@
 "Scorte mancanti, settimana per settimana",
 "المخزون المفقود أسبوعًا بأسبوع"
 ],
+"Missing: {0}": [
+"Fehlt: {0}",
+"Manca: {0}",
+"الناقص: {0}"
+],
 "Mixed berries": [
 "Gemischte Beeren",
 "Frutti di bosco",
 "توت"
+],
+"Mon": [
+"Mo",
+"lun",
+"الإثنين"
+],
+"Mon:": [
+"Mo:",
+"lun:",
+"الإثنين:"
 ],
 "Money": [
 "Geld",
@@ -7014,6 +7774,11 @@
 "I nomi sono visibili solo ai responsabili che seguono il team.",
 "تظهر الأسماء فقط للمديرين الذين يوجّهون الفريق."
 ],
+"Needed": [
+"Benötigt",
+"Necessario",
+"المطلوب"
+],
 "Needs a closer look": [
 "Braucht einen genaueren Blick",
 "Serve un controllo più attento",
@@ -7084,6 +7849,11 @@
 "Vendite nette, questo periodo",
 "صافي المبيعات، هذه الفترة"
 ],
+"Never late": [
+"Nie verspätet",
+"Mai in ritardo",
+"لم يتأخر قط"
+],
 "New": [
 "Neu",
 "Nuovo",
@@ -7119,6 +7889,11 @@
 "Prossimo ordine",
 "الطلب التالي"
 ],
+"Next order {0}": [
+"Nächste Bestellung {0}",
+"Prossimo ordine {0}",
+"الطلب التالي {0}"
+],
 "Next order {0}.": [
 "Nächste Bestellung {0}.",
 "Prossimo ordine {0}.",
@@ -7153,6 +7928,11 @@
 "Nein",
 "No",
 "لا"
+],
+"No AI chooses a quantity.": [
+"Keine KI wählt eine Menge.",
+"Nessuna IA sceglie una quantità.",
+"لا يختار أي ذكاء اصطناعي الكمية."
 ],
 "No account is connected": [
 "Kein Konto ist verbunden",
@@ -7234,6 +8014,16 @@
 "Nessun accredito registrato",
 "لم يُسجل أي رصيد بعد"
 ],
+"No deliveries": [
+"Keine Lieferungen",
+"Nessuna consegna",
+"لا توصيلات"
+],
+"No delivery in the next two days is likely to be late in a way that leaves a service short.": [
+"Keine Lieferung der nächsten zwei Tage kommt wahrscheinlich so spät, dass einem Service etwas fehlt.",
+"Nessuna consegna dei prossimi due giorni rischia un ritardo che lasci scoperto un servizio.",
+"لا توجد توصيلة خلال اليومين القادمين يُرجح أن تتأخر بما يترك خدمة دون ما تحتاجه."
+],
 "No drink, of tables with food": [
 "Ohne Getränk, von Tischen mit Essen",
 "Senza bevande, dei tavoli con cibo",
@@ -7293,6 +8083,16 @@
 "Noch kein Outlet scannt seine leeren Flaschen, daher ist jede Flasche hier simuliert.",
 "Nessun punto vendita scansiona ancora i vuoti, quindi ogni bottiglia qui è simulata.",
 "لا يمسح أي منفذ زجاجاته الفارغة بعد، لذا كل زجاجة هنا محاكاة."
+],
+"No pattern stands out: lateness is spread across the week.": [
+"Kein Muster fällt auf: Verspätungen verteilen sich über die Woche.",
+"Nessuno schema evidente: i ritardi sono distribuiti nella settimana.",
+"لا نمط بارز: التأخير موزع على أيام الأسبوع."
+],
+"No prediction yet": [
+"Noch keine Vorhersage",
+"Nessuna previsione ancora",
+"لا توقع بعد"
 ],
 "No reason, no approval": [
 "Kein Grund, keine Freigabe",
@@ -7409,6 +8209,11 @@
 "Nessuno anche la settimana scorsa",
 "لا شيء الأسبوع الماضي أيضًا"
 ],
+"None late": [
+"Keine verspätet",
+"Nessuna in ritardo",
+"لا تأخير"
+],
 "None of the outlets in view takes table bookings": [
 "Keines der angezeigten Outlets nimmt Tischreservierungen an",
 "Nessuno dei punti vendita visibili accetta prenotazioni di tavoli",
@@ -7523,6 +8328,11 @@
 "Nicht geprüft",
 "Non verificato",
 "لم يُحقق فيه"
+],
+"Not known yet": [
+"Noch unbekannt",
+"Non ancora noto",
+"غير معروف بعد"
 ],
 "Not matched": [
 "Nicht abgeglichen",
@@ -7864,6 +8674,51 @@
 "In arrivo",
 "في الطريق"
 ],
+"On time": [
+"Pünktlich",
+"In orario",
+"في الموعد"
+],
+"On time on all of the last {0} deliveries.": [
+"Pünktlich bei allen der letzten {0} Lieferungen.",
+"Puntuale in tutte le ultime {0} consegne.",
+"في الموعد في كل التوصيلات الـ{0} الأخيرة."
+],
+"On time on {0} of the last {1} deliveries.": [
+"Pünktlich bei {0} der letzten {1} Lieferungen.",
+"Puntuale in {0} delle ultime {1} consegne.",
+"في الموعد في {0} من آخر {1} توصيلات."
+],
+"On time per week, all suppliers": [
+"Pünktlich pro Woche, alle Lieferanten",
+"In orario per settimana, tutti i fornitori",
+"في الموعد أسبوعيا، كل الموردين"
+],
+"On time, all suppliers": [
+"Pünktlich, alle Lieferanten",
+"In orario, tutti i fornitori",
+"في الموعد، كل الموردين"
+],
+"On time, it would be in.": [
+"Pünktlich wäre sie da.",
+"In orario, sarebbe già arrivata.",
+"لو وصلت في الموعد لكانت متوفرة."
+],
+"On time, the delivery arrives before breakfast prep.": [
+"Pünktlich kommt die Lieferung vor der Vorbereitung für das Frühstück.",
+"In orario, la consegna arriva prima della preparazione della colazione.",
+"في الموعد، تصل التوصيلة قبل تحضير الإفطار."
+],
+"On time, the delivery arrives before dinner prep.": [
+"Pünktlich kommt die Lieferung vor der Vorbereitung für das Abendessen.",
+"In orario, la consegna arriva prima della preparazione della cena.",
+"في الموعد، تصل التوصيلة قبل تحضير العشاء."
+],
+"On time, the delivery arrives before lunch prep.": [
+"Pünktlich kommt die Lieferung vor der Vorbereitung für das Mittagessen.",
+"In orario, la consegna arriva prima della preparazione del pranzo.",
+"في الموعد، تصل التوصيلة قبل تحضير الغداء."
+],
 "On track": [
 "Im Plan",
 "In linea",
@@ -8024,6 +8879,11 @@
 "Apri Non corrispondenti al giorno, {0} giorni in grande, con altre linee da confrontare",
 "افتح غير المطابقة يوميًا، {0} يومًا بحجم أكبر مع خطوط أخرى للمقارنة"
 ],
+"Open On time per week, all suppliers larger, with more lines to compare": [
+"Pünktlich pro Woche, alle Lieferanten, größer öffnen, mit mehr Linien zum Vergleich",
+"Apri In orario per settimana, tutti i fornitori più grande, con più linee da confrontare",
+"افتح في الموعد أسبوعيا، كل الموردين بحجم أكبر مع خطوط أكثر للمقارنة"
+],
 "Open Overview": [
 "Übersicht öffnen",
 "Apri Panoramica",
@@ -8064,6 +8924,11 @@
 "Apri Scorte",
 "فتح المخزون"
 ],
+"Open Stock used per day, then predicted larger, with more lines to compare": [
+"Bestandsverbrauch pro Tag, dann Prognose, größer öffnen, mit mehr Linien zum Vergleich",
+"Apri Scorte usate al giorno, poi previste più grande, con più linee da confrontare",
+"افتح المخزون المستخدم يوميا ثم المتوقع بحجم أكبر مع خطوط أكثر للمقارنة"
+],
 "Open Value not billed per day, last {0} days larger, with more lines to compare": [
 "Nicht abgerechneten Wert pro Tag, letzte {0} Tage, größer öffnen, mit mehr Linien zum Vergleich",
 "Apri Valore non fatturato al giorno, ultimi {0} giorni più grande, con più linee da confrontare",
@@ -8098,6 +8963,11 @@
 "Offene Fälle",
 "Casi aperti",
 "الحالات المفتوحة"
+],
+"Open draft order {0}": [
+"Bestellentwurf {0} öffnen",
+"Apri la bozza d'ordine {0}",
+"افتح مسودة الطلب {0}"
 ],
 "Open draft {0}": [
 "Entwurf {0} öffnen",
@@ -8289,6 +9159,16 @@
 "Data ordine",
 "تاريخ الطلب"
 ],
+"Order from Talho Central, arrives today": [
+"Bei Talho Central bestellen, Lieferung heute",
+"Ordina da Talho Central, arriva oggi",
+"اطلب من Talho Central، يصل اليوم"
+],
+"Order from Talho Central, arrives tomorrow": [
+"Bei Talho Central bestellen, Lieferung morgen",
+"Ordina da Talho Central, arriva domani",
+"اطلب من Talho Central، يصل غدا"
+],
 "Order from backup supplier": [
 "Beim Ersatzlieferanten bestellen",
 "Ordina dal fornitore di riserva",
@@ -8298,6 +9178,11 @@
 "Bei Lieferanten bestellen",
 "Ordina dai fornitori",
 "الطلب من المورّدين"
+],
+"Order from the backup supplier, call the supplier or adjust prep in Tyll.": [
+"Beim Ersatzlieferanten bestellen, den Lieferanten anrufen oder die Vorbereitung in Tyll anpassen.",
+"Ordina dal fornitore di riserva, chiama il fornitore o adatta la preparazione in Tyll.",
+"اطلب من المورد البديل أو اتصل بالمورد أو عدّل التحضير في Tyll."
 ],
 "Order history": [
 "Bestellverlauf",
@@ -8338,6 +9223,11 @@
 "Bestellstatus geändert",
 "Stato dell'ordine cambiato",
 "تغيّرت حالة الطلب"
+],
+"Order these first": [
+"Diese zuerst bestellen",
+"Ordina prima questi",
+"اطلب هذه أولا"
 ],
 "Order today: {0} items, {1}": [
 "Heute bestellen: {0} Artikel, {1}",
@@ -8398,6 +9288,21 @@
 "Bestellt (Bestellung)",
 "Ordinato (ordine)",
 "المطلوب (أمر الشراء)"
+],
+"Ordered a day early:": [
+"Einen Tag früher bestellt:",
+"Ordinato un giorno prima:",
+"طُلب قبل يوم:"
+],
+"Ordered automatically at {0}:{1}:": [
+"Automatisch bestellt um {0}:{1}:",
+"Ordinato automaticamente alle {0}:{1}:",
+"طُلب تلقائيا الساعة {0}:{1}:"
+],
+"Ordered from the backup supplier": [
+"Beim Ersatzlieferanten bestellt",
+"Ordinato dal fornitore di riserva",
+"طُلب من المورد البديل"
 ],
 "Orders": [
 "Bestellungen",
@@ -9164,6 +10069,16 @@
 "Profitto per unità",
 "الربح لكل وحدة"
 ],
+"Promised": [
+"Zugesagt",
+"Promessa",
+"الموعد المحدد"
+],
+"Promised {0} to {1}": [
+"Zugesagt {0} bis {1}",
+"Promessa dalle {0} alle {1}",
+"الموعد من {0} إلى {1}"
+],
 "Properties": [
 "Hotels",
 "Hotel",
@@ -9254,6 +10169,11 @@
 "Gli acquisti verificano ogni ordine.",
 "يراجع قسم المشتريات كل طلب."
 ],
+"Purchasing, the head chef and the restaurant manager were told this evening, and are told again at {0} if nobody has handled it.": [
+"Einkauf, Küchenchef und Restaurantleitung wurden heute Abend informiert und erneut um {0}, falls niemand reagiert hat.",
+"Acquisti, capo chef e responsabile del ristorante sono stati avvisati stasera, e lo saranno di nuovo alle {0} se nessuno è intervenuto.",
+"أُبلغ قسم المشتريات ورئيس الطهاة ومدير المطعم هذا المساء، وسيُبلغون مجددا الساعة {0} إن لم يعالج أحد الأمر."
+],
 "Quantities for {0}, valued at today’s cost in euros. Expected usage covers the first {1} recipes. Items sold at a standard cost do not draw down stock yet.": [
 "Mengen für {0}, bewertet zu heutigen Kosten in Euro. Der erwartete Verbrauch umfasst die ersten {1} Rezepte. Zu Standardkosten verkaufte Artikel mindern den Bestand noch nicht.",
 "Quantità per {0}, valutate al costo di oggi in euro. Il consumo previsto copre le prime {1} ricette. Gli articoli a costo standard non riducono ancora le scorte.",
@@ -9300,9 +10220,9 @@
 "السبب المسجل:"
 ],
 "Received": [
-"Eingegangen",
-"Ricevuto",
-"المستلم"
+"Erhalten",
+"Ricevuta",
+"تم الاستلام"
 ],
 "Received from suppliers": [
 "Von Lieferanten erhalten",
@@ -9313,6 +10233,11 @@
 "Aus dem Hauptlager erhalten",
 "Ricevuto dal magazzino centrale",
 "المستلم من المخزن الرئيسي"
+],
+"Received, something missing": [
+"Erhalten, es fehlt etwas",
+"Ricevuta, manca qualcosa",
+"تم الاستلام، وينقص شيء"
 ],
 "Recent": [
 "Zuletzt",
@@ -9583,6 +10508,11 @@
 "Abgelehnt: nichts wird aufgezeichnet.",
 "Rifiutati: non si registra nulla.",
 "مرفوضة: لا يُسجَّل شيء."
+],
+"Reliability": [
+"Zuverlässigkeit",
+"Affidabilità",
+"الموثوقية"
 ],
 "Reload the page to try again.": [
 "Seite neu laden und erneut versuchen.",
@@ -10524,6 +11454,16 @@
 "I totali dell'esempio coincidono",
 "مجاميع النموذج متطابقة"
 ],
+"Sat": [
+"Sa",
+"sab",
+"السبت"
+],
+"Sat:": [
+"Sa:",
+"sab:",
+"السبت:"
+],
 "Saucers": [
 "Untertassen",
 "Piattini da tazza",
@@ -10623,6 +11563,11 @@
 "Sofort im heutigen Protokoll gespeichert. Simulierte Daten.",
 "Salvato subito nel registro di oggi. Dati simulati.",
 "يُحفظ في سجل اليوم فورًا. بيانات محاكاة."
+],
+"Saved. The alert is closed for the team.": [
+"Gespeichert. Die Warnung ist für das Team geschlossen.",
+"Salvato. L'avviso è chiuso per il team.",
+"تم الحفظ. أُغلق التنبيه للفريق."
 ],
 "Saved. The flag is closed for everyone.": [
 "Gespeichert. Die Markierung ist für alle geschlossen.",
@@ -10809,6 +11754,11 @@
 "Vedere acquistato rispetto a usato e segnarlo come verificato",
 "عرض المشترى مقابل المستخدم وتعليمه كمفحوص"
 ],
+"See deliveries at risk of arriving late": [
+"Lieferungen mit Verspätungsrisiko sehen",
+"Vedere le consegne a rischio di ritardo",
+"رؤية التوصيلات المعرضة للتأخير"
+],
 "See dish": [
 "Gericht ansehen",
 "Vedi piatto",
@@ -10894,6 +11844,11 @@
 "Vedi i conti",
 "عرض الفواتير"
 ],
+"See the delivery": [
+"Lieferung ansehen",
+"Vedi la consegna",
+"عرض التوصيلة"
+],
 "See the kitchen plan": [
 "Küchenplan ansehen",
 "Vedi il piano di cucina",
@@ -10933,6 +11888,11 @@
 "Abfall ansehen",
 "Vedi scarti",
 "اعرض الهدر"
+],
+"See what to do": [
+"Was tun",
+"Cosa fare",
+"ما العمل"
 ],
 "See what to order": [
 "Bestellbedarf ansehen",
@@ -11084,6 +12044,11 @@
 "Quota",
 "الحصة"
 ],
+"Share of deliveries on time each week over {0} weeks, all suppliers with a record.": [
+"Anteil pünktlicher Lieferungen pro Woche über {0} Wochen, alle Lieferanten mit Lieferdaten.",
+"Quota di consegne in orario ogni settimana in {0} settimane, tutti i fornitori con uno storico.",
+"نسبة التوصيلات في الموعد كل أسبوع على مدى {0} أسابيع، لكل الموردين الذين لديهم سجل."
+],
 "Share of net sales": [
 "Anteil am Nettoumsatz",
 "Quota sulle vendite nette",
@@ -11108,6 +12073,11 @@
 "Schichten, in denen die leeren Flaschen am meisten nicht Abgerechnetes zeigen",
 "Turni in cui i vuoti mostrano più non fatturato",
 "الورديات التي تُظهر فيها الزجاجات الفارغة أكبر قدر غير مُفوتر"
+],
+"Short": [
+"Fehlt",
+"Mancante",
+"النقص"
 ],
 "Shortages also count what the kitchen will use for other meals and drinks in the same period.": [
 "Engpässe berücksichtigen auch den Küchenbedarf für andere Mahlzeiten und Getränke im selben Zeitraum.",
@@ -11199,6 +12169,11 @@
 "Mostra tutti i {0} addebiti",
 "عرض كل الرسوم ({0})"
 ],
+"Show all {0} coming deliveries": [
+"Alle {0} kommenden Lieferungen zeigen",
+"Mostra tutte le {0} consegne in arrivo",
+"عرض كل التوصيلات القادمة ({0})"
+],
 "Show all {0} days": [
 "Alle {0} Tage anzeigen",
 "Mostra tutti i {0} giorni",
@@ -11248,6 +12223,11 @@
 "Alle {0} Schichten zeigen",
 "Mostra tutti i {0} turni",
 "عرض كل الورديات الـ{0}"
+],
+"Show all {0} suppliers": [
+"Alle {0} Lieferanten zeigen",
+"Mostra tutti i {0} fornitori",
+"عرض كل الموردين ({0})"
 ],
 "Show all {0} tables": [
 "Alle {0} Tische zeigen",
@@ -11479,6 +12459,11 @@
 "Così punti vendita affollati e tranquilli si confrontano in modo equo.",
 "لتُقارَن المنافذ المزدحمة والهادئة بإنصاف."
 ],
+"So it likely comes about {0}.": [
+"Sie kommt also wahrscheinlich gegen {0}.",
+"Quindi arriva probabilmente verso le {0}.",
+"لذا يُرجح أن تصل نحو {0}."
+],
 "Soda water": [
 "Sodawasser",
 "Acqua gassata",
@@ -11508,6 +12493,11 @@
 "Verkauft in",
 "Venduto in",
 "بيع ضمن"
+],
+"Something missing?": [
+"Fehlt etwas?",
+"Manca qualcosa?",
+"هل ينقص شيء؟"
 ],
 "Sort by": [
 "Sortieren nach",
@@ -11694,6 +12684,11 @@
 "Steward",
 "مضيف"
 ],
+"Still being learned": [
+"Noch in Lernphase",
+"Ancora in apprendimento",
+"قيد التعلم"
+],
 "Still water": [
 "Stilles Wasser",
 "Acqua naturale",
@@ -11743,6 +12738,11 @@
 "Bestandszählungen",
 "Conteggi delle scorte",
 "جرد المخزون"
+],
+"Stock covers it": [
+"Bestand reicht",
+"Le scorte bastano",
+"المخزون يكفي"
 ],
 "Stock covers the month": [
 "Der Bestand reicht für den Monat",
@@ -11834,6 +12834,11 @@
 "Scorte uscite senza una vendita che lo spieghi",
 "مخزون خرج دون بيع يفسره"
 ],
+"Stock tonight": [
+"Bestand heute Abend",
+"Scorte stasera",
+"المخزون الليلة"
+],
 "Stock used per day at cost over the last {0} days, then predicted use per day to month end.": [
 "Verbrauch pro Tag zum Einstandspreis in den letzten {0} Tagen, dann prognostizierter Verbrauch pro Tag bis Monatsende.",
 "Scorte usate al giorno a costo negli ultimi {0} giorni, poi uso previsto al giorno fino a fine mese.",
@@ -11909,6 +12914,16 @@
 "Suggerito",
 "المقترح"
 ],
+"Sun": [
+"So",
+"dom",
+"الأحد"
+],
+"Sun:": [
+"So:",
+"dom:",
+"الأحد:"
+],
 "Supervisor": [
 "Schichtleitung",
 "Supervisore",
@@ -11918,6 +12933,11 @@
 "Lieferant",
 "Fornitore",
 "المورد"
+],
+"Supplier deliveries. Tap Received when the van arrives.": [
+"Lieferungen der Lieferanten. Auf Erhalten tippen, wenn der Lieferwagen da ist.",
+"Consegne dei fornitori. Tocca Ricevuta quando arriva il furgone.",
+"توصيلات الموردين. اضغط تم الاستلام عند وصول الشاحنة."
 ],
 "Supplier invoice differences": [
 "Abweichungen bei Lieferantenrechnungen",
@@ -11938,6 +12958,16 @@
 "Lieferantenrechnungen, Ausgaben und Differenzen.",
 "Fatture fornitore, spese e differenze.",
 "فواتير الموردين والمصروفات والفروق."
+],
+"Supplier reliability": [
+"Lieferantenzuverlässigkeit",
+"Affidabilità dei fornitori",
+"موثوقية الموردين"
+],
+"Supplier reliability could not load.": [
+"Die Lieferantenzuverlässigkeit konnte nicht geladen werden.",
+"Impossibile caricare l'affidabilità dei fornitori.",
+"تعذر تحميل موثوقية الموردين."
 ],
 "Supplier, {0}": [
 "Lieferant, {0}",
@@ -12068,6 +13098,11 @@
 "Zurückgenommen.",
 "Annullato.",
 "تم التراجع."
+],
+"Taken back. The delivery is at risk again.": [
+"Zurückgenommen. Die Lieferung ist wieder gefährdet.",
+"Annullato. La consegna è di nuovo a rischio.",
+"تم التراجع. التوصيلة معرضة للتأخير مجددا."
 ],
 "Taken back. The item is to check again.": [
 "Zurückgenommen. Der Artikel ist wieder zu prüfen.",
@@ -12744,6 +13779,11 @@
 "La tariffa include la colazione per {0} ospiti, quindi {1} colazioni da addebitare.",
 "يشمل السعر الإفطار لـ {0} نزلاء، لذا يجب احتساب {1} وجبات إفطار."
 ],
+"The record": [
+"Die Daten",
+"Lo storico",
+"السجل"
+],
 "The records cannot settle it either way.": [
 "Die Aufzeichnungen können es weder so noch so klären.",
 "I dati non permettono di stabilirlo in nessun senso.",
@@ -13014,6 +14054,11 @@
 "Questa è una dimostrazione. Ecco i lavori principali per arrivare a un sistema di produzione.",
 "هذا عرض توضيحي. هذه أهم الأعمال المتبقية للوصول إلى نظام إنتاج."
 ],
+"This is a prediction from the supplier's record.": [
+"Dies ist eine Vorhersage aus den Lieferdaten.",
+"Questa è una previsione dallo storico del fornitore.",
+"هذا توقع من سجل المورد."
+],
 "This is not net profit. Tyll does not hold the hotel’s full accounts: rooms revenue, depreciation, rent, financing and taxes are not included.": [
 "Das ist kein Nettogewinn. Tyll hat nicht die vollständige Buchhaltung des Hotels: Zimmerumsatz, Abschreibung, Miete, Finanzierung und Steuern fehlen.",
 "Questo non è il profitto netto. Tyll non ha la contabilità completa dell'hotel: ricavi camere, ammortamenti, affitto, finanziamenti e tasse sono esclusi.",
@@ -13098,6 +14143,16 @@
 "Über den Concierge, vom Gast in Zimmer {0}",
 "Tramite il concierge, dall'ospite della camera {0}",
 "عبر الكونسيرج، من نزيل الغرفة {0}"
+],
+"Thu": [
+"Do",
+"gio",
+"الخميس"
+],
+"Thu:": [
+"Do:",
+"gio:",
+"الخميس:"
 ],
 "Till rule check": [
 "Kassenregel-Prüfung",
@@ -13204,6 +14259,11 @@
 "Oggi",
 "اليوم"
 ],
+"Today at {0}:": [
+"Heute in {0}:",
+"Oggi a {0}:",
+"اليوم في {0}:"
+],
 "Today so far": [
 "Heute bisher",
 "Oggi finora",
@@ -13211,8 +14271,13 @@
 ],
 "Today {0}": [
 "Heute {0}",
-"Oggi {0}",
-"اليوم {0}"
+"Oggi alle {0}",
+"اليوم الساعة {0}"
+],
+"Today {0} to {1}": [
+"Heute {0} bis {1}",
+"Oggi dalle {0} alle {1}",
+"اليوم من {0} إلى {1}"
 ],
 "Today's log": [
 "Heutiges Protokoll",
@@ -13244,10 +14309,20 @@
 "Domani e prossimi {0} giorni",
 "غدًا والأيام الـ{0} القادمة"
 ],
+"Tomorrow at {0}:": [
+"Morgen in {0}:",
+"Domani a {0}:",
+"غدا في {0}:"
+],
 "Tomorrow {0}": [
 "Morgen {0}",
-"Domani {0}",
-"غدًا {0}"
+"Domani alle {0}",
+"غدا الساعة {0}"
+],
+"Tomorrow {0} to {1}": [
+"Morgen {0} bis {1}",
+"Domani dalle {0} alle {1}",
+"غدا من {0} إلى {1}"
 ],
 "Tonight": [
 "Heute Nacht",
@@ -13409,6 +14484,16 @@
 "Riprova",
 "حاول مرة أخرى"
 ],
+"Tue": [
+"Di",
+"mar",
+"الثلاثاء"
+],
+"Tue:": [
+"Di:",
+"mar:",
+"الثلاثاء:"
+],
 "Turkey bacon": [
 "Putenspeck",
 "Bacon di tacchino",
@@ -13458,6 +14543,26 @@
 "Tyll Staff, Tyll Demo",
 "Tyll Staff, demo Tyll",
 "Tyll Staff، عرض Tyll"
+],
+"Tyll alerts only because lateness is the cause.": [
+"Tyll warnt nur, weil die Verspätung die Ursache ist.",
+"Tyll avvisa solo perché la causa è il ritardo.",
+"ينبّه Tyll فقط لأن التأخير هو السبب."
+],
+"Tyll alerts only because lateness is the cause: on time, the delivery arrives before breakfast prep; late, breakfast runs short.": [
+"Tyll warnt nur, weil die Verspätung die Ursache ist: pünktlich kommt die Lieferung vor der Vorbereitung für Frühstück; verspätet reicht es nicht für Frühstück.",
+"Tyll avvisa solo perché la causa è il ritardo: in orario la consegna arriva prima della preparazione colazione; in ritardo, colazione resta scoperto.",
+"ينبّه Tyll فقط لأن التأخير هو السبب: في الموعد تصل التوصيلة قبل تحضير الإفطار؛ ومع التأخير لا يكفي الإفطار."
+],
+"Tyll alerts only because lateness is the cause: on time, the delivery arrives before dinner prep; late, dinner runs short.": [
+"Tyll warnt nur, weil die Verspätung die Ursache ist: pünktlich kommt die Lieferung vor der Vorbereitung für Abendessen; verspätet reicht es nicht für Abendessen.",
+"Tyll avvisa solo perché la causa è il ritardo: in orario la consegna arriva prima della preparazione cena; in ritardo, cena resta scoperto.",
+"ينبّه Tyll فقط لأن التأخير هو السبب: في الموعد تصل التوصيلة قبل تحضير العشاء؛ ومع التأخير لا يكفي العشاء."
+],
+"Tyll alerts only because lateness is the cause: on time, the delivery arrives before lunch prep; late, lunch runs short.": [
+"Tyll warnt nur, weil die Verspätung die Ursache ist: pünktlich kommt die Lieferung vor der Vorbereitung für Mittagessen; verspätet reicht es nicht für Mittagessen.",
+"Tyll avvisa solo perché la causa è il ritardo: in orario la consegna arriva prima della preparazione pranzo; in ritardo, pranzo resta scoperto.",
+"ينبّه Tyll فقط لأن التأخير هو السبب: في الموعد تصل التوصيلة قبل تحضير الغداء؛ ومع التأخير لا يكفي الغداء."
 ],
 "Tyll expects": [
 "Tyll erwartet",
@@ -13539,6 +14644,11 @@
 "Tyll confronta il numero del conto nel folio",
 "يطابق Tyll رقم الفاتورة في حساب النزيل"
 ],
+"Tyll predicts from {0}.": [
+"Tyll sagt ab {0} voraus.",
+"Tyll prevede da {0}.",
+"يتوقع Tyll بدءا من {0}."
+],
 "Tyll reads from the hotel's existing systems and changes nothing in them. This is what stands behind each figure in the demo.": [
 "Tyll liest aus den bestehenden Hotelsystemen und ändert dort nichts. Das steht hinter jeder Zahl in der Demo.",
 "Tyll legge dai sistemi esistenti dell'hotel e non vi cambia nulla. Ecco cosa c'è dietro ogni dato della demo.",
@@ -13563,6 +14673,11 @@
 "Erklärung von Tyll",
 "La spiegazione di Tyll",
 "شرح Tyll"
+],
+"Tyll's own forecasting model works out every quantity from sales history, bookings, events, hotel occupancy and current stock.": [
+"Tylls eigenes Prognosemodell berechnet jede Menge aus Verkaufshistorie, Reservierungen, Veranstaltungen, Hotelauslastung und aktuellem Bestand.",
+"Il modello di previsione di Tyll calcola ogni quantità da storico vendite, prenotazioni, eventi, occupazione dell'hotel e scorte attuali.",
+"يحسب نموذج التوقعات الخاص بـTyll كل كمية من سجل المبيعات والحجوزات والفعاليات وإشغال الفندق والمخزون الحالي."
 ],
 "Tyll's suggestion from past sales, bookings and occupancy. Adjust anything you know better.": [
 "Tylls Vorschlag aus früheren Verkäufen, Buchungen und Auslastung. Passen Sie an, was Sie besser wissen.",
@@ -13798,6 +14913,11 @@
 "Üblich für die Gäste im Haus",
 "Usuale per gli ospiti in casa",
 "المعتاد للنزلاء المقيمين"
+],
+"Usual window {0} to {1}.": [
+"Übliches Zeitfenster {0} bis {1}.",
+"Fascia abituale dalle {0} alle {1}.",
+"الموعد المعتاد من {0} إلى {1}."
 ],
 "VAT": [
 "MwSt.",
@@ -14139,6 +15259,16 @@
 "Onde",
 "الموجات"
 ],
+"Wed": [
+"Mi",
+"mer",
+"الأربعاء"
+],
+"Wed:": [
+"Mi:",
+"mer:",
+"الأربعاء:"
+],
 "Weekend brunch. Still checking the berry quantity.": [
 "Wochenendbrunch. Die Beerenmenge wird noch geprüft.",
 "Brunch del fine settimana. Sto ancora verificando la quantità di frutti di bosco.",
@@ -14199,9 +15329,14 @@
 "Cosa potrebbe spiegarlo",
 "ما الذي قد يفسره"
 ],
+"What did they say? (optional)": [
+"Was wurde gesagt? (optional)",
+"Cosa hanno detto? (facoltativo)",
+"ماذا قالوا؟ (اختياري)"
+],
 "What did you do?": [
 "Was haben Sie getan?",
-"Cosa hai fatto?",
+"Cosa ha fatto?",
 "ماذا فعلت؟"
 ],
 "What did you find?": [
@@ -14289,6 +15424,11 @@
 "Cosa è collegato, chi vede cosa e il registro modifiche.",
 "ما هو متصل، ومن يرى ماذا، وسجل التغييرات."
 ],
+"What is missing?": [
+"Was fehlt?",
+"Cosa manca?",
+"ما الناقص؟"
+],
 "What is on order, and what still needs a decision?": [
 "Was ist bestellt, und was muss noch entschieden werden?",
 "Cosa è in ordine e cosa richiede ancora una decisione?",
@@ -14303,6 +15443,11 @@
 "Womit es verglichen wurde.",
 "Con cosa è stato confrontato.",
 "ما قورن به."
+],
+"What it would leave short": [
+"Was fehlen würde",
+"Cosa resterebbe scoperto",
+"ما الذي سينقص"
 ],
 "What might explain it?": [
 "Was könnte es erklären?",
@@ -14324,6 +15469,11 @@
 "Su cosa si basa la previsione",
 "ما تعتمد عليه التوقعات"
 ],
+"What the record says": [
+"Was die Daten zeigen",
+"Cosa dice lo storico",
+"ما يقوله السجل"
+],
 "What the records show": [
 "Was die Daten zeigen",
 "Cosa mostrano i dati",
@@ -14343,6 +15493,11 @@
 "Was einkaufen",
 "Cosa acquistare",
 "ما يجب شراؤه"
+],
+"What to do": [
+"Was tun",
+"Cosa fare",
+"ما العمل"
 ],
 "What to do next": [
 "Nächste Schritte",
@@ -14404,6 +15559,11 @@
 "Ciò che resta viene segnalato, al prezzo della colazione di quella mattina.",
 "ما يتبقى يُعلَّم بسعر الإفطار في ذلك الصباح."
 ],
+"Whatever you choose is saved with your name and role, and closes the alert for Purchasing, the kitchen and the outlet. A backup order is a draft: it needs approval and is never sent from here.": [
+"Ihre Wahl wird mit Name und Rolle gespeichert und schließt die Warnung für Einkauf, Küche und Outlet. Eine Ersatzbestellung ist ein Entwurf: Sie braucht eine Freigabe und wird hier nie versendet.",
+"La scelta viene salvata con nome e ruolo e chiude l'avviso per acquisti, cucina e punto vendita. Un ordine di riserva è una bozza: va approvato e da qui non viene mai inviato.",
+"يُحفظ اختيارك باسمك ودورك، ويغلق التنبيه للمشتريات والمطبخ والمنفذ. طلب المورد البديل مسودة: يحتاج موافقة ولا يُرسل من هنا أبدا."
+],
 "When": [
 "Wann",
 "Quando",
@@ -14413,6 +15573,11 @@
 "Wann Tyll eine Lücke markiert",
 "Quando Tyll segnala un divario",
 "متى يُعلِّم Tyll فرقًا"
+],
+"When late, on average": [
+"Bei Verspätung im Schnitt",
+"Quando in ritardo, in media",
+"عند التأخير، في المتوسط"
 ],
 "When the business day closes, and that voids after a bill is sent arrive as lines with a negative quantity.": [
 "Wann der Geschäftstag schließt, und dass Stornos nach dem Senden einer Rechnung als Positionen mit negativer Menge ankommen.",
@@ -14489,6 +15654,16 @@
 "Su quali servizi Mews registrano i punti vendita, e che le camere sono le risorse di spazio attive.",
 "إلى أي خدمات في Mews تسجّل المنافذ، وأن الغرف هي موارد المساحات النشطة."
 ],
+"Which deliveries might arrive late?": [
+"Welche Lieferungen könnten zu spät kommen?",
+"Quali consegne potrebbero arrivare in ritardo?",
+"أي التوصيلات قد تتأخر؟"
+],
+"Which deliveries might arrive late? A prediction from each supplier's record over the last {0} weeks, checked against the stock each service needs. Simulated data.": [
+"Welche Lieferungen könnten zu spät kommen? Eine Vorhersage aus den Lieferdaten jedes Lieferanten der letzten {0} Wochen, abgeglichen mit dem Bestand, den jeder Service braucht. Simulierte Daten.",
+"Quali consegne potrebbero arrivare in ritardo? Una previsione dallo storico di ogni fornitore delle ultime {0} settimane, confrontata con le scorte che serve a ogni servizio. Dati simulati.",
+"أي التوصيلات قد تتأخر؟ توقع من سجل كل مورد خلال آخر {0} أسابيع، مقارنة بالمخزون الذي تحتاجه كل خدمة. بيانات محاكاة."
+],
 "Which departments are over or under their budget.": [
 "Welche Abteilungen über oder unter ihrem Budget liegen.",
 "Quali reparti sono sopra o sotto il budget.",
@@ -14508,6 +15683,11 @@
 "Welches Gästekonto zu welchem Zimmer gehört",
 "Quale conto ospite appartiene a quale camera",
 "أي حساب نزيل يتبع أي غرفة"
+],
+"Which suppliers deliver late?": [
+"Welche Lieferanten liefern zu spät?",
+"Quali fornitori consegnano in ritardo?",
+"أي الموردين يتأخرون في التوصيل؟"
 ],
 "White rum": [
 "Weißer Rum",
@@ -14698,6 +15878,11 @@
 "Beispiel: ein Abendessen auf dem falschen Zimmer gebucht",
 "Esempio: una cena addebitata alla camera sbagliata",
 "مثال تطبيقي: عشاء رُحّل إلى الغرفة الخطأ"
+],
+"Worked example: a late delivery that would leave a service short": [
+"Durchgerechnetes Beispiel: eine verspätete Lieferung, durch die einem Service etwas fehlt",
+"Esempio guidato: una consegna in ritardo che lascerebbe scoperto un servizio",
+"مثال عملي: توصيلة متأخرة تترك خدمة دون ما تحتاجه"
 ],
 "Worked example: a table seated with no bill": [
 "Beispiel: ein platzierter Tisch ohne Rechnung",
@@ -15124,6 +16309,11 @@
 "ultime {0} settimane {1}",
 "آخر {0} أسابيع {1}"
 ],
+"late on {0} of {1}": [
+"an {0} von {1} verspätet",
+"in ritardo {0} su {1}",
+"متأخر في {0} من {1}"
+],
 "less profit": [
 "weniger Gewinn",
 "profitto in meno",
@@ -15184,6 +16374,11 @@
 "nuovo",
 "جديد"
 ],
+"no deliveries": [
+"keine Lieferungen",
+"nessuna consegna",
+"لا توصيلات"
+],
 "no earlier data": [
 "keine früheren Daten",
 "nessun dato precedente",
@@ -15201,8 +16396,8 @@
 ],
 "none": [
 "keine",
-"nessuno",
-"لا يوجد"
+"nessuna",
+"لا شيء"
 ],
 "none for {0} to {1} guests.": [
 "keine für {0} bis {1} Gäste.",
@@ -15374,6 +16569,11 @@
 "vendite e sprechi: {0} ricevuti dai fornitori contro {1} usati dalle ricette di quanto venduto, sprechi registrati e trasferimenti, nei {2} giorni fino al {3}.",
 "المبيعات والهدر: {0} مستلمة من الموردين مقابل {1} مستخدمة في وصفات ما بيع والهدر المسجل والتحويلات، خلال {2} يومًا حتى {3}."
 ],
+"sales at risk, an estimate": [
+"Umsatz gefährdet, eine Schätzung",
+"vendite a rischio, una stima",
+"مبيعات معرضة للخطر، تقدير"
+],
 "scanned": [
 "gescannt",
 "scansionata",
@@ -15504,6 +16704,11 @@
 "la cassa ha addebitato {0} alla camera {1}",
 "حمّل نظام الكاشير {0} على الغرفة {1}"
 ],
+"this morning it placed {0} orders, so they no longer show here.": [
+"heute Morgen waren es {0} Bestellungen, daher erscheinen sie hier nicht mehr.",
+"stamattina ha effettuato {0} ordini, quindi qui non compaiono più.",
+"وقد أرسل هذا الصباح {0} طلبات، لذا لم تعد تظهر هنا."
+],
 "tip added to the card payment": [
 "Trinkgeld zur Kartenzahlung hinzugefügt",
 "mancia aggiunta al pagamento con carta",
@@ -15538,6 +16743,11 @@
 "unverändert",
 "invariato",
 "دون تغيير"
+],
+"under {0} deliveries": [
+"unter {0} Lieferungen",
+"meno di {0} consegne",
+"أقل من {0} توصيلات"
 ],
 "under {0} of use.": [
 "unter {0} des Verbrauchs.",
@@ -15679,6 +16889,11 @@
 "{0} e altri richiedono un ordine nei prossimi giorni.",
 "يحتاج {0} وأصناف أخرى إلى طلب خلال الأيام القادمة."
 ],
+"{0} and {1}": [
+"{0} und {1}",
+"{0} e {1}",
+"{0} و{1}"
+],
 "{0} and {1}, {2}": [
 "{0} und {1}, {2}",
 "{0} e {1}, {2}",
@@ -15718,6 +16933,21 @@
 "{0} verfügbar",
 "{0} disponibili",
 "{0} متاح"
+],
+"{0} before breakfast": [
+"{0} vor dem Frühstück",
+"{0} prima della colazione",
+"{0} قبل الإفطار"
+],
+"{0} before dinner": [
+"{0} vor dem Abendessen",
+"{0} prima della cena",
+"{0} قبل العشاء"
+],
+"{0} before lunch": [
+"{0} vor dem Mittagessen",
+"{0} prima del pranzo",
+"{0} قبل الغداء"
 ],
 "{0} beyond the last delivery, {1}": [
 "{0} über die letzte Lieferung hinaus, {1}",
@@ -16064,6 +17294,16 @@
 "{0} da {1}",
 "{0} بواسطة {1}"
 ],
+"{0} can deliver today.": [
+"{0} kann heute liefern.",
+"{0} può consegnare oggi.",
+"يمكن لـ{0} التوصيل اليوم."
+],
+"{0} can deliver tomorrow.": [
+"{0} kann morgen liefern.",
+"{0} può consegnare domani.",
+"يمكن لـ{0} التوصيل غدا."
+],
 "{0} cans": [
 "{0} Dosen",
 "{0} lattine",
@@ -16234,6 +17474,21 @@
 "{0} consegne confermate",
 "{0} توريدات مؤكدة"
 ],
+"{0} deliveries in {1} weeks": [
+"{0} Lieferungen in {1} Wochen",
+"{0} consegne in {1} settimane",
+"{0} توصيلات في {1} أسابيع"
+],
+"{0} deliveries so far, {1} are needed for a prediction.": [
+"bisher {0} Lieferungen, für eine Vorhersage sind {1} nötig.",
+"{0} consegne finora, ne servono {1} per una previsione.",
+"{0} توصيلات حتى الآن، ويلزم {1} للتوقع."
+],
+"{0} deliveries so far.": [
+"bisher {0} Lieferungen.",
+"{0} consegne finora.",
+"{0} توصيلات حتى الآن."
+],
 "{0} deliveries, {1} to {2}": [
 "{0} Lieferungen, {1} bis {2}",
 "{0} consegne, dal {1} al {2}",
@@ -16243,6 +17498,36 @@
 "{0} Lieferung",
 "{0} consegna",
 "{0} توريد"
+],
+"{0} delivery so far, {1} are needed for a prediction.": [
+"bisher {0} Lieferung, für eine Vorhersage sind {1} nötig.",
+"{0} consegna finora, ne servono {1} per una previsione.",
+"توصيلة {0} حتى الآن، ويلزم {1} للتوقع."
+],
+"{0} delivery so far.": [
+"bisher {0} Lieferung.",
+"{0} consegna finora.",
+"توصيلة {0} حتى الآن."
+],
+"{0} delivery today {1} likely late": [
+"Lieferung von {0} heute {1} wahrscheinlich verspätet",
+"Consegna di {0} oggi alle {1} probabilmente in ritardo",
+"توصيلة {0} اليوم الساعة {1} على الأرجح متأخرة"
+],
+"{0} delivery today {1} likely late:": [
+"Lieferung von {0} heute {1} wahrscheinlich verspätet:",
+"Consegna di {0} oggi alle {1} probabilmente in ritardo:",
+"توصيلة {0} اليوم الساعة {1} على الأرجح متأخرة:"
+],
+"{0} delivery tomorrow {1} likely late": [
+"Lieferung von {0} morgen {1} wahrscheinlich verspätet",
+"Consegna di {0} domani alle {1} probabilmente in ritardo",
+"توصيلة {0} غدا الساعة {1} على الأرجح متأخرة"
+],
+"{0} delivery tomorrow {1} likely late:": [
+"Lieferung von {0} morgen {1} wahrscheinlich verspätet:",
+"Consegna di {0} domani alle {1} probabilmente in ritardo:",
+"توصيلة {0} غدا الساعة {1} على الأرجح متأخرة:"
 ],
 "{0} difference": [
 "{0} Differenz",
@@ -16534,10 +17819,50 @@
 "{0} tenuti a parte",
 "{0} محفوظة منفصلة"
 ],
+"{0} hour": [
+"{0} Stunde",
+"{0} ora",
+"{0} ساعة"
+],
+"{0} hour late on average": [
+"im Schnitt {0} Stunde zu spät",
+"in media {0} ora di ritardo",
+"تأخير {0} ساعة في المتوسط"
+],
+"{0} hour {1} minutes": [
+"{0} Stunde {1} Minuten",
+"{0} ora e {1} minuti",
+"{0} ساعة و{1} دقيقة"
+],
+"{0} hour {1} minutes late on average": [
+"im Schnitt {0} Stunde {1} Minuten zu spät",
+"in media {0} ora e {1} minuti di ritardo",
+"تأخير {0} ساعة و{1} دقيقة في المتوسط"
+],
+"{0} hours": [
+"{0} Stunden",
+"{0} ore",
+"{0} ساعات"
+],
 "{0} hours a week across the team, at {1} an hour.": [
 "{0} Stunden pro Woche im Team, zu {1} pro Stunde.",
 "{0} ore a settimana nel team, a {1} l'ora.",
 "{0} ساعة أسبوعيًا عبر الفريق، بسعر {1} للساعة."
+],
+"{0} hours late on average": [
+"im Schnitt {0} Stunden zu spät",
+"in media {0} ore di ritardo",
+"تأخير {0} ساعات في المتوسط"
+],
+"{0} hours {1} minutes": [
+"{0} Stunden {1} Minuten",
+"{0} ore e {1} minuti",
+"{0} ساعات و{1} دقيقة"
+],
+"{0} hours {1} minutes late on average": [
+"im Schnitt {0} Stunden {1} Minuten zu spät",
+"in media {0} ore e {1} minuti di ritardo",
+"تأخير {0} ساعات و{1} دقيقة في المتوسط"
 ],
 "{0} in the sample": [
 "{0} im Beispiel",
@@ -16559,6 +17884,11 @@
 "{0} coinvolti",
 "{0} معنية"
 ],
+"{0} is due with {1} of {2}": [
+"{0} soll {1} {2} liefern",
+"{0} deve consegnare {1} di {2}",
+"{0} يُنتظر أن يسلّم {1} من {2}"
+],
 "{0} is left out.": [
 "{0} bleibt außen vor.",
 "{0} è escluso.",
@@ -16568,6 +17898,61 @@
 "{0} bleibt außen vor: Getränke werden dort als Pakete pro Veranstaltung verkauft, nicht von einer Servicekraft am Tisch.",
 "{0} è escluso: lì le bevande si vendono a pacchetto per evento, non da un cameriere al tavolo.",
 "يُستبعد {0}: تُباع المشروبات هناك كباقات لكل مناسبة، لا من نادل على الطاولة."
+],
+"{0} is often late after public holidays.": [
+"{0} liefert nach Feiertagen oft zu spät.",
+"{0} è spesso in ritardo dopo i giorni festivi.",
+"{0} يتأخر غالبا بعد العطل الرسمية."
+],
+"{0} is often late in the {1} slot.": [
+"{0} liefert im Zeitfenster {1} oft zu spät.",
+"{0} è spesso in ritardo nella fascia delle {1}.",
+"{0} يتأخر غالبا في موعد {1}."
+],
+"{0} is often late on Fridays.": [
+"{0} liefert freitags oft zu spät.",
+"{0} è spesso in ritardo di venerdì.",
+"{0} يتأخر غالبا أيام الجمعة."
+],
+"{0} is often late on Mondays.": [
+"{0} liefert montags oft zu spät.",
+"{0} è spesso in ritardo di lunedì.",
+"{0} يتأخر غالبا أيام الاثنين."
+],
+"{0} is often late on Saturdays.": [
+"{0} liefert samstags oft zu spät.",
+"{0} è spesso in ritardo di sabati.",
+"{0} يتأخر غالبا أيام السبت."
+],
+"{0} is often late on Sundays.": [
+"{0} liefert sonntags oft zu spät.",
+"{0} è spesso in ritardo di domeniche.",
+"{0} يتأخر غالبا أيام الأحد."
+],
+"{0} is often late on Thursdays.": [
+"{0} liefert donnerstags oft zu spät.",
+"{0} è spesso in ritardo di giovedì.",
+"{0} يتأخر غالبا أيام الخميس."
+],
+"{0} is often late on Tuesdays.": [
+"{0} liefert dienstags oft zu spät.",
+"{0} è spesso in ritardo di martedì.",
+"{0} يتأخر غالبا أيام الثلاثاء."
+],
+"{0} is often late on Wednesdays.": [
+"{0} liefert mittwochs oft zu spät.",
+"{0} è spesso in ritardo di mercoledì.",
+"{0} يتأخر غالبا أيام الأربعاء."
+],
+"{0} is often late with large orders.": [
+"{0} liefert große Bestellungen oft zu spät.",
+"{0} è spesso in ritardo con gli ordini grandi.",
+"{0} يتأخر غالبا في الطلبات الكبيرة."
+],
+"{0} is often late.": [
+"{0} liefert oft zu spät.",
+"{0} è spesso in ritardo.",
+"{0} يتأخر غالبا."
 ],
 "{0} item": [
 "{0} Artikel",
@@ -16634,6 +18019,11 @@
 "{0} articoli, {1} critici",
 "{0} أصناف، {1} حرجة"
 ],
+"{0} items.": [
+"{0} Artikel.",
+"{0} articoli.",
+"{0} أصناف."
+],
 "{0} items: {1} food, {2} beverage, {3} inventory": [
 "{0} Artikel: {1} Speisen, {2} Getränke, {3} Inventar",
 "{0} articoli: {1} cibo, {2} bevande, {3} inventario",
@@ -16643,6 +18033,71 @@
 "{0} vor dem Bestellen gegangen",
 "{0} andati via prima di ordinare",
 "{0} غادروا قبل الطلب"
+],
+"{0} left when breakfast prep starts at {1}": [
+"{0} übrig, wenn die Vorbereitung für Frühstück um {1} beginnt",
+"{0} rimasti all'inizio della preparazione colazione alle {1}",
+"يتبقى {0} عند بدء تحضير الإفطار الساعة {1}"
+],
+"{0} left when dinner prep starts at {1}": [
+"{0} übrig, wenn die Vorbereitung für Abendessen um {1} beginnt",
+"{0} rimasti all'inizio della preparazione cena alle {1}",
+"يتبقى {0} عند بدء تحضير العشاء الساعة {1}"
+],
+"{0} left when lunch prep starts at {1}": [
+"{0} übrig, wenn die Vorbereitung für Mittagessen um {1} beginnt",
+"{0} rimasti all'inizio della preparazione pranzo alle {1}",
+"يتبقى {0} عند بدء تحضير الغداء الساعة {1}"
+],
+"{0} left when prep starts at {1}, breakfast needs about {2}, at {3} and {4}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Frühstück braucht etwa {2}, in {3} und {4}.",
+"{0} rimasti all'inizio della preparazione alle {1}, colazione richiede circa {2}, a {3} e {4}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج الإفطار نحو {2}، في {3} و{4}."
+],
+"{0} left when prep starts at {1}, breakfast needs about {2}, at {3}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Frühstück braucht etwa {2}, in {3}.",
+"{0} rimasti all'inizio della preparazione alle {1}, colazione richiede circa {2}, a {3}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج الإفطار نحو {2}، في {3}."
+],
+"{0} left when prep starts at {1}, breakfast needs about {2}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Frühstück braucht etwa {2}.",
+"{0} rimasti all'inizio della preparazione alle {1}, colazione richiede circa {2}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج الإفطار نحو {2}."
+],
+"{0} left when prep starts at {1}, dinner needs about {2}, at {3} and {4}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Abendessen braucht etwa {2}, in {3} und {4}.",
+"{0} rimasti all'inizio della preparazione alle {1}, cena richiede circa {2}, a {3} e {4}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج العشاء نحو {2}، في {3} و{4}."
+],
+"{0} left when prep starts at {1}, dinner needs about {2}, at {3}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Abendessen braucht etwa {2}, in {3}.",
+"{0} rimasti all'inizio della preparazione alle {1}, cena richiede circa {2}, a {3}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج العشاء نحو {2}، في {3}."
+],
+"{0} left when prep starts at {1}, dinner needs about {2}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Abendessen braucht etwa {2}.",
+"{0} rimasti all'inizio della preparazione alle {1}, cena richiede circa {2}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج العشاء نحو {2}."
+],
+"{0} left when prep starts at {1}, lunch needs about {2}, at {3} and {4}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Mittagessen braucht etwa {2}, in {3} und {4}.",
+"{0} rimasti all'inizio della preparazione alle {1}, pranzo richiede circa {2}, a {3} e {4}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج الغداء نحو {2}، في {3} و{4}."
+],
+"{0} left when prep starts at {1}, lunch needs about {2}, at {3}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Mittagessen braucht etwa {2}, in {3}.",
+"{0} rimasti all'inizio della preparazione alle {1}, pranzo richiede circa {2}, a {3}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج الغداء نحو {2}، في {3}."
+],
+"{0} left when prep starts at {1}, lunch needs about {2}.": [
+"{0} übrig, wenn die Vorbereitung um {1} beginnt, Mittagessen braucht etwa {2}.",
+"{0} rimasti all'inizio della preparazione alle {1}, pranzo richiede circa {2}.",
+"يتبقى {0} عند بدء التحضير الساعة {1}، ويحتاج الغداء نحو {2}."
+],
+"{0} left, and breakfast uses about {1}": [
+"{0} übrig, das Frühstück braucht etwa {1}",
+"{0} rimasti, e la colazione ne usa circa {1}",
+"يتبقى {0}، ويستهلك الإفطار نحو {1}"
 ],
 "{0} less than in the {1} days before": [
 "{0} weniger als in den {1} Tagen davor",
@@ -16729,6 +18184,16 @@
 "{0} abbinati a un'altra camera della lista.",
 "{0} مطابقة لغرفة أخرى في قائمة الإفطار."
 ],
+"{0} may be late with stock covering the wait, {1} expected on time, {2} still being learned": [
+"{0} vielleicht verspätet, der Bestand überbrückt; {1} pünktlich erwartet, {2} noch in Lernphase",
+"{0} forse in ritardo con scorte sufficienti, {1} attese in orario, {2} ancora in apprendimento",
+"{0} قد تتأخر والمخزون يغطي الانتظار، {1} متوقعة في الموعد، {2} قيد التعلم"
+],
+"{0} may be late, and stock covers the wait.": [
+"{0} vielleicht verspätet, der Bestand reicht bis dahin.",
+"{0} forse in ritardo, e le scorte coprono l'attesa.",
+"{0} قد تتأخر، والمخزون يغطي الانتظار."
+],
 "{0} measures": [
 "{0} Maße",
 "{0} misure",
@@ -16753,6 +18218,16 @@
 "vor {0} Min.",
 "{0} min fa",
 "قبل {0} دقيقة"
+],
+"{0} minutes": [
+"{0} Minuten",
+"{0} minuti",
+"{0} دقيقة"
+],
+"{0} minutes late on average": [
+"im Schnitt {0} Minuten zu spät",
+"in media {0} minuti di ritardo",
+"تأخير {0} دقيقة في المتوسط"
 ],
 "{0} missing drink to check.": [
 "{0} fehlendes Getränk zu prüfen.",
@@ -16783,6 +18258,16 @@
 "{0} mehr auf den Rechnungen als geliefert oder vereinbart.",
 "{0} in più in fattura rispetto a consegnato o concordato.",
 "{0} في الفواتير أكثر مما سُلم أو اتفق عليه."
+],
+"{0} more on time from {1} to {2}": [
+"{0} weitere, pünktlich von {1} bis {2}",
+"altri {0}, in orario dal {1} al {2}",
+"{0} آخرون، في الموعد من {1} إلى {2}"
+],
+"{0} more on time from {1} to {2}, {3} still being learned": [
+"{0} weitere, pünktlich von {1} bis {2}, {3} noch in Lernphase",
+"altri {0}, in orario dal {1} al {2}, {3} ancora in apprendimento",
+"{0} آخرون، في الموعد من {1} إلى {2}، و{3} قيد التعلم"
 ],
 "{0} more than colleagues": [
 "{0} mehr als Kollegen",
@@ -16829,6 +18314,11 @@
 "{0} non fatturati",
 "{0} غير مُفوتر"
 ],
+"{0} not complete": [
+"{0} unvollständig",
+"{0} incomplete",
+"{0} غير مكتملة"
+],
 "{0} now, {1}": [
 "{0} jetzt, {1}",
 "{0} ora, {1}",
@@ -16848,6 +18338,11 @@
 "Davon {0} Schätzungen bei offenen Fällen",
 "{0} sono stime su casi aperti",
 "{0} منها تقديرات على حالات مفتوحة"
+],
+"{0} of sales at risk, an estimate.": [
+"{0} Umsatz gefährdet, eine Schätzung.",
+"{0} di vendite a rischio, una stima.",
+"{0} من المبيعات معرضة للخطر، تقدير."
 ],
 "{0} of them, for {1} guest, was already matched to another booking:": [
 "{0} davon, für {1} Gast, war bereits einer anderen Reservierung zugeordnet:",
@@ -17059,6 +18554,11 @@
 "{0} in arrivo",
 "{0} في الطريق"
 ],
+"{0} on time": [
+"{0} pünktlich",
+"{0} in orario",
+"{0} في الموعد"
+],
 "{0} only.": [
 "Nur {0}.",
 "Solo {0}.",
@@ -17078,6 +18578,11 @@
 "{0} offene Hinweise, bis geprüft",
 "{0} segnalazioni aperte, fino alla verifica",
 "{0} تنبيهات مفتوحة حتى التحقق"
+],
+"{0} orders, {1}.": [
+"{0} Bestellungen, {1}.",
+"{0} ordini, {1}.",
+"{0} طلبات، {1}."
 ],
 "{0} other outlets are simulated.": [
 "{0} weitere Outlets sind simuliert.",
@@ -17259,6 +18764,81 @@
 "{0} finisce per primo, {1}. Un ordine più tardi arriva troppo tardi.",
 "ينفد {0} أولًا، {1}. الطلب اللاحق يصل متأخرًا."
 ],
+"{0} runs short before breakfast": [
+"{0} reicht nicht bis zum Frühstück",
+"{0} non basta per la colazione",
+"{0} لا يكفي قبل الإفطار"
+],
+"{0} runs short before breakfast at {1} and {2}.": [
+"{0} reicht nicht bis zum Frühstück in {1} und {2}.",
+"{0} non basta per la colazione a {1} e {2}.",
+"{0} لا يكفي قبل الإفطار في {1} و{2}."
+],
+"{0} runs short before breakfast at {1}.": [
+"{0} reicht nicht bis zum Frühstück in {1}.",
+"{0} non basta per la colazione a {1}.",
+"{0} لا يكفي قبل الإفطار في {1}."
+],
+"{0} runs short before breakfast.": [
+"{0} reicht nicht bis zum Frühstück.",
+"{0} non basta per la colazione.",
+"{0} لا يكفي قبل الإفطار."
+],
+"{0} runs short before breakfast:": [
+"{0} reicht nicht bis zum Frühstück:",
+"{0} non basta per la colazione:",
+"{0} لا يكفي قبل الإفطار:"
+],
+"{0} runs short before dinner": [
+"{0} reicht nicht bis zum Abendessen",
+"{0} non basta per la cena",
+"{0} لا يكفي قبل العشاء"
+],
+"{0} runs short before dinner at {1} and {2}.": [
+"{0} reicht nicht bis zum Abendessen in {1} und {2}.",
+"{0} non basta per la cena a {1} e {2}.",
+"{0} لا يكفي قبل العشاء في {1} و{2}."
+],
+"{0} runs short before dinner at {1}.": [
+"{0} reicht nicht bis zum Abendessen in {1}.",
+"{0} non basta per la cena a {1}.",
+"{0} لا يكفي قبل العشاء في {1}."
+],
+"{0} runs short before dinner.": [
+"{0} reicht nicht bis zum Abendessen.",
+"{0} non basta per la cena.",
+"{0} لا يكفي قبل العشاء."
+],
+"{0} runs short before dinner:": [
+"{0} reicht nicht bis zum Abendessen:",
+"{0} non basta per la cena:",
+"{0} لا يكفي قبل العشاء:"
+],
+"{0} runs short before lunch": [
+"{0} reicht nicht bis zum Mittagessen",
+"{0} non basta per il pranzo",
+"{0} لا يكفي قبل الغداء"
+],
+"{0} runs short before lunch at {1} and {2}.": [
+"{0} reicht nicht bis zum Mittagessen in {1} und {2}.",
+"{0} non basta per il pranzo a {1} e {2}.",
+"{0} لا يكفي قبل الغداء في {1} و{2}."
+],
+"{0} runs short before lunch at {1}.": [
+"{0} reicht nicht bis zum Mittagessen in {1}.",
+"{0} non basta per il pranzo a {1}.",
+"{0} لا يكفي قبل الغداء في {1}."
+],
+"{0} runs short before lunch.": [
+"{0} reicht nicht bis zum Mittagessen.",
+"{0} non basta per il pranzo.",
+"{0} لا يكفي قبل الغداء."
+],
+"{0} runs short before lunch:": [
+"{0} reicht nicht bis zum Mittagessen:",
+"{0} non basta per il pranzo:",
+"{0} لا يكفي قبل الغداء:"
+],
 "{0} s": [
 "{0} s",
 "{0} s",
@@ -17293,6 +18873,11 @@
 "{0} zu wenig, {1}",
 "{0} in meno, {1}",
 "نقص {0}، {1}"
+],
+"{0} short.": [
+"{0} fehlen.",
+"{0} mancanti.",
+"نقص {0}."
 ],
 "{0} short. Invoice shows the full {1}.": [
 "{0} fehlen. Die Rechnung zeigt die vollen {1}.",
@@ -17644,6 +19229,11 @@
 "{0} in attesa di approvazione, {1} in arrivo, {2} in totale",
 "{0} بانتظار الموافقة، {1} في الطريق، {2} إجمالًا"
 ],
+"{0} waiting for approval.": [
+"{0} warten auf Freigabe.",
+"{0} in attesa di approvazione.",
+"{0} بانتظار الموافقة."
+],
 "{0} was charged at {1} through a price changed by hand, {2} below the menu price of {3}, with no approval recorded.": [
 "{0} wurde zu {1} mit einem von Hand geänderten Preis berechnet, {2} unter dem Kartenpreis von {3}, ohne erfasste Freigabe.",
 "{0} è stato addebitato a {1} con un prezzo cambiato a mano, il {2} sotto il prezzo di listino di {3}, senza approvazione registrata.",
@@ -17698,6 +19288,11 @@
 "{0} Abfall, {1} Bruch",
 "{0} scarti, {1} rotture",
 "{0} هدر، {1} كسر"
+],
+"{0} weeks": [
+"{0} Wochen",
+"{0} settimane",
+"{0} أسابيع"
 ],
 "{0} were billed as reserve, while {1} glasses of {2} were billed.": [
 "{0} wurden als Reserva berechnet, während {1} Gläser {2} berechnet wurden.",
@@ -18199,10 +19794,35 @@
 "{0}, supervisore",
 "{0}، مشرف"
 ],
+"{0}, today {1}": [
+"{0}, heute {1}",
+"{0}, oggi {1}",
+"{0}، اليوم {1}"
+],
+"{0}, today. How one alert is found, step by step.": [
+"{0}, heute. Wie eine Warnung entsteht, Schritt für Schritt.",
+"{0}, oggi. Come nasce un avviso, passo dopo passo.",
+"{0}، اليوم. كيف يُكتشف تنبيه واحد خطوة بخطوة."
+],
+"{0}, tomorrow {1}": [
+"{0}, morgen {1}",
+"{0}, domani {1}",
+"{0}، غدا {1}"
+],
+"{0}, tomorrow. How one alert is found, step by step.": [
+"{0}, morgen. Wie eine Warnung entsteht, Schritt für Schritt.",
+"{0}, domani. Come nasce un avviso, passo dopo passo.",
+"{0}، غدا. كيف يُكتشف تنبيه واحد خطوة بخطوة."
+],
 "{0}, weekly check": [
 "{0}, wöchentliche Prüfung",
 "{0}, controllo settimanale",
 "{0}، فحص أسبوعي"
+],
+"{0}, {1} and {2}": [
+"{0}, {1} und {2}",
+"{0}, {1} e {2}",
+"{0}، {1} و{2}"
 ],
 "{0}, {1} breakfast": [
 "{0}, {1} Frühstück",
