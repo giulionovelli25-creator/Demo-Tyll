@@ -469,6 +469,11 @@
 "Tutti i miei punti vendita",
 "جميع منافذي"
 ],
+"All of them were already matched to another booking:": [
+"Alle waren bereits anderen Reservierungen zugeordnet:",
+"Erano tutti già abbinati ad altre prenotazioni:",
+"كانت كلها مطابقة بالفعل لحجوزات أخرى:"
+],
 "All orders": [
 "Alle Bestellungen",
 "Tutti gli ordini",
@@ -549,6 +554,11 @@
 "Già prenotati",
 "محجوز بالفعل"
 ],
+"Already matched to booking {0}": [
+"Bereits der Reservierung {0} zugeordnet",
+"Già abbinato alla prenotazione {0}",
+"مطابقة بالفعل للحجز {0}"
+],
 "Amount": [
 "Menge",
 "Quantità",
@@ -558,6 +568,11 @@
 "Zu klärender Betrag pro Liefertag, letzte {0} Tage",
 "Importo da verificare per giorno di consegna, ultimi {0} giorni",
 "المبلغ للاستفسار لكل يوم توريد، آخر {0} يومًا"
+],
+"An estimate at the spend per guest": [
+"Eine Schätzung nach Umsatz pro Gast",
+"Una stima alla spesa per ospite",
+"تقدير بمتوسط إنفاق الضيف"
 ],
 "An estimate from forecast covers, events and recent use. Simulated data.": [
 "Eine Schätzung aus prognostizierten Gästen, Events und letztem Verbrauch. Simulierte Daten.",
@@ -588,6 +603,11 @@
 "Analyse",
 "Analisi",
 "التحليل"
+],
+"And no unmatched bill for {0} to {1} guests nearby": [
+"Und keine nicht zugeordnete Rechnung für {0} bis {1} Gäste in der Nähe",
+"E nessun conto non abbinato per {0} a {1} ospiti nelle vicinanze",
+"ولا فاتورة غير مطابقة لـ {0} إلى {1} ضيوف بالقرب"
 ],
 "And none for {0} to {1} guests opened nearby": [
 "Und keine für {0} bis {1} Gäste in der Nähe eröffnet",
@@ -714,6 +734,11 @@
 "Chiedete all'accoglienza e al cameriere di quella sala dove si è seduto il gruppo e quale conto ha pagato.",
 "اسأل مسؤول الاستقبال ونادل ذلك القسم أين جلست المجموعة وأي فاتورة دفعت."
 ],
+"Ask the host which of the two bookings sat there.": [
+"Fragen Sie den Empfang, welche der beiden Reservierungen dort saß.",
+"Chiedete all'accoglienza quale delle due prenotazioni sedeva lì.",
+"اسأل مسؤول الاستقبال أيّ الحجزين جلس هناك."
+],
 "Ask the manager on duty whether a dish was sent back and agreed to come off.": [
 "Fragen Sie den diensthabenden Manager, ob ein Gericht zurückgegeben und das Entfernen vereinbart wurde.",
 "Chiedete al responsabile di turno se un piatto è stato rimandato indietro e se è stato concordato di toglierlo.",
@@ -774,6 +799,11 @@
 "Assegnato",
 "مُسند"
 ],
+"At a table with no bill": [
+"An einem Tisch ohne Rechnung",
+"A un tavolo senza conto",
+"على طاولة دون فاتورة"
+],
 "At risk": [
 "Gefährdet",
 "A rischio",
@@ -799,10 +829,20 @@
 "Al ritmo degli ultimi {0} giorni. Ogni parte è una stima e le ipotesi sono elencate. Dati simulati.",
 "بمعدل آخر {0} يومًا. كل جزء تقدير، والافتراضات مذكورة. بيانات محاكاة."
 ],
+"At {0}, a booking for {1} was seated at Table {2} at {3}, and Tyll found no bill for the table, nor an unmatched bill for a party of that size nearby.": [
+"Im {0} wurde eine Reservierung für {1} an Tisch {2} um {3} platziert, und Tyll fand keine Rechnung für den Tisch und auch keine nicht zugeordnete Rechnung für eine Gruppe dieser Größe in der Nähe.",
+"Da {0}, una prenotazione per {1} è stata accomodata al tavolo {2} alle {3}, e Tyll non ha trovato alcun conto per il tavolo, né un conto non abbinato per un gruppo di quelle dimensioni nelle vicinanze.",
+"في {0}، أُجلس حجز لـ {1} على الطاولة {2} الساعة {3}، ولم يجد Tyll فاتورة للطاولة ولا فاتورة غير مطابقة لمجموعة بهذا الحجم بالقرب منها."
+],
 "At {0}, a booking for {1} was seated at Table {2} at {3}, and Tyll found no bill for the table, nor for a party of that size nearby.": [
 "Im {0} wurde eine Reservierung für {1} an Tisch {2} um {3} platziert, und Tyll fand keine Rechnung für den Tisch und auch keine für eine Gruppe dieser Größe in der Nähe.",
 "Da {0}, una prenotazione per {1} è stata accomodata al tavolo {2} alle {3}, e Tyll non ha trovato alcun conto per il tavolo, né per un gruppo di quelle dimensioni nelle vicinanze.",
 "في {0}، أُجلس حجز لـ {1} على الطاولة {2} الساعة {3}، ولم يجد Tyll فاتورة للطاولة ولا لمجموعة بهذا الحجم بالقرب منها."
+],
+"At {0}, a booking for {1} was seated at Table {2} from {3} to {4}, and Tyll found no bill for the table, nor an unmatched bill for a party of that size nearby.": [
+"Im {0} wurde eine Reservierung für {1} an Tisch {2} von {3} bis {4} platziert, und Tyll fand keine Rechnung für den Tisch und auch keine nicht zugeordnete Rechnung für eine Gruppe dieser Größe in der Nähe.",
+"Da {0}, una prenotazione per {1} è stata accomodata al tavolo {2} dalle {3} alle {4}, e Tyll non ha trovato alcun conto per il tavolo, né un conto non abbinato per un gruppo di quelle dimensioni nelle vicinanze.",
+"في {0}، أُجلس حجز لـ {1} على الطاولة {2} من {3} إلى {4}، ولم يجد Tyll فاتورة للطاولة ولا فاتورة غير مطابقة لمجموعة بهذا الحجم بالقرب منها."
 ],
 "At {0}, a booking for {1} was seated at Table {2} from {3} to {4}, and Tyll found no bill for the table, nor for a party of that size nearby.": [
 "Im {0} wurde eine Reservierung für {1} an Tisch {2} von {3} bis {4} platziert, und Tyll fand keine Rechnung für den Tisch und auch keine für eine Gruppe dieser Größe in der Nähe.",
@@ -1118,6 +1158,16 @@
 "Rechnung {0} Min. nach Zahlung wieder geöffnet und {1} niedriger abgeschlossen",
 "Conto riaperto {0} min dopo il pagamento e chiuso con {1} in meno",
 "أُعيد فتح الفاتورة بعد الدفع بـ {0} دقيقة وأُغلقت بمبلغ أقل بـ {1}"
+],
+"Bill {0}, for {1} guest at Table {2}, is matched to booking {3}.": [
+"Rechnung {0}, für {1} Gast an Tisch {2}, ist der Reservierung {3} zugeordnet.",
+"Il conto {0}, per {1} ospite al tavolo {2}, è abbinato alla prenotazione {3}.",
+"الفاتورة {0}، لـ {1} ضيف على الطاولة {2}، مطابقة للحجز {3}."
+],
+"Bill {0}, for {1} guests at Table {2}, is matched to booking {3}.": [
+"Rechnung {0}, für {1} Gäste an Tisch {2}, ist der Reservierung {3} zugeordnet.",
+"Il conto {0}, per {1} ospiti al tavolo {2}, è abbinato alla prenotazione {3}.",
+"الفاتورة {0}، لـ {1} ضيوف على الطاولة {2}، مطابقة للحجز {3}."
 ],
 "Billed": [
 "Abgerechnet",
@@ -1864,6 +1914,21 @@
 "Controllato prima da {0}, {1}, quando il divario era di {2}.",
 "تحقّق منه {0} سابقًا، {1}، حين كان الفرق {2}."
 ],
+"Checked tables not in this demo’s list of flags are left out of the {0} day trend.": [
+"Geprüfte Tische, die nicht in der Liste der Markierungen dieser Demo stehen, sind im {0}-Tage-Verlauf nicht enthalten.",
+"I tavoli verificati che non sono nell'elenco delle segnalazioni di questa demo sono esclusi dall'andamento di {0} giorni.",
+"الطاولات التي جرى التحقق منها وليست في قائمة التنبيهات في هذا العرض مستبعدة من اتجاه الـ {0} يومًا."
+],
+"Checked tables not in this demo’s list of flags are left out of these figures, so the period before is not compared.": [
+"Geprüfte Tische, die nicht in der Liste der Markierungen dieser Demo stehen, sind in diesen Zahlen nicht enthalten, daher wird der Zeitraum davor nicht verglichen.",
+"I tavoli verificati che non sono nell'elenco delle segnalazioni di questa demo sono esclusi da queste cifre, quindi il periodo precedente non viene confrontato.",
+"الطاولات التي جرى التحقق منها وليست في قائمة التنبيهات في هذا العرض مستبعدة من هذه الأرقام، لذا لا تُقارن بالفترة السابقة."
+],
+"Checked tables not in this demo’s list of flags are left out of these figures.": [
+"Geprüfte Tische, die nicht in der Liste der Markierungen dieser Demo stehen, sind in diesen Zahlen nicht enthalten.",
+"I tavoli verificati che non sono nell'elenco delle segnalazioni di questa demo sono esclusi da queste cifre.",
+"الطاولات التي جرى التحقق منها وليست في قائمة التنبيهات في هذا العرض مستبعدة من هذه الأرقام."
+],
 "Checked with the server on that section.": [
 "Mit der Servicekraft dieses Bereichs geprüft.",
 "Verificato con il cameriere di quella sala.",
@@ -2143,6 +2208,11 @@
 "Farbige Balken: ein Tisch ohne Rechnung, zu prüfen. Graue Balken: Gäste, die vor dem Bestellen gegangen sind, nicht markiert.",
 "Barre colorate: un tavolo senza conto, da verificare. Barre grigie: ospiti andati via prima di ordinare, non segnalati.",
 "الأعمدة الملوّنة: طاولة دون فاتورة، للتحقق. الأعمدة الرمادية: ضيوف غادروا قبل الطلب، دون تنبيه."
+],
+"Coloured: guests at a table with no bill, to check. Grey: guests who left before ordering, not flagged. Together they are the gap.": [
+"Farbig: Gäste an einem Tisch ohne Rechnung, zu prüfen. Grau: Gäste, die vor dem Bestellen gegangen sind, nicht markiert. Zusammen ergeben sie die Lücke.",
+"Colorato: ospiti a un tavolo senza conto, da verificare. Grigio: ospiti andati via prima di ordinare, non segnalati. Insieme formano la differenza.",
+"الملوّن: ضيوف على طاولة دون فاتورة، للتحقق. الرمادي: ضيوف غادروا قبل الطلب، دون تنبيه. معًا يشكّلان الفرق."
 ],
 "Colours": [
 "Farben",
@@ -2918,6 +2988,11 @@
 "Douro Reserva rot, Glas",
 "Rosso Douro riserva, calice",
 "نبيذ دورو الأحمر المعتق، كأس"
+],
+"Down from {0} in the {1} days before": [
+"Gesunken von {0} in den {1} Tagen davor",
+"In calo da {0} nei {1} giorni precedenti",
+"انخفاض من {0} في الأيام الـ {1} السابقة"
 ],
 "Download as CSV": [
 "Als CSV herunterladen",
@@ -4784,6 +4859,11 @@
 "Finisce sul conto della camera {0}",
 "تصل إلى فاتورة الغرفة {0}"
 ],
+"It was already matched to another booking:": [
+"Sie war bereits einer anderen Reservierung zugeordnet:",
+"Era già abbinato a un'altra prenotazione:",
+"كانت مطابقة بالفعل لحجز آخر:"
+],
 "Item": [
 "Artikel",
 "Articolo",
@@ -6428,6 +6508,11 @@
 "Nicht markiert:",
 "Non segnalato:",
 "غير مُعلَّم:"
+],
+"Not flagged: a party that joined another booking at its table and paid on that bill, a party that left within {0} minutes, before ordering, and a party seated elsewhere, when a bill for the same party, give or take one guest, not matched to another booking, was opened within {1} minutes.": [
+"Nicht markiert: eine Gruppe, die sich einer anderen Reservierung an deren Tisch angeschlossen und über diese Rechnung bezahlt hat, eine Gruppe, die innerhalb von {0} Minuten vor dem Bestellen gegangen ist, und eine anderswo platzierte Gruppe, wenn innerhalb von {1} Minuten eine Rechnung für dieselbe Gruppe, plus oder minus einen Gast, eröffnet wurde, die keiner anderen Reservierung zugeordnet ist.",
+"Non segnalati: un gruppo che si è unito a un'altra prenotazione al suo tavolo e ha pagato su quel conto, un gruppo andato via entro {0} minuti, prima di ordinare, e un gruppo accomodato altrove, quando un conto per lo stesso gruppo, con un ospite in più o in meno, non abbinato a un'altra prenotazione, è stato aperto entro {1} minuti.",
+"لا تنبيه: مجموعة انضمت إلى حجز آخر على طاولته ودفعت ضمن تلك الفاتورة، ومجموعة غادرت خلال {0} دقيقة قبل الطلب، ومجموعة أُجلست في مكان آخر حين فُتحت خلال {1} دقيقة فاتورة للمجموعة نفسها، بزيادة أو نقص ضيف واحد، غير مطابقة لحجز آخر."
 ],
 "Not flagged: a party that joined another booking at its table and paid on that bill, a party that left within {0} minutes, before ordering, and a party seated elsewhere, when a bill for the same party, give or take one guest, was opened within {1} minutes.": [
 "Nicht markiert: eine Gruppe, die sich einer anderen Reservierung an deren Tisch angeschlossen und über diese Rechnung bezahlt hat, eine Gruppe, die innerhalb von {0} Minuten vor dem Bestellen gegangen ist, und eine anderswo platzierte Gruppe, wenn innerhalb von {1} Minuten eine Rechnung für dieselbe Gruppe, plus oder minus einen Gast, eröffnet wurde.",
@@ -10194,6 +10279,16 @@
 "Tavolo {0} · {1}",
 "طاولة {0} · {1}"
 ],
+"Table {0}, {1}, {2} guest": [
+"Tisch {0}, {1}, {2} Gast",
+"Tavolo {0}, {1}, {2} ospite",
+"الطاولة {0}، {1}، {2} ضيف"
+],
+"Table {0}, {1}, {2} guests": [
+"Tisch {0}, {1}, {2} Gäste",
+"Tavolo {0}, {1}, {2} ospiti",
+"الطاولة {0}، {1}، {2} ضيوف"
+],
 "Tables seated": [
 "Platzierte Tische",
 "Tavoli accomodati",
@@ -10919,6 +11014,11 @@
 "La cassa non ha alcun conto al tavolo {0} aperto tra le {1} e le {2}, né un conto per {3} a {4} ospiti aperto altrove da {5} entro {6} minuti dall'accomodamento.",
 "لا توجد في نقطة البيع فاتورة على الطاولة {0} فُتحت بين {1} و{2}، ولا فاتورة لـ {3} إلى {4} ضيوف فُتحت في مكان آخر في {5} خلال {6} دقيقة من الجلوس."
 ],
+"The till has no bill at Table {0} opened between {1} and {2}, and no bill for {3} to {4} guests, not already matched to another booking, opened elsewhere at {5} within {6} minutes of seating.": [
+"Die Kasse hat keine Rechnung an Tisch {0}, eröffnet zwischen {1} und {2}, und keine Rechnung für {3} bis {4} Gäste, die nicht bereits einer anderen Reservierung zugeordnet ist und anderswo im {5} innerhalb von {6} Minuten nach dem Platzieren eröffnet wurde.",
+"La cassa non ha alcun conto al tavolo {0} aperto tra le {1} e le {2}, né un conto per {3} a {4} ospiti, non già abbinato a un'altra prenotazione, aperto altrove da {5} entro {6} minuti dall'accomodamento.",
+"لا توجد في نقطة البيع فاتورة على الطاولة {0} فُتحت بين {1} و{2}، ولا فاتورة لـ {3} إلى {4} ضيوف، غير مطابقة لحجز آخر، فُتحت في مكان آخر في {5} خلال {6} دقيقة من الجلوس."
+],
 "The till sends the charge to the guest folio": [
 "Die Kasse sendet die Belastung an das Gästefolio",
 "La cassa invia l'addebito al folio dell'ospite",
@@ -11434,6 +11534,16 @@
 "Tyll prevede",
 "يتوقع Tyll"
 ],
+"Tyll flags a table the host marked seated with no bill at that table, nor an unmatched bill for a party of that size nearby. It does not conclude why. The case shows the booking, the bills around it and what to check: whether the party paid on another table’s bill, and whether the meal can go on the guest's room.": [
+"Tyll markiert einen Tisch, den der Empfang als platziert markiert hat, ohne Rechnung an diesem Tisch und ohne nicht zugeordnete Rechnung für eine Gruppe dieser Größe in der Nähe. Tyll schließt nicht auf den Grund. Der Fall zeigt die Reservierung, die Rechnungen rundherum und was zu prüfen ist: ob die Gruppe über die Rechnung eines anderen Tisches bezahlt hat und ob das Essen auf das Zimmer des Gastes gebucht werden kann.",
+"Tyll segnala un tavolo segnato come accomodato senza conto a quel tavolo, né un conto non abbinato per un gruppo di quelle dimensioni nelle vicinanze. Non ne deduce il motivo. Il caso mostra la prenotazione, i conti intorno e cosa verificare: se il gruppo ha pagato sul conto di un altro tavolo e se il pasto può essere addebitato in camera.",
+"يُبرز Tyll طاولة سجّلها مسؤول الاستقبال جالسة دون فاتورة عليها، ولا فاتورة غير مطابقة لمجموعة بهذا الحجم بالقرب منها. لا يستنتج السبب. تعرض الحالة الحجز والفواتير من حوله وما يجب التحقق منه: هل دفعت المجموعة ضمن فاتورة طاولة أخرى، وهل يمكن إضافة الوجبة إلى غرفة النزيل."
+],
+"Tyll flags a table the host marked seated with no bill at that table, nor an unmatched bill for a party of that size nearby. It does not conclude why. The case shows the booking, the bills around it and what to check: whether the party paid on another table’s bill.": [
+"Tyll markiert einen Tisch, den der Empfang als platziert markiert hat, ohne Rechnung an diesem Tisch und ohne nicht zugeordnete Rechnung für eine Gruppe dieser Größe in der Nähe. Tyll schließt nicht auf den Grund. Der Fall zeigt die Reservierung, die Rechnungen rundherum und was zu prüfen ist: ob die Gruppe über die Rechnung eines anderen Tisches bezahlt hat.",
+"Tyll segnala un tavolo segnato come accomodato senza conto a quel tavolo, né un conto non abbinato per un gruppo di quelle dimensioni nelle vicinanze. Non ne deduce il motivo. Il caso mostra la prenotazione, i conti intorno e cosa verificare: se il gruppo ha pagato sul conto di un altro tavolo.",
+"يُبرز Tyll طاولة سجّلها مسؤول الاستقبال جالسة دون فاتورة عليها، ولا فاتورة غير مطابقة لمجموعة بهذا الحجم بالقرب منها. لا يستنتج السبب. تعرض الحالة الحجز والفواتير من حوله وما يجب التحقق منه: هل دفعت المجموعة ضمن فاتورة طاولة أخرى."
+],
 "Tyll flags a table the host marked seated with no bill at that table, nor for a party of that size nearby. It does not conclude why. The case shows the booking, the bills around it and what to check: whether the party paid on another table’s bill, and whether the meal can go on the guest's room.": [
 "Tyll markiert einen Tisch, den der Empfang als platziert markiert hat, ohne Rechnung an diesem Tisch und ohne Rechnung für eine Gruppe dieser Größe in der Nähe. Tyll schließt nicht auf den Grund. Der Fall zeigt die Reservierung, die Rechnungen rundherum und was zu prüfen ist: ob die Gruppe über die Rechnung eines anderen Tisches bezahlt hat und ob das Essen auf das Zimmer des Gastes gebucht werden kann.",
 "Tyll segnala un tavolo segnato come accomodato senza conto a quel tavolo, né per un gruppo di quelle dimensioni nelle vicinanze. Non ne deduce il motivo. Il caso mostra la prenotazione, i conti intorno e cosa verificare: se il gruppo ha pagato sul conto di un altro tavolo e se il pasto può essere addebitato in camera.",
@@ -11628,6 +11738,11 @@
 "Pfeiltasten zum Bewegen",
 "Frecce su e giù per spostarti",
 "الأسهم للتنقل"
+],
+"Up from {0} in the {1} days before": [
+"Gestiegen von {0} in den {1} Tagen davor",
+"In aumento da {0} nei {1} giorni precedenti",
+"ارتفاع من {0} في الأيام الـ {1} السابقة"
 ],
 "Upcoming events: operational cost estimates": [
 "Kommende Events: geschätzte Betriebskosten",
@@ -12954,6 +13069,11 @@
 "nessun motivo, nessuna approvazione.",
 "لا سبب ولا موافقة."
 ],
+"no unmatched bill for {0} to {1} guests.": [
+"keine nicht zugeordnete Rechnung für {0} bis {1} Gäste.",
+"nessun conto non abbinato per {0} a {1} ospiti.",
+"ولا فاتورة غير مطابقة لـ {0} إلى {1} ضيوف."
+],
 "none": [
 "keine",
 "nessuno",
@@ -13449,15 +13569,75 @@
 "{0} conto è stato aperto altrove da {1} entro {2} minuti dall'accomodamento, per {3} ospiti:",
 "فُتحت {0} فاتورة في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3} ضيوف:"
 ],
+"{0} bill was opened elsewhere at {1} within {2} minutes of seating, for {3} or {4} guests:": [
+"{0} Rechnung wurde anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet, für {3} oder {4} Gäste:",
+"{0} conto è stato aperto altrove da {1} entro {2} minuti dall'accomodamento, per {3} o {4} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3} أو {4} ضيوف:"
+],
+"{0} bill was opened elsewhere at {1} within {2} minutes of seating, for {3} to {4} guests:": [
+"{0} Rechnung wurde anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet, für {3} bis {4} Gäste:",
+"{0} conto è stato aperto altrove da {1} entro {2} minuti dall'accomodamento, per {3} a {4} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3} إلى {4} ضيوف:"
+],
+"{0} bill was opened elsewhere at {1} within {2} minutes of seating, for {3}, {4} or {5} guests:": [
+"{0} Rechnung wurde anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet, für {3}, {4} oder {5} Gäste:",
+"{0} conto è stato aperto altrove da {1} entro {2} minuti dall'accomodamento, per {3}, {4} o {5} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3}، {4} أو {5} ضيوف:"
+],
+"{0} bill was opened elsewhere at {1} within {2} minutes of seating, for {3}, {4}, {5} or {6} guests:": [
+"{0} Rechnung wurde anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet, für {3}, {4}, {5} oder {6} Gäste:",
+"{0} conto è stato aperto altrove da {1} entro {2} minuti dall'accomodamento, per {3}, {4}, {5} o {6} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3}، {4}، {5} أو {6} ضيوف:"
+],
+"{0} bill was opened elsewhere at {1} within {2} minutes of seating.": [
+"{0} Rechnung wurde anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet.",
+"{0} conto è stato aperto altrove da {1} entro {2} minuti dall'accomodamento.",
+"فُتحت {0} فاتورة في مكان آخر في {1} خلال {2} دقيقة من الجلوس."
+],
+"{0} bill was opened elsewhere within {1} minutes of seating, for {2} guest:": [
+"{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} Gast:",
+"{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento, per {2} ospite:",
+"فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} ضيف:"
+],
 "{0} bill was opened elsewhere within {1} minutes of seating, for {2} guest: none for {3} to {4} guests.": [
 "{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} Gast: keine für {3} bis {4} Gäste.",
 "{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento, per {2} ospite: nessuno per {3} a {4} ospiti.",
 "فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} ضيف: ولا واحدة لـ {3} إلى {4} ضيوف."
 ],
+"{0} bill was opened elsewhere within {1} minutes of seating, for {2} guests:": [
+"{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} Gäste:",
+"{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento, per {2} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} ضيوف:"
+],
 "{0} bill was opened elsewhere within {1} minutes of seating, for {2} guests: none for {3} to {4} guests.": [
 "{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} Gäste: keine für {3} bis {4} Gäste.",
 "{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento, per {2} ospiti: nessuno per {3} a {4} ospiti.",
 "فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} ضيوف: ولا واحدة لـ {3} إلى {4} ضيوف."
+],
+"{0} bill was opened elsewhere within {1} minutes of seating, for {2} or {3} guests:": [
+"{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} oder {3} Gäste:",
+"{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento, per {2} o {3} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} أو {3} ضيوف:"
+],
+"{0} bill was opened elsewhere within {1} minutes of seating, for {2} to {3} guests:": [
+"{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} bis {3} Gäste:",
+"{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento, per {2} a {3} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} إلى {3} ضيوف:"
+],
+"{0} bill was opened elsewhere within {1} minutes of seating, for {2}, {3} or {4} guests:": [
+"{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2}, {3} oder {4} Gäste:",
+"{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento, per {2}, {3} o {4} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2}، {3} أو {4} ضيوف:"
+],
+"{0} bill was opened elsewhere within {1} minutes of seating, for {2}, {3}, {4} or {5} guests:": [
+"{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2}, {3}, {4} oder {5} Gäste:",
+"{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento, per {2}, {3}, {4} o {5} ospiti:",
+"فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2}، {3}، {4} أو {5} ضيوف:"
+],
+"{0} bill was opened elsewhere within {1} minutes of seating.": [
+"{0} Rechnung wurde innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet.",
+"{0} conto è stato aperto altrove entro {1} minuti dall'accomodamento.",
+"فُتحت {0} فاتورة في مكان آخر خلال {1} دقيقة من الجلوس."
 ],
 "{0} billed": [
 "{0} berechnet",
@@ -13479,20 +13659,75 @@
 "{0} conti sono stati aperti altrove da {1} entro {2} minuti dall'accomodamento, per {3} o {4} ospiti:",
 "فُتحت {0} فواتير في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3} أو {4} ضيوف:"
 ],
+"{0} bills were opened elsewhere at {1} within {2} minutes of seating, for {3} to {4} guests:": [
+"{0} Rechnungen wurden anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet, für {3} bis {4} Gäste:",
+"{0} conti sono stati aperti altrove da {1} entro {2} minuti dall'accomodamento, per {3} a {4} ospiti:",
+"فُتحت {0} فواتير في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3} إلى {4} ضيوف:"
+],
+"{0} bills were opened elsewhere at {1} within {2} minutes of seating, for {3}, {4} or {5} guests:": [
+"{0} Rechnungen wurden anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet, für {3}, {4} oder {5} Gäste:",
+"{0} conti sono stati aperti altrove da {1} entro {2} minuti dall'accomodamento, per {3}, {4} o {5} ospiti:",
+"فُتحت {0} فواتير في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3}، {4} أو {5} ضيوف:"
+],
+"{0} bills were opened elsewhere at {1} within {2} minutes of seating, for {3}, {4}, {5} or {6} guests:": [
+"{0} Rechnungen wurden anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet, für {3}, {4}, {5} oder {6} Gäste:",
+"{0} conti sono stati aperti altrove da {1} entro {2} minuti dall'accomodamento, per {3}, {4}, {5} o {6} ospiti:",
+"فُتحت {0} فواتير في مكان آخر في {1} خلال {2} دقيقة من الجلوس، لـ {3}، {4}، {5} أو {6} ضيوف:"
+],
+"{0} bills were opened elsewhere at {1} within {2} minutes of seating.": [
+"{0} Rechnungen wurden anderswo im {1} innerhalb von {2} Minuten nach dem Platzieren eröffnet.",
+"{0} conti sono stati aperti altrove da {1} entro {2} minuti dall'accomodamento.",
+"فُتحت {0} فواتير في مكان آخر في {1} خلال {2} دقيقة من الجلوس."
+],
+"{0} bills were opened elsewhere within {1} minutes of seating, for {2} guest:": [
+"{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} Gast:",
+"{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2} ospite:",
+"فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} ضيف:"
+],
 "{0} bills were opened elsewhere within {1} minutes of seating, for {2} guest: none for {3} to {4} guests.": [
 "{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} Gast: keine für {3} bis {4} Gäste.",
 "{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2} ospite: nessuno per {3} a {4} ospiti.",
 "فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} ضيف: ولا واحدة لـ {3} إلى {4} ضيوف."
+],
+"{0} bills were opened elsewhere within {1} minutes of seating, for {2} guests:": [
+"{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} Gäste:",
+"{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2} ospiti:",
+"فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} ضيوف:"
 ],
 "{0} bills were opened elsewhere within {1} minutes of seating, for {2} guests: none for {3} to {4} guests.": [
 "{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} Gäste: keine für {3} bis {4} Gäste.",
 "{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2} ospiti: nessuno per {3} a {4} ospiti.",
 "فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} ضيوف: ولا واحدة لـ {3} إلى {4} ضيوف."
 ],
+"{0} bills were opened elsewhere within {1} minutes of seating, for {2} or {3} guests:": [
+"{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} oder {3} Gäste:",
+"{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2} o {3} ospiti:",
+"فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} أو {3} ضيوف:"
+],
 "{0} bills were opened elsewhere within {1} minutes of seating, for {2} or {3} guests: none for {4} to {5} guests.": [
 "{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} oder {3} Gäste: keine für {4} bis {5} Gäste.",
 "{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2} o {3} ospiti: nessuno per {4} a {5} ospiti.",
 "فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} أو {3} ضيوف: ولا واحدة لـ {4} إلى {5} ضيوف."
+],
+"{0} bills were opened elsewhere within {1} minutes of seating, for {2} to {3} guests:": [
+"{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2} bis {3} Gäste:",
+"{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2} a {3} ospiti:",
+"فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2} إلى {3} ضيوف:"
+],
+"{0} bills were opened elsewhere within {1} minutes of seating, for {2}, {3} or {4} guests:": [
+"{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2}, {3} oder {4} Gäste:",
+"{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2}, {3} o {4} ospiti:",
+"فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2}، {3} أو {4} ضيوف:"
+],
+"{0} bills were opened elsewhere within {1} minutes of seating, for {2}, {3}, {4} or {5} guests:": [
+"{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet, für {2}, {3}, {4} oder {5} Gäste:",
+"{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento, per {2}, {3}, {4} o {5} ospiti:",
+"فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس، لـ {2}، {3}، {4} أو {5} ضيوف:"
+],
+"{0} bills were opened elsewhere within {1} minutes of seating.": [
+"{0} Rechnungen wurden innerhalb von {1} Minuten nach dem Platzieren anderswo eröffnet.",
+"{0} conti sono stati aperti altrove entro {1} minuti dall'accomodamento.",
+"فُتحت {0} فواتير في مكان آخر خلال {1} دقيقة من الجلوس."
 ],
 "{0} booked guests seated, {1} billed, a gap of {2} in the last {3} days.": [
 "{0} reservierte Gäste platziert, {1} abgerechnet, eine Lücke von {2} in den letzten {3} Tagen.",
@@ -14278,6 +14513,46 @@
 "{0} vom Soll",
 "{0} del previsto",
 "{0} من المتوقع"
+],
+"{0} of them, for {1} guest, was already matched to another booking:": [
+"{0} davon, für {1} Gast, war bereits einer anderen Reservierung zugeordnet:",
+"{0} di questi, per {1} ospite, era già abbinato a un'altra prenotazione:",
+"{0} منها، لـ {1} ضيف، كانت مطابقة بالفعل لحجز آخر:"
+],
+"{0} of them, for {1} guest, were already matched to another booking:": [
+"{0} davon, für {1} Gast, waren bereits anderen Reservierungen zugeordnet:",
+"{0} di questi, per {1} ospite, erano già abbinati ad altre prenotazioni:",
+"{0} منها، لـ {1} ضيف، كانت مطابقة بالفعل لحجوزات أخرى:"
+],
+"{0} of them, for {1} guests, was already matched to another booking:": [
+"{0} davon, für {1} Gäste, war bereits einer anderen Reservierung zugeordnet:",
+"{0} di questi, per {1} ospiti, era già abbinato a un'altra prenotazione:",
+"{0} منها، لـ {1} ضيوف، كانت مطابقة بالفعل لحجز آخر:"
+],
+"{0} of them, for {1} guests, were already matched to another booking:": [
+"{0} davon, für {1} Gäste, waren bereits anderen Reservierungen zugeordnet:",
+"{0} di questi, per {1} ospiti, erano già abbinati ad altre prenotazioni:",
+"{0} منها، لـ {1} ضيوف، كانت مطابقة بالفعل لحجوزات أخرى:"
+],
+"{0} of them, for {1} or {2} guests, was already matched to another booking:": [
+"{0} davon, für {1} oder {2} Gäste, war bereits einer anderen Reservierung zugeordnet:",
+"{0} di questi, per {1} o {2} ospiti, era già abbinato a un'altra prenotazione:",
+"{0} منها، لـ {1} أو {2} ضيوف، كانت مطابقة بالفعل لحجز آخر:"
+],
+"{0} of them, for {1} or {2} guests, were already matched to another booking:": [
+"{0} davon, für {1} oder {2} Gäste, waren bereits anderen Reservierungen zugeordnet:",
+"{0} di questi, per {1} o {2} ospiti, erano già abbinati ad altre prenotazioni:",
+"{0} منها، لـ {1} أو {2} ضيوف، كانت مطابقة بالفعل لحجوزات أخرى:"
+],
+"{0} of them, for {1} to {2} guests, was already matched to another booking:": [
+"{0} davon, für {1} bis {2} Gäste, war bereits einer anderen Reservierung zugeordnet:",
+"{0} di questi, per {1} a {2} ospiti, era già abbinato a un'altra prenotazione:",
+"{0} منها، لـ {1} إلى {2} ضيوف، كانت مطابقة بالفعل لحجز آخر:"
+],
+"{0} of them, for {1} to {2} guests, were already matched to another booking:": [
+"{0} davon, für {1} bis {2} Gäste, waren bereits anderen Reservierungen zugeordnet:",
+"{0} di questi, per {1} a {2} ospiti, erano già abbinati ad altre prenotazioni:",
+"{0} منها، لـ {1} إلى {2} ضيوف، كانت مطابقة بالفعل لحجوزات أخرى:"
 ],
 "{0} of this week, {1}": [
 "{0} dieser Woche, {1}",

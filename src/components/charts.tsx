@@ -84,21 +84,25 @@ export function AreaTrend({ data, format, axisFormat, height = 200, summary, nam
   );
 }
 
-export function ColumnChart({ data, format, axisFormat, height = 220, summary, name, highlight, reference, tickGap, whole }: { data: { label: string; value: number }[]; format: (n: number) => string; axisFormat?: (n: number) => string; height?: number; summary: string; name: string; highlight?: (i: number) => boolean; reference?: number; /** For many columns, such as one a day: the space kept between axis labels, so they never crowd. Every label shows by default. */ tickGap?: number; /** Counts: whole numbers only on the axis. */ whole?: boolean }) {
+export function ColumnChart({ data, format, axisFormat, height = 220, summary, name, highlight, reference, tickGap, whole, stack }: { data: { label: string; value: number }[]; format: (n: number) => string; axisFormat?: (n: number) => string; height?: number; summary: string; name: string; highlight?: (i: number) => boolean; reference?: number; /** For many columns, such as one a day: the space kept between axis labels, so they never crowd. Every label shows by default. */ tickGap?: number; /** Counts: whole numbers only on the axis. */ whole?: boolean; /** A second part stacked on each column, in the comparison grey, such as what was not flagged. */ stack?: { name: string; values: number[] } }) {
+  const rows = stack ? data.map((d, i) => ({ ...d, stack: stack.values[i] ?? 0 })) : data;
+  // A column's top corners are rounded on whichever part is on top.
+  const topOf = (i: number) => (stack && (stack.values[i] ?? 0) > 0 ? ({ radius: 0 } as object) : {});
   return (
     <figure>
       <figcaption className="sr-only">{summary}</figcaption>
       <div style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+          <BarChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
             <CartesianGrid stroke={LINE} strokeDasharray="2 4" vertical={false} />
             <XAxis dataKey="label" {...axis} interval={tickGap === undefined ? 0 : "preserveStartEnd"} minTickGap={tickGap} />
             <YAxis {...axis} axisLine={false} width={52} tickFormatter={axisFormat ?? format} allowDecimals={!whole} />
             <Tooltip content={(p) => <Tip {...(p as object)} format={format} />} cursor={{ fill: "var(--color-hair)" }} />
             {reference !== undefined && <ReferenceLine y={reference} stroke={FOG} strokeDasharray="4 4" />}
-            <Bar dataKey="value" name={name} radius={[5, 5, 0, 0]} maxBarSize={38} isAnimationActive={false}>
-              {data.map((_, i) => <Cell key={i} fill={highlight?.(i) ? INK : FOG} />)}
+            <Bar dataKey="value" name={name} radius={[5, 5, 0, 0]} maxBarSize={38} isAnimationActive={false} stackId={stack ? "s" : undefined}>
+              {data.map((_, i) => <Cell key={i} fill={highlight?.(i) ? INK : FOG} {...topOf(i)} />)}
             </Bar>
+            {stack && <Bar dataKey="stack" name={stack.name} radius={[5, 5, 0, 0]} maxBarSize={38} isAnimationActive={false} stackId="s" fill={FOG} />}
           </BarChart>
         </ResponsiveContainer>
       </div>

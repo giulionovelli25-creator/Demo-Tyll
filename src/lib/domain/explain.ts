@@ -8,7 +8,7 @@ import { POLICY, REMOVAL_TYPES, belowMenu, fmtClock, folioTime, ringFinding, rin
 import { cheapName, mixLabelById, mixValue } from "./till-rules";
 import { countVariance, countVarianceValue } from "./inventory";
 import { BOUGHT_USED_CAUSES, boughtQty, itemWords } from "./bought-used";
-import { COVER_RULES, SERVICE_LABEL, VIA_LABEL, fmtStay, partyRange } from "./covers";
+import { COVER_RULES, SERVICE_LABEL, VIA_LABEL, fmtStay, guestWords, nearbyFact, sameParty } from "./covers";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 import { lineValue, orderTotals } from "./orders";
@@ -185,13 +185,12 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
     const meal = SERVICE_LABEL[b.service].toLowerCase();
     const value = fmtMoney(e.exposure, currency);
     const stay = b.leftMin === undefined ? null : fmtStay(b.leftMin - b.seatedMin);
-    const sizes = [...new Set(b.nearby.map((o) => o.covers))].sort((x, y) => x - y);
     base.whatHappened = `A booking for ${b.party} was seated at ${b.table} at ${fmtTime(b.seatedMin)}${stay ? ` and stayed ${stay}` : ""}. No bill was found for the table.`;
     base.facts = [
       `The reservation book shows booking ${b.bookingId}, for ${b.party} at ${fmtTime(b.bookedFor)}, made ${VIA_LABEL[b.via]}${b.room ? ` by the guest in room ${b.room}` : ""}.`,
       b.leftMin === undefined ? `The host marked it seated at ${b.table} at ${fmtTime(b.seatedMin)}. No finish time was recorded.` : `The host marked it seated at ${b.table} at ${fmtTime(b.seatedMin)} and the table finished at ${fmtTime(b.leftMin)}.`,
       `No bill at ${b.table} was opened between ${fmtTime(b.from)} and ${fmtTime(b.to)}.${b.atTable.length ? (b.atTable.length === 1 ? " The table had 1 other bill that day, outside that time." : ` The table had ${b.atTable.length} other bills that day, all outside that time.`) : ""}`,
-      b.nearby.length ? `${b.nearby.length} ${b.nearby.length === 1 ? "bill was" : "bills were"} opened elsewhere at ${where} within ${COVER_RULES.moved} minutes of seating, for ${sizes.join(" or ")} ${sizes.length === 1 && sizes[0] === 1 ? "guest" : "guests"}: none for ${partyRange(b.party)}.` : `No bill was opened elsewhere at ${where} within ${COVER_RULES.moved} minutes of seating.`,
+      nearbyFact(b, where),
       `The ${meal} spend per guest at ${where} over the ${COVER_RULES.spendDays} days before was ${fmtMoney(b.spendPerGuest, currency)}, so ${b.party} guests are about ${value}. An estimate.`,
     ];
     base.possibleCauses = [
@@ -203,10 +202,11 @@ export function explain(e: Exception, data: Dataset, counts: readonly CountRecor
     base.recommended = [
       `Ask the host and the server for that section where the party sat and which bill they paid.`,
       `Look for a bill around ${fmtTime(b.seatedMin)} with more guests than its own booking.`,
+      ...b.nearby.filter((o) => o.matchedTo && sameParty(o.covers, b.party)).slice(0, 2).map((o) => `Bill ${o.orderId}, for ${guestWords(o.covers)} at ${o.table}, is matched to booking ${o.matchedTo}. Ask the host which of the two bookings sat there.`),
       ...(b.room ? [`The booking was made by the guest in room ${b.room}. If the guest is still in house and dined, the front office can add the meal to the room with the guest's agreement.`] : []),
       "If a bill is found, close as a legitimate correction. If the meal was served and not billed, record the amount as a loss, or as recovered if it is paid.",
     ];
-    base.message = `At ${where}, a booking for ${b.party} was seated at ${b.table} ${b.leftMin === undefined ? `at ${fmtTime(b.seatedMin)}` : `from ${fmtTime(b.seatedMin)} to ${fmtTime(b.leftMin)}`}, and Tyll found no bill for the table, nor for a party of that size nearby. That is about ${value} at the ${meal} spend per guest, an estimate. Please check with the host and the server whether the party paid on another bill.`;
+    base.message = `At ${where}, a booking for ${b.party} was seated at ${b.table} ${b.leftMin === undefined ? `at ${fmtTime(b.seatedMin)}` : `from ${fmtTime(b.seatedMin)} to ${fmtTime(b.leftMin)}`}, and Tyll found no bill for the table, nor an unmatched bill for a party of that size nearby. That is about ${value} at the ${meal} spend per guest, an estimate. Please check with the host and the server whether the party paid on another bill.`;
     return base;
   }
 

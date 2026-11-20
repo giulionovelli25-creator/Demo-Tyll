@@ -25,6 +25,16 @@ const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ b
 const share = (a: number, b: number) => (b ? fmtPct(a / b, 1) : "None");
 const guests = (n: number) => `${fmtNum(n)} ${n === 1 ? "guest" : "guests"}`;
 const tables = (n: number) => `${fmtNum(n)} ${n === 1 ? "table" : "tables"}`;
+/**
+ * A share against the period before, in words with the earlier share ("Down from 99.0% in the 30 days before"), never
+ * as a percentage of a percentage, which reads like points.
+ */
+function shareVersus(now: number, before: number | null, period: string): { text: string; good: boolean | null } | undefined {
+  if (before === null) return undefined;
+  const a = fmtPct(now, 1), b = fmtPct(before, 1);
+  if (a === b) return { text: `Same as ${period}`, good: null };
+  return now > before ? { text: `Up from ${b} ${period}`, good: true } : { text: `Down from ${b} ${period}`, good: false };
+}
 
 export function BookedCovers() {
   const router = useRouter();
@@ -67,14 +77,15 @@ export function BookedCovers() {
   const storyCase = story ? cases.get(story.caseId) : undefined;
   const elsewhere = t.moved + t.joined + t.leftEarlyTables;
   const R = data.rules;
+  const unlisted = data.unlisted.period + data.unlisted.trend + data.unlisted.before > 0;
 
   return (
     <div className="space-y-6">
       <SummaryBar
         items={[
           { label: "Seated from bookings", value: fmtNum(t.tables), compare: { text: `${guests(t.booked)}. ${fmtNum(t.noShows)} no-shows are not counted`, good: null }, onClick: () => scrollTo("covers-services") },
-          { label: "Booked guests billed", value: share(t.billed, t.booked), compare: versus(t.booked ? t.billed / t.booked : 0, data.before.booked ? data.before.billed / data.before.booked : 0, "up", period), note: `${fmtNum(t.billed)} of ${guests(t.booked)}`, onClick: () => scrollTo("covers-services") },
-          { label: "Tables with no bill", value: fmtNum(t.noBillTables), tone: t.noBillTables ? "warn" : "pos", compare: versus(t.noBillTables, data.before.noBillTables, "down", period), note: t.noBillTables ? `${guests(t.noBill)}, about ${money(t.value)}, an estimate` : "Every seated table had a bill", onClick: () => scrollTo("covers-list") },
+          { label: "Booked guests billed", value: share(t.billed, t.booked), compare: t.booked && data.before?.booked ? shareVersus(t.billed / t.booked, data.before.billed / data.before.booked, period) : undefined, note: `${fmtNum(t.billed)} of ${guests(t.booked)}`, onClick: () => scrollTo("covers-services") },
+          { label: "Tables with no bill", value: fmtNum(t.noBillTables), tone: t.noBillTables ? "warn" : "pos", compare: data.before ? versus(t.noBillTables, data.before.noBillTables, "down", period) : undefined, note: t.noBillTables ? `${guests(t.noBill)}, about ${money(t.value)}, an estimate` : "Every seated table had a bill", onClick: () => scrollTo("covers-list") },
           { label: "Open to check", value: money(openValue), tone: "money", compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/investigations?type=seated_no_bill&status=open" },
         ]}
         trend={
@@ -101,6 +112,7 @@ export function BookedCovers() {
       <div className="flex flex-wrap items-center gap-3">
         <Segmented size="sm" label="Period" value={String(days) as "7" | "30"} onChange={(v) => setParam({ days: v === "30" ? null : v })} options={[{ value: "7", label: "7 days" }, { value: "30", label: "30 days" }]} />
         <span className="text-[13px] text-steel">{fmtDate(data.from)} to {fmtDate(data.to)}. Services are checked once they close.</span>
+        {unlisted && <span className="w-full text-[13px] text-steel">{data.unlisted.period + data.unlisted.before === 0 ? "Checked tables not in this demo’s list of flags are left out of the 30 day trend." : `Checked tables not in this demo’s list of flags are left out of these figures${data.before ? "." : ", so the period before is not compared."}`}</span>}
       </div>
 
       {story && (
@@ -110,7 +122,7 @@ export function BookedCovers() {
               {[
                 [fmtTime(story.bookedFor), `A booking for ${story.party} at ${fmtTime(story.bookedFor)}`, `Made ${VIA_LABEL[story.via]}${story.room ? `, by the guest in room ${story.room}` : ""}`],
                 [fmtTime(story.seatedMin), `Seated at ${story.table}`, "Marked seated by the host"],
-                [`${fmtTime(story.from)} to ${fmtTime(story.to)}`, `No bill at ${story.table}`, `And none for ${partyRange(story.party)} opened nearby`],
+                [`${fmtTime(story.from)} to ${fmtTime(story.to)}`, `No bill at ${story.table}`, `And no unmatched bill for ${partyRange(story.party)} nearby`],
                 [story.leftMin !== undefined ? fmtTime(story.leftMin) : "", "Table marked finished", story.leftMin !== undefined ? `${fmtStay(story.leftMin - story.seatedMin)} after seating, about ${money(story.value)} at the ${SERVICE_LABEL[story.service].toLowerCase()} spend per guest` : `About ${money(story.value)}`],
               ].map(([time, title, detail], i) => (
                 <li key={i} className={cn("relative rounded-2xl border p-4", i === 2 ? "border-warn/40 bg-warn-soft" : "border-line")}>
@@ -121,7 +133,7 @@ export function BookedCovers() {
               ))}
             </ol>
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-              <p className="max-w-[70ch] text-sm text-graphite">Tyll flags a table the host marked seated with no bill at that table, nor for a party of that size nearby. It does not conclude why. The case shows the booking, the bills around it and what to check: whether the party paid on another table&rsquo;s bill{story.room ? ", and whether the meal can go on the guest's room" : ""}.</p>
+              <p className="max-w-[70ch] text-sm text-graphite">Tyll flags a table the host marked seated with no bill at that table, nor an unmatched bill for a party of that size nearby. It does not conclude why. The case shows the booking, the bills around it and what to check: whether the party paid on another table&rsquo;s bill{story.room ? ", and whether the meal can go on the guest's room" : ""}.</p>
               {storyCase && <Button onClick={() => router.push(`/investigations/${story.caseId}`)}>Open the investigation <ArrowRight size={15} className="rtl:rotate-180" /></Button>}
             </div>
           </Panel>
@@ -135,22 +147,23 @@ export function BookedCovers() {
           action={<Segmented size="sm" label="Service" value={meal} onChange={(v) => setParam({ service: v === "dinner" ? null : v })} options={[{ value: "dinner", label: "Dinner" }, { value: "lunch", label: "Lunch" }]} />}
         >
           <ColumnChart
-            data={chartDays.map((d) => ({ label: fmtDate(d.date), value: d[meal].gap }))}
-            highlight={(i) => chartDays[i][meal].noBill > 0}
+            data={chartDays.map((d) => ({ label: fmtDate(d.date), value: d[meal].noBill }))}
+            highlight={() => true}
+            stack={{ name: "Left before ordering", values: chartDays.map((d) => d[meal].leftEarly) }}
             format={(n) => guests(n)}
             axisFormat={(n) => fmtNum(n)}
-            name="Booked guests not billed"
+            name="At a table with no bill"
             tickGap={days === 7 ? 4 : 24}
             whole
             height={260}
             summary={`${SERVICE_LABEL[meal]}: booked guests not billed each day for the last ${days} days. ${fmtNum(mealSum.noBillTables)} ${mealSum.noBillTables === 1 ? "table" : "tables"} with no bill, ${fmtNum(mealSum.leftEarly)} guests left before ordering.`}
           />
-          <Note className="mt-3">Coloured bars: a table with no bill, to check. Grey bars: guests who left before ordering, not flagged.</Note>
+          <Note className="mt-3">Coloured: guests at a table with no bill, to check. Grey: guests who left before ordering, not flagged. Together they are the gap.</Note>
         </Panel>
         <Panel title="What Tyll checks" description="Rules agreed with the hotel. A table with no bill is a prompt to check, not proof of anyone's mistake.">
           <ul className="space-y-3 text-sm text-graphite">
             <li>{`Each booking the host marks seated is matched with the bill opened at its table, from ${R.beforeSeat} minutes before seating until the table is finished.`}</li>
-            <li>{`Not flagged: a party that joined another booking at its table and paid on that bill, a party that left within ${R.leftEarly} minutes, before ordering, and a party seated elsewhere, when a bill for the same party, give or take one guest, was opened within ${R.moved} minutes.`}</li>
+            <li>{`Not flagged: a party that joined another booking at its table and paid on that bill, a party that left within ${R.leftEarly} minutes, before ordering, and a party seated elsewhere, when a bill for the same party, give or take one guest, not matched to another booking, was opened within ${R.moved} minutes.`}</li>
             <li>No-shows and cancellations never sat down, so they are not counted. Breakfast is hotel guests walking in, with no bookings.</li>
             <li>{`A table with no bill is valued at the outlet's spend per guest at that service over the ${R.spendDays} days before. An estimate.`}</li>
           </ul>

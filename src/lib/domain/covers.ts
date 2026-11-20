@@ -173,7 +173,7 @@ export function spendPerGuest(bills: readonly Order[], outletId: string, service
   return guests > 0 ? Math.round((net / guests) * 100) / 100 : 0;
 }
 
-const bill = (o: Order): NearbyBill => ({ orderId: o.id, table: o.table, openMin: o.openMin, closeMin: o.closeMin, covers: o.covers });
+const bill = (o: Order, owner?: string): NearbyBill => ({ orderId: o.id, table: o.table, openMin: o.openMin, closeMin: o.closeMin, covers: o.covers, ...(owner ? { matchedTo: owner } : {}) });
 const guests = (n: number) => `${n} ${n === 1 ? "guest" : "guests"}`;
 /** "3 to 5 guests": the party sizes the seated elsewhere rule would have accepted. */
 export const partyRange = (party: number) => {
@@ -181,18 +181,55 @@ export const partyRange = (party: number) => {
   const hi = party + COVER_RULES.partySlack;
   return `${lo} to ${hi} guests`;
 };
+/** A bill's party size is within the slack of the booking's party: the seated elsewhere rule would accept it. */
+export const sameParty = (covers: number, party: number) => Math.abs(covers - party) <= COVER_RULES.partySlack;
+
+/** Party sizes in words: "2 guests", "1 to 3 guests" for a run, "1, 2 or 6 guests" otherwise. */
+export function sizeWords(sizes: readonly number[]): string {
+  const s = [...new Set(sizes)].sort((x, y) => x - y);
+  if (s.length === 0) return "";
+  if (s.length === 1) return guests(s[0]);
+  if (s.length > 2 && s[s.length - 1] - s[0] === s.length - 1) return `${s[0]} to ${s[s.length - 1]} guests`;
+  return `${s.slice(0, -1).join(", ")} or ${s[s.length - 1]} guests`;
+}
+
+/**
+ * What the bills opened elsewhere near the seating say, in one or two sentences. A bill for the same party that another
+ * booking already has is named as such, so the case never says no such bill exists when one does.
+ */
+export function nearbyFact(b: Pick<BookingEvidence, "nearby" | "party">, where?: string): string {
+  const at = where ? ` at ${where}` : "";
+  const n = b.nearby.length;
+  if (n === 0) return `No bill was opened elsewhere${at} within ${COVER_RULES.moved} minutes of seating.`;
+  const opened = `${n} ${n === 1 ? "bill was" : "bills were"} opened elsewhere${at} within ${COVER_RULES.moved} minutes of seating`;
+  const taken = b.nearby.filter((o) => o.matchedTo && sameParty(o.covers, b.party));
+  if (taken.length === 0) return `${opened}, for ${sizeWords(b.nearby.map((o) => o.covers))}: none for ${partyRange(b.party)}.`;
+  const lead = n === taken.length ? (n === 1 ? "It was" : "All of them were") : `${taken.length} of them, for ${sizeWords(taken.map((o) => o.covers))}, ${taken.length === 1 ? "was" : "were"}`;
+  return `${opened}. ${lead} already matched to another booking: no unmatched bill for ${partyRange(b.party)}.`;
+}
 
 export const seatedHeadline = (b: Pick<Booking, "party" | "table">) => `Booking for ${b.party} seated at ${b.table}, no bill found`;
 
-/** The evidence for one seated booking with no bill: the window searched, the table's other bills and the bills nearby. */
-export function bookingEvidence(b: Booking, bills: readonly Order[], spend: number): BookingEvidence {
+/** The booking each bill was matched to: at its table or as a party seated elsewhere (a joined party shares its host's bill). */
+export function billOwners(matches: ReadonlyMap<string, BookingMatch>): Map<string, string> {
+  const owner = new Map<string, string>();
+  for (const [bookingId, m] of matches) if ((m.kind === "billed" || m.kind === "moved") && !owner.has(m.orderId)) owner.set(m.orderId, bookingId);
+  return owner;
+}
+
+/**
+ * The evidence for one seated booking with no bill: the window searched, the table's other bills and the bills nearby,
+ * each with the booking it was already matched to, if any.
+ */
+export function bookingEvidence(b: Booking, bills: readonly Order[], spend: number, owners: ReadonlyMap<string, string> = new Map()): BookingEvidence {
   const day = bills.filter((o) => o.outletId === b.outletId && o.date === b.date);
   const from = b.seatedMin! - COVER_RULES.beforeSeat;
   const to = windowEnd(b);
+  const one = (o: Order) => bill(o, owners.get(o.id));
   return {
     bookingId: b.id, service: b.service, table: b.table, party: b.party, bookedFor: b.bookedFor, seatedMin: b.seatedMin!, leftMin: b.leftMin, via: b.via, room: b.room, from, to,
-    atTable: day.filter((o) => o.table === b.table).sort((x, y) => x.openMin - y.openMin).map(bill),
-    nearby: day.filter((o) => o.table !== b.table && o.openMin >= from && o.openMin <= b.seatedMin! + COVER_RULES.moved).sort((x, y) => x.openMin - y.openMin).map(bill),
+    atTable: day.filter((o) => o.table === b.table).sort((x, y) => x.openMin - y.openMin).map(one),
+    nearby: day.filter((o) => o.table !== b.table && o.openMin >= from && o.openMin <= b.seatedMin! + COVER_RULES.moved).sort((x, y) => x.openMin - y.openMin).map(one),
     spendPerGuest: spend,
   };
 }
@@ -208,19 +245,20 @@ export function seatedNoBillException(b: Booking, ev: BookingEvidence): Exceptio
     id: `EX-${b.id}`, type: "seated_no_bill", propertyId: outlet.propertyId, outletId: b.outletId, date: b.date, min: b.seatedMin!,
     exposure: value, basis: "estimate", booking: ev,
     headline: seatedHeadline(b),
-    comparedWith: `Compared with the reservation book: a booking for ${b.party} was seated at ${b.table} at ${fmtTime(b.seatedMin!)} and ${finished}. The till has no bill at ${b.table} opened between ${fmtTime(ev.from)} and ${fmtTime(ev.to)}, and no bill for ${partyRange(b.party)} opened elsewhere at ${outlet.name} within ${COVER_RULES.moved} minutes of seating. Valued at the ${SERVICE_LABEL[b.service].toLowerCase()} spend per guest at ${outlet.name}, ${money(ev.spendPerGuest)}, an estimate.`,
+    comparedWith: `Compared with the reservation book: a booking for ${b.party} was seated at ${b.table} at ${fmtTime(b.seatedMin!)} and ${finished}. The till has no bill at ${b.table} opened between ${fmtTime(ev.from)} and ${fmtTime(ev.to)}, and no bill for ${partyRange(b.party)}, not already matched to another booking, opened elsewhere at ${outlet.name} within ${COVER_RULES.moved} minutes of seating. Valued at the ${SERVICE_LABEL[b.service].toLowerCase()} spend per guest at ${outlet.name}, ${money(ev.spendPerGuest)}, an estimate.`,
   };
 }
 
 /** Every seated booking with no bill on a closed day, as a flag. */
 export function detectSeatedNoBill(bookings: readonly Booking[], bills: readonly Order[], matches = matchBookings(bookings, bills)): Exception[] {
   const spend = new Map<string, number>();
+  const owners = billOwners(matches);
   const out: Exception[] = [];
   for (const b of bookings) {
     if (matches.get(b.id)?.kind !== "no_bill") continue;
     const k = `${b.outletId}|${b.service}|${b.date}`;
     if (!spend.has(k)) spend.set(k, spendPerGuest(bills, b.outletId, b.service, b.date));
-    out.push(seatedNoBillException(b, bookingEvidence(b, bills, spend.get(k)!)));
+    out.push(seatedNoBillException(b, bookingEvidence(b, bills, spend.get(k)!, owners)));
   }
   return out;
 }

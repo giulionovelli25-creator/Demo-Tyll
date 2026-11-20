@@ -10,7 +10,7 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tyll-covers-"));
 process.env.TYLL_AUTH_STORE = path.join(dir, "auth.json");
 process.env.TYLL_PURCHASING_STORE = path.join(dir, "purchasing.json");
 
-const { COVER_RULES, detectSeatedNoBill, matchBookings, serviceOf, spendPerGuest, totalsOf } = await import("../domain/covers");
+const { COVER_RULES, detectSeatedNoBill, matchBookings, nearbyFact, sameParty, serviceOf, sizeWords, spendPerGuest, totalsOf } = await import("../domain/covers");
 const { TYPE_LABEL, inBillsLedger, hasOwnDay } = await import("../domain/detect");
 const { explain } = await import("../domain/explain");
 const { orderTotals } = await import("../domain/orders");
@@ -59,7 +59,7 @@ describe("the matching rule", () => {
     // One bill of 4 guests at €116 is €29 a guest, so 4 guests are €116.
     expect(e.booking!.spendPerGuest).toBe(29);
     expect(e.exposure).toBe(116);
-    expect(e.comparedWith).toContain("no bill at Table 7 opened between 7:50 PM and 9:50 PM, and no bill for 3 to 5 guests opened elsewhere at Mercado within 20 minutes of seating");
+    expect(e.comparedWith).toContain("no bill at Table 7 opened between 7:50 PM and 9:50 PM, and no bill for 3 to 5 guests, not already matched to another booking, opened elsewhere at Mercado within 20 minutes of seating");
     expect(e.booking!.atTable).toHaveLength(0);
   });
 
@@ -81,6 +81,41 @@ describe("the matching rule", () => {
     // A bill for 2 is not this party, nor a bill opened 30 minutes later.
     expect(kindOf([book()], [bill({ table: "Table 30", covers: 2 })])).toBe("no_bill");
     expect(kindOf([book()], [bill({ table: "Table 30", openMin: T(20, 35) })])).toBe("no_bill");
+  });
+
+  it("names a bill for the same party that another booking already has, and never says no such bill was opened", () => {
+    // Another booking for 2 sat at Table 9 at 8 PM; its bill opened at 8:06 PM. Our party of 3 at Table 7 has no bill, and the
+    // only bill for 2 to 4 guests nearby is that one, already matched.
+    const other = book({ id: "BK-MER-T-02", party: 2, table: "Table 9", seatedMin: T(20), leftMin: T(21, 30) });
+    const ours = book({ party: 3 });
+    const theirs = bill({ id: "MER-T-009", table: "Table 9", covers: 2, openMin: T(20, 6) });
+    const single = bill({ id: "MER-T-010", table: "Table 12", covers: 1, openMin: T(20, 10) });
+    const m = matchBookings([other, ours], [theirs, single]);
+    expect(m.get("BK-MER-T-02")).toMatchObject({ kind: "billed", orderId: "MER-T-009" });
+    expect(m.get("BK-MER-T-01")?.kind).toBe("no_bill");
+    const e = detectSeatedNoBill([other, ours], [theirs, single])[0];
+    expect(e.booking!.nearby).toEqual([
+      expect.objectContaining({ orderId: "MER-T-009", covers: 2, matchedTo: "BK-MER-T-02" }),
+      expect.objectContaining({ orderId: "MER-T-010", covers: 1 }),
+    ]);
+    expect(e.booking!.nearby[1].matchedTo).toBeUndefined();
+    expect(e.comparedWith).toContain("no bill for 2 to 4 guests, not already matched to another booking, opened elsewhere");
+    const fact = nearbyFact(e.booking!, "Mercado");
+    expect(fact).toBe("2 bills were opened elsewhere at Mercado within 20 minutes of seating. 1 of them, for 2 guests, was already matched to another booking: no unmatched bill for 2 to 4 guests.");
+    expect(fact).not.toContain("none for");
+    const x = explain(e, d0, d0.counts, []);
+    expect(x.facts).toContain(fact);
+    expect(x.recommended.join(" ")).toContain("Bill MER-T-009, for 2 guests at Table 9, is matched to booking BK-MER-T-02.");
+    // With no same size bill nearby, the plain sentence stays.
+    expect(nearbyFact({ party: 4, nearby: [{ orderId: "X", table: "Table 1", openMin: 0, closeMin: 0, covers: 1, matchedTo: "BK-Y" }] })).toBe("1 bill was opened elsewhere within 20 minutes of seating, for 1 guest: none for 3 to 5 guests.");
+  });
+
+  it("writes party sizes as a run or a list, never 1 or 2 or 3", () => {
+    expect(sizeWords([1])).toBe("1 guest");
+    expect(sizeWords([2])).toBe("2 guests");
+    expect(sizeWords([2, 1])).toBe("1 or 2 guests");
+    expect(sizeWords([3, 1, 2, 2])).toBe("1 to 3 guests");
+    expect(sizeWords([1, 2, 6])).toBe("1, 2 or 6 guests");
   });
 
   it("does not flag a booking that joined another at its table on a bill with room for both, and flags one with no room", () => {
@@ -155,6 +190,23 @@ describe("the simulated reservation book", () => {
     expect(t.billed / t.booked).toBeGreaterThan(0.97);
     expect(t.moved + t.joined + t.leftEarlyTables).toBeGreaterThan(20);
     expect(t.sizeChanged).toBeGreaterThan(50);
+  });
+
+  it("never describes a bill as missing when a bill for the party nearby was taken by another booking", () => {
+    const owners = new Map<string, string>();
+    for (const [id, x] of matchBookings(d0.bookings, d0.orders)) if ((x.kind === "billed" || x.kind === "moved") && !owners.has(x.orderId)) owners.set(x.orderId, id);
+    let taken = 0;
+    for (const e of d0.exceptions.filter((x) => x.type === "seated_no_bill")) {
+      const b = e.booking!;
+      for (const o of [...b.nearby, ...b.atTable]) expect(o.matchedTo, o.orderId).toBe(owners.get(o.orderId));
+      // No free bill for the party is ever nearby: the rule would have matched it.
+      expect(b.nearby.filter((o) => !o.matchedTo && sameParty(o.covers, b.party)), e.id).toEqual([]);
+      const same = b.nearby.filter((o) => sameParty(o.covers, b.party));
+      const fact = explain(e, d0, d0.counts, []).facts.find((f) => f.includes("within 20 minutes of seating"))!;
+      if (same.length) { taken += 1; expect(fact, e.id).toContain("already matched to another booking"); expect(fact, e.id).not.toContain("none for"); }
+    }
+    // On the test date one flag (a party of 3 in September) has a bill for 2 nearby taken by another booking.
+    expect(taken).toBeGreaterThan(0);
   });
 
   it("stays rare: a few seated tables with no bill a month, each with a seeded state, recovered only on a guest's room", () => {
@@ -242,6 +294,28 @@ describe("the covers check", () => {
     expect(r.from).toBe(rel(-7));
     expect(r.cases.every((x) => x.date >= rel(-7))).toBe(true);
     expect(r.cases.map((x) => x.caseId)).toContain(COVERS_STORY_EXCEPTION_ID);
+  });
+
+  it("compares with the period before only when no table with no bill was left out of it", () => {
+    const full = check();
+    expect(full.unlisted).toEqual({ period: 0, before: 0, trend: 0 });
+    expect(full.before).not.toBeNull();
+    const was = process.env.TYLL_PUBLIC_DEMO;
+    process.env.TYLL_PUBLIC_DEMO = "on";
+    try {
+      for (const days of ["7", "30"]) {
+        const r = check(fnb, { days });
+        const listed = new Set(snapshotFor(fnb).exceptions.map((e) => e.id));
+        const left = d0.exceptions.filter((e) => e.type === "seated_no_bill" && !listed.has(e.id));
+        const beforeFrom = addDays(r.from, -r.days);
+        expect(r.unlisted.before, days).toBe(left.filter((e) => e.date >= beforeFrom && e.date < r.from).length);
+        expect(r.unlisted.period, days).toBe(left.filter((e) => e.date >= r.from && e.date <= r.to).length);
+        expect(r.before === null, days).toBe(r.unlisted.before > 0);
+      }
+    } finally {
+      if (was === undefined) delete process.env.TYLL_PUBLIC_DEMO;
+      else process.env.TYLL_PUBLIC_DEMO = was;
+    }
   });
 
   it("agrees with the flags in the public demo too, with every counted table's case in the list", () => {

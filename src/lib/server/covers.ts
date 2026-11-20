@@ -57,8 +57,13 @@ export interface CoversCheck {
   walkIn: string[];
   rows: CoverRow[];
   total: CoverTotals & { value: number };
-  /** The same period before, for the comparison. */
-  before: CoverTotals;
+  /**
+   * The same period before, for the comparison. Null when that period had tables with no bill whose cases are not in this
+   * user's list (the public demo's shorter list): a comparison would rest on tables left out, so none is made.
+   */
+  before: CoverTotals | null;
+  /** Seated tables with no bill left out because their case is not in this user's list: in the period, the period before and the 30 day trend. */
+  unlisted: { period: number; before: number; trend: number };
   /** The last 30 closed days, whatever the period, for the trend and the per service chart. */
   trend: CoverDay[];
   /** Every seated table with no bill in the period, largest first. */
@@ -87,6 +92,14 @@ export function coversCheckFor(user: User, q: { days?: string | null; outlets?: 
   // A table with no bill whose case is not in this user's list (the public demo keeps a shorter one) is left out of the
   // check altogether, so every table the check counts as having no bill has its case to review, and the totals still add up.
   const inView = all.filter((b) => matches.get(b.id)?.kind !== "no_bill" || listed.has(`EX-${b.id}`));
+  const left = all.filter((b) => matches.get(b.id)?.kind === "no_bill" && !listed.has(`EX-${b.id}`));
+  const beforeFrom = addDays(from, -days);
+  const trendFrom = addDays(to, -29);
+  const unlisted = {
+    period: left.filter((b) => b.date >= from && b.date <= to).length,
+    before: left.filter((b) => b.date >= beforeFrom && b.date < from).length,
+    trend: left.filter((b) => b.date >= trendFrom && b.date <= to).length,
+  };
   const sumOf = (bs: Booking[]) => bs.reduce((t, b) => addBooking(t, b, matches.get(b.id)), emptyTotals());
 
   const valueOf = new Map(cases.map((e) => [e.id, e.exposure]));
@@ -99,9 +112,9 @@ export function coversCheckFor(user: User, q: { days?: string | null; outlets?: 
     }),
   );
   const total = { ...sumOf(period), value: rows.reduce((s, r) => s + r.value, 0) };
-  const before = sumOf(inView.filter((b) => b.date >= addDays(from, -days) && b.date < from));
+  const before = unlisted.before > 0 ? null : sumOf(inView.filter((b) => b.date >= beforeFrom && b.date < from));
 
-  const trend: CoverDay[] = eachDay({ from: addDays(to, -29), to }).map((date) => {
+  const trend: CoverDay[] = eachDay({ from: trendFrom, to }).map((date) => {
     const day: CoverDay = { date, booked: 0, billed: 0, noBill: 0, lunch: slice(), dinner: slice() };
     for (const b of inView) {
       if (b.date !== date || (b.service !== "lunch" && b.service !== "dinner")) continue;
@@ -125,5 +138,5 @@ export function coversCheckFor(user: User, q: { days?: string | null; outlets?: 
   const storyCase = cases.find((e) => e.id === COVERS_STORY_EXCEPTION_ID);
   const story = storyCase?.booking ? { ...storyCase.booking, caseId: storyCase.id, outletId: storyCase.outletId!, date: storyCase.date, value: storyCase.exposure } : null;
 
-  return { ok: true, days, from, to, bookable, walkIn, rows, total, before, trend, cases: rowsOut, story, rules: COVER_RULES };
+  return { ok: true, days, from, to, bookable, walkIn, rows, total, before, unlisted, trend, cases: rowsOut, story, rules: COVER_RULES };
 }

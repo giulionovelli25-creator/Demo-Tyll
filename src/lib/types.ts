@@ -323,6 +323,8 @@ export interface NearbyBill {
   openMin: number;
   closeMin: number;
   covers: number;
+  /** The booking this bill was already matched to, at its own table or as a party seated elsewhere. Unset when no booking has it. */
+  matchedTo?: string;
 }
 
 /** The facts behind a seated table with no bill. */
@@ -341,7 +343,7 @@ export interface BookingEvidence {
   to: number;
   /** Other bills at the same table that day, all outside the window. */
   atTable: NearbyBill[];
-  /** Bills opened elsewhere at the outlet near the seating time, none for a party of this size. */
+  /** Bills opened elsewhere at the outlet near the seating time. None of them is both free (no `matchedTo`) and for a party of this size. */
   nearby: NearbyBill[];
   /** The outlet's average spend per guest at this service over the days before, the basis of the estimate. */
   spendPerGuest: number;

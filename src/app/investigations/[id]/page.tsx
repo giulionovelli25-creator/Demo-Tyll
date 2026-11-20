@@ -18,7 +18,7 @@ import { assignablePeople, personName, useCtx, useInvestigations, useOrder, useP
 import { useDemo } from "@/lib/store";
 import { AMOUNT_OUTCOMES, GUEST_OUTCOME_HELP, OUTCOME_HELP, OUTCOME_LABEL, STATUS_LABEL, STOCK_OUTCOME_HELP } from "@/lib/labels";
 import type { BookingEvidence, BoughtUsedEvidence, MixEvidence, Outcome } from "@/lib/types";
-import { COVER_RULES, VIA_LABEL, fmtStay, partyRange } from "@/lib/domain/covers";
+import { COVER_RULES, VIA_LABEL, fmtStay, nearbyFact, sameParty } from "@/lib/domain/covers";
 import { cheapName, mixLabelById, mixValue } from "@/lib/domain/till-rules";
 import { DEMO_TODAY, addDays, fmtDate, fmtMoney, fmtQty, fmtTime } from "@/lib/util";
 import { isPastDeadline } from "@/lib/domain/deadline";
@@ -225,7 +225,8 @@ export default function InvestigationPage() {
         <div className="space-y-5 xl:sticky xl:top-24">
           <Panel title="Financial impact">
             <p className="text-[13px] text-steel">{closed ? "Value that was involved" : "Potential value involved"}</p>
-            <p className={cn("num mt-1 text-[30px] tracking-[-0.03em]", !closed && "text-warn")}>{money(inv.exposure)}</p>
+            <p className={cn("num mt-1 text-[30px] tracking-[-0.03em]", !closed && "text-warn")}>{booking ? fmtMoney(inv.exposure, property.currency) : money(inv.exposure)}</p>
+            {booking && <p className="mt-1 text-[13px] text-steel">An estimate at the spend per guest</p>}
             {closed ? (
               <dl className="mt-4 space-y-2 border-t border-hair pt-4 text-sm">
                 <div className="flex justify-between"><dt className="text-steel">Confirmed loss</dt><dd className={cn("num", inv.confirmedLoss > 0 && "text-neg")}>{money(inv.confirmedLoss)}</dd></div>
@@ -400,7 +401,8 @@ function MixWeek({ m, money }: { m: MixEvidence; money: (n: number) => string })
 
 /** The booking behind a seated table with no bill, and the bills around it. */
 function BookingFacts({ b, value, money }: { b: BookingEvidence; value: number; money: (n: number) => string }) {
-  const sizes = [...new Set(b.nearby.map((o) => o.covers))].sort((x, y) => x - y);
+  // Bills for a party of this size nearby that another booking already has: named, so the case never hides them.
+  const taken = b.nearby.filter((o) => o.matchedTo && sameParty(o.covers, b.party));
   const facts: [string, string][] = [
     ["Booking", `${b.bookingId}, for ${b.party} at ${fmtTime(b.bookedFor)}`],
     ["Made", `${VIA_LABEL[b.via].charAt(0).toUpperCase()}${VIA_LABEL[b.via].slice(1)}${b.room ? `, by the guest in room ${b.room}` : ""}`],
@@ -426,7 +428,17 @@ function BookingFacts({ b, value, money }: { b: BookingEvidence; value: number; 
           </ul>
         )}
       </div>
-      <p className="text-sm text-graphite">{b.nearby.length ? `${b.nearby.length} ${b.nearby.length === 1 ? "bill was" : "bills were"} opened elsewhere within ${COVER_RULES.moved} minutes of seating, for ${sizes.join(" or ")} ${sizes.length === 1 && sizes[0] === 1 ? "guest" : "guests"}: none for ${partyRange(b.party)}.` : `No bill was opened elsewhere within ${COVER_RULES.moved} minutes of seating.`}</p>
+      <p className="text-sm text-graphite">{nearbyFact(b)}</p>
+      {taken.length > 0 && (
+        <ul className="divide-y divide-hair rounded-2xl border border-line text-sm">
+          {taken.map((o) => (
+            <li key={o.orderId} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 px-4 py-2.5">
+              <span><Link prefetch={false} href={`/money/orders/${o.orderId}`} className="num underline decoration-line underline-offset-4 hover:decoration-ink">{o.orderId}</Link><span className="num ms-2 text-graphite">{`${o.table}, ${fmtTime(o.openMin)}, ${o.covers} ${o.covers === 1 ? "guest" : "guests"}`}</span></span>
+              <span className="text-[13px] text-steel">Already matched to booking {o.matchedTo}</span>
+            </li>
+          ))}
+        </ul>
+      )}
       <Note className="max-w-[80ch]">{`Valued at the spend per guest at this service over the ${COVER_RULES.spendDays} days before, ${money(b.spendPerGuest)}. The reservation book and the bills are simulated.`}</Note>
       <Link prefetch={false} href="/money?tab=covers" className="inline-block text-[13px] underline underline-offset-4">See booked against billed covers</Link>
     </div>
