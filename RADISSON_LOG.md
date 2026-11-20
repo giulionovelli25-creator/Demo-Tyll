@@ -135,3 +135,37 @@ The 15 s and 502/503 seen on the hosted demo cannot be reproduced locally. The l
 - **Privacy:** no waiter or till login is named or sent (tested: no staff id in the answer); coaching by person stays on Drinks per guest by waiter, for the managers allowed to see names. Roles without Revenue checks (chef, purchasing) are refused on the server.
 - **Cases:** the simulated sales already hold about one such table a day at Mercado; the 7 day window shows them. Planting extra bills would have moved every revenue figure the earlier work reconciled, so none were added.
 - **Tests:** 3 more.
+
+## 6. Guided path (done)
+Five steps in `components/shell/early-access.tsx`: critical stock and Order now (Head Chef, `/stock`); approval, sending and the supplier's answer (Purchasing, `/forecast?tab=approvals`); stock count review (F&B Director, `/stock?tab=takes`); menu from Simphony (Head Chef, `/stock?tab=recipes`); tonight's special (Head Chef, `/stock?tab=expiry`). The other stories (late delivery, drinks not billed, supplier invoices, flagged bills, Meal with no drink) stay one tap away from the Overview and Alerts.
+
+## 7. Checks
+
+| Check | Result |
+|---|---|
+| Type check | 0 errors |
+| Lint | 0 errors, the same 2 warnings as before this branch (`domain.test.ts`) |
+| Tests | 587 of 587 (the 538 before this branch, plus 49 in `radisson.test.ts`) |
+| Build | Passes (second run, after the known SecurityFatalError on the first) |
+| Crawl | 57 pages as Purchasing, F&B Director, Head Chef and Financial Controller: 0 console errors. Found and fixed: Expiring soon showed "could not load" to the controller, who cannot see batches; it is now hidden for roles without batch access |
+| Links | Every link each role sees, opened as that role: 44 + 83 + 45 + 80 = 252, 0 errors, 0 error pages |
+| Role switching | 24 of 24 checks |
+| Speed | 10 pages: ready in 117 to 229 ms, 9 to 12 calls, 0 duplicates |
+| Arabic | 13 new and nearby screens opened in Arabic; 195 untranslated lines found, the sentences translated; supplier contact names, email addresses and codes stay as written |
+| Screenshots | 46 in `radisson-screenshots/` (1440 and 375 wide; Purchasing, F&B Director, Head Chef; pages a role cannot open are left out) |
+| Flows run by hand | Order now (chef), approvals with a timed-out push and safe retry, supplier change accepted, recipe confirmed, tonight's special, stock take review |
+
+## Scores after
+
+| # | Criterion | Before | After | Why not 10 |
+|---|---|---|---|---|
+| 1 | Automatic purchasing | 6 | 9 | Sending and confirmations are simulated |
+| 2 | Simphony fit | 3 | 7 | Recorded samples only; field names unconfirmed without an Oracle sandbox |
+| 3 | Menu changes | 2 | 8 | One outlet (Mercado) is synced; suggestions are rule based and need the chef |
+| 4 | Valuation | 6 | 9 | Older dashboards still use the list price curve; Recipes and Stock levels use invoices |
+| 5 | Expiry | 3 | 8 | Batches depend on goods in recording use-by dates; the demo case is planted |
+| 6 | Stock counts | 7 | 9 | Likely reasons are fixed rules, not checked against other records beyond goods in |
+| 7 | Trust | 8 | 9 | Every new figure says simulated, demo connection or estimate |
+| 8 | Speed and reliability | 8 | 9 | The hosted cold start cannot be measured here |
+| 9 | Clarity | 9 | 9 | Recipes and costs now holds more sections |
+| 10 | Polish | 9 | 8 | Older order and supplier screens still mix in English names and terms; wide tables scroll sideways on a phone |
