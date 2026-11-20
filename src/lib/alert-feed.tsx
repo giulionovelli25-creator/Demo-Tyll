@@ -14,6 +14,7 @@ import { useApi, useCtx, useInvestigations, usePatterns, useView } from "./hooks
 import { useMonthPlan, useRequests } from "./plan-hooks";
 import { useExpiring } from "./procurement-hooks";
 import type { PourOut } from "./server/pour";
+import { useEmptiesVersion } from "./empties-version";
 import type { MonthPlanOut } from "./server/purchasing";
 import { fmtDate, fxRate } from "./util";
 
@@ -89,7 +90,9 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
   const planned = useMonthPlan(canOpen(user, "stock") && user.role !== "employee" ? pid : null);
   const plan = planned.data?.plan;
   const outlets = useMemo(() => sel.outletIds.filter((o) => outletById[o].propertyId === pid).join(","), [sel.outletIds, pid]);
-  const pourRes = useApi<{ pour: PourOut }>(canOpen(user, "money") && pid ? `/api/pour?propertyId=${pid}&outlets=${outlets}` : null);
+  // A new empty bottle scan changes Over pouring, so the figures are fetched again after one.
+  const emptiesVersion = useEmptiesVersion((s) => s.v);
+  const pourRes = useApi<{ pour: PourOut }>(canOpen(user, "money") && pid ? `/api/pour?propertyId=${pid}&outlets=${outlets}${emptiesVersion ? `&v=${emptiesVersion}` : ""}` : null);
   const pour = pourRes.data?.pour;
   const orders = useRequests().data?.requests;
   // Batches that normal use will not finish before they expire, in the next three days.

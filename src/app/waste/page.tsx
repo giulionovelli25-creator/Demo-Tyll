@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { BarList } from "@/components/charts";
 import { Section, useRemembered } from "@/components/disclosure";
 import { BreakageFlow, mayLogBreakage } from "@/components/shell/breakage";
+import { EmptyBottleFlow, mayLogEmpty } from "@/components/stock/empty-bottles";
 import { WasteAnalytics } from "@/components/stock/waste-analytics";
 import { WasteLogger } from "@/components/stock/waste-logger";
 import { EmptyState, OutletDot, PageHeader, Panel, Segmented, SummaryBar, TableWrap, Td, Th, rowClass, textLink } from "@/components/ui";
@@ -113,6 +114,12 @@ export default function WastePage() {
           {can(user, "stock.logWaste") && <p className="mt-3 text-center"><Link href="/waste?log=1" className={textLink}>Log a prepared dish or add a note</Link></p>}
         </Panel>
       ) : <EmptyState title="Your role reads waste, it does not log it">Kitchen, bar and outlet teams log waste here. What they logged is below.</EmptyState>}
+
+      {mayLogEmpty(user) && (
+        <Panel title="Empty wine and spirit bottles" description="Scan or tap each empty before it goes in the bin. It is not waste: Over pouring counts it as a bottle used.">
+          <EmptyBottleFlow wide />
+        </Panel>
+      )}
 
       {filter && behind && (
         <section id="waste-records" className="scroll-mt-24">

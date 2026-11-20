@@ -73,7 +73,16 @@ const pourFactor = (outletId: string, shift: Shift, family: PourFamily, date: st
   return 1 + (base - 1 + weekend) * (family === "spirits" ? 0.6 : 1) * lossLevel(date);
 };
 
-export interface PourEntry { date: string; outletId: string; shift: Shift; skuId: string; sold: number; ml: number }
+export interface PourEntry {
+  date: string; outletId: string; shift: Shift; skuId: string; sold: number; ml: number;
+  /**
+   * Empty bottles scanned in this shift, set only where the outlet scans its empties (lib/domain/empties.ts). Then the
+   * shift's bottles are the empties plus `part`, the change in the open bottle counted at close, instead of the simulated bottles.
+   */
+  scanned?: number;
+  /** Change in the open (part) bottle over the shift, in bottles, from the count at close. Simulated. */
+  part?: number;
+}
 
 const cache = new WeakMap<object, PourEntry[]>();
 
@@ -125,7 +134,10 @@ export function pourLog(orders: readonly Order[]): PourEntry[] {
 }
 
 export interface PourFigures {
+  /** Bottles used: empty bottle scans where an outlet scans them, simulated bottles opened elsewhere. */
   opened: number;
+  /** How many of those bottles come from empty bottle scans. The rest are simulated. */
+  scanned: number;
   sold: number;
   expected: number;
   /** Glasses a bottle gave, on average. Null when no bottle was opened. */
@@ -139,21 +151,27 @@ export interface PourFigures {
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
-/** Bottles are worked out per label, outlet and shift, so tables add up whichever way they are cut. */
+/**
+ * Bottles are worked out per label, outlet and shift, so tables add up whichever way they are cut.
+ * A shift whose empties were scanned counts the empties plus the change in the open bottle at close; any other shift
+ * counts the simulated bottles opened. Either way to a tenth of a bottle.
+ */
 export function figures(entries: readonly PourEntry[], minBottles = POUR_RULES.minBottles): PourFigures {
-  const groups = new Map<string, { sku: PourSku; outletId: string; sold: number; ml: number }>();
+  const groups = new Map<string, { sku: PourSku; outletId: string; sold: number; ml: number; scanned: number }>();
   for (const e of entries) {
     const k = `${e.outletId}|${e.skuId}|${e.shift}`;
-    const g = groups.get(k) ?? { sku: skuById[e.skuId], outletId: e.outletId, sold: 0, ml: 0 };
+    const g = groups.get(k) ?? { sku: skuById[e.skuId], outletId: e.outletId, sold: 0, ml: 0, scanned: 0 };
     g.sold += e.sold;
-    g.ml += e.ml;
+    if (e.scanned === undefined) g.ml += e.ml;
+    else { g.scanned += e.scanned; g.ml += (e.part ?? 0) * g.sku.bottleMl; }
     groups.set(k, g);
   }
-  let opened = 0, sold = 0, expected = 0, value = 0;
+  let opened = 0, scanned = 0, sold = 0, expected = 0, value = 0;
   for (const g of groups.values()) {
-    const bottles = Math.round(g.ml / g.sku.bottleMl / g.sku.countStep) * g.sku.countStep;
+    const bottles = Math.round(g.ml / g.sku.bottleMl / g.sku.countStep) * g.sku.countStep + g.scanned;
     const exp = Math.round(bottles * perBottle(g.sku));
     opened += bottles;
+    scanned += g.scanned;
     sold += g.sold;
     expected += exp;
     value += (exp - g.sold) * menuPriceAt(g.sku.itemId, g.outletId, DEMO_TODAY) * g.sku.priceShare;
@@ -162,7 +180,7 @@ export function figures(entries: readonly PourEntry[], minBottles = POUR_RULES.m
   const per = opened > 0 ? expected / opened : 0;
   const yieldPer = opened > 0 ? sold / opened : null;
   return {
-    opened, sold, expected, yieldPer, perBottle: round1(per), gap: Math.max(0, expected - sold), gapValue: Math.max(0, Math.round(value)),
+    opened, scanned, sold, expected, yieldPer, perBottle: round1(per), gap: Math.max(0, expected - sold), gapValue: Math.max(0, Math.round(value)),
     flagged: opened >= minBottles && yieldPer !== null && yieldPer < per * POUR_RULES.threshold,
   };
 }

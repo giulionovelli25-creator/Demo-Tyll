@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Section } from "@/components/disclosure";
 import { MissingDrinks, useMissingDrinks } from "@/components/drinks/missing";
+import { EmptyScans, emptiesSummary } from "@/components/drinks/empty-scans";
 import { PatternDetail, PourByItem, PourPatterns, PourWhere, WhoWasOn } from "@/components/money/pour-control";
 import { PageHeader, Panel, Skeleton, SummaryBar, linkButton } from "@/components/ui";
 import { StripTrend } from "@/components/charts";
@@ -23,8 +24,12 @@ export default function DrinksPage() {
   const { sel, money } = useView();
   const { pour } = useAlertFeed();
   const missing = useMissingDrinks();
-  const askedForMissing = useSearchParams().get("tab") === "missing";
+  const params = useSearchParams();
+  const askedForMissing = params.get("tab") === "missing";
+  // A link can open the empty bottle scans, such as the one under the scan flow on Waste and breakage.
+  const askedForEmpties = params.get("open") === "empties";
   useEffect(() => { if (askedForMissing) document.getElementById("missing")?.scrollIntoView({ block: "center" }); }, [askedForMissing]);
+  useEffect(() => { if (askedForEmpties) document.getElementById("sec-empties")?.scrollIntoView({ block: "start" }); }, [askedForEmpties]);
   const rate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
   const line = (family: "wine" | "spirits", noun: string) => pour ? `${pour[family].rows.length} ${family === "wine" ? "wines" : "spirits"}. ${fmtNum(pour[family].totals.week.gap)} ${noun} not billed this week, ${fmtMoney(pour[family].totals.week.gapValue, pour.currency as Currency)}` : "Loading";
   const below = pour ? pour.wine.outlets.reduce((n, o) => n + SHIFTS.filter((s) => o.shifts[s.id].week.flagged).length, 0) : 0;
@@ -37,10 +42,12 @@ export default function DrinksPage() {
   const patterns = (pour?.wine.flags.length ?? 0) + (pour?.spirits.flags.length ?? 0);
   const daily = (pour?.wine.daily ?? []).map((d, i) => ({ date: d.date, value: Math.round((d.gapValue + (pour?.spirits.daily[i]?.gapValue ?? 0)) * rate) }));
   const [opened, setOpened] = useState<string | null>(null);
+  const scanning = (pour?.empties.outlets ?? []).filter((o) => o.from).map((o) => outletById[o.outletId].name);
+  const source = scanning.length ? `Bottles come from empty bottle scans at ${scanning.join(" and ")}, and are simulated elsewhere.` : "Bottles opened are simulated.";
   const go = (id: string) => { setOpened(id); requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: "start", behavior: "smooth" })); };
   return (
     <div className="space-y-6">
-      <PageHeader title="Over pouring" question="Is the bar over pouring, and are any drinks missing?" lead="Bottles opened are simulated. Simulated data." />
+      <PageHeader title="Over pouring" question="Is the bar over pouring, and are any drinks missing?" lead={`${source} Simulated data.`} />
       <SummaryBar
         items={[
           { label: "Not billed this week", value: local(weekValue), tone: "money", compare: versus(weekValue, lastWeekValue, "down"), onClick: () => go("sec-wine") },
@@ -54,7 +61,7 @@ export default function DrinksPage() {
             { id: "wine", label: "Wine", axis: "main", format: money, points: (pour?.wine.daily ?? []).map((d) => ({ date: d.date, value: Math.round(d.gapValue * rate) })), goodWhen: "down" as const, explain: "Wine by the glass." },
             { id: "spirits", label: "Spirits", axis: "main", format: money, points: (pour?.spirits.daily ?? []).map((d) => ({ date: d.date, value: Math.round(d.gapValue * rate) })), goodWhen: "down" as const, explain: "Spirits by the measure." },
             ...(["day", "evening"] as const).map((sh) => ({ id: sh, label: `${sh[0].toUpperCase()}${sh.slice(1)} shift`, axis: "main", goodWhen: "down" as const, format: money, points: (pour?.wine.daily ?? []).map((d, i) => ({ date: d.date, value: Math.round((d.shifts[sh] + (pour?.spirits.daily[i]?.shifts[sh] ?? 0)) * rate) })), explain: sh === "day" ? "Until 5 PM." : sh === "evening" ? "5 PM to 10 PM." : "After 10 PM." })),
-          ]} summary={`Wine and spirits poured but not billed, by selling value, per day. This week ${local(weekValue)}.`} note="bottles opened simulated" />}
+          ]} summary={`Wine and spirits poured but not billed, by selling value, per day. This week ${local(weekValue)}.`} note={scanning.length ? "bottles from scans where an outlet scans, simulated elsewhere" : "bottles opened simulated"} />}
         action={missing.unexplained[0] ? <Link href={`/stock?tab=where&period=${missing.unexplained[0].p.id}`} className={linkButton("primary")}>Check the largest gap</Link> : undefined}
       />
 
@@ -76,7 +83,7 @@ export default function DrinksPage() {
                       <div className="grid grid-cols-[96px_1fr_auto] items-center gap-3">
                         <dt className="text-steel">Expected</dt>
                         <dd className="h-2.5 rounded-full bg-hair" aria-hidden><span className="block h-full rounded-full bg-accent-ink" style={{ width: `${(f.figures.expected / max) * 100}%` }} /></dd>
-                        <dd className="num text-end text-ink">{fmtNum(f.figures.expected)} {noun} from {fmtNum(f.figures.opened, 1)} bottles</dd>
+                        <dd className="num text-end text-ink">{fmtNum(f.figures.expected)} {noun} from {fmtNum(f.figures.opened, 1)} bottles{f.figures.scanned > 0 ? `, ${fmtNum(f.figures.scanned)} scanned empty` : ""}</dd>
                       </div>
                       <div className="grid grid-cols-[96px_1fr_auto] items-center gap-3">
                         <dt className="text-steel">Billed</dt>
@@ -94,6 +101,10 @@ export default function DrinksPage() {
         </Section>
       )}
 
+      <div id="sec-empties" className="scroll-mt-24">
+        <Section id="drinks.empties" forceOpen={askedForEmpties || opened === "sec-empties"} title="Empty bottle scans" summary={emptiesSummary(pour?.empties)} flush><EmptyScans openFirst={askedForEmpties} onHelp={() => go("sec-patterns")} /></Section>
+      </div>
+
       {pour?.staff && pour.staff.length > 0 && (
         <Section id="drinks.who" title="Who was on, day by day" summary={(() => { const lead = pour.staff.flatMap((v) => v.people.filter((p) => p.z >= 3).map((p) => `${p.name} at ${outletById[v.outletId].name}`))[0]; return lead ? `${lead} stands out against the rota. Chart and table inside.` : "Nobody stands out against the rota."; })()} flush>
           <p className="px-4 pt-4 text-[13px] text-steel sm:px-6">What was not billed each day, set against the rota. Hover a day to see who was on; choose a person to see their days.</p>
@@ -108,7 +119,7 @@ export default function DrinksPage() {
       <div id="sec-spirits" className="scroll-mt-24"><Section id="drinks.spirits" forceOpen={opened === "sec-spirits"} title="Spirits" summary={line("spirits", "measures")} flush><PourByItem family="spirits" /></Section></div>
       <Section id="drinks.where" title="Where and when" summary={`By outlet and shift, with no names. ${below} wine ${below === 1 ? "shift" : "shifts"} below the threshold this week`} flush><PourWhere /></Section>
       <div id="sec-patterns" className="scroll-mt-24"><Section id="drinks.patterns" forceOpen={opened === "sec-patterns"} title="All patterns" summary={`${pour?.wine.flags.length ?? 0} wine and ${pour?.spirits.flags.length ?? 0} spirit patterns over the last 4 weeks`} flush><PourPatterns /></Section></div>
-      <p className="px-1 text-xs text-steel">Glasses sold come from the till. Bottles opened are simulated in this demo, because the till does not record them, and the one house wine is shared across labels. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.</p>
+      <p className="px-1 text-xs text-steel">Glasses sold come from the till. Bottles come from the empty bottle scans where an outlet scans every empty before it goes in the bin: the empties scanned plus the open bottle counted at close. An outlet that starts scanning today counts its scans from tomorrow, so a part day is never read as a whole one. Elsewhere bottles opened are simulated, because the till does not record them. In this demo the scans are simulated too, and the one house wine is shared across labels. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.</p>
     </div>
   );
 }

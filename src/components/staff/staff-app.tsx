@@ -3,8 +3,9 @@
 // the management screens; each person sees only the actions their job needs.
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, BedDouble, Check, ChefHat, ClipboardCheck, ConciergeBell, GlassWater, Luggage, Minus, PackageCheck, Plus, Trash2, type LucideIcon } from "lucide-react";
+import { ArrowLeft, BedDouble, Check, ChefHat, ClipboardCheck, ConciergeBell, GlassWater, Luggage, Minus, PackageCheck, Plus, Trash2, Wine, type LucideIcon } from "lucide-react";
 import { BreakageFlow } from "@/components/shell/breakage";
+import { EmptyBottleFlow, mayLogEmpty } from "@/components/stock/empty-bottles";
 import { useMemo, useState, type ReactNode } from "react";
 import { BellTaskView } from "@/components/guest/bell";
 import { RoomDetail } from "@/components/guest/rooms";
@@ -21,7 +22,7 @@ import { useShared } from "@/lib/shared-stock";
 import type { PurchaseRequest, ServiceRequest, User, WasteReason } from "@/lib/types";
 import { DEMO_TODAY, fmtMoney, fmtQty } from "@/lib/util";
 
-type Do = "waste" | "breakage" | "prep" | "rooms" | "bell" | "requests" | "count" | "receive";
+type Do = "waste" | "breakage" | "bottle" | "prep" | "rooms" | "bell" | "requests" | "count" | "receive";
 
 interface Action { id: Do; label: string; icon: LucideIcon }
 
@@ -31,6 +32,7 @@ export function staffActions(user: User): Action[] {
   return ([
     can(user, "stock.logWaste") && outlets && { id: "waste", label: "Log waste", icon: Trash2 },
     can(user, "stock.logWaste") && outlets && { id: "breakage", label: "Log breakage", icon: GlassWater },
+    mayLogEmpty(user) && { id: "bottle", label: "Empty bottle", icon: Wine },
     can(user, "prep.complete") && user.role === "employee" && outlets && { id: "prep", label: "Prep tasks", icon: ChefHat },
     can(user, "hk.clean") && user.deptId === "lis-hk" && { id: "rooms", label: "My rooms", icon: BedDouble },
     can(user, "bell.task") && user.deptId === "lis-bell" && { id: "bell", label: "Luggage tasks", icon: Luggage },
@@ -61,6 +63,7 @@ export function StaffApp() {
   const allowed = staffActions(user).map((a) => a.id);
   if (what && !allowed.includes(what)) return <Screen title="Not available"><EmptyState title="This action is not part of your job in Tyll." /></Screen>;
   if (what === "breakage") return <Screen title="Log breakage"><BreakageFlow only="inventory" onDone={() => undefined} /></Screen>;
+  if (what === "bottle") return <Screen title="Empty bottle"><p className="-mt-2 text-[15px] text-steel">Before it goes in the bin. An empty is not waste: it tells Over pouring a bottle was used.</p><EmptyBottleFlow /></Screen>;
   if (what === "waste") return <QuickLog kind={what} />;
   if (what === "prep") return <PrepTasks />;
   if (what === "rooms") return params.get("room") ? <RoomDetail roomId={params.get("room")!} back="/staff?do=rooms" /> : <MyRoomsMobile />;

@@ -824,6 +824,11 @@
 "Bicchieri da birra",
 "كؤوس بيرة"
 ],
+"Before it goes in the bin. An empty is not waste: it tells Over pouring a bottle was used.": [
+"Bevor sie in den Müll kommt. Eine leere Flasche ist kein Abfall: Sie zeigt Überausschank, dass eine Flasche verbraucht wurde.",
+"Prima di buttarla. Un vuoto non è uno spreco: dice a Mescita eccessiva che una bottiglia è stata usata.",
+"قبل رميها. الزجاجة الفارغة ليست هدرًا: إنها تخبر صفحة السكب الزائد أن زجاجة قد استُخدمت."
+],
 "Before real customer use": [
 "Vor dem Einsatz bei echten Kunden",
 "Prima dell'uso con clienti reali",
@@ -913,6 +918,21 @@
 "Beide Artikel gehen in die Zubereitung",
 "Entrambi gli articoli vanno in preparazione",
 "يُرسل الصنفان للتحضير"
+],
+"Bottles come from": [
+"Flaschen stammen aus",
+"Le bottiglie vengono da",
+"مصدر الزجاجات"
+],
+"Bottles come from empty bottle scans at {0} and {1}, and are simulated elsewhere. Simulated data.": [
+"Flaschen stammen aus Scans leerer Flaschen bei {0} und {1}, anderswo sind sie simuliert. Simulierte Daten.",
+"Le bottiglie vengono dalle scansioni dei vuoti a {0} e {1}, altrove sono simulate. Dati simulati.",
+"الزجاجات مأخوذة من مسح الزجاجات الفارغة في {0} و{1}، ومحاكاة في غيرهما. بيانات محاكاة."
+],
+"Bottles come from empty bottle scans at {0}, and are simulated elsewhere. Simulated data.": [
+"Flaschen stammen aus Scans leerer Flaschen bei {0}, anderswo sind sie simuliert. Simulierte Daten.",
+"Le bottiglie vengono dalle scansioni dei vuoti a {0}, altrove sono simulate. Dati simulati.",
+"الزجاجات مأخوذة من مسح الزجاجات الفارغة في {0}، ومحاكاة في غيره. بيانات محاكاة."
 ],
 "Bottles opened": [
 "Geöffnete Flaschen",
@@ -1008,6 +1028,11 @@
 "Bruch oder Verschüttetes",
 "Rottura o versamento",
 "كسر أو انسكاب"
+],
+"Breakage this week": [
+"Bruch diese Woche",
+"Rotture questa settimana",
+"الكسر هذا الأسبوع"
 ],
 "Breakage, glass and plates": [
 "Bruch, Gläser und Teller",
@@ -1498,6 +1523,11 @@
 "Outlet und Abteilung wählen",
 "Scegli punto vendita e reparto",
 "اختر المنفذ والقسم"
+],
+"Choose the bottle.": [
+"Wählen Sie die Flasche.",
+"Scegli la bottiglia.",
+"اختر الزجاجة."
 ],
 "Cleaning chemicals": [
 "Reinigungsmittel",
@@ -2584,6 +2614,31 @@
 "Smeraldo",
 "زمردي"
 ],
+"Empties today": [
+"Leere Flaschen heute",
+"Vuoti oggi",
+"الزجاجات الفارغة اليوم"
+],
+"Empty bottle": [
+"Leere Flasche",
+"Bottiglia vuota",
+"زجاجة فارغة"
+],
+"Empty bottle logged: {0}, {1}. Over pouring counts it.": [
+"Leere Flasche erfasst: {0}, {1}. Überausschank zählt sie.",
+"Bottiglia vuota registrata: {0}, {1}. Mescita eccessiva la conta.",
+"تم تسجيل زجاجة فارغة: {0}، {1}. صفحة السكب الزائد تحسبها."
+],
+"Empty bottle scans": [
+"Scans leerer Flaschen",
+"Scansioni delle bottiglie vuote",
+"مسح الزجاجات الفارغة"
+],
+"Empty wine and spirit bottles": [
+"Leere Wein- und Spirituosenflaschen",
+"Bottiglie vuote di vino e distillati",
+"زجاجات النبيذ والمشروبات الروحية الفارغة"
+],
 "End of shift checks, voids and comps, bar counts": [
 "Schichtabschluss, Stornos und Einladungen, Barzählungen",
 "Controlli di fine turno, storni e omaggi, conteggi del bar",
@@ -2763,6 +2818,11 @@
 "Jede Zählung und ihre Prüfung",
 "Ogni conteggio e la sua revisione",
 "كل جرد ومراجعته"
+],
+"Every item pours to standard": [
+"Jeder Artikel wird nach Standard ausgeschenkt",
+"Ogni articolo è versato a standard",
+"كل صنف يُسكب حسب المعيار"
 ],
 "Every item was used about as fast as it came in.": [
 "Jeder Artikel wurde etwa so schnell verbraucht, wie er hereinkam.",
@@ -3034,6 +3094,11 @@
 "Ordini segnalati ogni {0} ordini, per confrontare equamente punti vendita affollati e tranquilli.",
 "الطلبات المشار إليها لكل {0} طلب، لمقارنة عادلة بين المنافذ المزدحمة والهادئة."
 ],
+"Flagged patterns": [
+"Markierte Muster",
+"Schemi segnalati",
+"أنماط مُعلَّمة"
+],
 "Flagged postings": [
 "Markierte Buchungen",
 "Registrazioni segnalate",
@@ -3299,6 +3364,11 @@
 "I calici venduti vengono dal POS. Le bottiglie aperte sono simulate in questa demo, perché il POS non le registra, e l'unico vino della casa è qui diviso su più etichette. Una resa bassa di solito indica versamenti generosi, calici gratuiti non registrati o rotture. Controlla prima dosi e misure. Non dice nulla sulle singole persone.",
 "الكؤوس المبيعة من نظام نقاط البيع. والزجاجات المفتوحة محاكاة هنا لأن النظام لا يسجلها، ونبيذ البيت الوحيد موزع هنا على عدة علامات. يعني الناتج المنخفض عادة سكبًا سخيًا أو كؤوسًا مجانية غير مسجلة أو كسرًا. تحقق أولًا من حجم السكب والمقاييس. ولا يقول شيئًا عن أي شخص."
 ],
+"Glasses sold come from the till. Bottles come from the empty bottle scans where an outlet scans every empty before it goes in the bin: the empties scanned plus the open bottle counted at close. An outlet that starts scanning today counts its scans from tomorrow, so a part day is never read as a whole one. Elsewhere bottles opened are simulated, because the till does not record them. In this demo the scans are simulated too, and the one house wine is shared across labels. A gap means generous pours, glasses not rung up or breakage. Tyll never says which.": [
+"Verkaufte Gläser stammen aus der Kasse. Flaschen stammen aus den Scans leerer Flaschen, wo ein Outlet jede leere Flasche vor dem Wegwerfen scannt: die gescannten leeren Flaschen plus die offene Flasche, gezählt bei Schichtende. Ein Outlet, das heute mit dem Scannen beginnt, zählt seine Scans ab morgen, damit ein halber Tag nie als ganzer gilt. Anderswo sind geöffnete Flaschen simuliert, weil die Kasse sie nicht erfasst. In dieser Demo sind auch die Scans simuliert, und der eine Hauswein wird auf mehrere Etiketten verteilt. Eine Lücke bedeutet großzügiges Einschenken, nicht gebuchte Gläser oder Bruch. Tyll sagt nie, was davon.",
+"I bicchieri venduti vengono dalla cassa. Le bottiglie vengono dalle scansioni dei vuoti dove un punto vendita scansiona ogni vuoto prima di buttarlo: i vuoti scansionati più la bottiglia aperta contata a fine turno. Un punto vendita che inizia a scansionare oggi conta le scansioni da domani, così una giornata parziale non vale mai come intera. Altrove le bottiglie aperte sono simulate, perché la cassa non le registra. In questa demo anche le scansioni sono simulate, e l'unico vino della casa è diviso tra più etichette. Uno scarto indica versate abbondanti, bicchieri non battuti o rotture. Tyll non dice mai quale.",
+"الكؤوس المبيعة تأتي من نظام نقاط البيع. الزجاجات تأتي من مسح الزجاجات الفارغة حيث يمسح المنفذ كل زجاجة فارغة قبل رميها: الزجاجات الفارغة الممسوحة مضافًا إليها الزجاجة المفتوحة المعدودة عند الإغلاق. المنفذ الذي يبدأ المسح اليوم يحتسب مسوحاته من الغد، حتى لا يُقرأ جزء من يوم كيوم كامل. في غير ذلك الزجاجات المفتوحة محاكاة، لأن نظام نقاط البيع لا يسجلها. في هذا العرض المسوحات محاكاة أيضًا، ونبيذ البيت الواحد موزع على عدة ملصقات. الفجوة تعني سكبًا سخيًا أو كؤوسًا غير مسجلة أو كسرًا. Tyll لا يقول أبدًا أيها."
+],
 "Glassware": [
 "Gläser",
 "Bicchieri",
@@ -3458,6 +3528,11 @@
 "Küchenchef",
 "Capo chef",
 "رئيس الطهاة"
+],
+"Hide the scans": [
+"Scans ausblenden",
+"Nascondi le scansioni",
+"إخفاء المسوحات"
 ],
 "High": [
 "Hoch",
@@ -3623,6 +3698,11 @@
 "So prüfen Sie:",
 "Come verificare:",
 "كيفية التحقق:"
+],
+"How to help": [
+"Wie man hilft",
+"Come aiutare",
+"كيف تساعد"
 ],
 "How was it found?": [
 "Wie wurde es festgestellt?",
@@ -4129,6 +4209,11 @@
 "Ultimi {0} giorni, nessuna nemmeno la settimana scorsa.",
 "آخر {0} أيام، ولا شيء الأسبوع الماضي أيضًا."
 ],
+"Last {0} days, scanned shifts only, largest first.": [
+"Letzte {0} Tage, nur gescannte Schichten, größte zuerst.",
+"Ultimi {0} giorni, solo turni scansionati, i maggiori prima.",
+"آخر {0} يومًا، الورديات الممسوحة فقط، الأكبر أولًا."
+],
 "Last {0} days, up {1}. {2} profit, estimate.": [
 "Letzte {0} Tage, {1} mehr. {2} Gewinn, Schätzung.",
 "Ultimi {0} giorni, in aumento del {1}. {2} di profitto, stima.",
@@ -4518,6 +4603,11 @@
 "Managementbericht, {0}, heute bis {1}. Verglichen mit dem Vortag zur selben Zeit. Beträge in Euro.",
 "Report direzionale, {0}, oggi fino alle {1}. Confronto con il giorno precedente alla stessa ora. Importi in euro.",
 "تقرير الإدارة، {0}، اليوم حتى {1}. مقارنة باليوم السابق في الوقت نفسه. المبالغ باليورو."
+],
+"Manager": [
+"Manager",
+"Manager",
+"مدير"
 ],
 "Manager review:": [
 "Prüfung durch die Leitung:",
@@ -5064,6 +5154,11 @@
 "No",
 "لا"
 ],
+"No bottle has the barcode {0}. Tap the bottle instead.": [
+"Keine Flasche hat den Barcode {0}. Tippen Sie stattdessen auf die Flasche.",
+"Nessuna bottiglia ha il codice a barre {0}. Tocca invece la bottiglia.",
+"لا توجد زجاجة بالباركود {0}. اضغط على الزجاجة بدلًا من ذلك."
+],
 "No count of this item yet. A count confirms the gap.": [
 "Dieser Artikel wurde noch nicht gezählt. Eine Zählung bestätigt die Lücke.",
 "Questo articolo non è ancora stato contato. Un conteggio conferma la differenza.",
@@ -5118,6 +5213,11 @@
 "Keine offenen Bestellungen",
 "Nessun ordine aperto",
 "لا توجد طلبات مفتوحة"
+],
+"No outlet scans its empties yet, so every bottle here is simulated.": [
+"Noch kein Outlet scannt seine leeren Flaschen, daher ist jede Flasche hier simuliert.",
+"Nessun punto vendita scansiona ancora i vuoti, quindi ogni bottiglia qui è simulata.",
+"لا يمسح أي منفذ زجاجاته الفارغة بعد، لذا كل زجاجة هنا محاكاة."
 ],
 "No reason, no approval": [
 "Kein Grund, keine Freigabe",
@@ -5189,10 +5289,20 @@
 "Nessuno in questo periodo.",
 "لا شيء في هذه الفترة."
 ],
+"None last week either": [
+"Auch letzte Woche keine",
+"Nessuno anche la settimana scorsa",
+"لا شيء الأسبوع الماضي أيضًا"
+],
 "Not accounted for": [
 "Nicht erklärt",
 "Non giustificato",
 "غير مُفسَّر"
+],
+"Not billed this week": [
+"Diese Woche nicht abgerechnet",
+"Non fatturato questa settimana",
+"غير مُفوتر هذا الأسبوع"
 ],
 "Not billed: today {0} ({1} glasses), this week {2} ({3} glasses), this month {4} ({5} glasses).": [
 "Nicht berechnet: heute {0} ({1} Gläser), diese Woche {2} ({3} Gläser), diesen Monat {4} ({5} Gläser).",
@@ -5449,6 +5559,11 @@
 "Olio d'oliva",
 "زيت زيتون"
 ],
+"On every scanned shift the empties match the glasses sold.": [
+"In jeder gescannten Schicht passen die leeren Flaschen zu den verkauften Gläsern.",
+"In ogni turno scansionato i vuoti corrispondono ai bicchieri venduti.",
+"في كل وردية ممسوحة تتطابق الزجاجات الفارغة مع الكؤوس المبيعة."
+],
 "On hand": [
 "Vorhanden",
 "Disponibile",
@@ -5489,6 +5604,11 @@
 "Un giorno",
 "يوم واحد"
 ],
+"One other outlet is simulated.": [
+"Ein weiteres Outlet ist simuliert.",
+"Un altro punto vendita è simulato.",
+"منفذ آخر محاكاة."
+],
 "One thing needs you today.": [
 "Eine Sache braucht heute Ihre Aufmerksamkeit.",
 "Una cosa richiede la tua attenzione oggi.",
@@ -5518,6 +5638,11 @@
 "Nur die gelieferte Menge wird zum geschätzten Bestand addiert. Lieferungen und Rechnungen sind simuliert. Eine echte Version läse sie aus dem Einkaufssystem.",
 "Solo la quantità consegnata si aggiunge alle scorte stimate. Consegne e fatture sono simulate. Una versione reale le leggerebbe dal sistema acquisti.",
 "تُضاف الكمية المسلّمة فقط إلى المخزون التقديري. التوريدات والفواتير محاكاة. وستقرأها النسخة الفعلية من نظام المشتريات."
+],
+"Only today's scans can be taken back.": [
+"Nur heutige Scans können zurückgenommen werden.",
+"Si possono annullare solo le scansioni di oggi.",
+"يمكن التراجع عن مسوحات اليوم فقط."
 ],
 "Only where it was removed, voided or given free": [
 "Nur wo es entfernt, storniert oder gratis gegeben wurde",
@@ -5598,6 +5723,16 @@
 "Bestand öffnen",
 "Apri Scorte",
 "فتح المخزون"
+],
+"Open Value not billed per day, last {0} days larger, with more lines to compare": [
+"Nicht abgerechneten Wert pro Tag, letzte {0} Tage, größer öffnen, mit mehr Linien zum Vergleich",
+"Apri Valore non fatturato al giorno, ultimi {0} giorni più grande, con più linee da confrontare",
+"افتح القيمة غير المفوترة يوميًا، آخر {0} يومًا بحجم أكبر مع خطوط أكثر للمقارنة"
+],
+"Open Waste and breakage per day, last {0} days larger, with more lines to compare": [
+"Abfall und Bruch pro Tag, letzte {0} Tage, größer öffnen, mit mehr Linien zum Vergleich",
+"Apri Scarti e rotture al giorno, ultimi {0} giorni più grande, con più linee da confrontare",
+"افتح الهدر والكسر يوميًا، آخر {0} يومًا بحجم أكبر مع خطوط أكثر للمقارنة"
 ],
 "Open a case": [
 "Fall eröffnen",
@@ -5738,6 +5873,11 @@
 "Oder eine Signaturfarbe überall",
 "O un colore distintivo ovunque",
 "أو لون مميز واحد في كل مكان"
+],
+"Or tap the bottle. Tapping saves it.": [
+"Oder tippen Sie auf die Flasche. Antippen speichert sie.",
+"Oppure tocca la bottiglia. Toccarla la salva.",
+"أو اضغط على الزجاجة. الضغط يحفظها."
 ],
 "Oranges": [
 "Orangen",
@@ -5994,6 +6134,11 @@
 "Panoramica, demo Tyll",
 "نظرة عامة، عرض Tyll"
 ],
+"Owner": [
+"Inhaber",
+"Titolare",
+"المالك"
+],
 "PO price": [
 "Bestellpreis",
 "Prezzo d'ordine",
@@ -6153,6 +6298,11 @@
 "Kassensystem",
 "Punto cassa",
 "نقطة البيع"
+],
+"Point the camera at the bottle's barcode.": [
+"Richten Sie die Kamera auf den Barcode der Flasche.",
+"Inquadra il codice a barre della bottiglia.",
+"وجّه الكاميرا إلى باركود الزجاجة."
 ],
 "Pool bar": [
 "Poolbar",
@@ -7474,6 +7624,11 @@
 "Salvato nei registri dell'hotel con il tuo nome. Solo i responsabili che seguono il team vedono i nomi in questa pagina.",
 "حُفظ في سجلات الفندق باسمك. لا يرى الأسماء في هذه الصفحة إلا المديرون الذين يوجّهون الفريق."
 ],
+"Saved to today's log straight away. Lost today: {0}. Simulated data.": [
+"Sofort im heutigen Protokoll gespeichert. Heute verloren: {0}. Simulierte Daten.",
+"Salvato subito nel registro di oggi. Perso oggi: {0}. Dati simulati.",
+"يُحفظ في سجل اليوم فورًا. الخسارة اليوم: {0}. بيانات محاكاة."
+],
 "Saved to today's log straight away. Simulated data.": [
 "Sofort im heutigen Protokoll gespeichert. Simulierte Daten.",
 "Salvato subito nel registro di oggi. Dati simulati.",
@@ -7499,10 +7654,30 @@
 "Salvataggio…",
 "جارٍ الحفظ…"
 ],
+"Scan or tap each empty before it goes in the bin. It is not waste: Over pouring counts it as a bottle used.": [
+"Scannen oder tippen Sie jede leere Flasche an, bevor sie in den Müll kommt. Das ist kein Abfall: Überausschank zählt sie als verbrauchte Flasche.",
+"Scansiona o tocca ogni vuoto prima di buttarlo. Non è uno spreco: Mescita eccessiva lo conta come bottiglia usata.",
+"امسح كل زجاجة فارغة أو اضغط عليها قبل رميها. هذا ليس هدرًا: صفحة السكب الزائد تحسبها زجاجة مستخدمة."
+],
 "Scan or type a barcode": [
 "Barcode scannen oder eingeben",
 "Scansiona o digita un codice a barre",
 "امسح الباركود أو اكتبه"
+],
+"Scan with the camera": [
+"Mit der Kamera scannen",
+"Scansiona con la fotocamera",
+"امسح بالكاميرا"
+],
+"Scans count from tomorrow": [
+"Scans zählen ab morgen",
+"Le scansioni contano da domani",
+"المسوحات تُحتسب من الغد"
+],
+"Scans since {0}": [
+"Scans seit {0}",
+"Scansioni dal {0}",
+"مسح منذ {0}"
 ],
 "Sea bass fillet": [
 "Wolfsbarschfilet",
@@ -7623,6 +7798,11 @@
 "Küchenplan ansehen",
 "Vedi il piano di cucina",
 "اعرض خطة المطبخ"
+],
+"See the scans": [
+"Scans ansehen",
+"Vedi le scansioni",
+"عرض المسوحات"
 ],
 "See this item in Bought against used": [
 "Diesen Artikel in Gekauft gegen verbraucht ansehen",
@@ -7809,6 +7989,11 @@
 "Turno",
 "الوردية"
 ],
+"Shifts where the empties show the most not billed": [
+"Schichten, in denen die leeren Flaschen am meisten nicht Abgerechnetes zeigen",
+"Turni in cui i vuoti mostrano più non fatturato",
+"الورديات التي تُظهر فيها الزجاجات الفارغة أكبر قدر غير مُفوتر"
+],
 "Shortages also count what the kitchen will use for other meals and drinks in the same period.": [
 "Engpässe berücksichtigen auch den Küchenbedarf für andere Mahlzeiten und Getränke im selben Zeitraum.",
 "Le carenze contano anche ciò che la cucina userà per altri pasti e bevande nello stesso periodo.",
@@ -7914,6 +8099,11 @@
 "Mostra tutti i {0} articoli consigliati",
 "عرض جميع الأصناف الموصى بها ({0})"
 ],
+"Show all {0} shifts": [
+"Alle {0} Schichten zeigen",
+"Mostra tutti i {0} turni",
+"عرض كل الورديات الـ{0}"
+],
 "Show all {0} tables": [
 "Alle {0} Tische zeigen",
 "Mostra tutti i {0} tavoli",
@@ -7953,6 +8143,11 @@
 "Die ersten fünf zeigen",
 "Mostra i primi cinque",
 "اعرض أعلى خمسة"
+],
+"Show the top three": [
+"Die drei größten zeigen",
+"Mostra i primi tre",
+"عرض أكبر ثلاثة"
 ],
 "Show this hotel": [
 "Dieses Hotel anzeigen",
@@ -8219,6 +8414,11 @@
 "Consumo del personale",
 "استهلاك الموظفين"
 ],
+"Staff scan each empty wine or spirit bottle before it goes in the bin. Where an outlet scans, its bottles here are the empties scanned plus the open bottle counted at close. Elsewhere bottles opened are simulated.": [
+"Das Team scannt jede leere Wein- oder Spirituosenflasche, bevor sie in den Müll kommt. Wo ein Outlet scannt, sind seine Flaschen hier die gescannten leeren Flaschen plus die offene Flasche, gezählt bei Schichtende. Anderswo sind geöffnete Flaschen simuliert.",
+"Il personale scansiona ogni bottiglia vuota di vino o distillato prima di buttarla. Dove un punto vendita scansiona, le sue bottiglie qui sono i vuoti scansionati più la bottiglia aperta contata a fine turno. Altrove le bottiglie aperte sono simulate.",
+"يمسح الموظفون كل زجاجة نبيذ أو مشروب روحي فارغة قبل رميها. حيث يمسح المنفذ، تكون زجاجاته هنا هي الزجاجات الفارغة الممسوحة مضافًا إليها الزجاجة المفتوحة المعدودة عند الإغلاق. في غير ذلك الزجاجات المفتوحة محاكاة."
+],
 "Staff, estimate": [
 "Personal, geschätzt",
 "Personale, stima",
@@ -8298,6 +8498,11 @@
 "Schritte",
 "Passaggi",
 "الخطوات"
+],
+"Steward": [
+"Steward",
+"Steward",
+"مضيف"
 ],
 "Still water": [
 "Stilles Wasser",
@@ -8489,6 +8694,11 @@
 "Suggerito",
 "المقترح"
 ],
+"Supervisor": [
+"Schichtleitung",
+"Supervisore",
+"مشرف"
+],
 "Supplier": [
 "Lieferant",
 "Fornitore",
@@ -8589,6 +8799,11 @@
 "Annullato. L'articolo è di nuovo da controllare.",
 "تم التراجع. الصنف للتحقق مجددًا."
 ],
+"Taken back. The scan stays on record and no longer counts.": [
+"Zurückgenommen. Der Scan bleibt gespeichert und zählt nicht mehr.",
+"Annullato. La scansione resta registrata e non conta più.",
+"تم التراجع. يبقى المسح في السجل ولم يعد يُحتسب."
+],
 "Taken from supplier deliveries, till sales with their recipes, and the waste log. No stock count is used, so the gap is an estimate.": [
 "Aus Lieferantenlieferungen, Kassenverkäufen mit ihren Rezepten und dem Abfallprotokoll. Es wird keine Zählung verwendet, daher ist die Lücke eine Schätzung.",
 "Preso dalle consegne dei fornitori, dalle vendite in cassa con le loro ricette e dal registro sprechi. Non si usa alcun conteggio, quindi il divario è una stima.",
@@ -8629,6 +8844,11 @@
 "Non è stato possibile salvare.",
 "تعذر الحفظ."
 ],
+"That could not be taken back. Try again.": [
+"Das konnte nicht zurückgenommen werden. Versuchen Sie es erneut.",
+"Non è stato possibile annullare. Riprova.",
+"تعذّر التراجع. حاول مرة أخرى."
+],
 "That leaves {0} cans, {1} of what was used, worth about {2} at the price paid.": [
 "Bleiben {0} Dosen, {1} des Verbrauchs, etwa {2} wert zum bezahlten Preis.",
 "Restano {0} lattine, il {1} di quanto usato, per circa {2} al prezzo pagato.",
@@ -8653,6 +8873,21 @@
 "Diese Rolle konnte nicht geöffnet werden.",
 "Non è stato possibile aprire questo ruolo.",
 "تعذر فتح هذا الدور."
+],
+"That scan is not one of yours.": [
+"Dieser Scan stammt nicht von Ihnen.",
+"Questa scansione non è tua.",
+"هذا المسح ليس من مسوحاتك."
+],
+"That scan was already taken back.": [
+"Dieser Scan wurde bereits zurückgenommen.",
+"Questa scansione è già stata annullata.",
+"تم التراجع عن هذا المسح بالفعل."
+],
+"That was not saved. Try again.": [
+"Das wurde nicht gespeichert. Versuchen Sie es erneut.",
+"Non è stato salvato. Riprova.",
+"لم يتم الحفظ. حاول مرة أخرى."
 ],
 "That you can see": [
 "Die Sie sehen können",
@@ -9049,10 +9284,20 @@
 "Troppo pochi ospiti per dirlo",
 "عدد الضيوف أقل من أن يُحكم"
 ],
+"Top item": [
+"Häufigster Artikel",
+"Articolo principale",
+"الصنف الأول"
+],
 "Top items by gap": [
 "Größte Lücken nach Artikel",
 "Articoli con il divario maggiore",
 "الأصناف الأعلى فرقًا"
+],
+"Top reason": [
+"Häufigster Grund",
+"Motivo principale",
+"السبب الأول"
 ],
 "Top up outlets from the main store": [
 "Outlets aus dem Hauptlager auffüllen",
@@ -9349,6 +9594,11 @@
 "Differenze di scorte non risolte ({0})",
 "فروق مخزون غير محلولة ({0})"
 ],
+"Unused or dropped": [
+"Ungenutzt oder fallen gelassen",
+"Non usato o caduto",
+"غير مستخدم أو سقط"
+],
 "Unusual discount": [
 "Ungewöhnlicher Rabatt",
 "Sconto insolito",
@@ -9424,6 +9674,11 @@
 "Usato",
 "المستخدمة"
 ],
+"Used but not sold, between counts": [
+"Verbraucht, aber nicht verkauft, zwischen Zählungen",
+"Usato ma non venduto, tra i conteggi",
+"مستخدم وغير مُباع، بين الجردين"
+],
 "Used by the recipes of what was sold": [
 "Durch die Rezepte des Verkauften verbraucht",
 "Usato dalle ricette di quanto venduto",
@@ -9478,6 +9733,11 @@
 "Betroffener Wert im Zeitraum. Wählen Sie eine Art, um die Fälle zu sehen.",
 "Valore coinvolto nel periodo. Scegli un tipo per vedere i casi.",
 "القيمة المعنية في الفترة. اختر نوعًا لترى حالاته."
+],
+"Value not billed per day, last {0} days": [
+"Nicht abgerechneter Wert pro Tag, letzte {0} Tage",
+"Valore non fatturato al giorno, ultimi {0} giorni",
+"القيمة غير المفوترة يوميًا، آخر {0} يومًا"
 ],
 "Value of priority items missing at each weekly count, at the cost on the day.": [
 "Wert fehlender Prioritätsartikel bei jeder Wochenzählung, zu den Tageskosten.",
@@ -9639,6 +9899,16 @@
 "Scarti e rotture",
 "الهدر والكسر"
 ],
+"Waste and breakage at cost per day. This week {0}.": [
+"Abfall und Bruch zum Einkaufspreis pro Tag. Diese Woche {0}.",
+"Scarti e rotture al costo, al giorno. Questa settimana {0}.",
+"الهدر والكسر بالتكلفة يوميًا. هذا الأسبوع {0}."
+],
+"Waste and breakage per day, last {0} days": [
+"Abfall und Bruch pro Tag, letzte {0} Tage",
+"Scarti e rotture al giorno, ultimi {0} giorni",
+"الهدر والكسر يوميًا، آخر {0} يومًا"
+],
 "Waste cost": [
 "Abfallkosten",
 "Costo degli scarti",
@@ -9658,6 +9928,11 @@
 "Abfall diesen Monat",
 "Scarti di questo mese",
 "الهدر هذا الشهر"
+],
+"Waste this week": [
+"Abfall diese Woche",
+"Scarti questa settimana",
+"الهدر هذا الأسبوع"
 ],
 "Waste, breakage and drinks poured but not billed, per day. This week {0}, {1} less than last week.": [
 "Abfall, Bruch und ausgeschenkte, nicht berechnete Getränke pro Tag. Diese Woche {0}, {1} weniger als letzte Woche.",
@@ -9919,6 +10194,11 @@
 "Il venduto rispetto al consumo reale, tra due conteggi.",
 "ما بيع مقابل ما استُخدم فعليًا، بين جردين."
 ],
+"What was wasted or broken, and what did it cost?": [
+"Was wurde verschwendet oder ist zerbrochen, und was hat es gekostet?",
+"Cosa è stato sprecato o rotto, e quanto è costato?",
+"ما الذي هُدر أو انكسر، وكم كلّف؟"
+],
 "What was wasted or broken?": [
 "Was wurde weggeworfen oder ist zerbrochen?",
 "Cosa è stato scartato o rotto?",
@@ -9984,6 +10264,11 @@
 "Dove sono andati i soldi, per reparto e categoria.",
 "أين ذهبت الأموال، حسب القسم والفئة."
 ],
+"Where the most is lost": [
+"Wo am meisten verloren geht",
+"Dove si perde di più",
+"أين تكون الخسارة الأكبر"
+],
 "Where you are": [
 "Sie sind hier",
 "Dove ti trovi",
@@ -10008,6 +10293,16 @@
 "Wer braucht Coaching, und wo gehen Getränke verloren?",
 "Chi ha bisogno di coaching, e dove si perdono le bevande?",
 "من يحتاج إلى توجيه، وأين تضيع المشروبات؟"
+],
+"Who scanned a bottle is not who poured it. A prompt to check, not proof.": [
+"Wer eine Flasche scannt, hat sie nicht unbedingt ausgeschenkt. Ein Anlass zu prüfen, kein Beweis.",
+"Chi scansiona una bottiglia non è chi l'ha versata. Uno spunto per verificare, non una prova.",
+"من مسح الزجاجة ليس بالضرورة من سكبها. تنبيه للتحقق، وليس دليلًا."
+],
+"Who was on, day by day": [
+"Wer im Dienst war, Tag für Tag",
+"Chi era in turno, giorno per giorno",
+"من كان في الوردية، يومًا بيوم"
 ],
 "Whole order voided after items were sent for preparation": [
 "Ganze Bestellung storniert, nachdem Artikel zur Zubereitung geschickt wurden",
@@ -10048,6 +10343,11 @@
 "Wein und Bier",
 "Vino e birra",
 "النبيذ والبيرة"
+],
+"Wine and spirits poured but not billed, by selling value, per day. This week {0}.": [
+"Wein und Spirituosen ausgeschenkt, aber nicht abgerechnet, zum Verkaufswert, pro Tag. Diese Woche {0}.",
+"Vino e distillati versati ma non fatturati, a valore di vendita, al giorno. Questa settimana {0}.",
+"نبيذ ومشروبات روحية سُكبت ولم تُفوتر، بقيمة البيع، يوميًا. هذا الأسبوع {0}."
 ],
 "Wine and spirits yield, by outlet and shift": [
 "Ausbeute von Wein und Spirituosen, nach Outlet und Schicht",
@@ -10099,6 +10399,16 @@
 "Con differenza",
 "مع فرق"
 ],
+"With the open bottle, {0} bottles used, which should give {1} glasses.": [
+"Mit der offenen Flasche {0} Flaschen verbraucht, die {1} Gläser ergeben sollten.",
+"Con la bottiglia aperta, {0} bottiglie usate, che dovrebbero dare {1} bicchieri.",
+"مع الزجاجة المفتوحة، استُخدمت {0} زجاجات، يُفترض أن تعطي {1} كأسًا."
+],
+"With the open bottle, {0} bottles used, which should give {1} measures.": [
+"Mit der offenen Flasche {0} Flaschen verbraucht, die {1} Portionen ergeben sollten.",
+"Con la bottiglia aperta, {0} bottiglie usate, che dovrebbero dare {1} misure.",
+"مع الزجاجة المفتوحة، استُخدمت {0} زجاجات، يُفترض أن تعطي {1} جرعة."
+],
 "Within normal range": [
 "Im Normalbereich",
 "Nella norma",
@@ -10149,6 +10459,11 @@
 "Lavorare senza connessione",
 "العمل دون اتصال"
 ],
+"Worst item": [
+"Schlechtester Artikel",
+"Articolo peggiore",
+"أسوأ صنف"
+],
 "Worth": [
 "Wert",
 "Valore",
@@ -10194,6 +10509,11 @@
 "Ieri",
 "أمس"
 ],
+"You cannot log empty bottles for this outlet.": [
+"Sie können für dieses Outlet keine leeren Flaschen erfassen.",
+"Non puoi registrare bottiglie vuote per questo punto vendita.",
+"لا يمكنك تسجيل زجاجات فارغة لهذا المنفذ."
+],
 "Your access": [
 "Ihr Zugriff",
 "Il tuo accesso",
@@ -10228,6 +10548,11 @@
 "Ihre Rolle sieht das Prüfprotokoll nicht. Eigentümer, General Manager und Finanzcontroller schon.",
 "Il tuo ruolo non vede il registro di controllo. Proprietari, direttori generali e controller sì.",
 "لا يمكن لدورك رؤية سجل التدقيق. يمكن للمالكين والمديرين العامين والمراقبين الماليين رؤيته."
+],
+"Your role does not log empty bottles.": [
+"Ihre Rolle erfasst keine leeren Flaschen.",
+"Il tuo ruolo non registra bottiglie vuote.",
+"دورك لا يسجل الزجاجات الفارغة."
 ],
 "a day,": [
 "pro Tag,",
@@ -10293,6 +10618,16 @@
 "Flaschen",
 "bottiglie",
 "زجاجات"
+],
+"bottles from scans where an outlet scans, simulated elsewhere": [
+"Flaschen aus Scans, wo ein Outlet scannt, sonst simuliert",
+"bottiglie dalle scansioni dove un punto vendita scansiona, altrove simulate",
+"الزجاجات من المسح حيث يمسح المنفذ، ومحاكاة في غيره"
+],
+"bottles opened simulated": [
+"geöffnete Flaschen simuliert",
+"bottiglie aperte simulate",
+"الزجاجات المفتوحة محاكاة"
 ],
 "by the day of the charge": [
 "nach Tag der Belastung",
@@ -10539,6 +10874,16 @@
 "in sospeso",
 "معلق"
 ],
+"picked at {0}": [
+"ausgewählt um {0}",
+"scelta alle {0}",
+"اختيرت في {0}"
+],
+"picked from the list": [
+"aus der Liste gewählt",
+"scelta dall'elenco",
+"مختارة من القائمة"
+],
 "portions": [
 "Portionen",
 "porzioni",
@@ -10598,6 +10943,16 @@
 "Verkäufe und Abfall: {0} von Lieferanten erhalten gegen {1}, verbraucht durch die Rezepte des Verkauften, erfassten Abfall und Umbuchungen, in den {2} Tagen bis {3}.",
 "vendite e sprechi: {0} ricevuti dai fornitori contro {1} usati dalle ricette di quanto venduto, sprechi registrati e trasferimenti, nei {2} giorni fino al {3}.",
 "المبيعات والهدر: {0} مستلمة من الموردين مقابل {1} مستخدمة في وصفات ما بيع والهدر المسجل والتحويلات، خلال {2} يومًا حتى {3}."
+],
+"scanned": [
+"gescannt",
+"scansionata",
+"ممسوحة"
+],
+"scanned at {0}": [
+"gescannt um {0}",
+"scansionata alle {0}",
+"مُسحت في {0}"
 ],
 "server": [
 "Service",
@@ -10798,6 +11153,11 @@
 "{0} gefährdet, bis es jemand prüft.",
 "{0} a rischio finché qualcuno non controlla.",
 "{0} معرّض للخطر حتى يتحقق منه أحد."
+],
+"{0} at {1} stands out against the rota. Chart and table inside.": [
+"{0} bei {1} fällt gegenüber dem Dienstplan auf. Diagramm und Tabelle im Inneren.",
+"{0} a {1} spicca rispetto ai turni. Grafico e tabella all'interno.",
+"{0} في {1} يبرز مقارنة بجدول الورديات. الرسم والجدول في الداخل."
 ],
 "{0} available": [
 "{0} verfügbar",
@@ -11024,10 +11384,45 @@
 "{0} bevande per ospite, colleghi {1}",
 "{0} مشروب لكل ضيف، الزملاء {1}"
 ],
+"{0} drinks used but not sold between the last two counts": [
+"{0} Getränke zwischen den letzten zwei Zählungen verbraucht, aber nicht verkauft",
+"{0} bevande usate ma non vendute tra gli ultimi due conteggi",
+"{0} مشروبات استُخدمت ولم تُبع بين آخر جردين"
+],
 "{0} each": [
 "je {0}",
 "{0} cad.",
 "{0} للواحدة"
+],
+"{0} empties logged by you today at {1}.": [
+"{0} leere Flaschen heute von Ihnen bei {1} erfasst.",
+"{0} vuoti registrati da te oggi a {1}.",
+"{0} زجاجات فارغة سجلتها اليوم في {1}."
+],
+"{0} empties scanned in the last {1} days.": [
+"{0} leere Flaschen in den letzten {1} Tagen gescannt.",
+"{0} vuoti scansionati negli ultimi {1} giorni.",
+"{0} زجاجات فارغة ممسوحة في آخر {1} أيام."
+],
+"{0} empties scanned.": [
+"{0} leere Flaschen gescannt.",
+"{0} vuoti scansionati.",
+"{0} زجاجات فارغة ممسوحة."
+],
+"{0} empty logged by you today at {1}.": [
+"{0} leere Flasche heute von Ihnen bei {1} erfasst.",
+"{0} vuoto registrato da te oggi a {1}.",
+"{0} زجاجة فارغة سجلتها اليوم في {1}."
+],
+"{0} empty scanned in the last {1} days.": [
+"{0} leere Flasche in den letzten {1} Tagen gescannt.",
+"{0} vuoto scansionato negli ultimi {1} giorni.",
+"{0} زجاجة فارغة ممسوحة في آخر {1} أيام."
+],
+"{0} empty scanned.": [
+"{0} leere Flasche gescannt.",
+"{0} vuoto scansionato.",
+"{0} زجاجة فارغة ممسوحة."
 ],
 "{0} entered": [
 "{0} eingegeben",
@@ -11098,6 +11493,16 @@
 "{0} prognostizierte Gäste, {1} Event, Verbrauch der letzten {2} Wochen. Hohe Sicherheit.",
 "{0} coperti previsti, {1} evento, consumi delle ultime {2} settimane. Affidabilità alta.",
 "{0} زبونًا متوقعًا، {1} فعالية، استخدام آخر {2} أسابيع. الثقة عالية."
+],
+"{0} glasses from {1} bottles, {2} scanned empty": [
+"{0} Gläser aus {1} Flaschen, {2} leer gescannt",
+"{0} bicchieri da {1} bottiglie, {2} scansionate vuote",
+"{0} كأسًا من {1} زجاجات، {2} ممسوحة فارغة"
+],
+"{0} glasses not billed, {1}": [
+"{0} Gläser nicht abgerechnet, {1}",
+"{0} bicchieri non fatturati, {1}",
+"{0} كؤوس غير مُفوترة، {1}"
 ],
 "{0} glasses of wine not billed this week, {1}.": [
 "{0} Gläser Wein diese Woche nicht berechnet, {1}.",
@@ -11239,6 +11644,11 @@
 "{0} articoli: {1} cibo, {2} bevande, {3} inventario",
 "{0} صنفًا: {1} أطعمة، {2} مشروبات، {3} عهدة"
 ],
+"{0} less than last week": [
+"{0} weniger als letzte Woche",
+"{0} in meno della settimana scorsa",
+"{0} أقل من الأسبوع الماضي"
+],
 "{0} less than the week before": [
 "{0} weniger als in der Vorwoche",
 "{0} in meno della settimana prima",
@@ -11289,6 +11699,11 @@
 "{0} segnato pronto",
 "أُشير إلى جاهزية {0}"
 ],
+"{0} measures from {1} bottles, {2} scanned empty": [
+"{0} Portionen aus {1} Flaschen, {2} leer gescannt",
+"{0} misure da {1} bottiglie, {2} scansionate vuote",
+"{0} جرعة من {1} زجاجات، {2} ممسوحة فارغة"
+],
 "{0} min": [
 "{0} Min.",
 "{0} min",
@@ -11334,6 +11749,11 @@
 "{0} in più dei colleghi",
 "{0} أكثر من الزملاء"
 ],
+"{0} more than last week": [
+"{0} mehr als letzte Woche",
+"{0} in più della settimana scorsa",
+"{0} أكثر من الأسبوع الماضي"
+],
 "{0} more than the week before": [
 "{0} mehr als in der Vorwoche",
 "{0} in più della settimana prima",
@@ -11359,6 +11779,11 @@
 "Sono arrivati {0} di {1} in più di quanto spieghino cassa e registro sprechi, nei {2} giorni fino al {3}.",
 "ورد {0} من {1} أكثر مما تفسره نقطة البيع وسجل الهدر، خلال {2} يومًا حتى {3}."
 ],
+"{0} not billed": [
+"{0} nicht abgerechnet",
+"{0} non fatturati",
+"{0} غير مُفوتر"
+],
 "{0} now, {1}": [
 "{0} jetzt, {1}",
 "{0} ora, {1}",
@@ -11373,6 +11798,11 @@
 "{0} vom Soll",
 "{0} del previsto",
 "{0} من المتوقع"
+],
+"{0} of this week, {1}": [
+"{0} dieser Woche, {1}",
+"{0} di questa settimana, {1}",
+"{0} من هذا الأسبوع، {1}"
 ],
 "{0} of use": [
 "{0} des Verbrauchs",
@@ -11469,6 +11899,11 @@
 "{0} segnalazioni aperte, fino alla verifica",
 "{0} تنبيهات مفتوحة حتى التحقق"
 ],
+"{0} other outlets are simulated.": [
+"{0} weitere Outlets sind simuliert.",
+"{0} altri punti vendita sono simulati.",
+"{0} منافذ أخرى محاكاة."
+],
 "{0} outlets, {1} to {2}. {3} leads with {4}.": [
 "{0} Outlets, {1} bis {2}. {3} führt mit {4}.",
 "{0} punti vendita, dal {1} al {2}. {3} è in testa con {4}.",
@@ -11534,6 +11969,11 @@
 "{0} finisce per primo, {1}. Un ordine più tardi arriva troppo tardi.",
 "ينفد {0} أولًا، {1}. الطلب اللاحق يصل متأخرًا."
 ],
+"{0} scanned empty": [
+"{0} leer gescannt",
+"{0} scansionate vuote",
+"{0} ممسوحة فارغة"
+],
 "{0} sent to bar": [
 "{0} an die Bar geschickt",
 "{0} inviato al bar",
@@ -11554,6 +11994,21 @@
 "Mancano {0}. La fattura riporta tutti i {1}.",
 "نقص {0}. الفاتورة تظهر الـ{1} كاملة."
 ],
+"{0} since {1}, {2} since {3}, {4} since {5}.": [
+"{0} seit {1}, {2} seit {3}, {4} seit {5}.",
+"{0} dal {1}, {2} dal {3}, {4} dal {5}.",
+"{0} منذ {1}، {2} منذ {3}، {4} منذ {5}."
+],
+"{0} since {1}, {2} since {3}.": [
+"{0} seit {1}, {2} seit {3}.",
+"{0} dal {1}, {2} dal {3}.",
+"{0} منذ {1}، {2} منذ {3}."
+],
+"{0} since {1}.": [
+"{0} seit {1}.",
+"{0} dal {1}.",
+"{0} منذ {1}."
+],
 "{0} snoozed": [
 "{0} zurückgestellt",
 "{0} posticipati",
@@ -11573,6 +12028,11 @@
 "{0} im POS verkauft",
 "{0} venduti nel POS",
 "{0} مبيعة في نقطة البيع"
+],
+"{0} sold.": [
+"{0} verkauft.",
+"{0} venduti.",
+"{0} مبيعة."
 ],
 "{0} spirits. {1} measures not billed this week, {2}": [
 "{0} Spirituosen. {1} Maße diese Woche nicht berechnet, {2}",
@@ -11603,6 +12063,11 @@
 "{0} Dinge brauchen heute Ihre Aufmerksamkeit.",
 "{0} cose richiedono la tua attenzione oggi.",
 "{0} أمور تحتاج إليك اليوم."
+],
+"{0} this week": [
+"{0} diese Woche",
+"{0} questa settimana",
+"{0} هذا الأسبوع"
 ],
 "{0} to act on today": [
 "{0} heute zu erledigen",
@@ -11794,6 +12259,16 @@
 "{0} schemi di vino e {1} di distillati nelle ultime {2} settimane",
 "{0} أنماط نبيذ و{1} أنماط مشروبات روحية خلال آخر {2} أسابيع"
 ],
+"{0} wine shift below the threshold this week": [
+"{0} Weinschicht diese Woche unter der Schwelle",
+"{0} turno di vino sotto la soglia questa settimana",
+"{0} وردية نبيذ تحت الحد هذا الأسبوع"
+],
+"{0} wine shifts below the threshold this week": [
+"{0} Weinschichten diese Woche unter der Schwelle",
+"{0} turni di vino sotto la soglia questa settimana",
+"{0} ورديات نبيذ تحت الحد هذا الأسبوع"
+],
 "{0} wines. {1} glasses not billed this week, {2}": [
 "{0} Weine. {1} Gläser diese Woche nicht berechnet, {2}",
 "{0} vini. {1} calici non fatturati questa settimana, {2}",
@@ -11858,6 +12333,11 @@
 "{0}, Freitag, Spätschicht:",
 "{0}, venerdì, turno di notte:",
 "{0}، الجمعة، الوردية المتأخرة:"
+],
+"{0}, Friday late shift: {1} not billed. Team, reasons and how to help inside.": [
+"{0}, Spätschicht am Freitag: {1} nicht abgerechnet. Team, Gründe und Hilfe im Inneren.",
+"{0}, turno notturno del venerdì: {1} non fatturati. Squadra, motivi e come aiutare all'interno.",
+"{0}، وردية الجمعة المتأخرة: {1} غير مُفوتر. الفريق والأسباب وكيفية المساعدة في الداخل."
 ],
 "{0}, Lisbon": [
 "{0}, Lisbon",
@@ -11979,15 +12459,30 @@
 "{0}, turno di giorno",
 "{0}، وردية النهار"
 ],
+"{0}, day shift, {1}:": [
+"{0}, Tagschicht, {1}:",
+"{0}, turno di giorno, {1}:",
+"{0}، وردية النهار، {1}:"
+],
 "{0}, evening shift": [
 "{0}, Abendschicht",
 "{0}, turno serale",
 "{0}، الوردية المسائية"
 ],
+"{0}, evening shift, {1}:": [
+"{0}, Abendschicht, {1}:",
+"{0}, turno serale, {1}:",
+"{0}، الوردية المسائية، {1}:"
+],
 "{0}, late night shift": [
 "{0}, Spätschicht",
 "{0}, turno di notte",
 "{0}، الوردية الليلية"
+],
+"{0}, late shift, {1}:": [
+"{0}, Spätschicht, {1}:",
+"{0}, turno notturno, {1}:",
+"{0}، الوردية المتأخرة، {1}:"
 ],
 "{0}, prepared": [
 "{0}, zubereitet",

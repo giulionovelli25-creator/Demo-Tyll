@@ -7,6 +7,7 @@ import { INGREDIENTS, MENU_ITEMS, OUTLETS, PROPERTIES, STAFF, SUPPLIERS, USERS }
 import { HISTORY_EXPENSES } from "@/lib/data/finance-rules";
 import { startTranslating } from "@/lib/i18n/dom";
 import { LANGS, Translator, type Lang, type Messages } from "@/lib/i18n/translate";
+import { POUR_SKUS } from "@/lib/domain/pour";
 
 export const useLanguage = create<{ lang: Lang; set(lang: Lang): void }>()(
   persist((set) => ({ lang: "en" as Lang, set: (lang) => set({ lang }) }), { name: "tyll-lang-v1" }),
@@ -27,7 +28,8 @@ export function LanguageLayer() {
     import("@/lib/i18n/messages.json").then((m) => {
       if (cancelled) return;
       const translator = new Translator(lang, m.default as unknown as Messages, {
-        items: [...INGREDIENTS, ...MENU_ITEMS].map((x) => x.name),
+        // The bottle labels of Over pouring and empty bottle scans read like items in a sentence.
+        items: [...INGREDIENTS, ...MENU_ITEMS, ...POUR_SKUS].map((x) => x.name),
         names: [...[...OUTLETS, ...PROPERTIES, ...SUPPLIERS, ...STAFF, ...USERS].map((x) => x.name), ...HISTORY_EXPENSES.map((x) => x.supplier)],
       });
       (window as unknown as { __tyllMissing?: Set<string> }).__tyllMissing = translator.missing;

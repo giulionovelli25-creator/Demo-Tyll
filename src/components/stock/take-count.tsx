@@ -24,7 +24,8 @@ export function CountRoute() {
 interface Detector { detect(source: CanvasImageSource): Promise<{ rawValue: string }[]> }
 declare global { interface Window { BarcodeDetector?: new (o: { formats: string[] }) => Detector } }
 
-function CameraScan({ onCode, onClose }: { onCode: (code: string) => void; onClose: () => void }) {
+/** The camera barcode reader, where the browser can read barcodes. Also used for empty bottles (components/stock/empty-bottles.tsx). */
+export function CameraScan({ onCode, onClose, hint = "Point the camera at the pack barcode." }: { onCode: (code: string) => void; onClose: () => void; hint?: string }) {
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -55,7 +56,7 @@ function CameraScan({ onCode, onClose }: { onCode: (code: string) => void; onClo
     <div role="dialog" aria-label="Scan a barcode" className="fixed inset-0 z-50 flex flex-col bg-black">
       <video ref={video} className="flex-1 object-cover" playsInline muted />
       <div className="flex items-center justify-between gap-3 bg-black/80 px-4 py-4 text-white">
-        <span className="text-sm">Point the camera at the pack barcode.</span>
+        <span className="text-sm">{hint}</span>
         <button type="button" onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15" aria-label="Close the camera"><X size={18} /></button>
       </div>
     </div>

@@ -6,6 +6,8 @@ import type { User } from "../types";
 import { DEMO_TODAY, addDays, fmtMoney } from "../util";
 import { getDataset } from "../data/generate";
 import { rostered } from "../domain/rota";
+import { pourOutlets, scanningFrom, withScans, type EmptyScan } from "../domain/empties";
+import { emptyScans, scannedByWord } from "./empties";
 
 export type PourPeriod = "today" | "week" | "month";
 
@@ -38,8 +40,30 @@ export interface PourStaffView {
   people: { staffId: string; name: string; role: string; days: number; avgOn: number; avgOff: number; inTop: number; z: number }[];
 }
 
+/** One shift and bottle where the empties were scanned: what the scans show against the glasses sold. */
+export interface ScannedShift {
+  id: string;
+  date: string;
+  outletId: string;
+  shift: Shift;
+  skuId: string;
+  name: string;
+  family: PourFamily;
+  figures: PourFigures;
+  /** Each empty: the time, how it was logged and who by job (never by name). */
+  scans: { min: number; method: "scan" | "pick"; who: string }[];
+}
+
+export interface PourEmpties {
+  /** Every outlet in view that pours: the first day its bottles come from scans (null while simulated), and empties scanned. */
+  outlets: { outletId: string; from: string | null; startsTomorrow: boolean; today: number; week: number; month: number }[];
+  /** Scanned shifts of the last 30 days whose bottles gave under the threshold, with at least SCANNED_SHIFT_MIN not billed, most first. */
+  shifts: ScannedShift[];
+}
+
 export interface PourOut {
   staff?: PourStaffView[];
+  empties: PourEmpties;
   propertyId: string;
   currency: string;
   threshold: number;
@@ -93,6 +117,34 @@ function staffView(outletId: string, log: readonly PourEntry[]): PourStaffView {
   return { outletId, days, top, people };
 }
 
+/** A scanned shift is listed when its bottle gave under the threshold and at least this much was not billed. */
+export const SCANNED_SHIFT_MIN = 50;
+
+/** Where the bottles on Over pouring come from, outlet by outlet, and the scanned shifts that show the most not billed. */
+function emptiesView(outletIds: readonly string[], scans: readonly EmptyScan[], log: readonly PourEntry[]): PourEmpties {
+  const from = scanningFrom(scans);
+  const counted = scans.filter((x) => !x.withdrawnAt);
+  const since = (d: string) => counted.filter((x) => x.date >= d && x.date <= DEMO_TODAY);
+  const outlets = pourOutlets(outletIds).map((outletId) => {
+    const here = (d: string) => since(d).filter((x) => x.outletId === outletId).length;
+    return {
+      outletId, from: from.get(outletId) ?? null, startsTomorrow: !from.has(outletId) && counted.some((x) => x.outletId === outletId && x.date === DEMO_TODAY),
+      today: here(DEMO_TODAY), week: here(FROM.week), month: here(FROM.month),
+    };
+  });
+  const shifts: ScannedShift[] = [];
+  for (const e of log) {
+    if (e.scanned === undefined || e.date < FROM.month) continue;
+    const f = figures([e], 1);
+    if (!f.flagged || f.gapValue < SCANNED_SHIFT_MIN) continue;
+    const sku = POUR_SKUS.find((x) => x.id === e.skuId)!;
+    const mine = counted.filter((x) => x.date === e.date && x.outletId === e.outletId && x.shift === e.shift && x.skuId === e.skuId).sort((a, b) => a.min - b.min);
+    shifts.push({ id: `${e.date}|${e.outletId}|${e.shift}|${e.skuId}`, date: e.date, outletId: e.outletId, shift: e.shift, skuId: e.skuId, name: sku.name, family: sku.family, figures: f, scans: mine.map((x) => ({ min: x.min, method: x.method, who: scannedByWord(x) })) });
+  }
+  shifts.sort((a, b) => b.figures.gapValue - a.figures.gapValue || b.date.localeCompare(a.date));
+  return { outlets, shifts: shifts.slice(0, 12) };
+}
+
 type Result = { ok: true; pour: PourOut } | { ok: false; status: number; error: string };
 
 const byPeriod = (entries: readonly PourEntry[]) => Object.fromEntries((Object.keys(FROM) as PourPeriod[]).map((p) => [p, figures(entries.filter((e) => e.date >= FROM[p] && e.date <= DEMO_TODAY))])) as Record<PourPeriod, PourFigures>;
@@ -101,7 +153,9 @@ export function pourFor(user: User, propertyId: string, asked?: readonly string[
   if (!allowedProperties(user).includes(propertyId)) return { ok: false, status: 403, error: "This hotel is outside your access." };
   const mine = allowedOutlets(user).filter((o) => outletById[o].propertyId === propertyId);
   const outletIds = asked?.length ? mine.filter((o) => asked.includes(o)) : mine;
-  const log = pourLog(getDataset().orders).filter((e) => outletIds.includes(e.outletId));
+  // Bottles come from empty bottle scans where an outlet scans them, and stay simulated everywhere else.
+  const scans = emptyScans(propertyId).filter((x) => outletIds.includes(x.outletId));
+  const log = withScans(pourLog(getDataset().orders).filter((e) => outletIds.includes(e.outletId)), scans);
   const currency = propertyById[propertyId].currency;
   const money = (n: number) => fmtMoney(n, currency);
   // Names of the team only for managers who already see cases by person. Staff and the bar team never see them.
@@ -144,5 +198,5 @@ export function pourFor(user: User, propertyId: string, asked?: readonly string[
     };
   };
   const staff = mayName ? outletIds.filter((o) => pourSellsAt(o, "wine") || pourSellsAt(o, "spirits")).map((o) => staffView(o, log)).filter((v) => v.days.some((d) => d.value > 0)) : undefined;
-  return { ok: true, pour: { staff, propertyId, currency, threshold: POUR_RULES.threshold, wine: familyOut("wine"), spirits: familyOut("spirits") } };
+  return { ok: true, pour: { staff, empties: emptiesView(outletIds, scans, log), propertyId, currency, threshold: POUR_RULES.threshold, wine: familyOut("wine"), spirits: familyOut("spirits") } };
 }

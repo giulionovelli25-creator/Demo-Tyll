@@ -14,6 +14,7 @@ import { DEMO_TODAY, addDays, diffDays } from "../util";
 import { defaultAuto, type AutoShape } from "../domain/auto-order";
 import { seedProcurement, type ProcurementShape } from "./procurement-seed";
 import type { BoughtUsedCheck, CashUp, StockTake, WaiterCoaching } from "../types";
+import type { EmptyScan } from "../domain/empties";
 
 export interface Shape {
   version: 1;
@@ -51,6 +52,8 @@ export interface Shape {
   boughtUsedChecks?: BoughtUsedCheck[];
   /** Drinks per guest by waiter: coaching notes managers recorded, the latest per waiter shown. */
   waiterCoaching?: WaiterCoaching[];
+  /** Empty wine and spirit bottles scanned by staff before binning, with who and which role. Over pouring counts them. */
+  emptyScans?: EmptyScan[];
   /** The business date the records were last moved to, and the shape of the demo data they were built for. */
   businessDate?: string;
   dataVersion?: number;
@@ -67,7 +70,7 @@ function moveToToday(data: Shape): Shape {
   return { ...(JSON.parse(text) as Shape), businessDate: DEMO_TODAY };
 }
 
-const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), procurement: seedProcurement(), stockTakes: [], cashUps: [], boughtUsedChecks: [], waiterCoaching: [], businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
+const empty = (): Shape => ({ version: 1, seq: 7, requests: seedRequests(), plans: [], ...seedOps(), guest: seedGuest(), ...seedStage6(), notify: emptyNotify(), autoOrder: defaultAuto(), procurement: seedProcurement(), stockTakes: [], cashUps: [], boughtUsedChecks: [], waiterCoaching: [], emptyScans: [], businessDate: DEMO_TODAY, dataVersion: DATA_VERSION });
 
 const file = () => process.env.TYLL_PURCHASING_STORE ?? dataFile("purchasing.json");
 let cache: { path: string; mtime: number; data: Shape } | null = null;
