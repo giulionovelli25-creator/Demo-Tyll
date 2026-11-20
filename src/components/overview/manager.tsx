@@ -1,4 +1,5 @@
 "use client";
+import { featureOn } from "@/lib/features";
 import { caseIsPastDeadline } from "@/lib/domain/deadline";
 import { MoreDetail } from "@/components/disclosure";
 import { StockAlert } from "./stock-alert";
@@ -66,7 +67,7 @@ export function ManagerOverview() {
       out.push({ id: i.id, title: i.headline, detail: `Investigation · ${i.deadline ? `due ${fmtDate(i.deadline)}` : "no deadline"}`, href: `/investigations/${i.id}`, urgent: overdue });
     }
     const fresh = investigations.filter((i) => i.status === "new" && i.outletId && outletIds.has(i.outletId));
-    if (fresh.length) out.push({ id: "assign", title: `Assign ${fresh.length} new case${fresh.length === 1 ? "" : "s"}`, detail: "Flagged and not yet given to anyone", href: "/investigations?status=open", urgent: fresh.length >= 5 });
+    if (fresh.length) out.push({ id: "assign", title: `Assign ${fresh.length} new case${fresh.length === 1 ? "" : "s"}`, detail: "Flagged and not yet given to anyone", href: "/money?tab=flags&status=open", urgent: fresh.length >= 5 });
     if (can(user, "stock.count")) {
       const done = ctx.counts.filter((x) => x.propertyId === pid && x.date === DEMO_TODAY && x.seq > 0).length;
       if (done < 5) out.push({ id: "counts", title: `Count ${5 - done} priority item${5 - done === 1 ? "" : "s"}`, detail: "Today's spot checks", href: "/stock?tab=counts" });
@@ -158,7 +159,7 @@ export function ManagerOverview() {
               </ul>
             )}
           </Panel>
-          {canOpen(user, "flow") && (
+          {canOpen(user, "flow") && featureOn("flow") && (
             <Panel title="Service right now" action={<Link href="/flow" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Flow <ArrowRight size={14} /></Link>}>
               <div className="flex gap-8 text-sm">
                 <span><span className="num block text-[22px] text-ink">{service.active}</span><span className="text-steel">in progress</span></span>

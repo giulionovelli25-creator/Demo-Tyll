@@ -1,4 +1,5 @@
 "use client";
+import { featureOn } from "@/lib/features";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +22,8 @@ const GROUPS: { label: string; ids: string[] }[] = [
   { label: "Finance", ids: ["u-fc"] },
   { label: "Sales and events", ids: ["u-sales", "u-dos", "u-events"] },
   { label: "Rooms and guests", ids: ["u-fo", "u-con", "u-hk", "u-maid", "u-bellcap", "u-bell"] },
-];
+  // Departments whose part of Tyll is switched off in lib/features.ts are left out.
+].filter((g) => (g.label === "Rooms and guests" ? featureOn("rooms") : g.label === "Sales and events" ? featureOn("previews") : true));
 
 /** Only relative paths inside the app are accepted as a destination after sign-in. */
 const safeNext = (next: string | null) => (next && next.startsWith("/") && !next.startsWith("//") ? next : "/");

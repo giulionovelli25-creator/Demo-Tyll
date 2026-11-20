@@ -2,6 +2,7 @@
 // "Take a tour": Tyll teaches itself. Each step opens a real page, waits for the element, scrolls to it, dims the rest
 // and explains it in a sentence or two. Steps the person cannot open are left out, and a step whose element is not on
 // screen (for example the sidebar on a phone) is skipped. The tour never clicks, submits or approves anything.
+import { linkShown } from "@/lib/features";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Compass, X } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -23,7 +24,7 @@ const S = {
 
 const ownerLike = (u: User): TourStep[] => [
   { path: "/", target: "kpis", title: "Your four main tools", text: "Log waste, Stock, Predictions and Revenue. Each card has one number, one line and one button.", module: "overview" },
-  S.page("/investigations", "Investigations", "Every open case with its evidence and what the team decided. Potential losses become confirmed or recovered only when a case is closed.", "investigations"),
+  S.page("/money?tab=flags", "Investigations", "Every open case with its evidence and what the team decided. Potential losses become confirmed or recovered only when a case is closed.", "investigations"),
   (u.role === "owner" ? S.page : S.hub)("/finance", "Finance", u.role === "owner" ? "Budgets and reports: spending against budget for each department, in each hotel's own currency." : "Approvals, supplier invoices, budgets and reports.", "finance"),
   ...(u.role === "gm" ? [S.hub("/rooms", "Rooms and guests", "Arrivals, room readiness, housekeeping and guest service for the hotel.", "rooms")] : []),
   S.nav("/"), S.search("/"), S.bell("/"),
@@ -36,7 +37,7 @@ const TOURS: Partial<Record<User["role"], (u: User) => TourStep[]>> = {
   controller: () => [
     S.hub("/finance", "Your finance home", "Three choices: approvals waiting for you, supplier invoices to check, and budgets and reports.", "finance"),
     S.page("/finance?tab=approvals", "Approvals", "Purchase requests that need accounting's decision. Open one to see items, supplier, cost and the budget left.", "finance", "purchase.approveFinance"),
-    S.page("/finance?tab=invoices", "Invoices", "Each supplier invoice is compared with the order and what arrived. Differences are listed first.", "finance", "finance.review"),
+    S.page("/deliveries?tab=invoices", "Invoices", "Each supplier invoice is compared with the order and what arrived. Differences are listed first.", "finance", "finance.review"),
     S.page("/finance?tab=reports", "Budgets and reports", "Spending against budget, open commitments and cost exceptions. Recorded spending is never mixed with orders still open.", "finance"),
     S.nav("/finance"), S.search("/finance"), S.bell("/finance"),
   ],
@@ -113,7 +114,7 @@ TOURS.storekeeper = TOURS.employee;
 
 /** The steps this person may see. With `here`, only the steps for the current module. */
 export function tourFor(user: User, here?: string): TourStep[] {
-  const steps = (TOURS[user.role]?.(user) ?? []).filter((s) => (!s.module || canOpen(user, s.module)) && (!s.perm || can(user, s.perm)) && canOpen(user, moduleOfPath(s.path.split("?")[0])));
+  const steps = (TOURS[user.role]?.(user) ?? []).filter((s) => linkShown(s.path) && (!s.module || canOpen(user, s.module)) && (!s.perm || can(user, s.perm)) && canOpen(user, moduleOfPath(s.path.split("?")[0])));
   if (!here) return steps;
   const mod = moduleOfPath(here);
   const local = steps.filter((s) => moduleOfPath(s.path.split("?")[0]) === mod);

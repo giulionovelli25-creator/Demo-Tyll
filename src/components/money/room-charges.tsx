@@ -52,7 +52,7 @@ export function RoomChargeCheck() {
           { label: "Charges checked", value: fmtNum(s.checked), compare: { text: `${money(s.charged)} charged to rooms`, good: null }, onClick: () => scrollTo("rooms-sources") },
           { label: "Posted correctly", value: s.checked ? fmtPct(s.matched / s.checked, 1) : "None", tone: "pos", compare: { text: `${fmtNum(s.matched)} of ${fmtNum(s.checked)} charges`, good: null }, onClick: () => scrollTo("rooms-sources") },
           { label: "Not matched", value: fmtNum(s.mismatched), tone: s.mismatched ? "warn" : "pos", compare: { text: s.mismatched ? `${money(s.atStake)} involved` : "Every charge reached the right bill", good: s.mismatched ? false : true }, onClick: () => scrollTo("rooms-list") },
-          { label: "Open to check", value: money(openValue), tone: "money", compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/investigations?type=room&status=open" },
+          { label: "Open to check", value: money(openValue), tone: "money", compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/money?tab=flags&type=room&status=open" },
         ]}
         trend={
           <StripTrend
@@ -69,7 +69,7 @@ export function RoomChargeCheck() {
             summary={`Value of room charges that did not match the guest bill, per day for the last 30 days. ${s.mismatched} of ${s.checked} charges did not match in the selected period.`}
           />
         }
-        action={open.length > 0 ? <Link prefetch={false} href="/investigations?type=room&status=open" className={linkButton("primary")}>Review {open.length} open</Link> : undefined}
+        action={open.length > 0 ? <Link prefetch={false} href="/money?tab=flags&type=room&status=open" className={linkButton("primary")}>Review {open.length} open</Link> : undefined}
       />
 
       {story && (
@@ -100,7 +100,7 @@ export function RoomChargeCheck() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 [&>*]:min-w-0">
         <Panel title="Why charges did not match" description={`${fmtRange(sel.range)}. Value involved. Choose a reason to see its cases.`}>
           {reasons.length === 0 ? <EmptyState title="Every charge in this period reached the right bill" /> : (
-            <BarList format={(n) => money(n)} rows={reasons.map((r) => ({ key: r.status, label: ROOM_STATUS_LABEL[r.status], sub: `${r.n} ${r.n === 1 ? "charge" : "charges"}`, value: r.value, onClick: () => router.push(`/investigations?type=${ROOM_STATUS_TYPE[r.status as keyof typeof ROOM_STATUS_TYPE]}&status=all`) }))} />
+            <BarList format={(n) => money(n)} rows={reasons.map((r) => ({ key: r.status, label: ROOM_STATUS_LABEL[r.status], sub: `${r.n} ${r.n === 1 ? "charge" : "charges"}`, value: r.value, onClick: () => router.push(`/money?tab=flags&type=${ROOM_STATUS_TYPE[r.status as keyof typeof ROOM_STATUS_TYPE]}&status=all`) }))} />
           )}
         </Panel>
         <Panel title="What Tyll checks" description="Each charge is matched to the folio line with the same check number. A difference is a prompt to check the folio, not proof of anyone's mistake.">
@@ -115,7 +115,7 @@ export function RoomChargeCheck() {
       </div>
 
       <div id="rooms-list" className="scroll-mt-24">
-        <Panel title="Charges to check" description="Open first, largest amount first. Checked ones follow." action={<Link prefetch={false} href="/investigations?type=room&status=all" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} className="rtl:rotate-180" /></Link>} flush>
+        <Panel title="Charges to check" description="Open first, largest amount first. Checked ones follow." action={<Link prefetch={false} href="/money?tab=flags&type=room&status=all" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Flagged cases <ArrowRight size={14} className="rtl:rotate-180" /></Link>} flush>
           {rows.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Every charge in this period reached the right bill" /></div> : (
             <>
               {/* Phones get one card per charge, so the amount, status and action are never off screen. */}

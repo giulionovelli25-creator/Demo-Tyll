@@ -11,8 +11,8 @@ import { useView } from "@/lib/hooks";
 interface Entry { m: ModuleId; href: string; title: string; detail: string; icon?: LucideIcon; preview?: boolean }
 
 const AVAILABLE: Entry[] = [
-  { m: "finance", href: "/finance?tab=invoices", title: "Reconciliation", detail: "Supplier invoices checked against orders and deliveries." },
-  { m: "investigations", href: "/investigations", title: "Money Back List", detail: "Every money case, open and closed." },
+  { m: "finance", href: "/deliveries?tab=invoices", title: "Reconciliation", detail: "Supplier invoices checked against orders and deliveries." },
+  { m: "investigations", href: "/money?tab=flags", title: "Money Back List", detail: "Every money case, open and closed." },
   { m: "alerts", href: "/alerts", title: "Alerts", detail: "Everything that needs a decision, in one list." },
   { m: "overview", href: "/menu", title: "Menu", detail: "What each dish sells and earns." },
   { m: "tasks", href: "/tasks", title: "My tasks", detail: "Work assigned to you." },

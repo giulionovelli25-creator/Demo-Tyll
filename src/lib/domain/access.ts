@@ -148,7 +148,7 @@ export const roleCan = (role: Role, permission: Permission) => PERMISSIONS[role]
 /** In the public demo, whether this role can do a module's main job. If not, opening it switches role, which needs a full page load. */
 export const demoRoleFits = (user: User, module: ModuleId) =>
   canOpen(user, module) && (module !== "finance" || can(user, "finance.review")) && (module !== "forecast" || can(user, "purchase.create"));
-export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/stock" : user.role === "chef" ? "/stock" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : user.role === "controller" ? "/finance?tab=invoices" : "/");
+export const homePath = (user: User) => (user.role === "employee" || user.role === "storekeeper" ? "/staff" : user.role === "sales" || user.role === "sales_director" ? "/events" : user.role === "event_manager" ? "/events" : user.role === "purchasing" ? "/stock" : user.role === "chef" ? "/stock" : ["front_office", "housekeeping_manager", "concierge", "bell_captain"].includes(user.role) ? "/rooms" : user.role === "controller" ? "/deliveries?tab=invoices" : "/");
 
 /** Pages inside a module that also need a permission. A role without it is sent to its home page, like a module it cannot open. */
 const PAGE_PERMISSION: [path: string, permission: Permission][] = [["/settings/adapters", "adapters.view"]];
@@ -161,6 +161,8 @@ export const canOpenPath = (user: User, path: string) =>
 export function moduleOfPath(path: string): ModuleId {
   if (path === "/" || path.startsWith("/menu")) return "overview";
   if (path.startsWith("/count")) return "stock";
+  // Deliveries and invoices: the three way check of each delivery is stock; its invoice tab asks for finance.review itself.
+  if (path === "/deliveries" || path.startsWith("/deliveries/")) return "stock";
   const first = path.split("/")[1] as ModuleId;
   return first in MODULE_PATH ? first : "overview";
 }

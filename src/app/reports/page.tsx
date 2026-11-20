@@ -1,4 +1,5 @@
 "use client";
+import { linkShown } from "@/lib/features";
 import { Download, Printer } from "lucide-react";
 import { useMemo } from "react";
 import { TyllLogo } from "@/components/brand";
@@ -98,20 +99,21 @@ export default function ReportsPage() {
   // The printed page is the management report, so it opens first.
   const print = () => { setReportOpen("open"); setTimeout(() => window.print(), 80); };
   // Records with no place of their own in the sidebar. Anything in the sidebar is not repeated here.
-  const groups: { title: string; links: { m: ModuleId; href: string; title: string; summary: string }[] }[] = [
+  type Group = { title: string; links: { m: ModuleId; href: string; title: string; summary: string }[] };
+  const groups: Group[] = ([
     { title: "Stock records", links: [
       { m: "stock", href: "/stock?tab=recipes", title: "Recipes and costs", summary: "What each dish costs to make" },
       { m: "stock", href: "/stock?tab=inventory", title: "Item history", summary: "Deliveries, counts and use" },
     ] },
     { title: "Money records", links: [
-      { m: "investigations", href: "/investigations", title: "Money Back List", summary: "Every flagged case, open and closed" },
       { m: "money", href: "/money?tab=tips", title: "Tips", summary: "By outlet. Preview" },
     ] },
     { title: "Performance", links: [
       { m: "overview", href: "/menu", title: "Menu", summary: "What each dish sells and earns" },
       { m: "overview", href: "/performance", title: "Sales and performance", summary: "Outlets and trends. Preview" },
     ] },
-  ];
+  // Flagged cases live with the flags (Flagged transactions); parts switched off in lib/features.ts are left out.
+  ] as Group[]).map((g) => ({ ...g, links: g.links.filter((l) => linkShown(l.href)) })).filter((g) => g.links.length > 0);
 
   return (
     <div className="space-y-6">

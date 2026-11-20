@@ -1,4 +1,5 @@
 "use client";
+import { linkShown } from "@/lib/features";
 import Link from "next/link";
 import { ArrowRight, ClipboardCheck, Trash2, UtensilsCrossed } from "lucide-react";
 import { Badge, Button, PageHeader, Panel, toast } from "@/components/ui";
@@ -86,7 +87,7 @@ function OutletTasks() {
     { href: "/waste?log=1", icon: Trash2, title: "Log waste", detail: "Three taps: the item, how much, and why.", status: myWaste.length ? `${myWaste.length} logged this session` : "Nothing logged yet" },
     { href: "/stock?tab=counts", icon: ClipboardCheck, title: "Today's spot checks", detail: "Count five priority items.", status: `${Math.min(5, myCounts.length)} of 5 counted` },
     { href: "/flow", icon: UtensilsCrossed, title: "Order board", detail: "Move tickets along as they are prepared and served.", status: `${open} tickets in progress` },
-  ];
+  ].filter((t) => linkShown(t.href));
 
   return (
     <div className="space-y-5">

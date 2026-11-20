@@ -55,7 +55,7 @@ export default function InvestigationPage() {
 
   if (!inv || !explanation) {
     return (
-      <EmptyState title="This investigation is not available" action={<Button variant="primary" onClick={() => router.push("/investigations")}>Open the Money Back List</Button>}>
+      <EmptyState title="This investigation is not available" action={<Button variant="primary" onClick={() => router.push("/money?tab=flags")}>Open the flagged cases</Button>}>
         It does not exist, or it belongs to an outlet outside your access.
       </EmptyState>
     );
@@ -114,7 +114,7 @@ export default function InvestigationPage() {
       setCloseNote("");
       setCause("");
       setAction("");
-      report(result, `Closed as ${OUTCOME_LABEL[outcome].toLowerCase()}. The overview and Money Back List are updated.`);
+      report(result, `Closed as ${OUTCOME_LABEL[outcome].toLowerCase()}. The Overview and Flagged transactions are updated.`);
     } else setFormError(result.error);
   };
 
@@ -211,7 +211,7 @@ export default function InvestigationPage() {
               <div className="mt-6 rounded-2xl border border-warn/25 bg-warn-soft px-5 py-4 text-sm text-ink">
                 <p className="font-medium">A repeated pattern</p>
                 <p className="mt-1 text-graphite">{explanation.patternNote}</p>
-                <Link href={`/investigations?type=${inv.type}&status=all`} className="mt-2 inline-block text-[13px] underline underline-offset-4">See the similar cases</Link>
+                <Link href={`/money?tab=flags&type=${inv.type}&status=all`} className="mt-2 inline-block text-[13px] underline underline-offset-4">See the similar cases</Link>
               </div>
             )}
             {!explanation.patternNote && explanation.similarAtOutlet > 0 && <Note className="mt-5">{explanation.similarAtOutlet} similar case{explanation.similarAtOutlet === 1 ? "" : "s"} at this outlet in the previous 14 days.</Note>}

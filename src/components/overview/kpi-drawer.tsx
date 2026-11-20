@@ -158,10 +158,10 @@ export function KpiDrawer({ kpi, onClose, c, rows, ctx, sel, investigations, mon
           <Stat label="Value involved in open cases" value={money(openByType.reduce((s, [, v]) => s + v.v, 0))} sub="Not confirmed. A case becomes a loss only when a manager records it." />
           <H>Open cases by type</H>
           {openByType.length === 0 ? <p className="text-sm text-steel">No open cases.</p> : (
-            <BarList format={(n) => money(n)} rows={openByType.map(([type, v]) => ({ key: type, label: TYPE_LABEL[type], sub: `${v.n} open`, value: v.v, onClick: () => router.push(`/investigations?type=${type}`) }))} />
+            <BarList format={(n) => money(n)} rows={openByType.map(([type, v]) => ({ key: type, label: TYPE_LABEL[type], sub: `${v.n} open`, value: v.v, onClick: () => router.push(`/money?tab=flags&type=${type}`) }))} />
           )}
           <H>Recorded outcomes in this period</H>
-          <Lines money={money} rows={[["Confirmed losses", t.confirmedLoss, "/investigations?status=closed&outcome=confirmed_loss"], ["Revenue recovered", t.recovered, "/investigations?status=closed&outcome=recovered"]]} />
+          <Lines money={money} rows={[["Confirmed losses", t.confirmedLoss, "/money?tab=flags&status=closed&outcome=confirmed_loss"], ["Revenue recovered", t.recovered, "/money?tab=flags&status=closed&outcome=recovered"]]} />
           <H>Other money lost from stock</H>
           <Lines money={money} rows={[["Recorded waste", t.waste, "/waste"], ["Stock missing at count", t.variance, "/stock?tab=counts"], ["Breakage, glass and plates", t.breakage, "/waste"]]} />
           {byOutlet((r) => open.filter((i) => i.outletId === r.outletId).reduce((s, i) => s + i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency), 0), (r) => `${open.filter((i) => i.outletId === r.outletId).length} open`)}
@@ -176,9 +176,9 @@ export function KpiDrawer({ kpi, onClose, c, rows, ctx, sel, investigations, mon
             <Stat label="Past deadline" value={fmtNum(open.filter((i) => i.deadline && i.deadline < sel.range.to).length)} />
           </div>
           <H>By type</H>
-          <BarList format={(n) => fmtNum(n)} rows={openByType.map(([type, v]) => ({ key: type, label: TYPE_LABEL[type], value: v.n, onClick: () => router.push(`/investigations?type=${type}`) }))} />
+          <BarList format={(n) => fmtNum(n)} rows={openByType.map(([type, v]) => ({ key: type, label: TYPE_LABEL[type], value: v.n, onClick: () => router.push(`/money?tab=flags&type=${type}`) }))} />
           {byOutlet((r) => open.filter((i) => i.outletId === r.outletId).length, undefined, (n) => fmtNum(n))}
-          <Link href="/investigations?status=open" className="mt-6 inline-block text-sm underline underline-offset-4">Open the Money Back List</Link>
+          <Link href="/money?tab=flags&status=open" className="mt-6 inline-block text-sm underline underline-offset-4">Open the flagged cases</Link>
         </>
       )}
     </Drawer>

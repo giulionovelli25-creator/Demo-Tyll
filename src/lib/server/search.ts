@@ -1,5 +1,6 @@
 // Global search across saved records. Every list comes from the same function the record's own screen uses, so a
 // result appears only if this person may open it; nothing from another hotel is fetched and then hidden.
+import { linkShown } from "../features";
 import { INGREDIENTS, SUPPLIERS, outletById, propertyById } from "../data/catalog";
 import { employeeById } from "../data/workforce";
 import { canOpen, can, type ModuleId, type Permission } from "../domain/access";
@@ -60,7 +61,7 @@ const FEATURES: { label: string; detail: string; href: string; module?: ModuleId
   { label: "Room readiness", detail: "Arriving guests and their rooms", href: "/rooms?tab=readiness", perm: "rooms.view", also: "arrivals late room" },
   { label: "Guest Connect", detail: "Ask a hotel venue for a table or slot", href: "/rooms?tab=connect", perm: "fo.desk", also: "restaurant dinner table booking" },
   { label: "Bell & luggage", detail: "Luggage requests and tasks", href: "/rooms?tab=bell", perm: "bell.dispatch", also: "luggage bags porter" },
-  { label: "Invoices & expenses", detail: "Supplier invoices checked against deliveries", href: "/finance?tab=invoices", perm: "finance.review", also: "invoice supplier expense" },
+  { label: "Invoices & expenses", detail: "Supplier invoices checked against deliveries", href: "/deliveries?tab=invoices", perm: "finance.review", also: "invoice supplier expense" },
   { label: "Budgets & reports", detail: "Spending against budget", href: "/finance?tab=reports", perm: "finance.view", also: "budget spending report" },
   { label: "Tyll Staff", detail: "Your tasks and quick actions", href: "/staff", module: "staff", also: "mobile tasks" },
 ];
@@ -69,7 +70,8 @@ export function searchFor(user: User, q: string): SearchHit[] {
   const term = q.trim();
   if (term.length < 2) return [];
   const out: SearchHit[] = [];
-  const add = (group: string, text: string, hit: Omit<SearchHit, "group">) => { if (matches(text, term)) out.push({ group, ...hit }); };
+  // Parts switched off in lib/features.ts never show in search, and moved pages are found at their new address.
+  const add = (group: string, text: string, hit: Omit<SearchHit, "group">) => { if (matches(text, term) && linkShown(hit.href)) out.push({ group, ...hit }); };
   const props = allowedProperties(user);
 
   for (const f of FEATURES) if ((!f.module || canOpen(user, f.module)) && (!f.perm || can(user, f.perm))) add("Features", `${f.label} ${f.also ?? ""}`, { label: f.label, detail: f.detail, href: f.href });
@@ -83,14 +85,14 @@ export function searchFor(user: User, q: string): SearchHit[] {
   } else if (canOpen(user, "stock")) {
     for (const g of INGREDIENTS) add("Items", g.name, { label: g.name, detail: "Stock levels", href: "/stock?tab=inventory" });
   }
-  if (canOpen(user, "stock") || can(user, "finance.view")) for (const s of SUPPLIERS) add("Suppliers", s.name, { label: s.name, detail: "Deliveries and invoices", href: can(user, "finance.review") ? "/finance?tab=invoices" : "/stock?tab=suppliers" });
+  if (canOpen(user, "stock") || can(user, "finance.view")) for (const s of SUPPLIERS) add("Suppliers", s.name, { label: s.name, detail: "Deliveries and invoices", href: can(user, "finance.review") ? "/deliveries?tab=invoices" : "/deliveries" });
 
   if (canOpen(user, "forecast") || can(user, "purchase.receive")) {
     for (const r of requestsFor(user)) add("Purchase requests", `${r.id} ${r.poNumber ?? ""} ${r.lines.map((l) => INGREDIENTS.find((g) => g.id === l.ingredientId)?.name).join(" ")}`, { label: r.poNumber ? `${r.id} · ${r.poNumber}` : r.id, detail: `${r.status} · ${r.lines.length} item${r.lines.length === 1 ? "" : "s"}`, href: canOpen(user, "forecast") ? `/forecast?tab=approvals&request=${r.id}` : `/staff?do=receive&order=${r.id}` });
   }
   if (can(user, "finance.view")) {
     const inv = invoicesFor(user);
-    if (inv.ok) for (const i of inv.invoices) add("Invoices", `${i.id} ${i.supplierRef} ${i.poNumber} ${i.supplierName}`, { label: `${i.supplierName} · ${i.supplierRef}`, detail: `${i.poNumber} · ${i.status.replace("_", " ")}`, href: `/finance?tab=invoices&invoice=${i.id}` });
+    if (inv.ok) for (const i of inv.invoices) add("Invoices", `${i.id} ${i.supplierRef} ${i.poNumber} ${i.supplierName}`, { label: `${i.supplierName} · ${i.supplierRef}`, detail: `${i.poNumber} · ${i.status.replace("_", " ")}`, href: `/deliveries?tab=invoices&invoice=${i.id}` });
   }
   if (canOpen(user, "events")) {
     for (const e of eventsFor(user)) add("Events", `${e.id} ${e.name} ${e.type} ${e.venue}`, { label: e.name, detail: `${e.id} · ${e.date} · ${e.guests} guests`, href: can(user, "events.plan") ? `/events?tab=events&event=${e.id}` : "/events?tab=confirmed" });

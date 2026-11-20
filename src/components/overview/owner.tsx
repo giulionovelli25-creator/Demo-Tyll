@@ -95,7 +95,7 @@ export function OwnerOverview() {
         <span><span className="num text-pos">{money(t.recovered)}</span> <span className="text-steel">revenue recovered</span></span>
         <span><span className="num text-neg">{money(t.confirmedLoss)}</span> <span className="text-steel">confirmed losses</span></span>
         <span><span className="num text-ink">{open.length}</span> <span className="text-steel">still unresolved</span></span>
-        <Link href="/investigations" className="ms-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} /></Link>
+        <Link href="/money?tab=flags" className="ms-auto flex items-center gap-1 text-[13px] text-steel hover:text-ink">Flagged cases <ArrowRight size={14} /></Link>
       </section>
 
       <GuestStrip />

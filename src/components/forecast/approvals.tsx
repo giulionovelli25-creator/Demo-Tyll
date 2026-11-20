@@ -423,7 +423,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
             </div>
           </div>
         )}
-        {r.deliveryId && r.status === "received" && <p className="mt-4 text-sm"><Link prefetch={false} href={`/stock?tab=suppliers&delivery=${r.deliveryId}`} className="text-accent-ink underline-offset-4 hover:underline">See ordered, delivered and invoiced for {r.deliveryId}</Link></p>}
+        {r.deliveryId && r.status === "received" && <p className="mt-4 text-sm"><Link prefetch={false} href={`/deliveries?delivery=${r.deliveryId}`} className="text-accent-ink underline-offset-4 hover:underline">See ordered, delivered and invoiced for {r.deliveryId}</Link></p>}
         <section className="mt-5">
           <h3 className="text-[13px] font-medium text-ink">Status history</h3>
           <ol className="mt-2 space-y-1.5 text-[13px]">

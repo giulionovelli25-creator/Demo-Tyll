@@ -249,7 +249,8 @@ describe("navigation and dates", () => {
     expect(to("/forecast?tab=buy")).toBeNull();
     expect(to("/waste?log=1")).toBe("/waste");
     expect(to("/alerts?kind=stock")).toBeNull();
-    expect(to("/investigations/EX-1")).toBe("/investigations");
+    // Simplify pass: the list of cases moved into Flagged transactions, so a case returns there.
+    expect(to("/investigations/EX-1")).toBe("/money?tab=flags");
     expect(to("/events?tab=events")).toBe("/events");
     expect(to("/events")).toBe("/more");
     expect(to("/finance", "/money")).toBeNull();

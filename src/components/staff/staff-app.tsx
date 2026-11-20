@@ -1,6 +1,7 @@
 "use client";
 // Tyll Staff: a phone-first view for frontline work. Same sign-in, same server records and the same calculations as
 // the management screens; each person sees only the actions their job needs.
+import { featureOn } from "@/lib/features";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, BedDouble, Check, ChefHat, ClipboardCheck, ConciergeBell, GlassWater, Luggage, Minus, PackageCheck, Plus, Trash2, Wine, type LucideIcon } from "lucide-react";
@@ -34,9 +35,10 @@ export function staffActions(user: User): Action[] {
     can(user, "stock.logWaste") && outlets && { id: "breakage", label: "Log breakage", icon: GlassWater },
     mayLogEmpty(user) && { id: "bottle", label: "Empty bottle", icon: Wine },
     can(user, "prep.complete") && user.role === "employee" && outlets && { id: "prep", label: "Prep tasks", icon: ChefHat },
-    can(user, "hk.clean") && user.deptId === "lis-hk" && { id: "rooms", label: "My rooms", icon: BedDouble },
-    can(user, "bell.task") && user.deptId === "lis-bell" && { id: "bell", label: "Luggage tasks", icon: Luggage },
-    can(user, "concierge") && { id: "requests", label: "Guest requests", icon: ConciergeBell },
+    // Rooms and guest service tiles follow the rooms switch in lib/features.ts.
+    featureOn("rooms") && can(user, "hk.clean") && user.deptId === "lis-hk" && { id: "rooms", label: "My rooms", icon: BedDouble },
+    featureOn("rooms") && can(user, "bell.task") && user.deptId === "lis-bell" && { id: "bell", label: "Luggage tasks", icon: Luggage },
+    featureOn("rooms") && can(user, "concierge") && { id: "requests", label: "Guest requests", icon: ConciergeBell },
     can(user, "stock.count") && (user.role === "storekeeper" || outlets) && { id: "count", label: "Stock count", icon: ClipboardCheck },
     can(user, "purchase.receive") && { id: "receive", label: "Deliveries", icon: PackageCheck },
   ].filter(Boolean) as Action[]);

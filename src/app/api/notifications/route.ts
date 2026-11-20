@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { featureOn } from "@/lib/features";
 import { guard, json, sameOrigin } from "@/lib/server/guard";
 import { allowedProperties } from "@/lib/domain/access";
 import { ensureExpiryNotice } from "@/lib/server/expiry";
@@ -9,7 +10,8 @@ export async function GET(req: NextRequest) {
   const g = guard(req, {});
   if (!g.ok) return g.response;
   void deliverQueued();
-  for (const p of allowedProperties(g.user)) ensureExpiryNotice(p);
+  // Expiring soon is switched off in lib/features.ts unless batch tracking is on.
+  if (featureOn("expiry")) for (const p of allowedProperties(g.user)) ensureExpiryNotice(p);
   return json({ ...noticesFor(g.user), emails: req.nextUrl.searchParams.get("emails") ? emailsFor(g.user) : undefined });
 }
 

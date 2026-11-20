@@ -3,6 +3,7 @@ import { Inter, Noto_Sans_Arabic } from "next/font/google";
 import { Suspense } from "react";
 import { AppShell } from "@/components/shell/app-shell";
 import { BrandLoader } from "@/components/brand";
+import { DEMO_TODAY } from "@/lib/util";
 import "./globals.css";
 
 // tyll.ai sets its pages in Inter, with Noto Sans Arabic for Arabic text.
@@ -20,10 +21,15 @@ export const viewport: Viewport = {
   themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f4f5f7" }, { media: "(prefers-color-scheme: dark)", color: "#10141b" }],
 };
 
+// Every page is rendered on request, never at build time, so the business date written into it is today's.
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${arabic.variable} h-full`}>
       <head>
+        {/* The server's business date: the browser reads it first (lib/util.ts), so every page, chart and label shows one "today". */}
+        <meta name="tyll-day" content={DEMO_TODAY} />
         {/* Applies a saved theme and look before first paint, so the page never flashes the wrong colours. */}
         <script dangerouslySetInnerHTML={{ __html: `try{var r=document.documentElement.dataset;if(localStorage.getItem("tyll-theme-v2")==="dark")r.theme="dark";var l=(JSON.parse(localStorage.getItem("tyll-look-v1")||"{}").state)||{};if(l.waves)r.waves=l.waves;if(l.colour&&l.colour!=="sections"){r.look="one";if(l.colour==="outlets"){r.outlets="on";r.tone="indigo"}else{r.tone=l.colour}}var g=(JSON.parse(localStorage.getItem("tyll-lang-v1")||"{}").state||{}).lang;if(g&&g!=="en"){document.documentElement.lang=g;document.documentElement.dir=g==="ar"?"rtl":"ltr";r.translating="1"}}catch(e){}` }} />
       </head>

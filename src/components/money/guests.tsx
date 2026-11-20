@@ -84,7 +84,7 @@ export function HotelGuests() {
           ...(data.breakfastOutlet ? [
             { label: "Breakfast guests covered", value: t.guests ? floorPct(covered / t.guests) : "None", compare: t.guests && data.before?.guests ? shareVersus(covered / t.guests, (data.before.included + data.before.charged + data.before.paid) / data.before.guests, period) : undefined, note: `${fmtNum(covered)} of ${guests(t.guests)}: in the rate, charged or paid`, onClick: () => scrollTo("guests-breakfast") },
             { label: "Breakfasts not charged", value: fmtNum(t.notCharged), tone: t.notCharged ? "warn" as const : "pos" as const, compare: data.before ? versus(t.notCharged, data.before.notCharged, "down", period) : undefined, note: t.notCharged ? `${rooms(t.notChargedRooms)}, ${money(t.value)} at the breakfast price` : "Every breakfast was in the rate or charged", onClick: () => scrollTo("guests-list") },
-            { label: "Open to check", value: money(openValue), tone: "money" as const, compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/investigations?type=breakfast_not_charged&status=open" },
+            { label: "Open to check", value: money(openValue), tone: "money" as const, compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/money?tab=flags&type=breakfast_not_charged&status=open" },
           ] : []),
         ]}
         trend={data.breakfastOutlet ? (
@@ -104,7 +104,7 @@ export function HotelGuests() {
             footer={`${breakfasts(sum(data.trend, (d) => d.notCharged))} not charged in 30 mornings`}
           />
         ) : undefined}
-        action={open.length > 0 ? <Link prefetch={false} href="/investigations?type=breakfast_not_charged&status=open" className={linkButton("primary")}>Review {open.length} open</Link> : undefined}
+        action={open.length > 0 ? <Link prefetch={false} href="/money?tab=flags&type=breakfast_not_charged&status=open" className={linkButton("primary")}>Review {open.length} open</Link> : undefined}
       />
 
       <div className="flex flex-wrap items-center gap-3">
@@ -165,7 +165,7 @@ export function HotelGuests() {
           </div>
 
           <div id="guests-list" className="scroll-mt-24">
-            <Panel title="Rooms to check" description="Open first, largest amount first. Checked ones follow." action={<Link prefetch={false} href="/investigations?type=breakfast_not_charged&status=all" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} className="rtl:rotate-180" /></Link>} flush>
+            <Panel title="Rooms to check" description="Open first, largest amount first. Checked ones follow." action={<Link prefetch={false} href="/money?tab=flags&type=breakfast_not_charged&status=all" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Flagged cases <ArrowRight size={14} className="rtl:rotate-180" /></Link>} flush>
               {rows.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Every breakfast in this period was in the rate or charged" /></div> : (
                 <>
                   <ul className="divide-y divide-hair border-t border-hair">

@@ -33,7 +33,7 @@ describe("recording demo visits", () => {
     expect(V.cleanPath("/forecast?tab=approvals&request=PR-LIS-0008&q=salmon")).toBe("/forecast?tab=approvals");
     expect(V.cleanPath("/investigations/EX-123")).toBe("/investigations/:id");
     expect(V.pageName("/forecast?tab=approvals")).toBe("Orders");
-    expect(V.pageName("/stock?tab=expiry")).toBe("Expiring soon");
+    expect(V.pageName("/deliveries")).toBe("Deliveries and invoices");
     expect(V.pageName("/waste")).toBe("Waste and breakage");
   });
 
@@ -73,7 +73,8 @@ describe("recording demo visits", () => {
     expect(r.totals).toMatchObject({ onNow: 2, visitorsToday: 2, viewsToday: 3, visitors: 2, visits: 2, views: 3 });
     expect(r.pages[0]).toMatchObject({ page: "Overview", views: 2, visitors: 2 });
     expect(r.visits[0]).toMatchObject({ visitor: "Visitor 2", device: "phone", live: true });
-    expect(r.visits[1].path.map((p) => p.page)).toEqual(["Overview", "To order"]);
+    // To order is part of Ordering since the simplify pass.
+    expect(r.visits[1].path.map((p) => p.page)).toEqual(["Overview", "Ordering"]);
     expect(r.roles).toEqual([{ role: "Purchasing Manager", views: 2 }]);
     expect(r.delivery).toBe("Not configured");
     const csv = V.visitsCsv(7, at("2026-11-19T10:04:00Z")).split("\n");

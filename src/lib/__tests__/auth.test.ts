@@ -1,3 +1,4 @@
+import { FEATURES } from "../features";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -180,11 +181,14 @@ describe("page guard", () => {
     expect(where(proxy(req("/staff", staff)))).toBeNull();
     expect(where(proxy(req("/stock", staff)))).toBeNull();
     const manager = signIn("u-rm");
-    expect(where(proxy(req("/rooms", manager)))).toBeNull();
+    // Rooms is switched off in lib/features.ts: its address leads to the Overview until it is switched back on.
+    expect(where(proxy(req("/rooms", manager)))).toBe(FEATURES.rooms ? null : "/");
     expect(where(proxy(req("/money", signIn("u-maid"))))).toBe("/staff");
     expect(where(proxy(req("/finance", manager)))).toBe("/");
     expect(where(proxy(req("/finance", signIn("u-buy"))))).toBe("/stock");
-    expect(where(proxy(req("/investigations", manager)))).toBeNull();
+    // The Money Back List is part of Flagged transactions since the simplify pass: its address leads there, and opens.
+    expect(where(proxy(req("/investigations", manager)))?.startsWith("/money")).toBe(true);
+    expect(where(proxy(req("/money?tab=flags", manager)))).toBeNull();
   });
 });
 
@@ -246,7 +250,7 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     expect(resolveSession(token)!.user.id).toBe("u-chef");
     for (const t of old) expect(resolveSession(t)).toBeNull(); // no earlier role stays usable
     // Refresh: the same page opens as the same role, with no new cookie.
-    const refresh = proxy(req("/stock?tab=expiry", token));
+    const refresh = proxy(req("/stock?tab=takes", token));
     expect(where(refresh)).toBeNull();
     expect(cookieOf(refresh)).toBeUndefined();
     // Back to a page only the previous role could open: home page, same role.
@@ -256,18 +260,28 @@ describe("public demo (TYLL_PUBLIC_DEMO=on)", () => {
     expect(resolveSession(token)!.user.id).toBe("u-chef");
   });
 
-  it("opens deep links directly, as a role that may see the page", () => {
+  it("opens deep links directly, as a role that may see the page", async () => {
     const first = proxy(req("/forecast?tab=buy"));
     expect(where(first)).toBe("/forecast?tab=buy");
     expect(resolveSession(cookieOf(first)!)!.user.id).toBe("u-buy");
-    const cases: [string, string][] = [["/stock", "u-chef"], ["/money", "u-fc"], ["/finance?tab=invoices", "u-fc"], ["/events", "u-fnb"], ["/rooms", "u-gm"], ["/staff", "u-emp"], ["/investigations", "u-fnb"]];
+    const cases: [string, string][] = [["/stock", "u-chef"], ["/money", "u-fc"], ["/deliveries?tab=invoices", "u-fc"], ["/deliveries", "u-buy"], ["/drinks", "u-fnb"], ["/staff", "u-emp"], ["/money?tab=flags", "u-fc"]];
     for (const [url, id] of cases) expect(resolveSession(cookieOf(proxy(req(url)))!)!.user.id).toBe(id);
+    // Old addresses lead to where the page lives now (lib/redirects.ts), with their other values kept.
+    expect(where(proxy(req("/investigations?type=room&status=open")))).toBe("/money?tab=flags&type=room&status=open");
+    expect(where(proxy(req("/stock?tab=suppliers&delivery=PO-1")))).toBe("/deliveries?delivery=PO-1");
+    expect(where(proxy(req("/finance?tab=invoices&invoice=INV-1")))).toBe("/deliveries?tab=invoices&invoice=INV-1");
+    // Parts switched off in lib/features.ts lead to the Overview or their main page.
+    if (!FEATURES.flow) expect(where(proxy(req("/flow")))).toBe("/");
+    if (!FEATURES.rooms) expect(where(proxy(req("/rooms")))).toBe("/");
+    if (!FEATURES.previews) { expect(where(proxy(req("/events")))).toBe("/"); expect(where(proxy(req("/performance")))).toBe("/"); expect(where(proxy(req("/money?tab=tips")))).toBe("/money"); }
+    if (!FEATURES.expiry) expect(where(proxy(req("/stock?tab=expiry")))).toBe("/stock");
+    if (!FEATURES.otherTools) expect(where(proxy(req("/more")))).toBe("/");
     // A role that may already open the page keeps its session.
-    const fnb = cookieOf(proxy(req("/events")))!;
+    const fnb = cookieOf(proxy(req("/drinks")))!;
     expect(where(proxy(req("/stock", fnb)))).toBeNull();
     // The role never changes on its own: only the role switcher changes it. A page the role cannot open leads to its home page.
-    const gm = cookieOf(proxy(req("/rooms")))!;
-    const toFinance = proxy(req("/finance?tab=invoices", gm));
+    const gm = cookieOf(await (await demoRoute()).POST(req("/api/auth/demo", fnb, { method: "POST", body: { userId: "u-gm" } })))!;
+    const toFinance = proxy(req("/deliveries?tab=invoices", gm));
     expect(cookieOf(toFinance)).toBeUndefined();
     expect(resolveSession(gm)!.user.id).toBe("u-gm");
     const buyer = cookieOf(proxy(req("/forecast")))!;

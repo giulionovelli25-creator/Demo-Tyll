@@ -9,6 +9,7 @@ import { freshenPublicDemo } from "./lib/server/demo";
 import { sessionCookie } from "./lib/server/guard";
 import { WORKSPACE_COOKIE, inWorkspace, isWorkspaceId, newWorkspaceId, workspaceCookie } from "./lib/server/workspace";
 import { DAY_COOKIE, DEMO_TODAY } from "./lib/util";
+import { movedTo } from "./lib/redirects";
 
 /** The role a deep link opens as, when the visitor has none yet. */
 const PREFERRED: Record<string, string> = { forecast: "u-buy", stock: "u-chef", tasks: "u-chef", money: "u-fc", finance: "u-fc", rooms: "u-gm", staff: "u-emp" };
@@ -28,6 +29,9 @@ function route(req: NextRequest): NextResponse {
   const { pathname, search } = req.nextUrl;
   // The Tyll team's pages sit outside the demo: no demo session, no role. Their API checks the admin key itself.
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return NextResponse.next();
+  // Pages that moved, merged or are switched off (lib/redirects.ts, lib/features.ts) lead to where they live now.
+  const moved = movedTo(pathname, req.nextUrl.searchParams);
+  if (moved) return NextResponse.redirect(new URL(moved, req.url));
   const view = resolveSession(req.cookies.get(SESSION_COOKIE)?.value, { touch: true });
 
   if (publicDemo()) {
@@ -38,7 +42,7 @@ function route(req: NextRequest): NextResponse {
     // Never switch role behind the visitor's back: a signed-in role keeps its role, and is sent home from pages it cannot open.
     if (view) return canOpenPath(view.user, pathname) ? NextResponse.next() : NextResponse.redirect(new URL(homePath(view.user), req.url));
     // Deliveries and invoices sits under Purchasing, so a first visit opens it as purchasing, who sees the prices.
-    const preferred = pathname === "/stock" && req.nextUrl.searchParams.get("tab") === "suppliers" ? "u-buy" : PREFERRED[mod ?? ""] ?? "u-fnb";
+    const preferred = pathname === "/deliveries" ? (req.nextUrl.searchParams.get("tab") === "invoices" ? "u-fc" : "u-buy") : PREFERRED[mod ?? ""] ?? "u-fnb";
     const userId = demoRoleFor(fits, preferred);
     const started = userId ? startDemoSession(userId, req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local", req.cookies.get(SESSION_COOKIE)?.value) : null;
     if (!started?.ok) return pathname === "/welcome" ? NextResponse.next() : NextResponse.redirect(new URL("/welcome", req.url));

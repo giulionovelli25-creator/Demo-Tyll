@@ -1,4 +1,5 @@
 "use client";
+import { featureOn } from "@/lib/features";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ArrowLeft, CircleHelp, Menu, Wine,
@@ -59,7 +60,7 @@ const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }>
   events: { label: "Events and Staffing", icon: CalendarDays },
   flow: { label: "Tyll Flow", icon: UtensilsCrossed },
   rooms: { label: "Rooms and Guest Experience", icon: BedDouble },
-  investigations: { label: "Money Back List", icon: FileSearch },
+  investigations: { label: "Flagged transactions", icon: FileSearch },
   finance: { label: "Reconciliation", icon: Landmark },
 };
 
@@ -438,7 +439,7 @@ function Signed({ user, children }: { user: User; children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar user={user} />
         <main id="main" data-mod={sectionOf(pathname, tab)?.tone ?? MODULE_TONE[current]} tabIndex={-1} className={cn("mx-auto w-full max-w-[1500px] flex-1 px-4 pb-24 pt-6 outline-none sm:px-6 md:pb-10 lg:px-8", canBreak && "md:pb-24")}>
-          {allowed && (publicDemo ? <GuidedPath offer={pathname === "/more"} /> : pathname === "/more" && <TourOffer user={user} />)}
+          {allowed && (publicDemo ? <GuidedPath offer={pathname === "/"} /> : pathname === (featureOn("otherTools") ? "/more" : "/") && <TourOffer user={user} />)}
           {allowed && preview && (
             <p className="mb-4 flex items-start gap-2 rounded-[var(--radius-control)] bg-accent-soft px-4 py-3 text-sm text-accent-ink">
               <Eye size={18} className="mt-px shrink-0" aria-hidden /><span><span className="font-medium">Preview.</span> This module is in development and not yet part of our pilots.</span>
@@ -506,7 +507,7 @@ function PhoneBar({ user }: { user: User }) {
     { item: find("overview"), lit: pathname === "/", tone: "indigo" },
     { item: find("stock"), lit: section === "stock" && pathname !== "/waste", tone: "teal" },
     { item: find("waste"), lit: pathname === "/waste", tone: "teal" },
-    { item: find("predictions"), lit: section === "purchasing", tone: "blue" },
+    { item: find("ordering"), lit: section === "purchasing", tone: "blue" },
     { item: find("revenue"), lit: section === "revenue", tone: "violet" },
   ].filter((s) => may(s.item));
   const cell = "relative flex h-16 w-full flex-col items-center justify-center gap-1 text-xs text-steel transition-colors duration-150";
@@ -609,7 +610,7 @@ function Topbar({ user }: { user: User }) {
   const [theme, toggleTheme] = useTheme();
   const pathname = usePathname();
   // Main pages show fixed periods, and the sections that follow a date choice carry their own switch.
-  const dated = !["/", "/waste", "/stock", "/forecast", "/alerts", "/money", "/reports", "/drinks", "/finance", "/investigations"].includes(pathname);
+  const dated = !["/", "/waste", "/stock", "/forecast", "/alerts", "/money", "/reports", "/drinks", "/finance", "/money?tab=flags"].includes(pathname);
   const toggle = (p: typeof panel) => setPanel((cur) => (cur === p ? null : p));
   // Ctrl+K or Cmd+K opens search from anywhere.
   useEffect(() => {
@@ -770,16 +771,16 @@ function useAlerts(user: User): Alert[] {
     const open = investigations.filter((i) => i.status !== "closed");
     const today = open.filter((i) => i.date === DEMO_TODAY);
     const overdue = open.filter((i) => caseIsPastDeadline(i));
-    if (today.length) out.push({ id: "today", text: `${today.length} new case${today.length === 1 ? "" : "s"} today`, detail: today[0].headline, href: "/investigations", tone: "warn" });
-    if (overdue.length) out.push({ id: "overdue", text: `${overdue.length} investigation${overdue.length === 1 ? " is" : "s are"} past deadline`, detail: "Open the Money Back List and sort by deadline.", href: "/investigations", tone: "neg" });
+    if (today.length) out.push({ id: "today", text: `${today.length} new case${today.length === 1 ? "" : "s"} today`, detail: today[0].headline, href: "/money?tab=flags", tone: "warn" });
+    if (overdue.length) out.push({ id: "overdue", text: `${overdue.length} investigation${overdue.length === 1 ? " is" : "s are"} past deadline`, detail: "Open the flagged cases and sort by deadline.", href: "/money?tab=flags", tone: "neg" });
     const props = allowedProperties(user);
     if (canOpen(user, "stock")) {
       const issues = data.deliveries.filter((d) => props.includes(d.propertyId) && d.status === "delivered" && d.date >= addDays(DEMO_TODAY, -1) && deliveryOvercharge(d) > 0);
-      if (issues.length) out.push({ id: "suppliers", text: `${issues.length} supplier invoice${issues.length === 1 ? "" : "s"} differ from what was delivered`, detail: "Since yesterday. See Stock, Suppliers.", href: "/stock?tab=suppliers", tone: "warn" });
+      if (issues.length) out.push({ id: "suppliers", text: `${issues.length} supplier invoice${issues.length === 1 ? "" : "s"} differ from what was delivered`, detail: "Since yesterday. See Stock, Suppliers.", href: "/deliveries", tone: "warn" });
       const pending = wasteLogs.filter((w) => !w.synced && w.by === (user.staffId ?? user.id)).length;
       if (pending) out.push({ id: "offline", text: `${pending} waste entr${pending === 1 ? "y" : "ies"} waiting to synchronise`, detail: "Recorded offline on this device.", href: "/waste?log=1", tone: "neutral" });
     }
-    if (canOpen(user, "rooms")) {
+    if (canOpen(user, "rooms") && featureOn("rooms")) {
       const risky = data.arrivals.filter((a) => hasWholeProperty(user, a.propertyId) && (arrivalState[a.id] ?? a.status) !== "checked_in").filter((a) => {
         const room = data.rooms.find((r) => r.propertyId === a.propertyId && r.number === a.room);
         const v = assessArrival({ ...a, status: arrivalState[a.id] ?? a.status }, room ? { ...room, ...roomState[room.id] } : undefined, DEMO_NOW_MIN);

@@ -96,7 +96,7 @@ export function NeedsAttention({ issues, money, title = "Needs your attention", 
       )}
       <Drawer open={all} onClose={() => setAll(false)} title={`${issues.length} open issues`} description="Highest priority first.">
         <ul className="-mx-6">{issues.map((i) => <IssueRow key={i.id} issue={i} money={money} onOutlet={onOutlet} />)}</ul>
-        <Link href="/investigations?status=open" className="mt-4 inline-flex items-center gap-1 text-sm text-steel hover:text-ink">Open the Money Back List <ArrowRight size={14} /></Link>
+        <Link href="/money?tab=flags&status=open" className="mt-4 inline-flex items-center gap-1 text-sm text-steel hover:text-ink">Open the flagged cases <ArrowRight size={14} /></Link>
       </Drawer>
     </Panel>
   );

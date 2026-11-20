@@ -1,6 +1,7 @@
 "use client";
 // Shared figures for the number strips. Each is computed once per page from the records the screens already read.
 import { useMemo } from "react";
+import { canOpen } from "./domain/access";
 import { outletById, propertyById } from "./data/catalog";
 import { countVariance, countVarianceValue, deliveryOvercharge, matchDeliveryLine, receivedAsCorrected } from "./domain/inventory";
 import { computeTotals, type Totals } from "./domain/metrics";
@@ -58,15 +59,18 @@ export function useDeliveryChecks(propertyId: string | null | undefined) {
   const receipts = useDemo((s) => s.receiptCorrections);
   return useMemo(() => {
     const ds = receivedAsCorrected(ctx.data.deliveries, receipts).filter((d) => d.propertyId === propertyId && d.status === "delivered").map((d) => ({ d, over: deliveryOvercharge(d), issue: d.lines.some((l) => matchDeliveryLine(l).issues.length > 0) }));
-    return { issues: ds.filter((x) => x.issue).length, value: sum(ds, (x) => x.over), credited: sum(ds, (x) => x.d.credit?.amount ?? 0), perDay: byDay(ds, (x) => x.d.date, (x) => x.over, lastDays(30)) };
+    // Still to query: invoiced beyond what arrived or the agreed price, on deliveries the supplier has not credited yet.
+    const open = ds.filter((x) => x.over > 0 && !x.d.credit);
+    return { issues: ds.filter((x) => x.issue).length, value: sum(ds, (x) => x.over), credited: sum(ds, (x) => x.d.credit?.amount ?? 0), toQuery: sum(open, (x) => x.over), toQueryCount: open.length, perDay: byDay(ds, (x) => x.d.date, (x) => x.over, lastDays(30)) };
   }, [ctx.data.deliveries, receipts, propertyId]);
 }
 
 /** Stock used without a sale or waste to explain it, at cost: the same figure as the top of Counts and missing stock. */
 export function useUnexplained(propertyId: string | null) {
   const ctx = useCtx();
-  const { sel } = useView();
-  const { data } = useVariancePeriods(propertyId ?? "lis");
+  const { sel, user } = useView();
+  // Missing stock is for roles that follow cases up. Others are not asked for it, so their pages make no refused request.
+  const { data } = useVariancePeriods(canOpen(user, "investigations") ? propertyId ?? "lis" : null);
   return useMemo(() => {
     const outlets = new Set(sel.outletIds);
     const flagged = (data?.periods ?? []).filter((p) => outlets.has(p.outletId)).map((p) => periodVariance(p, ctx.adjust)).filter((v) => v.significant && v.unexplained > 0);

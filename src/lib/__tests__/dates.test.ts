@@ -40,5 +40,8 @@ describe("the hotel's day", () => {
     expect(resolveBusinessDay({ shared: {}, cookie: `x=1; ${DAY_COOKIE}=2026-11-19`, now: new Date("2026-11-20T00:05:00Z") })).toBe("2026-11-19");
     expect(resolveBusinessDay({ shared: {}, cookie: `${DAY_COOKIE}=garbage`, now: new Date("2026-11-20T00:05:00Z") })).toBe("2026-11-20");
     expect(resolveBusinessDay({ pinned: "2026-01-02", shared, cookie: `${DAY_COOKIE}=2026-11-19`, now: new Date() })).toBe("2026-01-02");
+    // The day the server wrote into the page wins over the cookie, which another part of the server may have set earlier.
+    expect(resolveBusinessDay({ shared: {}, page: "2026-11-20", cookie: `${DAY_COOKIE}=2026-11-19`, now: new Date("2026-11-20T00:05:00Z") })).toBe("2026-11-20");
+    expect(resolveBusinessDay({ shared: {}, page: "garbage", cookie: `${DAY_COOKIE}=2026-11-19`, now: new Date() })).toBe("2026-11-19");
   });
 });

@@ -322,7 +322,8 @@ describe("totals reconcile", () => {
     expect(week.now).toBe(weekSums(d.exceptions, (e) => e.date, () => 1).now);
     // Both pages take their per day chart and New this week from the same helper, never a filter of their own.
     const read = (f: string) => fs.readFileSync(path.join(process.cwd(), f), "utf8");
-    for (const f of ["src/app/money/page.tsx", "src/app/investigations/page.tsx"]) {
+    // Simplify pass: the Money Back List body moved into src/components/money/case-list.tsx, shown inside Flagged transactions.
+    for (const f of ["src/app/money/page.tsx", "src/components/money/case-list.tsx"]) {
       const src = read(f);
       expect(src, f).toContain("datedFlags(");
       expect(src, f).not.toContain('type !== "bought_not_used"');

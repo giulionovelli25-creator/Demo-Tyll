@@ -11,8 +11,8 @@ export function PurchasingTabs({ here }: { here: PurchasingPart }) {
   // Only what this role may do, in the public demo as well: the role never changes on its own.
   const may = (p: PurchasingPart) => (p === "deliveries" ? canOpen(user, "stock") : can(user, "finance.review"));
   const parts: { id: PurchasingPart; href: string; label: string }[] = [
-    { id: "deliveries", href: "/stock?tab=suppliers", label: "Deliveries checked" },
-    { id: "invoices", href: "/finance?tab=invoices", label: "Invoice approval" },
+    { id: "deliveries", href: "/deliveries", label: "Deliveries checked" },
+    { id: "invoices", href: "/deliveries?tab=invoices", label: "Invoice approval" },
     // Order approvals and budgets belong to the hotel's accounting system; they stay reachable from the finance page but are not part of this item.
   ];
   const shown = parts.filter((p) => may(p.id));

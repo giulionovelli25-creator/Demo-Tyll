@@ -6,7 +6,7 @@ const MAIN = ["/", "/waste", "/stock", "/forecast", "/money", "/drinks", "/alert
 const ON_MAIN_PAGE: Record<string, string[]> = { "/money": ["flags", "mistakes", "pour", "outlets"] };
 // Pages with their own full screen or frame already have their own way out.
 const OWN_EXIT = ["/count", "/staff", "/tasks", "/login", "/welcome"];
-const SECTION_HOME: Record<string, string> = { "/menu": "/", "/performance": "/", "/investigations": "/money", "/finance": "/money" };
+const SECTION_HOME: Record<string, string> = { "/menu": "/", "/performance": "/", "/investigations": "/money?tab=flags", "/finance": "/money" };
 
 const rootOf = (path: string) => `/${path.split("/")[1]}`;
 
@@ -30,6 +30,8 @@ export function backTarget(path: string, params: { get(name: string): string | n
   const root = rootOf(path);
   if (isMainPage(path, params) || OWN_EXIT.includes(root)) return null;
   if (MAIN.includes(root)) return cameFrom ?? root;
+  // A flagged case returns to Flagged transactions, where the list of cases lives since the simplify pass.
+  if (root === "/investigations") return "/money?tab=flags";
   if (path !== root || params.get("tab")) return root;
   if (home.split("?")[0] === root) return null;
   return cameFrom ?? SECTION_HOME[root] ?? "/more";

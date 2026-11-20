@@ -1,3 +1,4 @@
+import { FEATURES } from "../features";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -21,27 +22,33 @@ describe("sidebar in three sections", () => {
     const hrefs = ALL_ITEMS.flatMap((i) => [i.href, ...(i.also ?? [])]);
     expect(new Set(hrefs).size).toBe(hrefs.length);
     expect(SECTIONS.map((s) => s.title)).toEqual(["Stock and waste", "Purchasing", "Revenue and reconciliation"]);
-    // Purchasing is the flow hotels save most time in, so the owner asked for it to be the most visible (19 November 2026):
-    // To order, Automatic ordering, Predictions, Orders, Suppliers, Deliveries and invoices. The other sections keep four.
-    for (const s of SECTIONS) expect(s.items.length).toBeLessThanOrEqual(s.id === "purchasing" ? 6 : s.id === "stock" ? 5 : 4); // Expiry has its own item: the kitchen must find it at once.
-    for (const href of ["/", "/alerts", "/stock", "/waste", "/drinks", "/forecast", "/money", "/reports", "/settings", "/more"]) expect(hrefs).toContain(href);
+    // Simplify pass (20 November 2026): Purchasing is Ordering, Orders, Suppliers, Deliveries and invoices; every section
+    // has at most four items. Expiring soon and Other tools only return when switched on in lib/features.ts.
+    for (const s of SECTIONS) expect(s.items.length).toBeLessThanOrEqual(4 + (s.id === "stock" && FEATURES.expiry ? 1 : 0));
+    expect(SECTIONS.find((s) => s.id === "purchasing")!.items.map((i) => i.label)).toEqual(["Ordering", "Orders", "Suppliers", "Deliveries and invoices"]);
+    for (const href of ["/", "/alerts", "/stock", "/waste", "/drinks", "/forecast", "/deliveries", "/money", "/reports", "/settings"]) expect(hrefs).toContain(href);
+    expect(hrefs.includes("/more")).toBe(FEATURES.otherTools);
+    expect(hrefs.includes("/stock?tab=expiry")).toBe(FEATURES.expiry);
   });
 
   it("lights up the right item and colours the page by its section", () => {
-    expect(activeItem("/stock", "suppliers")?.label).toBe("Deliveries and invoices");
-    expect(sectionOf("/stock", "suppliers")?.tone).toBe("blue");
+    expect(activeItem("/deliveries", null)?.label).toBe("Deliveries and invoices");
+    expect(sectionOf("/deliveries", null)?.tone).toBe("blue");
     expect(sectionOf("/stock", null)?.tone).toBe("teal");
     expect(activeItem("/investigations/EX-1", null)?.label).toBe("Flagged transactions");
-    expect(activeItem("/finance", "invoices")?.label).toBe("Deliveries and invoices");
+    expect(activeItem("/deliveries", "invoices")?.label).toBe("Deliveries and invoices");
     expect(activeItem("/stock", "counts")?.label).toBe("Stock takes and missing stock");
     expect(activeItem("/stock", "takes")?.label).toBe("Stock takes and missing stock");
-    expect(activeItem("/stock", "expiry")?.label).toBe("Expiring soon");
-    expect(activeItem("/forecast", "pars")?.label).toBe("To order");
+    if (FEATURES.expiry) expect(activeItem("/stock", "expiry")?.label).toBe("Expiring soon");
+    expect(activeItem("/forecast", "pars")?.label).toBe("Ordering");
+    expect(activeItem("/forecast", "auto")?.label).toBe("Ordering");
+    expect(activeItem("/forecast", null)?.label).toBe("Ordering");
     expect(activeItem("/forecast", "catalogue")?.label).toBe("Suppliers");
     expect(activeItem("/money", "cash")?.label).toBe("Flagged transactions");
     expect(activeItem("/forecast", "buy")?.label).toBe("Orders");
     expect(sectionOf("/money", "flags")?.tone).toBe("violet");
-    expect(activeItem("/money", "mistakes")?.label).toBe("Flagged transactions");
+    expect(activeItem("/money", "flags")?.label).toBe("Flagged transactions");
+    expect(activeItem("/money", "rooms")?.label).toBe("Flagged transactions");
     expect(activeItem("/money", "orders")?.label).toBe("Revenue");
     expect(sectionOf("/", null)).toBeNull();
   });

@@ -280,7 +280,7 @@ export function spendEntries(s: Shape, propertyId: string): SpendEntry[] {
   const props = new Set([propertyId]);
   const out: SpendEntry[] = [];
   for (const i of [...datasetInvoices(s, props), ...tyllInvoices(s, props)]) {
-    out.push({ id: i.id, ref: i.poNumber, propertyId, dept: i.dept, category: categoryOf(i.dept), date: i.date, supplier: i.supplierName, description: `Invoice ${i.supplierRef}`, amount: i.total, stage: i.status === "posted" ? "recorded" : "invoice", source: i.source === "tyll" ? "tyll" : "dataset", href: `/finance?tab=invoices&invoice=${i.id}` });
+    out.push({ id: i.id, ref: i.poNumber, propertyId, dept: i.dept, category: categoryOf(i.dept), date: i.date, supplier: i.supplierName, description: `Invoice ${i.supplierRef}`, amount: i.total, stage: i.status === "posted" ? "recorded" : "invoice", source: i.source === "tyll" ? "tyll" : "dataset", href: `/deliveries?tab=invoices&invoice=${i.id}` });
   }
   for (const h of HISTORY_EXPENSES.filter((x) => x.propertyId === propertyId)) {
     out.push({ id: h.id, ref: h.id, propertyId, dept: h.dept, category: categoryOf(h.dept), date: h.date, supplier: h.supplier, description: `${h.description} (simulated history)`, amount: h.amount, stage: "recorded", source: "history" });
@@ -392,7 +392,7 @@ export function financeAlerts(user: User): { id: string; text: string; href: str
     if (over.length) out.push({ id: `fin-budget-${p}-${over.map((o) => o.dept).join("")}`, text: `${propertyById[p].name}: ${over[0].label} is set to exceed its ${BUDGET_MONTH.label} budget once open orders and invoices are recorded.`, href: `/finance?tab=reports&report=budget&propertyId=${p}`, action: "Review budget" });
     if (can(user, "finance.review")) {
       const big = allInvoices(s, new Set([p])).filter((i) => i.overcharge > 0 && NEEDS_CHECK.includes(i.status));
-      if (big.length) out.push({ id: `fin-inv-${p}-${big.length}`, text: `${big.length} supplier invoice${big.length === 1 ? "" : "s"} at ${propertyById[p].name} differ from what was ordered or delivered.`, href: `/finance?tab=invoices&propertyId=${p}`, action: "Check invoices" });
+      if (big.length) out.push({ id: `fin-inv-${p}-${big.length}`, text: `${big.length} supplier invoice${big.length === 1 ? "" : "s"} at ${propertyById[p].name} differ from what was ordered or delivered.`, href: `/deliveries?tab=invoices&propertyId=${p}`, action: "Check invoices" });
     }
   }
   return user.role === "owner" ? out.filter((a) => a.id.startsWith("fin-budget")).slice(0, 1) : out;

@@ -80,7 +80,7 @@ export function WhereDidItGo({ propertyId, tabs }: { propertyId: string; tabs?: 
           items={[
             { label: "Missing, needing a look", value: fmtMoney(flaggedValue, propertyById[propertyId].currency), tone: flaggedValue > 0 ? "warn" : "pos", compare: { text: `${flagged.length} ${flagged.length === 1 ? "item" : "items"} to check`, good: flagged.length ? false : true }, onClick: () => { setShow("flagged"); focusList(); } },
             { label: "Largest gap", value: largest ? ingredientById[largest.p.ingredientId].name : "None", compare: { text: largest ? `${fmtMoney(largest.v.value, propertyById[propertyId].currency)} at ${outletById[largest.p.outletId].name}` : "Nothing short", good: null }, onClick: largest ? () => open(largest.p.id) : undefined },
-            { label: "Being looked into", value: looking, compare: { text: `of ${flagged.length} that need a look`, good: null }, href: "/investigations?status=open" },
+            { label: "Being looked into", value: looking, compare: { text: `of ${flagged.length} that need a look`, good: null }, href: "/money?tab=flags&status=open" },
             { label: "Items counted", value: rows.length, compare: { text: "Each outlet counts its own stock", good: null }, onClick: () => { setShow("all"); focusList(); } },
           ]}
           trend={<StripTrend goodWhen="down" title="Missing at each count, last 30 days" points={byCount} format={money} summary={`Stock used without a sale or waste to explain it, by the date of the closing count. ${money(flaggedValue)} in total.`} note="days without a point had no gap" />}
@@ -190,7 +190,7 @@ function CaseAction({ p, v, existing }: { p: UsagePeriod; v: Variance; existing?
   return (
     <Button variant="primary" onClick={() => {
       const r = openCase(p);
-      if (report(r, "Investigation opened. It is on the Money Back List and the overview.") && r.ok && r.id) router.push(`/investigations/${r.id}`);
+      if (report(r, "Case opened. It is in Flagged transactions and on the Overview.") && r.ok && r.id) router.push(`/investigations/${r.id}`);
     }}>
       Investigate
     </Button>

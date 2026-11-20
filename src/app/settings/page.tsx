@@ -1,4 +1,5 @@
 "use client";
+import { moduleShown, roleShown } from "@/lib/features";
 import { PurchasingSettings } from "@/components/purchasing/purchasing-settings";
 import { Check, Minus } from "lucide-react";
 import { Badge, Note, PageHeader, Panel, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
@@ -18,8 +19,9 @@ import { VisitConsentSetting } from "@/components/shell/visit-consent";
 import type { Role } from "@/lib/types";
 
 
-const ROLES: Role[] = ["owner", "gm", "controller", "fnb_director", "restaurant_manager", "event_manager", "purchasing", "chef", "front_office", "housekeeping_manager", "concierge", "bell_captain", "employee"];
-const MODULE_ROWS: [ModuleId, string][] = [["overview", "Overview"], ["money", "Revenue"], ["stock", "Stock"], ["forecast", "Predictions"], ["flow", "Flow"], ["rooms", "Rooms"], ["investigations", "Investigations"], ["reports", "Reports"]];
+// Roles and modules that only belong to parts switched off in lib/features.ts are left out of the table.
+const ROLES: Role[] = (["owner", "gm", "controller", "fnb_director", "restaurant_manager", "event_manager", "purchasing", "chef", "front_office", "housekeeping_manager", "concierge", "bell_captain", "employee"] as Role[]).filter(roleShown);
+const MODULE_ROWS: [ModuleId, string][] = ([["overview", "Overview"], ["money", "Revenue"], ["stock", "Stock"], ["forecast", "Ordering"], ["flow", "Flow"], ["rooms", "Rooms"], ["investigations", "Flagged transactions"], ["reports", "Reports"]] as [ModuleId, string][]).filter(([m]) => moduleShown(m));
 /**
  * Every permission in the matrix, with the row it shows as in Roles and permissions, or null for steps that belong to a
  * workflow of their own (purchasing approvals, housekeeping, sales). A Record, so a new permission does not build until
@@ -106,7 +108,7 @@ export default function SettingsPage() {
               <tr><Th> </Th>{ROLES.map((r) => <Th key={r} className={cn("text-center", r === user.role && "text-ink")}>{ROLE_LABEL[r]}{r === user.role && <span className="block text-xs font-normal">you</span>}</Th>)}</tr>
             </thead>
             <tbody>
-              <tr className={rowClass}><Td className="text-steel">Sees</Td>{ROLES.map((r) => <Td key={r} className="text-center text-xs text-graphite">{sample(r).propertyIds === "all" ? "Both hotels" : sample(r).outletIds === "all" ? "Lisbon, all outlets" : "Mercado"}</Td>)}</tr>
+              <tr className={rowClass}><Td className="text-steel">Sees</Td>{ROLES.map((r) => <Td key={r} className="text-center text-xs text-graphite">{sample(r).propertyIds === "all" ? "All hotels" : sample(r).outletIds === "all" ? "Lisbon, all outlets" : "Mercado"}</Td>)}</tr>
               {MODULE_ROWS.map(([m, label]) => <tr key={m} className={rowClass}><Td className="min-w-[210px]">Open {label}</Td>{ROLES.map((r) => <Td key={r}><Mark on={canOpen(sample(r), m)} /></Td>)}</tr>)}
               {PERMISSION_ROWS.map(([p, label]) => <tr key={p} className={rowClass}><Td className="min-w-[210px]">{label}</Td>{ROLES.map((r) => <Td key={r}><Mark on={can(sample(r), p)} /></Td>)}</tr>)}
             </tbody>

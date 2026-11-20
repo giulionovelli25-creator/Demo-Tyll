@@ -10,7 +10,6 @@ import { useDailyTotals } from "@/lib/strip-data";
 import { Section, SectionLink } from "@/components/disclosure";
 import { OutletFinance } from "@/components/finance/outlets";
 import type { ChartPoint } from "@/components/home/chart";
-import { useAlertFeed } from "@/lib/alert-feed";
 import { useSection } from "@/components/module-hub";
 import { CashUps } from "@/components/money/cash";
 import { BookedCovers } from "@/components/money/covers";
@@ -18,6 +17,7 @@ import { HotelGuests } from "@/components/money/guests";
 import { RoomChargeCheck } from "@/components/money/room-charges";
 import { TillRuleCheck } from "@/components/money/till-rules";
 import { DrinksByWaiter } from "@/components/money/waiters";
+import { CaseList } from "@/components/money/case-list";
 import { Badge, Button, EmptyState, linkButton, Field, Note, PageHeader, Panel, Segmented, Select, SummaryBar, TableWrap, Td, Th, cn, rowClass, textLink } from "@/components/ui";
 import { STAFF, outletById, outletLabel, propertyById, staffById } from "@/lib/data/catalog";
 import { HERO_EXCEPTION_ID } from "@/lib/data/constants";
@@ -27,7 +27,7 @@ import { POLICY, ROOM_TYPES, TYPE_LABEL, datedFlags, detectOrderException, isEst
 import { adjustmentRate, compare, computeTotals, exceptionInSel, totalsByOutlet } from "@/lib/domain/metrics";
 import { orderTotals } from "@/lib/domain/orders";
 import { useApi, useCtx, useInvestigations, usePatterns, useView } from "@/lib/hooks";
-import { SOURCE_LABEL, STATUS_LABEL } from "@/lib/labels";
+import { STATUS_LABEL } from "@/lib/labels";
 import { useDemo } from "@/lib/store";
 import type { ExceptionType, Order } from "@/lib/types";
 import { DATA_START, DEMO_TODAY, eachDay, fmtDate, fmtMoney, fmtNum, fmtPct, fmtRange, fmtShort, fmtTime, fxRate, presetRange, sum } from "@/lib/util";
@@ -55,11 +55,11 @@ function Period() {
 /** Revenue: today, this week and this month first. Flags, outlets and transactions are one click away. */
 export default function MoneyPage() {
   const [tab] = useSection<Tab>("/money", ["flags", "mistakes", "pour", "outlets", "orders", "rooms", "tips", "cash", "waiters", "till", "covers", "guests"], null);
+  const params = useSearchParams();
   const { sel, money, currency, propertyId, user } = useView();
   const ctx = useCtx();
   const router = useRouter();
   const investigations = useInvestigations();
-  const { pour } = useAlertFeed();
   const t = useMemo(() => computeTotals(ctx, sel), [ctx, sel]);
   const weekC = useMemo(() => compare(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
   const monthC = useMemo(() => compare(ctx, { ...sel, range: presetRange("month") }), [ctx, sel]);
@@ -73,8 +73,6 @@ export default function MoneyPage() {
   const flagValue = sum(flags, (i) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency));
   // The part of it that is an estimate (bought against used, cheaper item rung up, seated table with no bill), said beside the total.
   const flagEstimate = sum(flags.filter(isEstimateFlag), (i) => i.exposure * fxRate(propertyById[i.propertyId].currency, sel.currency));
-  const rate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
-  const pourWeek = pour ? (pour.wine.totals.week.gapValue + pour.spirits.totals.week.gapValue) * rate : 0;
   const onFlags = tab === "flags" || tab === "mistakes" || tab === "pour";
   const profitName = monthC.now.operatingProfit !== null ? "Estimated operating contribution" : "Gross profit";
   const daily = useDailyTotals();
@@ -121,13 +119,13 @@ export default function MoneyPage() {
       {onFlags ? (
         <SummaryBar
           items={[
-            { label: "Open flags", value: flags.length, tone: flags.length ? "warn" : "pos", compare: { text: `${pastDeadline} past their deadline`, good: pastDeadline ? false : true }, href: "/investigations?status=open" },
-            { label: "Value at risk", value: money(flagValue, { compact: true }), tone: "money", compare: { text: flagEstimate > 0 ? `Open flags, until checked. ${money(flagEstimate, { compact: true })} of it estimates` : "Open flags, until checked", good: null }, href: "/investigations?status=open" },
-            { label: "New this week", value: newFlags.now, compare: versus(newFlags.now, newFlags.before, "down"), href: "/investigations?status=all" },
-            { label: "Recovered", value: money(sum(inSel.filter((i) => i.status === "closed"), (i) => i.recovered * fxRate(propertyById[i.propertyId].currency, sel.currency)), { compact: true }), tone: "pos", compare: { text: "All time, as on the Money Back List", good: null }, href: "/investigations?status=closed" },
+            { label: "Open flags", value: flags.length, tone: flags.length ? "warn" : "pos", compare: { text: `${pastDeadline} past their deadline, ${newFlags.now} new this week`, good: pastDeadline ? false : true }, href: "/money?tab=flags&status=open#cases" },
+            { label: "Value at risk", value: money(flagValue, { compact: true }), tone: "money", compare: { text: flagEstimate > 0 ? `Open flags, until checked. ${money(flagEstimate, { compact: true })} of it estimates` : "Open flags, until checked", good: null }, href: "/money?tab=flags&status=open#cases" },
+            { label: "Confirmed losses", value: money(sum(inSel.filter((i) => i.status === "closed"), (i) => i.confirmedLoss * fxRate(propertyById[i.propertyId].currency, sel.currency)), { compact: true }), compare: { text: `All time. ${inSel.filter((i) => i.status === "closed" && i.outcome === "legitimate").length} of ${inSel.filter((i) => i.status === "closed").length} closed were legitimate`, good: null }, href: "/money?tab=flags&status=closed&outcome=confirmed_loss#cases" },
+            { label: "Recovered", value: money(sum(inSel.filter((i) => i.status === "closed"), (i) => i.recovered * fxRate(propertyById[i.propertyId].currency, sel.currency)), { compact: true }), tone: "pos", compare: { text: "All time, on closed cases", good: null }, href: "/money?tab=flags&status=closed&outcome=recovered#cases" },
           ]}
           trend={<StripTrend goodWhen="down" title="Flagged value per day, last 30 days" points={flagDaily} format={(n) => money(n)} explain="The value of transactions that broke a rule, by the day they happened." series={[{ id: "count", label: "Flags raised", axis: "count", goodWhen: "down", format: (n) => `${Math.round(n)}`, points: byDay(dated, (i) => i.date, () => 1), explain: "How many transactions were flagged each day." }]} summary={`Value of flagged transactions by the day they happened. Open now ${money(flagValue)}.`} note="by the day it happened" />}
-          action={<Link href="/investigations" className={linkButton("primary")}>Review {flags.length} flags</Link>}
+          action={<a href="#cases" className={linkButton("primary")}>Review {flags.length} flags</a>}
         />
       ) : tab === "outlets" ? (
         <SummaryBar
@@ -145,7 +143,8 @@ export default function MoneyPage() {
             { label: "Revenue, 7 days", value: money(weekC.now.net, { compact: true }), compare: versus(weekC.now.net, weekC.before.net, "up", "the week before"), href: "/money?tab=orders" },
             { label: "Operating contribution, 7 days", value: money(weekC.now.operatingProfit ?? weekC.now.grossProfit, { compact: true }), compare: versus(weekC.now.operatingProfit ?? weekC.now.grossProfit, weekC.before.operatingProfit ?? weekC.before.grossProfit, "up", "the week before"), href: "/reports" },
             { label: "Guests, 7 days", value: fmtNum(weekC.now.covers), compare: versus(weekC.now.covers, weekC.before.covers, "up", "the week before"), href: "/money?tab=orders" },
-            { label: "At risk, flags and drinks", value: money(flagValue + pourWeek, { compact: true }), tone: "money", compare: { text: "Flags and drinks this week, includes estimates", good: null }, href: "/money?tab=flags" },
+            // Money at risk has one home (Flagged transactions), so Revenue shows the average bill instead of a second version.
+            { label: "Average bill, 7 days", value: money(weekC.now.orders ? weekC.now.net / weekC.now.orders : 0), compare: versus(weekC.now.orders ? weekC.now.net / weekC.now.orders : 0, weekC.before.orders ? weekC.before.net / weekC.before.orders : 0, "up", "the week before"), href: "/money?tab=orders" },
           ]}
           trend={<StripTrend goodWhen="up" title="Revenue per day, last 30 days" points={revenueDaily} format={(n) => money(n)} summary={`Net revenue per day. Last 7 days ${money(weekC.now.net)}.`} note={currency} explain="Net sales each day. Switch on guests and the average bill to see whether a change came from more people or bigger bills." series={revenueSeries} />}
           action={<Link href="/money?tab=orders" className={linkButton("primary")}>See transactions</Link>}
@@ -153,7 +152,9 @@ export default function MoneyPage() {
       )}
       {onFlags ? (
         <>
-          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="Voids, refunds, removed items, till rules and room charges" summary={`${flags.length} ${flags.length === 1 ? "flag" : "flags"}, ${money(flagValue)} at risk`}>
+          {/* The cases and their follow up (formerly the Money Back List), then the rules and patterns behind them. */}
+          <div id="cases" className="scroll-mt-24"><CaseList key={params.toString()} embedded /></div>
+          <Section id="revenue.flagged" forceOpen={tab === "mistakes"} title="What Tyll checks, by type and outlet" summary={`Rules for voids, refunds, removed items, till rules and room charges, with a worked example. ${flags.length} ${flags.length === 1 ? "flag" : "flags"} open.`}>
             <Mistakes />
           </Section>
           {can(user, "till.view") && <SectionLink href="/money?tab=till" title="Till rule check" summary="Bills reopened after payment, cheaper items rung up, open items and prices set by hand, and items rung twice." />}
@@ -218,17 +219,9 @@ function Mistakes() {
     { id: "bought", types: ["bought_not_used"], text: <>Items bought over 30 days beyond what sales, recipes and logged waste account for: more than the last delivery, at least {Math.round(BOUGHT_USED_RULES.minShare * 100)}% of use, and {money(BOUGHT_USED_RULES.minValue)} beyond the last delivery, which is the amount at risk. An estimate until a count.</> },
   ];
   const ruleValue = (r: (typeof rules)[number]) => sum(byType.filter((t) => r.types.includes(t.type)), (t) => t.value);
-  const rulesShown = [...rules].sort((a, b) => ruleValue(b) - ruleValue(a));
+  // Room charges are always among the rules shown first: they are the check hotels ask about most.
+  const rulesShown = [...rules].sort((a, b) => Number(b.id === "room") - Number(a.id === "room") || ruleValue(b) - ruleValue(a));
   const hero = all.find((i) => i.id === HERO_EXCEPTION_ID);
-  const flagged = [...inPeriod].sort((a, b) => Number(a.status === "closed") - Number(b.status === "closed") || toDisplay(b.propertyId, b.exposure) - toDisplay(a.propertyId, a.exposure)).slice(0, 8);
-  // Two text nodes, as before, so each half keeps its translation.
-  const typeLine = (i: (typeof inPeriod)[number]) => <>{TYPE_LABEL[i.type]}{i.type === "cheaper_item_rung" ? ", an estimate from bottles issued" : i.type === "seated_no_bill" ? ", an estimate at the spend per guest" : i.basis === "estimate" ? ", estimate until a stock take confirms it" : i.basis === "confirmed" ? ", confirmed by a stock take" : ""}</>;
-  // Minibar, spa and laundry belong to the hotel, not an outlet: name the source, as the room charge check does.
-  const whereOf = (i: (typeof inPeriod)[number]) => {
-    if (i.outletId) return outletLabel(i.outletId);
-    const charge = i.chargeId ? ctx.data.chargesById.get(i.chargeId) : undefined;
-    return charge ? SOURCE_LABEL[charge.source] : propertyById[i.propertyId].name;
-  };
   const steps = [
     ["8:42 PM", "Guest orders a burger and a Coke", ""],
     ["8:43 PM", "Both items are sent for preparation", "Kitchen and bar tickets print"],
@@ -262,7 +255,7 @@ function Mistakes() {
         <Panel title="Flagged by type" description="Value involved in the period. Choose a type to see its cases.">
           {byType.length === 0 ? <EmptyState title="Nothing flagged in this period" /> : (
             <>
-              <BarList format={(n) => money(n)} rows={(allTypes ? byType : byType.slice(0, 5)).map((t) => ({ key: t.type, label: TYPE_LABEL[t.type], sub: `${t.n} case${t.n === 1 ? "" : "s"}`, value: t.value, onClick: () => router.push(`/investigations?type=${t.type}&status=all`) }))} />
+              <BarList format={(n) => money(n)} rows={(allTypes ? byType : byType.slice(0, 5)).map((t) => ({ key: t.type, label: TYPE_LABEL[t.type], sub: `${t.n} case${t.n === 1 ? "" : "s"}`, value: t.value, onClick: () => router.push(`/money?tab=flags&type=${t.type}&status=all#cases`) }))} />
               {byType.length > 5 && <button type="button" onClick={() => setAllTypes((v) => !v)} className={cn(textLink, "mt-3")}>{allTypes ? "Show the five largest" : `Show all ${byType.length} types`}</button>}
             </>
           )}
@@ -304,48 +297,6 @@ function Mistakes() {
         )}
       </Panel>
       )}
-
-      <Panel title="Flagged orders" description="Open flags first, largest amount first. Closed ones follow." action={<Link href="/investigations" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} /></Link>} flush>
-        {inPeriod.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="No flagged orders in this period" /></div> : (
-          <>
-          {/* Phones get one card per flag: the headline, type and amount, with the comparison held to two lines, so nothing is cut off at the edge. */}
-          <ul className="divide-y divide-hair border-t border-hair sm:hidden">
-            {flagged.map((i) => (
-              <li key={i.id}>
-                <Link prefetch={false} href={`/investigations/${i.id}`} className="block px-5 py-4 transition-colors duration-150 hover:bg-cloud">
-                  <span className="flex items-start justify-between gap-3">
-                    <span className="min-w-0 text-sm text-ink">{i.headline}</span>
-                    <span className="num shrink-0 text-sm font-medium text-ink">{money(toDisplay(i.propertyId, i.exposure))}</span>
-                  </span>
-                  <span className="mt-0.5 block text-xs text-steel">{typeLine(i)}</span>
-                  {i.comparedWith && <span className="mt-0.5 line-clamp-2 text-xs text-graphite">{i.comparedWith}</span>}
-                  <span className="mt-2 flex items-center justify-between gap-3">
-                    <span className="min-w-0 truncate text-xs text-graphite">{whereOf(i)}, {fmtDate(i.date)}</span>
-                    <Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <TableWrap className="hidden sm:block">
-            <table className="w-full min-w-[820px] text-sm">
-              <thead><tr><Th>What Tyll found</Th><Th>Outlet</Th><Th>When</Th><Th align="right">Value involved</Th><Th>Status</Th></tr></thead>
-              <tbody>
-                {flagged.map((i) => (
-                  <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/investigations/${i.id}`)}>
-                    <Td><Link href={`/investigations/${i.id}`} className="text-ink underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>{i.headline}</Link><span className="mt-0.5 block text-xs text-steel">{typeLine(i)}</span>{i.comparedWith && <span className="mt-0.5 line-clamp-2 max-w-[460px] text-xs text-graphite">{i.comparedWith}</span>}</Td>
-                    <Td>{i.outletId ? whereOf(i) : <span className="text-steel">{whereOf(i)}</span>}</Td>
-                    <Td className="num whitespace-nowrap text-graphite">{fmtDate(i.date)}, {fmtTime(i.min)}</Td>
-                    <Td align="right">{money(toDisplay(i.propertyId, i.exposure))}</Td>
-                    <Td><Badge tone={i.status === "closed" ? "neutral" : i.status === "new" ? "warn" : "ink"}>{STATUS_LABEL[i.status]}</Badge></Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </TableWrap>
-          </>
-        )}
-      </Panel>
     </div>
   );
 }

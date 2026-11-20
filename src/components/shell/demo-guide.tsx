@@ -2,6 +2,7 @@
 // Guided demo: a short list of stories, then one small card that says what to do next. It uses the real screens,
 // records and sign-in; it never performs an action for you or claims one happened. Switching person is a real
 // sign-out and sign-in. Reset puts that story's demo records back to their seeded start.
+import { linkShown } from "@/lib/features";
 import { pullRecords } from "@/lib/records-sync";
 import { useMayReset } from "@/components/shell/saved-changes";
 import { useRouter } from "next/navigation";
@@ -118,7 +119,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "invoice", scope: "purchasing", title: "Invoice that does not match the delivery", summary: "Finance compares order, delivery and invoice.",
     steps: [
-      { as: "u-fc", href: `/finance?tab=invoices&invoice=${HERO_INVOICE_ID}`, text: "Priya opens Carnes Ribeiro & Filhos' invoice: 20 kg beef tenderloin ordered, 16 received, 20 invoiced. Flag it or request a correction." },
+      { as: "u-fc", href: `/deliveries?tab=invoices&invoice=${HERO_INVOICE_ID}`, text: "Priya opens Carnes Ribeiro & Filhos' invoice: 20 kg beef tenderloin ordered, 16 received, 20 invoiced. Flag it or request a correction." },
     ],
   },
 ];
@@ -157,7 +158,8 @@ export function DemoPicker({ user, onClose }: { user: User; onClose: () => void 
   const setTour = useDemo((s) => s.setTour);
   const [more, setMore] = useState(false);
   const start = (sc: Scenario) => { set({ scenario: sc.id, step: 0, min: false }); onClose(); };
-  const list = SCENARIOS.filter((s) => (more ? !s.main : s.main));
+  // A story that passes through a part switched off in lib/features.ts is left out.
+  const list = SCENARIOS.filter((s) => s.steps.every((st) => !st.href || linkShown(st.href))).filter((s) => (more ? !s.main : s.main));
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-scrim p-0 sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Guided demo" onClick={onClose}>
       <div className="animate-rise max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-t-3xl border border-line bg-paper p-5 shadow-float sm:rounded-3xl sm:p-6" onClick={(e) => e.stopPropagation()}>

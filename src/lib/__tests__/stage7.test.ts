@@ -1,3 +1,4 @@
+import { FEATURES } from "../features";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -77,15 +78,17 @@ describe("search stays inside each person's access", () => {
     expect(S.searchFor(nadia, r.id).some((h) => h.href.includes(r.id))).toBe(true);
     expect(S.searchFor(sara, "coca").some((h) => h.group === "Stock checks")).toBe(true);
     expect(S.searchFor(sara, "Coca-Colla").some((h) => h.group === "Stock checks")).toBe(true); // typo
-    expect(S.searchFor(fo, "1211").some((h) => h.group === "Rooms")).toBe(true);
+    // Rooms is switched off in lib/features.ts, so search leaves it out until it is switched back on.
+    expect(S.searchFor(fo, "1211").some((h) => h.group === "Rooms")).toBe(FEATURES.rooms);
     expect(S.searchFor(omar, r.id)).toHaveLength(0); // staff cannot open purchasing
     expect(S.searchFor(omar, "invoice").some((h) => h.group === "Invoices")).toBe(false);
     expect(S.searchFor(priya, "MEAT-1012").some((h) => h.group === "Invoices" && h.href.includes("INV-LIS-1012-MEAT"))).toBe(true);
     expect(S.searchFor(sara, "MEAT-1012").some((h) => h.group === "Invoices")).toBe(false); // a manager cannot open finance
     expect(S.searchFor(omar, "Atlas").some((h) => h.group === "Sales")).toBe(false); // staff cannot open sales
-    expect(S.searchFor(noor, "Atlas").some((h) => h.group === "Sales")).toBe(true);
+    // Sales and events are previews, switched off in lib/features.ts: search finds them only when switched back on.
+    expect(S.searchFor(noor, "Atlas").some((h) => h.group === "Sales")).toBe(FEATURES.previews);
     expect(S.searchFor(sara, "guest connect").some((h) => h.group === "Features")).toBe(false); // not her job
-    expect(S.searchFor(fo, "guest connect").some((h) => h.group === "Features")).toBe(true);
+    expect(S.searchFor(fo, "guest connect").some((h) => h.group === "Features")).toBe(FEATURES.rooms);
   });
 });
 

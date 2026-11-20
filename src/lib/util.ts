@@ -23,14 +23,18 @@ const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
  * server's day, from DAY_COOKIE, so labels worked out on screen agree with figures worked out on the server, also
  * after midnight. On the server it is the hotel's day when the process started, shared by every module.
  */
-export function resolveBusinessDay(o: { pinned?: string; cookie?: string; shared: { day?: string }; now: Date }): string {
+export function resolveBusinessDay(o: { pinned?: string; page?: string | null; cookie?: string; shared: { day?: string }; now: Date }): string {
   if (o.pinned && ISO_DAY.test(o.pinned)) return o.pinned;
+  // The day the page was rendered with by the server (a meta tag in the root layout). It comes from the same process as
+  // every API figure, so labels on screen and server figures can never show two different days.
+  if (o.page && ISO_DAY.test(o.page)) return o.page;
   const fromServer = o.cookie ? new RegExp(`(?:^|; )${DAY_COOKIE}=(\\d{4}-\\d{2}-\\d{2})`).exec(o.cookie)?.[1] : undefined;
   if (fromServer) return fromServer;
   return (o.shared.day ??= dayIn(DEMO_TIME_ZONE, o.now));
 }
 export const DEMO_TODAY = resolveBusinessDay({
   pinned: typeof process !== "undefined" ? process.env?.TYLL_DEMO_DATE || process.env?.NEXT_PUBLIC_TYLL_DEMO_DATE : undefined,
+  page: typeof document !== "undefined" ? document.querySelector('meta[name="tyll-day"]')?.getAttribute("content") : undefined,
   cookie: typeof document !== "undefined" ? document.cookie : undefined,
   shared: ((globalThis as { __tyllClock?: { day?: string } }).__tyllClock ??= {}),
   now: new Date(),

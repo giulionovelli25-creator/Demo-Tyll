@@ -91,7 +91,7 @@ function InvoiceHome() {
             {data.toInvoice.map((t) => (
               <li key={`${t.requestId}-${t.supplierId}`} className="flex flex-wrap items-center gap-3 px-5 py-3 sm:px-6">
                 <span className="flex-1 text-sm"><span className="text-ink">{t.poNumber} · {t.supplierName}</span><span className="block text-xs text-steel">Received value {money(t.receivedValue)}</span></span>
-                <Button size="sm" variant="primary" onClick={() => router.push(`/finance?tab=invoices&record=${t.requestId}&supplier=${t.supplierId}`)}>Record invoice</Button>
+                <Button size="sm" variant="primary" onClick={() => router.push(`/deliveries?tab=invoices&record=${t.requestId}&supplier=${t.supplierId}`)}>Record invoice</Button>
               </li>
             ))}
           </ul>
@@ -105,7 +105,7 @@ function InvoiceHome() {
               <thead><tr><Th>Supplier</Th><Th>Date</Th><Th align="right">Invoice total</Th><Th align="right">Difference</Th>{!oneStatus && <Th>Status</Th>}</tr></thead>
               <tbody>
                 {rows.map((i) => (
-                  <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/finance?tab=invoices&invoice=${i.id}&propertyId=${propertyId}`)}>
+                  <tr key={i.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`/deliveries?tab=invoices&invoice=${i.id}&propertyId=${propertyId}`)}>
                     <Td><span className="text-ink">{i.supplierName}</span><span className="num block text-xs text-steel">Invoice {i.supplierRef}</span></Td>
                     <Td className="num text-graphite">{fmtDate(i.date, true)}</Td>
                     <Td align="right"><span className="num">{money(i.total)}</span></Td>
@@ -133,7 +133,7 @@ function InvoiceDetail({ id }: { id: string }) {
   useEarnPilot(!!data && data.invoice.overcharge > 0);
   const [note, setNote] = useState("");
   const [fix, setFix] = useState<Record<string, { qty: string; unitPrice: string }> | null>(null);
-  const back = `/finance?tab=invoices${params.get("propertyId") ? `&propertyId=${params.get("propertyId")}` : ""}`;
+  const back = `/deliveries?tab=invoices${params.get("propertyId") ? `&propertyId=${params.get("propertyId")}` : ""}`;
   if (!data) return <Panel><EmptyState title={error ?? "Loading the invoice"} action={error ? <Button onClick={() => router.push(back)}>All invoices</Button> : undefined} /></Panel>;
   const i = data.invoice;
   const money = (n: number) => fmtMoney(n, i.currency, { decimals: true });
@@ -178,7 +178,7 @@ function InvoiceDetail({ id }: { id: string }) {
         {reviewer && open && (
           <div className="mt-5 space-y-3">
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => router.push(i.requestId ? `/finance?tab=approvals&request=${i.requestId}` : "/stock?tab=suppliers")}>Review delivery</Button>
+              <Button onClick={() => router.push(i.requestId ? `/finance?tab=approvals&request=${i.requestId}` : "/deliveries")}>Review delivery</Button>
               {fix ? <Button variant="primary" onClick={() => act({ action: "record_correction", lines: i.lines.map((l) => ({ ingredientId: l.ingredientId, qty: Number(fix[l.ingredientId].qty), unitPrice: Number(fix[l.ingredientId].unitPrice) })) }, "Corrected invoice recorded and checked again.")}>Save corrected invoice</Button>
                 : ["correction_requested", "flagged", "to_check"].includes(i.status) && <Button onClick={() => setFix(Object.fromEntries(i.lines.map((l) => [l.ingredientId, { qty: String(l.invoiced), unitPrice: String(l.invoicePrice) }])))}>Enter corrected invoice</Button>}
               {fix && <Button variant="ghost" onClick={() => setFix(null)}>Cancel</Button>}
@@ -220,7 +220,7 @@ function RecordInvoice({ requestId, supplierId }: { requestId: string; supplierI
         const r = await mutate<{ invoice: { id: string } }>("/api/finance/invoices", { requestId, supplierId, supplierRef: ref, lines: mine.map((l) => ({ ingredientId: l.ingredientId, qty: Number(vals[l.ingredientId].qty), unitPrice: Number(vals[l.ingredientId].unitPrice) })) });
         if (!r.ok) return toast.error(r.error);
         toast.done("Invoice recorded and compared with the order and delivery.");
-        router.push(`/finance?tab=invoices&invoice=${r.data.invoice.id}`);
+        router.push(`/deliveries?tab=invoices&invoice=${r.data.invoice.id}`);
       }}>
         <Field label="Supplier invoice number" value={ref} onChange={(e) => setRef(e.target.value)} placeholder="For example: GPM-48213" />
         <TableWrap>
@@ -239,7 +239,7 @@ function RecordInvoice({ requestId, supplierId }: { requestId: string; supplierI
             </tbody>
           </table>
         </TableWrap>
-        <div className="flex gap-2"><Button type="submit" variant="primary">Record invoice</Button><Button variant="ghost" onClick={() => router.push("/finance?tab=invoices")}>Cancel</Button></div>
+        <div className="flex gap-2"><Button type="submit" variant="primary">Record invoice</Button><Button variant="ghost" onClick={() => router.push("/deliveries?tab=invoices")}>Cancel</Button></div>
       </form>
     </Panel>
   );
@@ -440,7 +440,7 @@ function ExceptionReport({ data, money, propertyId }: { data: ReportData; money:
         {data.exceptions.length === 0 ? <p className="px-6 pb-6 text-sm text-steel">None open.</p> : (
           <ul className="divide-y divide-hair border-t border-hair">
             {data.exceptions.map((x) => (
-              <li key={x.id}><button type="button" onClick={() => router.push(`/finance?tab=invoices&invoice=${x.id}&propertyId=${propertyId}`)} className="flex w-full flex-wrap items-center justify-between gap-2 px-6 py-3 text-start text-sm hover:bg-cloud"><span>{x.supplier} · {x.poNumber}<span className="block text-xs text-steel">{x.date} · {x.issues.map((k) => ISSUE[k]).join("; ")}</span></span><span className="flex items-center gap-3"><Badge tone={INV_STATUS[x.status].tone} className="!py-0">{INV_STATUS[x.status].label}</Badge><span className="num text-warn">{money(x.amount)}</span></span></button></li>
+              <li key={x.id}><button type="button" onClick={() => router.push(`/deliveries?tab=invoices&invoice=${x.id}&propertyId=${propertyId}`)} className="flex w-full flex-wrap items-center justify-between gap-2 px-6 py-3 text-start text-sm hover:bg-cloud"><span>{x.supplier} · {x.poNumber}<span className="block text-xs text-steel">{x.date} · {x.issues.map((k) => ISSUE[k]).join("; ")}</span></span><span className="flex items-center gap-3"><Badge tone={INV_STATUS[x.status].tone} className="!py-0">{INV_STATUS[x.status].label}</Badge><span className="num text-warn">{money(x.amount)}</span></span></button></li>
             ))}
           </ul>
         )}

@@ -65,7 +65,7 @@ export function TillRuleCheck() {
         items={[
           { label: "Bills checked", value: fmtNum(data.bills), compare: { text: "Every bill in the period, at the outlets in view", good: null }, onClick: () => scrollTo("till-rules") },
           { label: "Rule met", value: fmtNum(data.rows.length), tone: data.rows.length ? "warn" : "pos", compare: { text: data.rows.length ? `${money(flaggedValue)} involved` : "Every bill followed the till rules", good: data.rows.length ? false : true }, onClick: () => scrollTo("till-list") },
-          { label: "Open to check", value: money(openValue), tone: "money", compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/investigations?type=till&status=open" },
+          { label: "Open to check", value: money(openValue), tone: "money", compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/money?tab=flags&type=till&status=open" },
           { label: "Reopened after payment", value: fmtNum(reopen.seen), compare: { text: `${reopen.flagged} closed lower with no approval`, good: reopen.flagged ? false : true }, onClick: () => scrollTo("till-rules") },
         ]}
         trend={
@@ -80,7 +80,7 @@ export function TillRuleCheck() {
             summary={`Value of bills that met a till rule, per day for the last 30 days. ${data.rows.length} in the selected period.`}
           />
         }
-        action={open.length > 0 ? <Link prefetch={false} href="/investigations?type=till&status=open" className={linkButton("primary")}>Review {open.length} open</Link> : undefined}
+        action={open.length > 0 ? <Link prefetch={false} href="/money?tab=flags&type=till&status=open" className={linkButton("primary")}>Review {open.length} open</Link> : undefined}
       />
 
       {story && (
@@ -114,7 +114,7 @@ export function TillRuleCheck() {
             format={(n) => money(n)}
             rows={[...data.rules].sort((a, b) => b.value - a.value || b.flagged - a.flagged).map((r) => ({
               key: r.type, label: TYPE_LABEL[r.type], sub: `${r.flagged} of ${fmtNum(r.seen)} ${words(r.type, r.seen)}`, value: r.value,
-              onClick: () => router.push(`/investigations?type=${r.type}&status=all`),
+              onClick: () => router.push(`/money?tab=flags&type=${r.type}&status=all`),
             }))}
           />
         </Panel>
@@ -129,7 +129,7 @@ export function TillRuleCheck() {
       </div>
 
       <div id="till-list" className="scroll-mt-24">
-        <Panel title="Bills to check" description="Open first, largest amount first. Checked ones follow." action={<Link prefetch={false} href="/investigations?type=till&status=all" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} className="rtl:rotate-180" /></Link>} flush>
+        <Panel title="Bills to check" description="Open first, largest amount first. Checked ones follow." action={<Link prefetch={false} href="/money?tab=flags&type=till&status=all" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Flagged cases <ArrowRight size={14} className="rtl:rotate-180" /></Link>} flush>
           {rows.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Every bill in this period followed the till rules" /></div> : (
             <>
               {/* Phones get one card per bill, so the amount, status and action are never off screen. */}

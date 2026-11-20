@@ -1,3 +1,4 @@
+import { FEATURES } from "../features";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -105,8 +106,9 @@ describe("Scenario E: room cleaned from a phone, seen by the front office", () =
 describe("staff quick actions follow the job", () => {
   it("gives each role only its own actions", () => {
     const ids = (u: typeof omar) => staffActions(u).map((a) => a.id);
-    expect(ids(maria)).toEqual(["rooms"]);
-    expect(ids(yusuf)).toEqual(["bell"]);
+    // Rooms and guest service are switched off in lib/features.ts; their tiles come back with the switch.
+    expect(ids(maria)).toEqual(FEATURES.rooms ? ["rooms"] : []);
+    expect(ids(yusuf)).toEqual(FEATURES.rooms ? ["bell"] : []);
     expect(ids(store)).toEqual(["count", "receive"]);
     expect(ids(ravi)).toEqual(expect.arrayContaining(["waste", "breakage", "prep"]));
     expect(ids(ravi)).not.toContain("receive");

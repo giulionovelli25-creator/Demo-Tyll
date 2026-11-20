@@ -89,7 +89,7 @@ export function buildIssues(
       if (over <= 0) continue;
       out.push({
         id: `supplier-${d.id}`, kind: "supplier", title: `${supplierById[d.supplierId].name} invoiced more than was delivered or agreed`,
-        location: propertyById[d.propertyId].name, impact: over, priority: over >= ISSUE_RULES.highImpact * aed ? "medium" : "low", status: "Open", href: "/stock?tab=suppliers",
+        location: propertyById[d.propertyId].name, impact: over, priority: over >= ISSUE_RULES.highImpact * aed ? "medium" : "low", status: "Open", href: "/deliveries",
       });
     }
   }

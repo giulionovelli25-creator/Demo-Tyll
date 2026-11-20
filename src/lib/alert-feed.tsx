@@ -19,6 +19,7 @@ import type { MonthPlanOut } from "./server/purchasing";
 import { useDemo } from "./store";
 import { DEMO_TODAY, addDays, fmtDate, fmtTime, fxRate } from "./util";
 import { minOf } from "./domain/late-delivery";
+import { featureOn } from "./features";
 
 export type AlertKind = "stock" | "money" | "pour" | "waste" | "margin" | "supplier" | "delivery" | "expiry";
 export type AlertState = AlertStateName;
@@ -88,7 +89,7 @@ export function AlertFeedProvider({ children }: { children: ReactNode }) {
   const orders = useRequests().data?.requests;
   // Batches that normal use will not finish before they expire, in the next three days.
   const seesBatches = can(user, "stock.count") || can(user, "stock.review") || can(user, "purchase.create");
-  const expiring = useExpiring(canOpen(user, "stock") && seesBatches && user.role !== "employee" ? pid : null, 3).data;
+  const expiring = useExpiring(featureOn("expiry") && canOpen(user, "stock") && seesBatches && user.role !== "employee" ? pid : null, 3).data;
 
   const value = useMemo<Feed>(() => {
     const out: FeedAlert[] = [];

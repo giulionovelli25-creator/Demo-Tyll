@@ -86,7 +86,7 @@ export function BookedCovers() {
           { label: "Seated from bookings", value: fmtNum(t.tables), compare: { text: `${guests(t.booked)}. ${fmtNum(t.noShows)} no-shows are not counted`, good: null }, onClick: () => scrollTo("covers-services") },
           { label: "Booked guests billed", value: share(t.billed, t.booked), compare: t.booked && data.before?.booked ? shareVersus(t.billed / t.booked, data.before.billed / data.before.booked, period) : undefined, note: `${fmtNum(t.billed)} of ${guests(t.booked)}`, onClick: () => scrollTo("covers-services") },
           { label: "Tables with no bill", value: fmtNum(t.noBillTables), tone: t.noBillTables ? "warn" : "pos", compare: data.before ? versus(t.noBillTables, data.before.noBillTables, "down", period) : undefined, note: t.noBillTables ? `${guests(t.noBill)}, about ${money(t.value)}, an estimate` : "Every seated table had a bill", onClick: () => scrollTo("covers-list") },
-          { label: "Open to check", value: money(openValue), tone: "money", compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/investigations?type=seated_no_bill&status=open" },
+          { label: "Open to check", value: money(openValue), tone: "money", compare: { text: `${open.length} open ${open.length === 1 ? "flag" : "flags"}, until checked`, good: null }, href: "/money?tab=flags&type=seated_no_bill&status=open" },
         ]}
         trend={
           <StripTrend
@@ -106,7 +106,7 @@ export function BookedCovers() {
             footer={`${guests(sum(data.trend, (d) => d.noBill))} at tables with no bill in 30 days`}
           />
         }
-        action={open.length > 0 ? <Link prefetch={false} href="/investigations?type=seated_no_bill&status=open" className={linkButton("primary")}>Review {open.length} open</Link> : undefined}
+        action={open.length > 0 ? <Link prefetch={false} href="/money?tab=flags&type=seated_no_bill&status=open" className={linkButton("primary")}>Review {open.length} open</Link> : undefined}
       />
 
       <div className="flex flex-wrap items-center gap-3">
@@ -225,7 +225,7 @@ export function BookedCovers() {
       </div>
 
       <div id="covers-list" className="scroll-mt-24">
-        <Panel title="Tables to check" description="Open first, largest amount first. Checked ones follow." action={<Link prefetch={false} href="/investigations?type=seated_no_bill&status=all" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Money Back List <ArrowRight size={14} className="rtl:rotate-180" /></Link>} flush>
+        <Panel title="Tables to check" description="Open first, largest amount first. Checked ones follow." action={<Link prefetch={false} href="/money?tab=flags&type=seated_no_bill&status=all" className="flex items-center gap-1 text-[13px] text-steel hover:text-ink">Flagged cases <ArrowRight size={14} className="rtl:rotate-180" /></Link>} flush>
           {rows.length === 0 ? <div className="px-5 pb-6 sm:px-6"><EmptyState title="Every seated table in this period had a bill" /></div> : (
             <>
               <ul className="divide-y divide-hair border-t border-hair">

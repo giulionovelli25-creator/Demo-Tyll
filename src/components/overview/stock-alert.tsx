@@ -1,4 +1,5 @@
 "use client";
+import { featureOn } from "@/lib/features";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui";
@@ -41,7 +42,7 @@ export function StockAlert({ where = "overview" }: { where?: Where }) {
   const dismissed = useDemo((s) => s.dismissedAlerts);
   const dismiss = useDemo((s) => s.dismissAlert);
   const { data } = usePlanAlerts(canOpen(user, "forecast"));
-  const { data: ops } = useOpsAlerts(canOpen(user, "events"));
+  const { data: ops } = useOpsAlerts(canOpen(user, "events") && featureOn("previews"));
 
   const notices: Notice[] = [];
   // Approvals waiting for this person come first: someone else is waiting on them.

@@ -1,5 +1,9 @@
 "use client";
 // Overview: money lost and saved this month with its trend, the three things that need you today, and one row of small doors into each area. Nothing else.
+import { orderStage } from "@/lib/domain/order-stage";
+import { awaitingDelivery } from "@/lib/domain/procurement";
+import { useRequests } from "@/lib/plan-hooks";
+import { featureOn } from "@/lib/features";
 import Link from "next/link";
 import { ArrowRight, ChevronRight, Sunrise } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -16,7 +20,7 @@ import { inBillsLedger, isEstimateFlag } from "@/lib/domain/detect";
 import { can, type ModuleId } from "@/lib/domain/access";
 import { useAutoOrder } from "@/lib/plan-hooks";
 import { useCtx, useInvestigations, useView } from "@/lib/hooks";
-import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, fmtDate, fmtMoney, fmtPct, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
+import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, fmtDate, fmtPct, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
 
 
 type Tone = "neg" | "warn" | "pos" | "money" | undefined;
@@ -180,7 +184,7 @@ export function Home() {
       { id: "drinks", label: "Drinks poured, not billed", lost: pour ? (pour.wine.totals.month.gapValue + pour.spirits.totals.month.gapValue) * pourRate : 0, saved: paceSaving(drinksBefore, beforeDays, pour ? (pour.wine.recentFull.gapValue + pour.spirits.recentFull.gapValue) * pourRate : 0, nowDays), how: "pace", href: "/drinks" },
       // Open cases valued at an estimate (a seated table with no bill, a cheaper item rung up) count at that value until they close, and the row says how much.
       { id: "bills", label: "Flagged bills", lost: sum(bills, flagValue), saved: recoveredOf(bills), how: "recovered", href: "/money?tab=flags", estimate: sum(bills.filter((i) => i.status !== "closed" && isEstimateFlag(i)), flagValue) },
-      { id: "invoices", label: "Supplier invoice differences", lost: checks.value, saved: checks.credited, how: "credit", href: "/stock?tab=suppliers" },
+      { id: "invoices", label: "Supplier invoice differences", lost: checks.value, saved: checks.credited, how: "credit", href: "/deliveries" },
       { id: "counts", label: "Stock missing at counts", lost: unexplained?.value ?? 0, saved: recoveredOf(counts), how: "recovered", href: "/stock?tab=where" },
     ];
     return { from, before, ...lostAndSaved(rows.map((r) => ({ ...r, lost: Math.round(r.lost), saved: Math.round(r.saved), ...(r.estimate ? { estimate: Math.round(r.estimate) } : {}) }))) };
@@ -191,8 +195,17 @@ export function Home() {
   const week = useMemo(() => compare(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
   const today = useMemo(() => computeTotals(ctx, { ...sel, range: { from: DEMO_TODAY, to: DEMO_TODAY } }), [ctx, sel]);
 
+  // Orders: what waits for this person's approval step, what is on the way and what is late (the same queues as Orders).
+  const orders = useRequests().data?.requests;
+
   if (sel.outletIds.length === 0) return <EmptyState title="Choose an outlet to begin">Your figures appear here once you pick an outlet in the top bar.</EmptyState>;
 
+  const myQueue = can(user, "purchase.review") ? "purchasing" : can(user, "purchase.approveFinance") ? "accounting" : user.role === "fnb_director" ? "fnb" : user.role === "gm" || user.role === "owner" ? "manager" : null;
+  const approves = myQueue !== null;
+  const ordersWaiting = (orders ?? []).filter((r) => ["purchasing", "accounting", "fnb", "manager"].includes(r.status));
+  const ordersMine = ordersWaiting.filter((r) => r.status === myQueue);
+  const ordersOnWay = (orders ?? []).filter(awaitingDelivery);
+  const ordersLate = ordersOnWay.filter((r) => orderStage(r) === "late");
   const items = plan?.items ?? [];
   const toOrder = items.filter((i) => i.orderQty > 0);
   const critical = items.filter((i) => i.health === "critical");
@@ -200,12 +213,8 @@ export function Home() {
   const net = week.now.net;
   const profit = week.now.operatingProfit;
   const nextDate = toOrder.map((i) => i.orderBy ?? "").filter(Boolean).sort()[0];
-  const dueToday = sum(toOrder.filter((i) => i.orderBy === DEMO_TODAY), (i) => i.cost);
-  const dueWeek = sum(toOrder.filter((i) => i.orderBy && i.orderBy > DEMO_TODAY && i.orderBy <= addDays(DEMO_TODAY, 7)), (i) => i.cost);
-  const dueLater = sum(toOrder, (i) => i.cost) - dueToday - dueWeek;
   const place = sel.outletIds.length === 1 ? outletById[sel.outletIds[0]].name : propertyId ? propertyById[propertyId].name : "All hotels";
   const top = topAlerts(open);
-  const local = (n: number) => fmtMoney(n, propertyById[plan?.propertyId ?? "lis"].currency, { compact: true });
   const greeting = DEMO_NOW_MIN < 720 ? "Good morning" : DEMO_NOW_MIN < 1020 ? "Good afternoon" : "Good evening";
 
   return (
@@ -270,29 +279,39 @@ export function Home() {
         </section>
       </div>
 
+      {/* Four cards, each one thing to act on, in plain words. Revenue reporting stays on Revenue and Reports. */}
       <div data-tour="kpis" className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         <Card
-          module="stock" title="Stock levels" picture={<Split parts={[{ n: critical.length, className: "bg-neg" }, { n: low.length, className: "bg-warn" }, { n: items.length - critical.length - low.length, className: "bg-pos" }]} />} number={`${critical.length} critical`} tone={critical.length ? "neg" : "pos"} loading={!plan && loading}
-          line={`${low.length} low and ${items.length - critical.length - low.length} fine.`}
+          module="stock" title="Stock levels" picture={<Split parts={[{ n: critical.length, className: "bg-neg" }, { n: low.length, className: "bg-warn" }, { n: items.length - critical.length - low.length, className: "bg-pos" }]} />} number={critical.length ? `${critical.length} to order today` : "Nothing urgent"} tone={critical.length ? "neg" : "pos"} loading={!plan && loading}
+          line={critical.length ? `${critical.length === 1 ? "This item runs" : "These items run"} out before a later order could arrive. ${low.length} more low.` : `${low.length} low and ${items.length - low.length} fine.`}
           cta="Check stock" href="/stock"
         />
         <Card
           module="drinks" title="Drinks not billed" picture={<Bars values={pourDaily.slice(-7).map((d) => d.value)} />} number={money(lostWeek.drinks, { compact: true })}
-          line={`Last 7 days, ${versus(lostWeek.drinks, lostWeek.drinksBefore, "down").text.toLowerCase()}.`}
+          line={`Poured but not billed in the last 7 days, ${versus(lostWeek.drinks, lostWeek.drinksBefore, "down").text.toLowerCase()}. An estimate.`}
           cta="See over pouring" href="/drinks"
         />
         <Card
-          module="forecast" title="Predictions" picture={<Split parts={[{ n: dueToday, className: "bg-money" }, { n: dueWeek, className: "bg-money/50" }, { n: dueLater, className: "bg-money/20" }]} />} number={local(sum(toOrder, (i) => i.cost))} loading={!plan && loading}
+          module="forecast" title="Orders" picture={<Split parts={[{ n: ordersMine.length, className: "bg-money" }, { n: ordersWaiting.length - ordersMine.length, className: "bg-money/50" }, { n: ordersOnWay.length, className: "bg-money/20" }]} />}
+          number={approves ? `${ordersMine.length} waiting for your approval` : `${ordersWaiting.length} waiting for approval`} tone={approves && ordersMine.length ? "warn" : undefined} loading={!orders}
           line={autoOrder?.run && autoOrder.orders.length
-            ? `Ordered automatically at ${autoOrder.run.time}: ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, ${local(sum(autoOrder.orders, (r) => sum(r.lines, (l) => l.qty * l.unitPrice)))}. ${autoOrder.orders.filter((r) => r.auto?.decision === "held").length} waiting for approval.`
-            : `Buying planned to ${plan ? fmtDate(plan.period.to) : "month end"}: ${toOrder.length} items.${nextDate ? ` Next order ${nextDate === DEMO_TODAY ? "today" : fmtDate(nextDate, true)}.` : ""}`}
-          cta={autoOrder?.run && autoOrder.orders.length ? "See automatic orders" : "See what to order"} href={autoOrder?.run && autoOrder.orders.length ? "/forecast?tab=auto" : "/forecast"}
+            ? `${approves ? `${ordersWaiting.length} waiting in all. ` : ""}${autoOrder.orders.length} placed automatically this morning, ${ordersOnWay.length} on the way${ordersLate.length ? `, ${ordersLate.length} late` : ""}.`
+            : `${approves ? `${ordersWaiting.length} waiting in all. ` : ""}${ordersOnWay.length} on the way${ordersLate.length ? `, ${ordersLate.length} late` : ""}.${nextDate ? ` Next order ${nextDate === DEMO_TODAY ? "today" : fmtDate(nextDate, true)}.` : ""}`}
+          cta={approves && ordersMine.length ? "Review orders" : "See orders"} href={`/forecast?tab=approvals${approves && myQueue ? `&queue=${myQueue}` : ""}`}
         />
+        {featureOn("overviewRevenue") ? (
         <Card
           module="money" title="Revenue" picture={<Spark values={dailyRevenue.slice(-7).map((d) => d.value)} />} number={money(net, { compact: true })}
           line={`Last 7 days, ${signed(pctChange(net, week.before.net))}. ${money(profit ?? week.now.grossProfit, { compact: true })} ${profit !== null ? "profit, estimate" : "gross profit"}.`}
           cta="See revenue" href="/money"
         />
+        ) : (
+        <Card
+          module="stock" title="Supplier invoices" picture={<Bars values={checks.perDay.slice(-7).map((d) => d.value ?? 0)} />} number={`${money(checks.toQuery, { compact: true })} to query`} tone={checks.toQuery > 0 ? "warn" : "pos"}
+          line={checks.toQueryCount ? `Invoiced for goods not delivered or above the agreed price, on ${checks.toQueryCount} ${checks.toQueryCount === 1 ? "delivery" : "deliveries"}. Not yet credited.` : "Every invoice matches what arrived."}
+          cta="Check deliveries" href="/deliveries"
+        />
+        )}
       </div>
 
       <Drawer open={breakdown === "lost" || breakdown === "saved"} onClose={() => setBreakdown(null)} title={breakdown === "saved" ? "Money saved, last 30 days" : "Money lost, last 30 days"} description={`Since ${fmtDate(ledger.from)}, by kind of loss. ${money(yearly(ledger.lost))} lost and ${money(yearly(ledger.saved))} saved a year at this rate, estimates. Simulated data.`}>

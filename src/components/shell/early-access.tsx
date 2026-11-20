@@ -25,13 +25,17 @@ export function WhatsNew({ open, onClose }: { open: boolean; onClose: () => void
   );
 }
 
-/** The stops of the public demo, all seen as the F&B Director, so nothing changes under the visitor's feet. */
+/**
+ * The stops of the public demo, all seen as the F&B Director, so nothing changes under the visitor's feet. The money
+ * story in five steps (simplify pass, 20 November 2026): what Tyll found, ordering, the bar, one flagged bill followed
+ * to money recovered, and supplier invoices. Each stop shows its point at the top of the page, without scrolling.
+ */
 export const GUIDED_PATH = [
-  { href: "/waste", userId: "u-fnb", title: "Log waste", text: "Tap the item, tap the number. Done in two taps, with Undo." },
-  { href: "/stock", userId: "u-fnb", title: "Stock", text: "How much is left, with what is about to run out on top. Start count walks the storeroom in order." },
-  { href: "/forecast", userId: "u-fnb", title: "Predictions", text: "What to order and how much to reach month end. Try Build order." },
-  { href: "/drinks", userId: "u-fnb", title: "Over pouring", text: "How many glasses each bottle really gave, and which drinks sales do not explain." },
-  { href: "/more", userId: "u-fnb", title: "Coming soon", text: "Events, rooms and sales are in development. Have a look at where Tyll is heading." },
+  { href: "/", userId: "u-fnb", title: "Money found", text: "Money lost and saved in the last 30 days, and the three things that need you today. Morning brief shows the 7 AM summary." },
+  { href: "/forecast", userId: "u-fnb", title: "Ordering", text: "What to order before it runs out, from sales, bookings and occupancy, and which deliveries may come too late. Larger orders wait for your approval." },
+  { href: "/drinks", userId: "u-fnb", title: "Over pouring", text: "How many glasses each bottle really gave at the bar, and what was poured but not billed." },
+  { href: "/money?tab=flags", userId: "u-fnb", title: "Flagged transactions", text: "Every bill that broke a rule, who is following it up and the money recovered. Open a case to follow it from the till to the outcome." },
+  { href: "/deliveries", userId: "u-fnb", title: "Deliveries and invoices", text: "Suppliers invoiced for goods that never arrived. Open the largest and draft the credit request in one click." },
 ] as const;
 
 const KEY = "tyll-guided-path";
@@ -69,7 +73,7 @@ export function GuidedPath({ offer = false }: { offer?: boolean }) {
   const close = () => { write("off"); force((n) => n + 1); };
 
   if (state === null) {
-    // The offer lives on the More page, so it never pushes the priority cards down.
+    // The offer is one line at the top of the Overview, the first page a visitor sees.
     if (!offer) return null;
     return (
       <div className="no-print mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-paper px-4 py-3">

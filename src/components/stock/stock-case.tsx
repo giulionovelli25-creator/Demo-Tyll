@@ -49,7 +49,7 @@ export function OpenStockCase({ count }: { count: CountRecord }) {
           onClick={(ev) => {
             ev.stopPropagation();
             const r = open(count.id, chosen);
-            if (report(r, "Case opened. It is on the Money Back List.") && r.ok && r.id) router.push(`/investigations/${r.id}`);
+            if (report(r, "Case opened. It is in Flagged transactions.") && r.ok && r.id) router.push(`/investigations/${r.id}`);
           }}
         >
           Open a case
