@@ -1,7 +1,7 @@
 "use client";
 // Rooms and guest service: server records, reloaded after every change so every department sees the same thing.
 import { useEffect, useState } from "react";
-import { api } from "./api";
+import { readShared } from "./api";
 import { usePlanDrafts } from "./plan-hooks";
 import type { RoomsBoard } from "./server/guest";
 import type { BellTask } from "./types";
@@ -20,7 +20,7 @@ export function useLiveGet<T>(url: string | null, everyMs = 30000) {
   useEffect(() => {
     if (!url || !key) return;
     let live = true;
-    api<T>(url).then((data) => live && setState({ key, data })).catch((e: unknown) => live && setState({ key, error: e instanceof Error ? e.message : "Could not load." }));
+    readShared<T>(url).then((data) => live && setState({ key, data })).catch((e: unknown) => live && setState({ key, error: e instanceof Error ? e.message : "Could not load." }));
     return () => { live = false; };
   }, [url, key]);
   return { data: state?.data, error: state?.error };

@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { api } from "./api";
+import { readShared } from "./api";
 import { STAFF, USERS, outletById, staffById, userById } from "./data/catalog";
 import { getDataset, rememberOrders, useDataVersion } from "./data/dataset";
 import { allowedOutlets, allowedProperties, clampScope, hasWholeProperty, scopeCurrency, scopeOutlets } from "./domain/access";
 import { detectPatterns } from "./domain/detect";
 import type { StockInputs } from "./domain/inventory";
 import { exceptionInSel, listInvestigations, type Ctx, type Sel } from "./domain/metrics";
+import { useRecordsMeta } from "./records-sync";
 import { useShared } from "./shared-stock";
 import { correctedWaste, currentRange, useDemo } from "./store";
 import type { ForecastInputs } from "./domain/forecast";
@@ -111,7 +112,7 @@ export function useApi<T>(url: string | null): { data: T | undefined | null; err
   useEffect(() => {
     if (!url) return;
     let live = true;
-    api<T>(url)
+    readShared<T>(url)
       .then((data) => live && setState({ url, data }))
       .catch((e: unknown) => live && setState({ url, data: null, error: e instanceof Error ? e.message : "Could not load." }));
     return () => {
@@ -136,13 +137,24 @@ export function useOrder(id: string | undefined): { order: Order | undefined; st
 
 /** Posts to a protected endpoint whenever the body changes. Keeps the last answer on screen while a new one loads. */
 export function usePost<T>(url: string, body: unknown | null, delayMs = 0): { data: T | undefined; loading: boolean; error?: string } {
-  const key = body === null ? null : JSON.stringify(body);
+  // A body that carries this session's entries waits for the saved records (at most 1.5 seconds), so the page asks once
+  // with them instead of once without and again with.
+  const loaded = useRecordsMeta((s) => s.loaded);
+  const [waited, setWaited] = useState(false);
+  const needsRecords = !!body && typeof body === "object" && "receipts" in body;
+  const hold = needsRecords && !loaded && !waited;
+  useEffect(() => {
+    if (!hold) return;
+    const t = setTimeout(() => setWaited(true), 1500);
+    return () => clearTimeout(t);
+  }, [hold]);
+  const key = body === null || hold ? null : JSON.stringify(body);
   const [state, setState] = useState<{ key: string; data?: T; error?: string } | null>(null);
   useEffect(() => {
     if (key === null) return;
     let live = true;
     const t = setTimeout(() => {
-      api<T>(url, { method: "POST", body: JSON.parse(key) })
+      readShared<T>(url, JSON.parse(key))
         .then((data) => live && setState({ key, data }))
         .catch((e: unknown) => live && setState((s) => ({ key, data: s?.data, error: e instanceof Error ? e.message : "Could not load." })));
     }, delayMs);
@@ -151,7 +163,7 @@ export function usePost<T>(url: string, body: unknown | null, delayMs = 0): { da
       clearTimeout(t);
     };
   }, [url, key, delayMs]);
-  return { data: state?.data, loading: key !== null && state?.key !== key, error: state?.key === key ? state.error : undefined };
+  return { data: state?.data, loading: hold || (key !== null && state?.key !== key), error: state?.key === key ? state.error : undefined };
 }
 
 /** Entries waiting on this device that belong to the person signed in. */

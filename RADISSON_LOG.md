@@ -1,0 +1,68 @@
+# Radisson feedback build: log
+
+Branch `feature/radisson-feedback`, from `feature/simplify-demo` (3f2e49a), which sits on `feature/late-delivery-prediction`, `feature/overnight-checks` and `fix/critical-audit`. Nothing is pushed to main or deployed. No real external call is made anywhere.
+
+## 2. What already exists (read before building)
+
+Read: AUDIT_LOG.md, REPORT.md, OVERNIGHT_LOG.md, MORNING_REPORT.md, FEATURE_LOG.md, FEATURE_REPORT.md, SIMPLIFY_LOG.md, SIMPLIFY_REPORT.md, and the git log.
+
+| Earlier task | Item | State in the code | What this build does with it |
+|---|---|---|---|
+| Critical audit | Person switching | Done, tested (one role per session, switcher only) | Reuse |
+| Critical audit | Overdue date rules, one business date | Done; simplify added the page date meta | Reuse |
+| Critical audit | Order states and approval chain | Draft, purchasing, accounting, F&B director over €2,000, GM over €5,000, approved, sent (logged), received, closed; nobody approves their own order | Reuse; add the sending states below |
+| Critical audit | Idempotent sending | Done (send once, confirm before sending, "logged, not emailed") | Reuse inside the new sending step |
+| Critical audit | Sending, failed, retry states | **Not built** (AUDIT_LOG F5: "no transport exists") | **Build first** (item 2) |
+| Critical audit | Server side validation | Done on every route | Reuse |
+| Overnight | Room charges, reopened bills, till rules, covers, hotel guests, bought against used, empty bottle scan | Done, flag types in "What Tyll checks" | Reuse |
+| Overnight | Tables with food but no drink, drinks per guest by waiter | Done as a coaching page (`/money?tab=waiters`, `noDrink` in `lib/domain/waiters.ts`); **not** a flag type, not in "What Tyll checks" | Extend into the "Meal with no drink" rule (item 8) |
+| Overnight | Save all user input on the server, workspaces | Done | Reuse for every new record |
+| Overnight | POS and PMS adapters | **Lightspeed K Series** and **Mews**, sample responses only, behind `PosAdapter` and `PmsAdapter`; Settings > Data sources and `/settings/adapters` | Add **Simphony** as a second POS adapter behind the same interface (item 3) |
+| Late delivery | Delivery history, one tap Received, supplier reliability, deliveries at risk | Done (`lib/data/delivery-history.ts`, `lib/server/late-delivery.ts`, `/forecast?tab=reliability`) | Reuse the same delivery record for "Delivered" (item 2) |
+| Simplify | Flow and Rooms hidden, previews hidden | Switches in `lib/features.ts` | Keep hidden |
+| Simplify | Expiring soon | **Hidden** (`expiry: false`) | Switch back on and make it actionable (item 6) |
+| Simplify | Flags merged with the Money Back List; Purchasing as Ordering, Orders, Suppliers, Deliveries and invoices; redirects | Done | Follow these routes |
+| Simplify | Overview, one business date, reconciled numbers, guided path | Done | Replace the guided path (section 6) |
+| Earlier stages | Stock valuation WAC, FIFO or last price | Setting in Settings > Purchasing; stock values say which method | Extend: prices from approved invoices (item 5) |
+| Earlier stages | Ingredient prices | Edited by hand on Recipes and costs, with a price log | Become explained overrides over invoice prices (item 5) |
+| Earlier stages | Price history per item from invoices, "above agreed" flag | Done in Suppliers > Catalogue and prices | Reuse for last invoice and contract price (item 5) |
+| Earlier stages | Stock takes with variance and approval | Done (`/stock?tab=takes`, the counter cannot approve, month end report); **no seeded stock take** waiting for approval | Add a clear review step and seed one waiting for approval (item 7) |
+| Earlier stages | Menu sync, new dish needs a recipe, modifiers | **Not built** (feature checklist: "Planned"); six menu items use a standard cost | Build (item 4) |
+| Earlier stages | "Order now" on critical items | **Not built** (To order creates orders in bulk; Stock, alerts and Overview only link to Ordering) | Build (item 1) |
+| Earlier stages | Supplier confirmation | **Not built** | Build (item 2) |
+
+## 3. The demo before this build
+
+Measured on the simplify build, public demo, as the Purchasing Manager, F&B Director and Head Chef.
+
+| # | Criterion | Before | Evidence |
+|---|---|---|---|
+| 1 | Automatic purchasing | 6 | The 06:00 run makes orders, and small ones are approved by rule and "sent (logged)"; but critical stock on Stock or the Overview has no "Order now", nothing is sent after a person approves, and there is no supplier confirmation. |
+| 2 | Simphony fit | 3 | Data sources lists Lightspeed and Mews only; Simphony appears only as "Planned" in the checklist. |
+| 3 | Menu changes | 2 | No menu sync; six dishes sit on a standard cost with no path to a recipe beyond editing by hand. |
+| 4 | Valuation | 6 | WAC, FIFO or last price can be chosen and stock values name the method, but ingredient prices are typed by hand rather than taken from invoices. |
+| 5 | Expiry | 3 | Expiring soon is switched off; when on, it lists actions in words but nobody is sent anything to do. |
+| 6 | Stock counts | 7 | Stock takes show system against counted with approval by another manager, but none is waiting, so it cannot be shown without counting first. |
+| 7 | Trust | 8 | Honest labels and reconciled figures (simplify pass); nothing yet claims Simphony. |
+| 8 | Speed and reliability | 8 | Pages ready in 0.1 to 0.3 s locally, no console errors or dead links; the plan is fetched twice on every page and the orders list two or three times. |
+| 9 | Clarity | 9 | One question per page, short lists (simplify pass). |
+| 10 | Polish | 9 | Consistent design, phone and Arabic checked on the main pages. |
+
+## 4. Bugs: checked first
+
+| Bug | Found | Detail |
+|---|---|---|
+| Slow load, hundreds of requests | **Not reproduced locally**; duplicates found | Locally (production build): pages ready in 124 to 245 ms; 9 to 12 API calls per page, no 502 or 503. Duplicates on every page: `POST /api/plan/month` twice; `GET /api/purchasing` two or three times on Orders and the Overview; `POST /api/stock` and `POST /api/auto-order` twice on their pages. The 15 s and 502/503 point at the hosted server's cold start: the simulated data (sales, deliveries, counts) is built on the first request of each process. |
+| Empty "All" on Orders | **Similar case found** | "All" (`queue=all`) shows every order. But a role's own queue opens by default even when it is empty: the controller opens on "Waiting for accounting", which is empty, and reads "Nothing here" while 3 orders wait elsewhere. |
+| Deep links | **Works** | `/forecast?tab=approvals&request=PR-LIS-0008`, `/investigations/EX-MER-1119-301` and `/forecast?risk=…` load directly, with no "Loading Tyll" hang. |
+
+### Bugs: fixed
+
+| Bug | Fix | Before | After |
+|---|---|---|---|
+| Duplicate requests | Reads that carry this session's entries wait for the saved records (at most 1.5 s), so a page asks once instead of once without and again with them; two parts of a page asking the same thing at the same moment share one request (`readShared` in `lib/api.ts`), cleared after every change | 9 to 12 calls a page; `plan/month` 2x on every page, `purchasing` 2 to 3x, `stock` and `auto-order` 2x | 7 to 10 calls a page, **0 duplicates** on 18 page loads (3 roles x 6 pages) |
+| Slow first load | `src/instrumentation.ts` builds the simulated dataset when the server starts, not on the first visitor's page | Locally 124 to 255 ms a page; dataset built on the first request (`/api/data` 342 ms cold) | Locally 112 to 249 ms a page, the first page after a restart included (113 ms) |
+| Orders opens empty | `openingQueue` (`lib/domain/order-queues.ts`): Orders opens on the role's own step only when it has orders, otherwise on All; a filter in the address always wins | Controller: "Nothing here" | Controller: All (9) |
+| Deep links | Checked, already working | `?request=PR-LIS-0008` opens the order | Same, also measured: 121 to 129 ms |
+
+The 15 s and 502/503 seen on the hosted demo cannot be reproduced locally. The likely causes are the host's cold start (now shortened by the warm-up) and the request count (now lower). Tests: `src/lib/__tests__/radisson.test.ts`, Orders filters (4 tests).

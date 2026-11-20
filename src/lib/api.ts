@@ -52,3 +52,16 @@ export async function api<T>(url: string, init?: { method?: "GET" | "POST"; body
   if (!res.ok) throw new ApiError(res.status, typeof body.error === "string" ? body.error : "Something went wrong.", body);
   return body as T;
 }
+
+/** Reads already on their way, by method, address and body. Two parts of a page that ask the same thing at the same
+ * moment share one request instead of sending two. Cleared after every change, so a read never answers from before it. */
+const inflight = new Map<string, Promise<unknown>>();
+export function readShared<T>(url: string, body?: unknown): Promise<T> {
+  const key = `${body === undefined ? "GET" : "POST"} ${url} ${body === undefined ? "" : JSON.stringify(body)}`;
+  const known = inflight.get(key) as Promise<T> | undefined;
+  if (known) return known;
+  const p = api<T>(url, body === undefined ? undefined : { method: "POST", body }).finally(() => { if (inflight.get(key) === p) inflight.delete(key); });
+  inflight.set(key, p);
+  return p;
+}
+export const forgetReads = () => inflight.clear();

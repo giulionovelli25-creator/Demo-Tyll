@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { api } from "./api";
+import { api, forgetReads, readShared } from "./api";
 import type { Assumptions, Meal, PeriodKind } from "./domain/planning";
 import { usePost, useSessionEntries } from "./hooks";
 import type { BuyPlanOut, MonthPlanOut, OutlookOut, PlanAlert, PrepOut } from "./server/purchasing";
@@ -53,7 +53,7 @@ export const usePlanDrafts = create<Drafts>()(
       version: 0,
       setBuy: (u, d) => set((s) => { const buy = { ...s.buy }; if (d) buy[u] = d; else delete buy[u]; return { buy }; }),
       setPrep: (u, d) => set((s) => { const prep = { ...s.prep }; if (d) prep[u] = d; else delete prep[u]; return { prep }; }),
-      bump: () => set((s) => ({ version: s.version + 1 })),
+      bump: () => { forgetReads(); set((s) => ({ version: s.version + 1 })); },
     }),
     { name: "tyll-plan-drafts", partialize: (s) => ({ buy: s.buy, prep: s.prep }) as unknown as Drafts },
   ),
@@ -86,7 +86,7 @@ function useLive<T>(url: string | null) {
   useEffect(() => {
     if (!url || !key) return;
     let live = true;
-    api<T>(url).then((data) => live && setState({ key, data })).catch((e: unknown) => live && setState({ key, error: e instanceof Error ? e.message : "Could not load." }));
+    readShared<T>(url).then((data) => live && setState({ key, data })).catch((e: unknown) => live && setState({ key, error: e instanceof Error ? e.message : "Could not load." }));
     return () => { live = false; };
   }, [url, key]);
   return { data: state?.data, error: state?.error, loading: !!key && state?.key !== key };

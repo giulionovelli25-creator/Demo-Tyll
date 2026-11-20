@@ -15,7 +15,8 @@ import { arrivalText, orderStage } from "@/lib/domain/order-stage";
 import { supplierById } from "@/lib/data/catalog";
 import Link from "next/link";
 import { Choice } from "./parts";
-import { MATCH_FLAG, PO_STATUS, awaitingDelivery, orderTotals, outstanding, packsText, poStatus } from "@/lib/domain/procurement";
+import { type Queue, inQueue, openingQueue } from "@/lib/domain/order-queues";
+import { MATCH_FLAG, PO_STATUS, orderTotals, outstanding, packsText, poStatus } from "@/lib/domain/procurement";
 
 export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "warn" | "pos" | "neg" | "ink" }> = {
   draft: { label: "Draft", tone: "neutral" },
@@ -28,15 +29,6 @@ export const STATUS: Record<RequestStatus, { label: string; tone: "neutral" | "w
   rejected: { label: "Rejected", tone: "neg" },
   changes: { label: "Changes requested", tone: "ink" },
 };
-
-type Queue = "purchasing" | "accounting" | "fnb" | "manager" | "approved" | "delivery" | "returned" | "drafts" | "all";
-const inQueue = (r: PurchaseRequest, q: Queue, user: User) =>
-  q === "all" ? true
-    : q === "approved" ? r.status === "approved" || r.status === "received"
-      : q === "delivery" ? awaitingDelivery(r)
-      : q === "returned" ? r.status === "rejected" || r.status === "changes"
-        : q === "drafts" ? r.status === "draft" && (r.createdBy === user.id || can(user, "purchase.review"))
-          : r.status === q;
 
 const total = (r: PurchaseRequest) => r.lines.reduce((s, l) => s + l.qty * l.unitPrice, 0);
 const suppliersOf = (r: PurchaseRequest) => [...new Set(r.lines.map((l) => supplierById[l.supplierId]?.name ?? supplierName(l.supplierId)))].join(", ");
@@ -63,12 +55,14 @@ function RequestList({ base }: { base: string }) {
   const params = useSearchParams();
   const { data, error } = useRequests();
   const requests = useMemo(() => data?.requests ?? [], [data]);
-  const preferred: Queue = (params.get("queue") as Queue) ?? (can(user, "purchase.review") ? "purchasing" : can(user, "purchase.approveFinance") ? "accounting" : user.role === "fnb_director" ? "fnb" : "all");
-  const [queue, setQueue] = useState<Queue>(preferred);
   // A number at the top of Orders opens its queue.
   const asked = params.get("queue") as Queue | null;
+  // Until someone picks a filter, Orders opens on the role's own step, or on All when that step is empty.
+  const [picked, setPicked] = useState<Queue | null>(null);
   const [seen, setSeen] = useState(asked);
-  if (asked !== seen) { setSeen(asked); if (asked) setQueue(asked); }
+  if (asked !== seen) { setSeen(asked); setPicked(asked); }
+  const queue: Queue = picked ?? openingQueue(requests, user, asked);
+  const setQueue = setPicked;
   useEffect(() => { if (asked) requestAnimationFrame(() => document.getElementById("order-list")?.scrollIntoView({ block: "start", behavior: "smooth" })); }, [asked]);
   const count = (q: Queue) => requests.filter((r) => inQueue(r, q, user)).length;
   const queues: { value: Queue; label: string }[] = [
