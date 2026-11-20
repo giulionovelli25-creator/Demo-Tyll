@@ -47,7 +47,7 @@ import { PILOT_URL } from "@/lib/pilot";
 const NAV: Record<ModuleId, { label: string; short?: string; icon: LucideIcon }> = {
   overview: { label: "Overview", icon: LayoutDashboard },
   stock: { label: "Stock levels", icon: Package },
-  forecast: { label: "Predictions", icon: ShoppingCart },
+  forecast: { label: "Ordering", icon: ShoppingCart },
   money: { label: "Revenue", icon: Banknote },
   drinks: { label: "Over pouring", short: "Pouring", icon: Wine },
   waste: { label: "Log waste", icon: Trash2 },

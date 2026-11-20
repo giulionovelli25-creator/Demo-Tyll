@@ -3474,6 +3474,11 @@
 "Consegne confermate",
 "التوريدات المؤكدة"
 ],
+"Deliveries likely to be late show on Ordering under Deliveries at risk.": [
+"Wahrscheinlich verspätete Lieferungen stehen unter Bestellen bei Lieferungen mit Risiko.",
+"Le consegne probabilmente in ritardo sono in Ordini, sotto Consegne a rischio.",
+"التوصيلات المرجح تأخرها تظهر في صفحة الطلب تحت توصيلات معرضة للتأخير."
+],
 "Deliveries, counts and use": [
 "Lieferungen, Zählungen und Verbrauch",
 "Consegne, conteggi e consumi",
@@ -3993,6 +3998,11 @@
 "Jede Lieferantenrechnung wird dreifach geprüft: was bestellt wurde, was ankam und was berechnet wurde. Eine Differenz ist ein zu prüfender Fakt, kein Beweis für Fehlverhalten.",
 "Ogni fattura fornitore è verificata in tre modi: cosa è stato ordinato, cosa è arrivato e cosa è stato fatturato. Una differenza è un fatto da verificare, non la prova di un illecito.",
 "تُفحص كل فاتورة مورد بثلاث طرق: ما طُلب وما وصل وما فُوتر. الفرق حقيقة للتحقق وليس دليلًا على مخالفة."
+],
+"Each supplier's on time rate, how late it is when it is late, and the weekdays it runs late.": [
+"Pünktlichkeit jedes Lieferanten, wie spät er kommt, wenn er spät kommt, und an welchen Wochentagen.",
+"Puntualità di ogni fornitore, quanto ritarda quando ritarda, e in quali giorni.",
+"نسبة التزام كل مورد بالموعد، ومدى تأخره حين يتأخر، وأيام التأخير."
 ],
 "Each supplier's on time rate, how late it is when it is late, and the weekdays it runs late. Deliveries likely to be late show on Predictions under Deliveries at risk.": [
 "Pünktlichkeit jedes Lieferanten, wie spät er kommt, wenn er spät kommt, und an welchen Wochentagen. Wahrscheinlich verspätete Lieferungen stehen in Prognosen unter Lieferungen mit Risiko.",
@@ -5764,6 +5774,11 @@
 "In questa demo non viene fatta alcuna chiamata.",
 "لا يتم أي اتصال في هذا العرض."
 ],
+"In this demo nothing is sent to a supplier.": [
+"In dieser Demo wird nichts an einen Lieferanten gesendet.",
+"In questa demo nulla viene inviato a un fornitore.",
+"في هذا العرض لا يُرسل شيء إلى أي مورد."
+],
 "In-Room Dining": [
 "Zimmerservice",
 "Servizio in camera",
@@ -6068,6 +6083,11 @@
 "Nachzubestellende Artikel",
 "Articoli da riordinare",
 "أصناف لإعادة الطلب"
+],
+"Items whose order date on the What to order tab is today or tomorrow, at the quantity it shows, from the usual supplier.": [
+"Artikel, deren Bestelldatum auf dem Reiter Was bestellen heute oder morgen ist, in der dort gezeigten Menge, beim üblichen Lieferanten.",
+"Articoli la cui data d'ordine nella scheda Cosa ordinare è oggi o domani, nella quantità indicata, dal fornitore abituale.",
+"الأصناف التي يكون تاريخ طلبها في تبويب ما يجب طلبه اليوم أو غدا، بالكمية المعروضة، من المورد المعتاد."
 ],
 "JSON": [
 "JSON",
@@ -8929,6 +8949,11 @@
 "Una bottiglia aperta può sempre essere in parte usata, quindi uno scarto sotto le due bottiglie non viene mai segnalato. Bottiglie consegnate e conti sono simulati.",
 "قد تكون زجاجة مفتوحة مستخدمة جزئيًا دائمًا، لذا لا يُشار أبدًا إلى فرق أقل من زجاجتين. الزجاجات المصروفة والفواتير بيانات محاكاة."
 ],
+"One order per supplier.": [
+"Eine Bestellung pro Lieferant.",
+"Un ordine per fornitore.",
+"طلب واحد لكل مورد."
+],
 "One other outlet is simulated.": [
 "Ein weiteres Outlet ist simuliert.",
 "Un altro punto vendita è simulato.",
@@ -8944,10 +8969,10 @@
 "Una registrazione per conto, con il numero di scontrino della cassa",
 "قيد واحد لكل فاتورة، وعليه رقم إيصال الصندوق"
 ],
-"One row per line in CSV;": [
-"Eine Zeile pro Position im CSV;",
-"Una riga per voce nel CSV;",
-"صف لكل بند في CSV؛"
+"One row per line in CSV": [
+"Eine Zeile pro Position im CSV",
+"Una riga per voce nel CSV",
+"صف لكل بند في CSV"
 ],
 "One thing needs you today.": [
 "Eine Sache braucht heute Ihre Aufmerksamkeit.",
@@ -14018,6 +14043,11 @@
 "Die Buchung wartete in der Schnittstelle zwischen Kasse und PMS.",
 "L'addebito è rimasto in coda nell'interfaccia tra cassa e PMS.",
 "انتظر الترحيل في قائمة الربط بين الكاشير ونظام إدارة الفندق."
+],
+"The quantities are the prediction’s, with the reasoning on Ordering.": [
+"Die Mengen stammen aus der Vorhersage, mit der Begründung unter Bestellen.",
+"Le quantità sono quelle della previsione, con il ragionamento in Ordini.",
+"الكميات من التوقع، مع الشرح في صفحة الطلب."
 ],
 "The rate includes breakfast for {0} guest, so {1} breakfast to charge.": [
 "Die Rate enthält Frühstück für {0} Gast, also ist {1} Frühstück zu berechnen.",

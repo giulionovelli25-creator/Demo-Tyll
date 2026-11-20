@@ -263,7 +263,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Predictions" question="What do I need to order?" lead="Tyll's own forecasting model works out every quantity from sales history, bookings, events, hotel occupancy and current stock. No AI chooses a quantity. Simulated data." />
+      <PageHeader title="Ordering" question="What do I need to order?" lead="Tyll's own forecasting model works out every quantity from sales history, bookings, events, hotel occupancy and current stock. No AI chooses a quantity. Simulated data." />
       {error ? <WidgetError>The stock prediction could not load.</WidgetError> : !plan ? (
         <div className="space-y-4" aria-busy><Skeleton className="h-24 w-full" /><Skeleton className="h-64 w-full" /></div>
       ) : (

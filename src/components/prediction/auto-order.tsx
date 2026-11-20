@@ -162,7 +162,7 @@ export function AutoOrdering({ tabs }: { tabs?: ReactNode } = {}) {
           <Panel title="The rules" description={`Set by ${personName(s.changedBy)}. The same rules every morning, written out so anyone can check them.`}>
             <dl>
               <Rule label="When">Every morning at {s.time}, after last night&rsquo;s sales, today&rsquo;s bookings and events are in.</Rule>
-              <Rule label="What is ordered">Items whose order date on Predictions is today or tomorrow, at the quantity Predictions shows, from the usual supplier. One order per supplier.</Rule>
+              <Rule label="What is ordered">Items whose order date on the What to order tab is today or tomorrow, at the quantity it shows, from the usual supplier. One order per supplier.</Rule>
               <Rule label="Sent without approval">Orders of {money(s.sendUnder)} or less where no item needs a manager&rsquo;s review.</Rule>
               <Rule label="Waits for approval">Orders over {money(s.sendUnder)}, or with an item that is more than 1.5 times its last 4 weeks of use, a fresh item that covers more days than it keeps, or a month with low forecast confidence. These go to purchasing like any other order.</Rule>
               <Rule label="Never ordered automatically">{s.never.length ? s.never.map((g) => ingredientById[g].name).join(", ") : "None"}</Rule>

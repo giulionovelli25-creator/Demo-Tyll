@@ -409,7 +409,7 @@ function RequestView({ id, base }: { id: string; base: string }) {
         {r.auto && (
           <div className="mb-5 rounded-2xl border border-line bg-cloud px-5 py-4">
             <p className="text-sm font-medium text-ink">{r.auto.decision === "sent" ? `Ordered automatically at ${r.auto.runAt.slice(11, 16)} and sent without waiting` : `Created automatically at ${r.auto.runAt.slice(11, 16)}, waiting for approval`}</p>
-            <p className="mt-1 text-sm text-graphite">{r.auto.decision === "sent" ? "Why it went straight to the supplier: " : "Why it waits: "}{r.auto.why} The quantities are the prediction&rsquo;s, with the reasoning on Predictions. In this demo nothing is sent to a supplier.</p>
+            <p className="mt-1 text-sm text-graphite">{r.auto.decision === "sent" ? "Why it went straight to the supplier: " : "Why it waits: "}{r.auto.why} The quantities are the prediction&rsquo;s, with the reasoning on Ordering. In this demo nothing is sent to a supplier.</p>
           </div>
         )}
         <Progress d={data} />
