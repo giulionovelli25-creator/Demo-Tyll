@@ -414,6 +414,11 @@
 "Revisione contabilità approvata",
 "وافقت مراجعة المحاسبة"
 ],
+"Accounting {0}": [
+"Buchhaltung {0}",
+"Contabilità {0}",
+"المحاسبة {0}"
+],
 "Act on a late delivery": [
 "Auf eine verspätete Lieferung reagieren",
 "Intervenire su una consegna in ritardo",
@@ -694,6 +699,16 @@
 "Da sempre, come nella lista dei recuperi",
 "منذ البداية، كما في قائمة استرداد المال"
 ],
+"All time, on closed cases": [
+"Gesamt, bei geschlossenen Fällen",
+"Da sempre, sui casi chiusi",
+"منذ البداية، في الحالات المغلقة"
+],
+"All time.": [
+"Gesamt.",
+"Da sempre.",
+"منذ البداية."
+],
 "All time. {0} of {1} closed were legitimate": [
 "Gesamt. {0} von {1} abgeschlossenen waren berechtigt",
 "Da sempre. {0} su {1} chiuse erano legittime",
@@ -777,7 +792,7 @@
 "An estimate.": [
 "Eine Schätzung.",
 "Una stima.",
-"هذا تقدير."
+"تقدير."
 ],
 "An independent security review and penetration test.": [
 "Eine unabhängige Sicherheitsprüfung und ein Penetrationstest.",
@@ -1139,6 +1154,11 @@
 "Media",
 "المتوسط"
 ],
+"Average bill, {0} days": [
+"Durchschnittsrechnung, {0} Tage",
+"Scontrino medio, {0} giorni",
+"متوسط الفاتورة، {0} أيام"
+],
 "Averages over the {0} nights before each morning. A guest beyond those registered on a rate with breakfast is counted as not included. The in-house list, the breakfast list and the bills are simulated.": [
 "Durchschnitte über die {0} Nächte vor jedem Morgen. Ein Gast über die gemeldeten hinaus gilt bei einer Rate mit Frühstück als nicht enthalten. Gästeliste, Frühstücksliste und Rechnungen sind simuliert.",
 "Medie sulle {0} notti prima di ogni mattina. Un ospite oltre quelli registrati con una tariffa con colazione è contato come non incluso. La lista ospiti, la lista della colazione e i conti sono simulati.",
@@ -1375,7 +1395,7 @@
 "كبير الحمالين"
 ],
 "Below minimum": [
-"Unter Mindestbestand",
+"Unter Minimum",
 "Sotto il minimo",
 "أقل من الحد الأدنى"
 ],
@@ -2149,6 +2169,16 @@
 "Continua con {0}",
 "تابع {0}"
 ],
+"Case opened. It is in Flagged transactions.": [
+"Fall eröffnet. Er steht unter Markierte Buchungen.",
+"Caso aperto. È in Transazioni segnalate.",
+"فُتحت الحالة. وهي في المعاملات المُعلَّمة."
+],
+"Cases": [
+"Fälle",
+"Casi",
+"الحالات"
+],
 "Cases opened per day, last {0} days": [
 "Eröffnete Fälle pro Tag, letzte {0} Tage",
 "Casi aperti al giorno, ultimi {0} giorni",
@@ -2371,8 +2401,8 @@
 ],
 "Check deliveries": [
 "Lieferungen prüfen",
-"Controlla consegne",
-"تحقق من التوريدات"
+"Controlla le consegne",
+"تحقق من التوصيلات"
 ],
 "Check minibars in departure rooms before the guest reaches the front desk.": [
 "Minibars in Abreisezimmern prüfen, bevor der Gast den Empfang erreicht.",
@@ -3399,6 +3429,11 @@
 "Consegnato incompleto",
 "توريد ناقص"
 ],
+"Delivered {0}": [
+"Geliefert {0}",
+"Consegnato {0}",
+"سُلِّم {0}"
+],
 "Deliveries": [
 "Lieferungen",
 "Consegne",
@@ -3407,7 +3442,7 @@
 "Deliveries and invoices": [
 "Lieferungen und Rechnungen",
 "Consegne e fatture",
-"التوريدات والفواتير"
+"التوصيلات والفواتير"
 ],
 "Deliveries and invoices, Tyll demo": [
 "Lieferungen und Rechnungen, Tyll Demo",
@@ -3899,6 +3934,11 @@
 "Ogni voce riduce le scorte stimate e si somma ai dati sugli scarti in Panoramica, nei Report e nelle analisi.",
 "كل إدخال يخفض المخزون التقديري ويضاف إلى أرقام الهدر في نظرة عامة والتقارير وتحليلات الهدر."
 ],
+"Each flagged transaction, who is following it up, the deadline and what came of it. Overdue first, then the most money.": [
+"Jede markierte Buchung, wer sie verfolgt, die Frist und das Ergebnis. Überfällige zuerst, dann die größten Beträge.",
+"Ogni transazione segnalata, chi la segue, la scadenza e l'esito. Prima le scadute, poi gli importi maggiori.",
+"كل معاملة مُعلَّمة، ومن يتابعها، والموعد النهائي، والنتيجة. المتأخرة أولا ثم الأعلى قيمة."
+],
 "Each invoice is compared with the purchase order and what was received.": [
 "Jede Rechnung wird mit der Bestellung und dem Wareneingang verglichen.",
 "Ogni fattura è confrontata con l'ordine e con quanto ricevuto.",
@@ -4214,6 +4254,11 @@
 "Ogni conto di questo periodo ha rispettato le regole di cassa",
 "اتبعت كل فاتورة في هذه الفترة قواعد الصندوق"
 ],
+"Every bill that broke a rule, who is following it up and the money recovered.": [
+"Jede Rechnung, die gegen eine Regel verstieß, wer sie verfolgt und das zurückgeholte Geld.",
+"Ogni conto che ha violato una regola, chi lo segue e il denaro recuperato.",
+"كل فاتورة خالفت قاعدة، ومن يتابعها، والمال المسترد."
+],
 "Every breakfast in this period was in the rate or charged": [
 "Jedes Frühstück in diesem Zeitraum war in der Rate oder wurde berechnet",
 "Ogni colazione in questo periodo era in tariffa o addebitata",
@@ -4258,6 +4303,11 @@
 "Jeder markierte Vorgang, wer ihn verfolgt und was daraus wurde. Simulierte Daten.",
 "Ogni transazione segnalata, chi la segue e com'è finita. Dati simulati.",
 "كل معاملة معلَّمة، ومن يتابعها، وما انتهت إليه. بيانات محاكاة."
+],
+"Every invoice matches what arrived.": [
+"Jede Rechnung passt zur Lieferung.",
+"Ogni fattura corrisponde a quanto arrivato.",
+"كل فاتورة تطابق ما وصل."
 ],
 "Every item pours to standard": [
 "Jeder Artikel wird nach Standard ausgeschenkt",
@@ -4638,6 +4688,11 @@
 "Markiert nach Art",
 "Segnalazioni per tipo",
 "المشار إليه حسب النوع"
+],
+"Flagged cases": [
+"Markierte Fälle",
+"Casi segnalati",
+"الحالات المُعلَّمة"
 ],
 "Flagged items first, then the largest other gaps, at the price paid. Choose an item for its figures.": [
 "Markierte Artikel zuerst, dann die größten anderen Lücken, zum bezahlten Preis. Wählen Sie einen Artikel für seine Zahlen.",
@@ -5259,6 +5314,11 @@
 "Percorso guidato, passo",
 "الجولة الإرشادية، الخطوة"
 ],
+"Guided path, step {0} of {1}": [
+"Geführter Rundgang, Schritt {0} von {1}",
+"Percorso guidato, passo {0} di {1}",
+"المسار الموجه، الخطوة {0} من {1}"
+],
 "Half a day": [
 "Ein halber Tag",
 "Mezza giornata",
@@ -5453,6 +5513,11 @@
 "Wie viele Belastungen pro Tag nicht zur Gästerechnung passten.",
 "Quanti addebiti al giorno non corrispondevano al conto dell'ospite.",
 "عدد الرسوم التي لم تطابق فاتورة النزيل كل يوم."
+],
+"How many glasses each bottle really gave at the bar, and what was poured but not billed.": [
+"Wie viele Gläser jede Flasche an der Bar wirklich ergab und was ausgeschenkt, aber nicht berechnet wurde.",
+"Quanti bicchieri ha dato davvero ogni bottiglia al bar, e cosa è stato versato ma non addebitato.",
+"كم كأسا أعطت كل زجاجة فعلا في البار، وما الذي سُكب ولم يُحسب."
 ],
 "How many glasses each bottle really gave, and which drinks sales do not explain.": [
 "Wie viele Gläser jede Flasche wirklich ergab und welche Getränke Verkäufe nicht erklären.",
@@ -5829,6 +5894,16 @@
 "Fatturata merce non consegnata",
 "فوترة بضائع لم تُسلم"
 ],
+"Invoiced for goods not delivered or above the agreed price, not yet credited": [
+"Berechnet für nicht gelieferte Ware oder über dem vereinbarten Preis, noch nicht gutgeschrieben",
+"Fatturato per merce non consegnata o sopra il prezzo concordato, non ancora accreditato",
+"فوترة لبضائع لم تُسلَّم أو فوق السعر المتفق عليه، لم تُسترد بعد"
+],
+"Invoiced for goods not delivered or above the agreed price, on {0} deliveries.": [
+"Berechnet für nicht gelieferte Ware oder über dem vereinbarten Preis, bei {0} Lieferungen.",
+"Fatturato per merce non consegnata o sopra il prezzo concordato, su {0} consegne.",
+"فوترة لبضائع لم تُسلَّم أو فوق السعر المتفق عليه، في {0} توصيلات."
+],
 "Invoiced for more than was received": [
 "Mehr berechnet als erhalten",
 "Fatturato più di quanto ricevuto",
@@ -6108,6 +6183,11 @@
 "Groß",
 "Grande",
 "كبير"
+],
+"Larger orders wait for your approval.": [
+"Größere Bestellungen warten auf Ihre Freigabe.",
+"Gli ordini più grandi attendono la sua approvazione.",
+"الطلبات الأكبر تنتظر موافقتك."
 ],
 "Largest first. Count the item, then mark what you found. Everyone with access sees it.": [
 "Größte zuerst. Zählen Sie den Artikel und markieren Sie dann, was Sie gefunden haben. Alle mit Zugriff sehen es.",
@@ -7564,10 +7644,20 @@
 "Casi finanziari",
 "الحالات المالية"
 ],
+"Money found": [
+"Gefundenes Geld",
+"Denaro trovato",
+"المال المكتشف"
+],
 "Money in these alerts": [
 "Geld in diesen Warnungen",
 "Denaro in questi avvisi",
 "الأموال في هذه التنبيهات"
+],
+"Money lost and saved in the last {0} days, and the three things that need you today.": [
+"Verlorenes und gespartes Geld der letzten {0} Tage und die drei Dinge, die heute Sie brauchen.",
+"Denaro perso e risparmiato negli ultimi {0} giorni, e le tre cose che oggi richiedono lei.",
+"المال المفقود والموفَّر خلال آخر {0} يوما، والأمور الثلاثة التي تحتاجك اليوم."
 ],
 "Money lost and saved, last {0} days": [
 "Verlorenes und gespartes Geld, letzte {0} Tage",
@@ -7688,6 +7778,11 @@
 "Morgenbericht",
 "Briefing del mattino",
 "الملخص الصباحي"
+],
+"Morning brief shows the {0} summary.": [
+"Der Morgenbericht zeigt die Zusammenfassung um {0}.",
+"Il riepilogo del mattino mostra la sintesi delle {0}.",
+"يعرض الموجز الصباحي ملخص الساعة {0}."
 ],
 "Morning brief, {0}": [
 "Morgenbericht, {0}",
@@ -7873,6 +7968,11 @@
 "Neu hier?",
 "Sei nuovo?",
 "جديد هنا؟"
+],
+"New here? Follow a {0} step guided path through what Tyll does today.": [
+"Neu hier? Folgen Sie einem geführten Rundgang in {0} Schritten durch das, was Tyll heute kann.",
+"Nuovo qui? Segui un percorso guidato di {0} passi tra ciò che Tyll fa oggi.",
+"جديد هنا؟ اتبع مسارا موجها من {0} خطوات لما يقدمه Tyll اليوم."
 ],
 "New standard (ml)": [
 "Neuer Standard (ml)",
@@ -8194,6 +8294,11 @@
 "Nessuno",
 "لا يوجد"
 ],
+"None at your step:": [
+"Keine bei Ihrem Schritt:",
+"Nessuno al suo passaggio:",
+"لا شيء عند خطوتك:"
+],
 "None due": [
 "Nichts fällig",
 "Nulla in scadenza",
@@ -8384,6 +8489,11 @@
 "Non ancora",
 "ليس بعد"
 ],
+"Not yet credited.": [
+"Noch nicht gutgeschrieben.",
+"Non ancora accreditato.",
+"لم تُسترد بعد."
+],
 "Not yet matched to the menu": [
 "Noch keinem Menüartikel zugeordnet",
 "Non ancora abbinati al menu",
@@ -8509,10 +8619,20 @@
 "Niente da ordinare qui",
 "لا شيء للطلب هنا"
 ],
+"Nothing urgent": [
+"Nichts Dringendes",
+"Niente di urgente",
+"لا شيء عاجل"
+],
 "Nothing waiting": [
 "Nichts wartet",
 "Nulla in attesa",
 "لا شيء بانتظار"
+],
+"Nothing waiting for approval.": [
+"Nichts wartet auf Freigabe.",
+"Nulla in attesa di approvazione.",
+"لا شيء بانتظار الموافقة."
 ],
 "Nothing waiting.": [
 "Nichts wartet.",
@@ -8954,6 +9074,11 @@
 "Apri un caso",
 "افتح حالة"
 ],
+"Open a case to follow it from the till to the outcome.": [
+"Öffnen Sie einen Fall, um ihn von der Kasse bis zum Ergebnis zu verfolgen.",
+"Apra un caso per seguirlo dalla cassa all'esito.",
+"افتح حالة لتتابعها من الصندوق حتى النتيجة."
+],
 "Open an outlet to see what makes up its costs, then its transactions and flagged items.": [
 "Öffnen Sie ein Outlet, um die Kosten, Transaktionen und markierten Posten zu sehen.",
 "Apri un punto vendita per vedere costi, transazioni e voci segnalate.",
@@ -9069,10 +9194,25 @@
 "Apri il primo avviso",
 "افتح التنبيه الأول"
 ],
+"Open the flagged cases": [
+"Markierte Fälle öffnen",
+"Apri i casi segnalati",
+"افتح الحالات المُعلَّمة"
+],
 "Open the investigation": [
 "Prüfung öffnen",
 "Apri la verifica",
 "افتح التحقيق"
+],
+"Open the largest and draft the credit request in one click.": [
+"Öffnen Sie die größte und entwerfen Sie die Gutschriftsanforderung mit einem Klick.",
+"Apra la più grande e prepari la richiesta di nota di credito con un clic.",
+"افتح الأكبر وأعدّ طلب الاسترداد بنقرة واحدة."
+],
+"Open the order": [
+"Bestellung öffnen",
+"Apri l'ordine",
+"افتح الطلب"
 ],
 "Open to check": [
 "Offen zur Prüfung",
@@ -9914,6 +10054,16 @@
 "Controllo versamenti, {0}",
 "مراقبة السكب، {0}"
 ],
+"Poured but not billed in the last {0} days, {1} less than last week.": [
+"In den letzten {0} Tagen ausgeschenkt, aber nicht berechnet, {1} weniger als letzte Woche.",
+"Versato ma non addebitato negli ultimi {0} giorni, {1} in meno della settimana scorsa.",
+"سُكب ولم يُحسب خلال آخر {0} أيام، أقل بنسبة {1} من الأسبوع الماضي."
+],
+"Poured but not billed in the last {0} days, {1} more than last week.": [
+"In den letzten {0} Tagen ausgeschenkt, aber nicht berechnet, {1} mehr als letzte Woche.",
+"Versato ma non addebitato negli ultimi {0} giorni, {1} in più della settimana scorsa.",
+"سُكب ولم يُحسب خلال آخر {0} أيام، أكثر بنسبة {1} من الأسبوع الماضي."
+],
 "Pouring": [
 "Ausschank",
 "Mescita",
@@ -10183,6 +10333,11 @@
 "Der Einkauf prüft jede Bestellung.",
 "Gli acquisti verificano ogni ordine.",
 "يراجع قسم المشتريات كل طلب."
+],
+"Purchasing {0}": [
+"Einkauf {0}",
+"Acquisti {0}",
+"المشتريات {0}"
 ],
 "Purchasing, the head chef and the restaurant manager were told this evening, and are told again at {0} if nobody has handled it.": [
 "Einkauf, Küchenchef und Restaurantleitung wurden heute Abend informiert und erneut um {0}, falls niemand reagiert hat.",
@@ -10844,6 +10999,11 @@
 "Rivedi segnalazioni",
 "راجع الإشارات"
 ],
+"Review orders": [
+"Bestellungen prüfen",
+"Rivedi gli ordini",
+"راجع الطلبات"
+],
 "Review started": [
 "Prüfung begonnen",
 "Esame avviato",
@@ -11344,6 +11504,11 @@
 "Regole concordate con l'hotel. Un tavolo senza conto è un invito a verificare, non la prova dell'errore di qualcuno.",
 "قواعد متفق عليها مع الفندق. الطاولة دون فاتورة دعوة للتحقق، وليست دليلًا على خطأ أحد."
 ],
+"Rules for voids, refunds, removed items, till rules and room charges, with a worked example.": [
+"Regeln für Stornos, Erstattungen, entfernte Artikel, Kassenregeln und Zimmerbelastungen, mit einem durchgerechneten Beispiel.",
+"Regole per annullamenti, rimborsi, articoli rimossi, regole di cassa e addebiti in camera, con un esempio guidato.",
+"قواعد الإلغاءات والمبالغ المستردة والأصناف المحذوفة وقواعد الصندوق ورسوم الغرف، مع مثال عملي."
+],
 "Rules on tips and service charges differ between countries and between hotel policies. A live version would hold the rule agreed for each property and would need local legal review before use.": [
 "Regeln zu Trinkgeld und Servicegebühr unterscheiden sich je nach Land und Hotel. Eine echte Version enthielte die für jedes Haus vereinbarte Regel und bräuchte eine rechtliche Prüfung vor Ort.",
 "Le regole su mance e servizio variano per paese e hotel. Una versione reale conterrebbe la regola di ogni struttura e richiederebbe una verifica legale locale.",
@@ -11814,6 +11979,11 @@
 "Vedi ordinato, consegnato e fatturato per {0}",
 "اعرض المطلوب والمورَّد والمفوتر لـ{0}"
 ],
+"See orders": [
+"Bestellungen ansehen",
+"Vedi gli ordini",
+"عرض الطلبات"
+],
 "See over pouring": [
 "Überschenken ansehen",
 "Vedi versamento eccessivo",
@@ -12173,6 +12343,11 @@
 "Alle {0} Rechnungen anzeigen",
 "Mostra tutti i {0} conti",
 "عرض كل الفواتير الـ {0}"
+],
+"Show all {0} cases": [
+"Alle {0} Fälle zeigen",
+"Mostra tutti i {0} casi",
+"عرض كل الحالات ({0})"
 ],
 "Show all {0} changes": [
 "Alle {0} Änderungen zeigen",
@@ -12961,7 +13136,7 @@
 ],
 "Supplier invoices": [
 "Lieferantenrechnungen",
-"Fatture fornitore",
+"Fatture dei fornitori",
 "فواتير الموردين"
 ],
 "Supplier invoices checked against orders and deliveries.": [
@@ -12993,6 +13168,11 @@
 "Lieferanten",
 "Fornitori",
 "المورّدون"
+],
+"Suppliers invoiced for goods that never arrived.": [
+"Lieferanten haben Ware berechnet, die nie ankam.",
+"Fornitori che hanno fatturato merce mai arrivata.",
+"موردون فوتروا بضائع لم تصل قط."
 ],
 "Suppliers, Tyll demo": [
 "Lieferanten, Tyll Demo",
@@ -14029,6 +14209,16 @@
 "I {0} di vendite di ristorante e servizio in camera addebitati alle camere nel periodo sono già nelle vendite nette del punto vendita. L'addebito li sposta sul conto ospite, il check-out lo salda. Nessuno dei due aggiunge ricavi, quindi Tyll non li somma mai.",
 "مبلغ {0} من مبيعات المطعم وخدمة الغرف المحمل على الغرف في هذه الفترة مشمول بالفعل في صافي مبيعات المنفذ. الترحيل ينقله إلى فاتورة الضيف والتسوية عند المغادرة تغلقها. ولا تضيف أي خطوة إيرادات، لذا لا يضيفها Tyll أبدًا."
 ],
+"These items run out before a later order could arrive.": [
+"Diese Artikel gehen aus, bevor eine spätere Bestellung ankäme.",
+"Questi articoli finiscono prima che un ordine successivo possa arrivare.",
+"تنفد هذه الأصناف قبل أن يصل طلب لاحق."
+],
+"They are on the Automatic ordering tab.": [
+"Sie stehen auf dem Reiter Automatische Bestellung.",
+"Sono nella scheda Ordine automatico.",
+"تجدها في تبويب الطلب التلقائي."
+],
 "They give about": [
 "Sie ergeben etwa",
 "Danno circa",
@@ -14078,6 +14268,11 @@
 "Das ist kein Nettogewinn. Tyll hat nicht die vollständige Buchhaltung des Hotels: Zimmerumsatz, Abschreibung, Miete, Finanzierung und Steuern fehlen.",
 "Questo non è il profitto netto. Tyll non ha la contabilità completa dell'hotel: ricavi camere, ammortamenti, affitto, finanziamenti e tasse sono esclusi.",
 "هذا ليس صافي الربح. لا يملك Tyll حسابات الفندق الكاملة: إيرادات الغرف والإهلاك والإيجار والتمويل والضرائب غير مشمولة."
+],
+"This item runs out before a later order could arrive.": [
+"Dieser Artikel geht aus, bevor eine spätere Bestellung ankäme.",
+"Questo articolo finisce prima che un ordine successivo possa arrivare.",
+"ينفد هذا الصنف قبل أن يصل طلب لاحق."
 ],
 "This line:": [
 "Diese Position:",
@@ -15144,6 +15339,11 @@
 "In attesa degli acquisti ({0})",
 "بانتظار المشتريات ({0})"
 ],
+"Waiting for your approval, {0} in all.": [
+"Wartet auf Ihre Freigabe, insgesamt {0}.",
+"In attesa della sua approvazione, {0} in tutto.",
+"بانتظار موافقتك، {0} في المجموع."
+],
 "Waiting longer costs money": [
 "Warten kostet Geld",
 "Aspettare costa denaro",
@@ -15303,6 +15503,11 @@
 "Was Tyll prüft",
 "Cosa controlla Tyll",
 "ما يتحقق منه Tyll"
+],
+"What Tyll checks, by type and outlet": [
+"Was Tyll prüft, nach Art und Outlet",
+"Cosa controlla Tyll, per tipo e punto vendita",
+"ما يفحصه Tyll حسب النوع والمنفذ"
 ],
 "What Tyll found": [
 "Was Tyll gefunden hat",
@@ -15529,6 +15734,11 @@
 "Cosa e quanto ordinare per arrivare a fine mese. Prova Crea ordine.",
 "ماذا تطلب وكم لتصل إلى نهاية الشهر. جرّب إنشاء الطلب."
 ],
+"What to order before it runs out, from sales, bookings and occupancy, and which deliveries may come too late.": [
+"Was vor dem Ausgehen zu bestellen ist, aus Verkäufen, Reservierungen und Belegung, und welche Lieferungen zu spät kommen könnten.",
+"Cosa ordinare prima che finisca, da vendite, prenotazioni e occupazione, e quali consegne potrebbero arrivare tardi.",
+"ما يجب طلبه قبل نفاده، من المبيعات والحجوزات والإشغال، وأي التوصيلات قد تتأخر."
+],
 "What to prep": [
 "Was vorbereiten",
 "Cosa preparare",
@@ -15614,6 +15824,11 @@
 "Dove e quando",
 "أين ومتى"
 ],
+"Where is money going missing, and what came back?": [
+"Wo geht Geld verloren, und was kam zurück?",
+"Dove si perde denaro, e cosa è stato recuperato?",
+"أين يضيع المال، وما الذي استُرد؟"
+],
 "Where is money going missing?": [
 "Wo geht Geld verloren?",
 "Dove si perde denaro?",
@@ -15698,6 +15913,11 @@
 "Welches Gästekonto zu welchem Zimmer gehört",
 "Quale conto ospite appartiene a quale camera",
 "أي حساب نزيل يتبع أي غرفة"
+],
+"Which supplier invoices need checking before they are paid?": [
+"Welche Lieferantenrechnungen müssen vor der Zahlung geprüft werden?",
+"Quali fatture dei fornitori vanno controllate prima del pagamento?",
+"أي فواتير الموردين تحتاج إلى تحقق قبل الدفع؟"
 ],
 "Which suppliers deliver late?": [
 "Welche Lieferanten liefern zu spät?",
@@ -16624,6 +16844,11 @@
 "tolto dopo il pagamento",
 "أُزيل بعد الدفع"
 ],
+"the F&B director {0}": [
+"der F&B Director {0}",
+"il direttore F&B {0}",
+"مدير الأغذية والمشروبات {0}"
+],
 "the PMS in-house list and the breakfast bills:": [
 "die Gästeliste im PMS und die Frühstücksrechnungen:",
 "la lista ospiti del PMS e i conti della colazione:",
@@ -16648,6 +16873,11 @@
 "das Folio hat keine passende Buchung.",
 "il folio non ha un addebito corrispondente.",
 "لا يحتوي الحساب على ترحيل مطابق."
+],
+"the general manager {0}": [
+"der General Manager {0}",
+"il direttore generale {0}",
+"المدير العام {0}"
 ],
 "the guest checked out on {0}, {1}, and the {2} posting arrived on {3}, {4}, after the bill was settled.": [
 "der Gast reiste am {0}, {1} ab, und die Buchung über {2} kam am {3}, {4} an, nachdem die Rechnung bezahlt war.",
@@ -17674,6 +17904,11 @@
 "{0} segnalati, {1} a rischio",
 "{0} مشار إليها، {1} معرّض للخطر"
 ],
+"{0} flags open.": [
+"{0} offene Markierungen.",
+"{0} segnalazioni aperte.",
+"{0} علامات مفتوحة."
+],
 "{0} flags, {1} at risk": [
 "{0} Markierungen, {1} gefährdet",
 "{0} segnalazioni, {1} a rischio",
@@ -18289,6 +18524,11 @@
 "Sono arrivati {0} in più di quanto spieghino cassa e registro sprechi. Tyll lo segnala perché il divario supera quanto l'ultima consegna potrebbe lasciare sullo scaffale.",
 "ورد {0} أكثر مما تفسره نقطة البيع وسجل الهدر. يُعلِّمه Tyll لأن الفرق أكبر مما قد يتركه آخر توريد على الرف."
 ],
+"{0} more low.": [
+"{0} weitere knapp.",
+"Altri {0} scarsi.",
+"{0} أخرى منخفضة."
+],
 "{0} more on the invoices than was delivered or agreed.": [
 "{0} mehr auf den Rechnungen als geliefert oder vereinbart.",
 "{0} in più in fattura rispetto a consegnato o concordato.",
@@ -18499,6 +18739,11 @@
 "{0} di {1} addebiti",
 "{0} من {1} رسوم"
 ],
+"{0} of {1} closed were legitimate": [
+"{0} von {1} geschlossenen waren berechtigt",
+"{0} di {1} chiusi erano legittimi",
+"{0} من {1} مغلقة كانت مشروعة"
+],
 "{0} of {1} digits entered": [
 "{0} von {1} Ziffern eingegeben",
 "{0} di {1} cifre inserite",
@@ -18589,6 +18834,16 @@
 "{0} in arrivo",
 "{0} في الطريق"
 ],
+"{0} on the way, {1} late.": [
+"{0} unterwegs, {1} verspätet.",
+"{0} in arrivo, {1} in ritardo.",
+"{0} في الطريق، {1} متأخرة."
+],
+"{0} on the way.": [
+"{0} unterwegs.",
+"{0} in arrivo.",
+"{0} في الطريق."
+],
 "{0} on time": [
 "{0} pünktlich",
 "{0} in orario",
@@ -18637,7 +18892,7 @@
 "{0} past their deadline": [
 "{0} über der Frist",
 "{0} oltre la scadenza",
-"{0} تجاوزت موعدها النهائي"
+"{0} تجاوزت الموعد"
 ],
 "{0} per guest in house a night": [
 "{0} pro Gast im Haus und Nacht",
@@ -19080,7 +19335,7 @@
 "{0} للتعامل معها اليوم"
 ],
 "{0} to approve": [
-"{0} freizugeben",
+"{0} zur Freigabe",
 "{0} da approvare",
 "{0} للموافقة"
 ],
@@ -19095,7 +19350,7 @@
 "{0} إلى جديد"
 ],
 "{0} to order today": [
-"{0} heute zu bestellen",
+"{0} heute bestellen",
 "{0} da ordinare oggi",
 "{0} للطلب اليوم"
 ],
@@ -19103,6 +19358,11 @@
 "{0} auf in Zubereitung",
 "{0} a in preparazione",
 "{0} إلى قيد التحضير"
+],
+"{0} to query": [
+"{0} zu klären",
+"{0} da contestare",
+"{0} للاستفسار"
 ],
 "{0} to ready": [
 "{0} auf fertig",
@@ -19260,9 +19520,9 @@
 "{0} نادلًا في {1} منافذ، {2} ضيفًا في آخر {3} يومًا. يُستبعد {4}."
 ],
 "{0} waiting": [
-"{0} wartend",
+"{0} warten",
 "{0} in attesa",
-"{0} في الانتظار"
+"{0} بانتظار الموافقة"
 ],
 "{0} waiting for a manager": [
 "{0} warten auf eine Führungskraft",

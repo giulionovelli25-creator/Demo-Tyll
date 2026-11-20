@@ -1,7 +1,8 @@
 /** The way out of a sub page. Pure, so every section follows the same rule. */
+import { featureOn } from "./features";
 import { SIDEBAR_PAGES as SIDEBAR } from "./nav";
 // Pages listed in a section of the sidebar, and the tabs on them, are main pages: the sidebar is their way out.
-const MAIN = ["/", "/waste", "/stock", "/forecast", "/money", "/drinks", "/alerts", "/reports", "/settings", "/more"];
+const MAIN = ["/", "/waste", "/stock", "/forecast", "/deliveries", "/money", "/drinks", "/alerts", "/reports", "/settings", "/more"];
 // These open a part of the main page, not a page of their own.
 const ON_MAIN_PAGE: Record<string, string[]> = { "/money": ["flags", "mistakes", "pour", "outlets"] };
 // Pages with their own full screen or frame already have their own way out.
@@ -34,5 +35,6 @@ export function backTarget(path: string, params: { get(name: string): string | n
   if (root === "/investigations") return "/money?tab=flags";
   if (path !== root || params.get("tab")) return root;
   if (home.split("?")[0] === root) return null;
-  return cameFrom ?? SECTION_HOME[root] ?? "/more";
+  // Other tools is switched off in lib/features.ts, so a page with no section of its own returns to the Overview.
+  return cameFrom ?? SECTION_HOME[root] ?? (featureOn("otherTools") ? "/more" : "/");
 }

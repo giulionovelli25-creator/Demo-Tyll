@@ -62,7 +62,8 @@ export function notify(x: Shape, n: Send) {
     const configured = process.env.TYLL_EMAIL_PROVIDER === "resend" && !!process.env.RESEND_API_KEY && !!process.env.TYLL_EMAIL_FROM;
     x.notify.emails.push({
       id: `E-${x.notify.emails.length + 1}`, at, userId: to, to: emailOf(to), subject: `Tyll: ${n.title}`,
-      text: `${n.body}\n\nReference: ${n.ref}\nOpen in Tyll: ${origin()}${n.href}`, link: `${origin()}${n.href}`, status: configured ? "queued" : "logged", key,
+      // A record number is useful in an email; an internal key (such as "meat|2026-11-21|evening") is not shown.
+      text: `${n.body}\n\n${n.ref.includes("|") ? "" : `Reference: ${n.ref}\n`}Open in Tyll: ${origin()}${n.href}`, link: `${origin()}${n.href}`, status: configured ? "queued" : "logged", key,
       detail: configured ? undefined : "Preview only. No email provider is configured, so nothing was sent.",
     });
   }

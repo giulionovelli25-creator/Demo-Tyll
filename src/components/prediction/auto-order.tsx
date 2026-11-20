@@ -2,7 +2,7 @@
 // Automatic ordering: what Tyll ordered this morning from the prediction, and the rules that decide what is sent
 // straight to a supplier and what waits for approval. Fixed rules, never AI. Simulated: nothing reaches a supplier.
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { X } from "lucide-react";
 import { Badge, Button, Drawer, EmptyState, Note, PageHeader, Panel, Segmented, Skeleton, SummaryBar, WidgetError, cn, textLink, toast } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -46,7 +46,7 @@ function OrderRow({ r, money }: { r: PurchaseRequest; money: (n: number) => stri
       </div>
       <p className="mt-2 text-[13px] text-graphite">{r.lines.map((l) => `${ingredientById[l.ingredientId].name} ${fmtQty(l.qty, ingredientById[l.ingredientId].unit)}`).join(", ")}.</p>
       <p className="mt-1 text-xs text-steel">{sent ? "Sent without waiting: " : "Waits because: "}{r.auto?.why}</p>
-      <Link href={`/forecast?tab=approvals&request=${r.id}`} prefetch={false} className={cn(textLink, "mt-2")}>Open {r.id}</Link>
+      <Link href={`/forecast?tab=approvals&request=${r.id}`} prefetch={false} className={cn(textLink, "mt-2")}>Open the order</Link>
     </li>
   );
 }
@@ -112,7 +112,7 @@ function RulesDrawer({ open, onClose, settings, propertyId }: { open: boolean; o
   );
 }
 
-export function AutoOrdering() {
+export function AutoOrdering({ tabs }: { tabs?: ReactNode } = {}) {
   const { propertyId } = useAlertFeed();
   const { data, error } = useAutoOrder(propertyId);
   const [editing, setEditing] = useState(false);
@@ -129,6 +129,7 @@ export function AutoOrdering() {
       <PageHeader title="Automatic ordering" question="What did Tyll order for me this morning?" lead={`Every morning${s ? ` at ${s.time}` : ""} Tyll orders what the prediction says must be ordered today or tomorrow, one order per supplier. Small orders go straight to the supplier; the rest wait for approval. Simulated data: nothing is sent to a supplier.`}>
         {s && <Badge tone={s.on ? "pos" : "neutral"}>{s.on ? "On" : "Off"}</Badge>}
       </PageHeader>
+      {tabs}
       {error ? <WidgetError>Automatic ordering could not load.</WidgetError> : !auto || !s ? (
         <div className="space-y-4" aria-busy><Skeleton className="h-24 w-full" /><Skeleton className="h-64 w-full" /></div>
       ) : (

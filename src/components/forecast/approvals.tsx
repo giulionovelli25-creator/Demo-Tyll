@@ -94,13 +94,13 @@ function RequestList({ base }: { base: string }) {
             : shown.length === 0 ? <div className="p-6"><EmptyState title="Nothing here" action={can(user, "purchase.create") ? <Button onClick={() => router.push("/forecast?tab=buy")}>Plan what to buy</Button> : undefined}>No requests in this list.</EmptyState></div> : (
               <TableWrap>
                 <table className="w-full min-w-[980px] text-sm">
-                  <thead><tr><Th>Order</Th><Th>For</Th><Th>Supplier</Th><Th>Created by</Th><Th>Approved by</Th><Th align="right">Value</Th><Th>Status</Th><Th>Arrival</Th></tr></thead>
+                  <thead><tr><Th>Supplier</Th><Th>For</Th><Th>Items</Th><Th>Created by</Th><Th>Approved by</Th><Th align="right">Value</Th><Th>Status</Th><Th>Arrival</Th></tr></thead>
                   <tbody>
                     {shown.map((r) => (
                       <tr key={r.id} className={cn(rowClass, "cursor-pointer")} onClick={() => router.push(`${base}&request=${r.id}`)}>
-                        <Td><button type="button" className="num whitespace-nowrap text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`${base}&request=${r.id}`); }}>{r.id}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
+                        <Td><button type="button" className="text-start text-ink underline-offset-4 hover:underline" onClick={(e) => { e.stopPropagation(); router.push(`${base}&request=${r.id}`); }}>{suppliersOf(r)}</button><span className="block text-xs text-steel">{r.lines.length} item{r.lines.length === 1 ? "" : "s"}</span></Td>
                         <Td>{where(r)}<span className="block text-xs text-steel">{forWhen(r)}</span></Td>
-                        <Td>{suppliersOf(r)}</Td>
+                        <Td className="max-w-[220px] text-graphite">{r.lines.slice(0, 2).map((l) => ingredientById[l.ingredientId].name).join(", ")}{r.lines.length > 2 ? `, ${r.lines.length - 2} more` : ""}</Td>
                         <Td>{r.auto ? <Badge tone="accent">Automatic</Badge> : personName(r.createdBy)}</Td>
                         <Td>{r.auto?.decision === "sent" ? "Automatic rule" : approverOf(r) ? personName(approverOf(r)!) : <span className="text-steel">Not yet</span>}</Td>
                         <Td align="right">{fmtMoney(total(r), propertyById[r.propertyId].currency)}</Td>

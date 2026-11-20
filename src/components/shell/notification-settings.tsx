@@ -25,7 +25,7 @@ export function NotificationSettings() {
           {data.emails.map((e) => (
             <li key={e.id} className="px-4 py-3">
               <div className="flex flex-wrap items-center justify-between gap-2"><span className="text-ink">{e.subject}</span><Badge tone={STATUS[e.status].tone} className="!py-0">{STATUS[e.status].label}</Badge></div>
-              <p className="mt-1 whitespace-pre-line text-xs text-steel">To {e.to} · {e.at.slice(0, 16).replace("T", " ")}{"\n"}{e.text}</p>
+              <p className="mt-1 whitespace-pre-line text-xs text-steel">To {e.to}, {new Date(e.at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}{"\n"}{e.text}</p>
             </li>
           ))}
         </ul>

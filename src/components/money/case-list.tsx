@@ -22,7 +22,7 @@ type Key = "priority" | "when" | "outlet" | "type" | "assignee" | "deadline" | "
 type StatusFilter = "open" | "closed" | "all";
 const PAGE = 25;
 /** Inside Flagged transactions the list opens on the first few, largest and most overdue first; the rest are one click away. */
-const FIRST = 8;
+const FIRST = 5;
 
 export function CaseList({ embedded = false }: { embedded?: boolean } = {}) {
   const params = useSearchParams();

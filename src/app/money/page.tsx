@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { BarList, StripTrend } from "@/components/charts";
-import { byDay, versus, weekSums } from "@/lib/domain/trends";
+import { byDay, versus } from "@/lib/domain/trends";
 import { useDailyTotals } from "@/lib/strip-data";
 import { Section, SectionLink } from "@/components/disclosure";
 import { OutletFinance } from "@/components/finance/outlets";
@@ -86,7 +86,6 @@ export default function MoneyPage() {
   // Per day chart and New this week count only flags with a day of their own, as the Money Back List does.
   const dated = datedFlags(inSel);
   const flagDaily = byDay(dated, (i) => i.date, valueOf);
-  const newFlags = weekSums(dated, (i) => i.date, () => 1);
   const pastDeadline = inSel.filter((i) => i.status !== "closed" && i.deadline && i.deadline < DEMO_TODAY).length;
   const weekOutlets = useMemo(() => totalsByOutlet(ctx, { ...sel, range: presetRange("week") }), [ctx, sel]);
   const best = [...weekOutlets].sort((x, y) => y.now.net - x.now.net)[0];
@@ -115,11 +114,11 @@ export default function MoneyPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={tab === "outlets" ? "Outlet performance" : onFlags ? "Flagged transactions" : "Revenue"} question={onFlags ? "Where is money going missing?" : tab === "outlets" ? "Which outlets are doing better or worse?" : "How much did we make?"} lead={onFlags ? "Voids, refunds, discounts, items removed from bills, bills changed at the till and room charges that broke a rule. A flag is a prompt to check, not a finding. Simulated data." : "Last 7 days against the 7 before. Profit is an estimate. Simulated data."} />
+      <PageHeader title={tab === "outlets" ? "Outlet performance" : onFlags ? "Flagged transactions" : "Revenue"} question={onFlags ? "Where is money going missing, and what came back?" : tab === "outlets" ? "Which outlets are doing better or worse?" : "How much did we make?"} lead={onFlags ? "Voids, refunds, discounts, items removed from bills, bills changed at the till and room charges that broke a rule. A flag is a prompt to check, not a finding. Simulated data." : "Last 7 days against the 7 before. Profit is an estimate. Simulated data."} />
       {onFlags ? (
         <SummaryBar
           items={[
-            { label: "Open flags", value: flags.length, tone: flags.length ? "warn" : "pos", compare: { text: `${pastDeadline} past their deadline, ${newFlags.now} new this week`, good: pastDeadline ? false : true }, href: "/money?tab=flags&status=open#cases" },
+            { label: "Open flags", value: flags.length, tone: flags.length ? "warn" : "pos", compare: { text: `${pastDeadline} past their deadline`, good: pastDeadline ? false : true }, href: "/money?tab=flags&status=open#cases" },
             { label: "Value at risk", value: money(flagValue, { compact: true }), tone: "money", compare: { text: flagEstimate > 0 ? `Open flags, until checked. ${money(flagEstimate, { compact: true })} of it estimates` : "Open flags, until checked", good: null }, href: "/money?tab=flags&status=open#cases" },
             { label: "Confirmed losses", value: money(sum(inSel.filter((i) => i.status === "closed"), (i) => i.confirmedLoss * fxRate(propertyById[i.propertyId].currency, sel.currency)), { compact: true }), compare: { text: `All time. ${inSel.filter((i) => i.status === "closed" && i.outcome === "legitimate").length} of ${inSel.filter((i) => i.status === "closed").length} closed were legitimate`, good: null }, href: "/money?tab=flags&status=closed&outcome=confirmed_loss#cases" },
             { label: "Recovered", value: money(sum(inSel.filter((i) => i.status === "closed"), (i) => i.recovered * fxRate(propertyById[i.propertyId].currency, sel.currency)), { compact: true }), tone: "pos", compare: { text: "All time, on closed cases", good: null }, href: "/money?tab=flags&status=closed&outcome=recovered#cases" },

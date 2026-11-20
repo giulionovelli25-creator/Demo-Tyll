@@ -286,7 +286,7 @@ export function Predictions({ tabs }: { tabs?: ReactNode } = {}) {
           {tabs}
           {autoOrder?.settings.on && (
             <p className="rounded-panel border border-line bg-paper px-5 py-3 text-[13px] text-graphite shadow-panel sm:px-6">
-              <span className="font-medium text-ink">Automatic ordering is on.</span> Every morning at {autoOrder.settings.time} Tyll orders the items due that day or the next{autoOrder.orders.length ? `; this morning it placed ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, so they no longer show here` : ""}. Find them under Automatic ordering in the menu.
+              <span className="font-medium text-ink">Automatic ordering is on.</span> Every morning at {autoOrder.settings.time} Tyll orders the items due that day or the next{autoOrder.orders.length ? `; this morning it placed ${autoOrder.orders.length} ${autoOrder.orders.length === 1 ? "order" : "orders"}, so they no longer show here` : ""}. They are on the Automatic ordering tab.
             </p>
           )}
           <DeliveriesAtRisk plan={plan} />

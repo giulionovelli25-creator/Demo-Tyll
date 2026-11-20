@@ -85,7 +85,7 @@ export function Suppliers({ propertyId, tabs }: { propertyId: string; tabs?: Rea
                     <tr key={d.id} className={cn(rowClass, "cursor-pointer", isOpen && "bg-cloud")} onClick={() => setOpen(isOpen ? null : d.id)}>
                       <Td>
                         <button type="button" aria-expanded={isOpen} className="flex items-center gap-2 text-start text-ink" onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : d.id); }}>
-                          <ChevronDown size={15} className={cn("shrink-0 text-steel transition-transform duration-200 ease-tyll", isOpen && "rotate-180")} aria-hidden /><span>{supplierById[d.supplierId].name}<span className="num block text-xs text-steel">{d.id}</span></span>
+                          <ChevronDown size={15} className={cn("shrink-0 text-steel transition-transform duration-200 ease-tyll", isOpen && "rotate-180")} aria-hidden /><span>{supplierById[d.supplierId].name}<span className="num block text-xs text-steel">Delivered {fmtDate(d.date, true)}</span></span>
                         </button>
                       </Td>
                       <Td className="num text-graphite">{fmtDate(d.date, true)}</Td>

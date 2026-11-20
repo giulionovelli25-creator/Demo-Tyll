@@ -59,7 +59,7 @@ export function ToOrder({ tabs }: { tabs?: ReactNode }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="To order" question="What is below its minimum, and how much brings it back to the maximum?" lead="From par levels and stock on hand, less what is already on order. Simulated data." />
+      <PageHeader title="Below minimum" question="What is below its minimum, and how much brings it back to the maximum?" lead="From par levels and stock on hand, less what is already on order. Simulated data." />
       {error ? <WidgetError>To order could not load.</WidgetError> : !data ? <div className="space-y-4" aria-busy><Skeleton className="h-24 w-full" /><Skeleton className="h-64 w-full" /></div> : (
         <>
           <SummaryBar

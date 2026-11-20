@@ -1,3 +1,4 @@
+import { FEATURES } from "../features";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -252,7 +253,9 @@ describe("navigation and dates", () => {
     // Simplify pass: the list of cases moved into Flagged transactions, so a case returns there.
     expect(to("/investigations/EX-1")).toBe("/money?tab=flags");
     expect(to("/events?tab=events")).toBe("/events");
-    expect(to("/events")).toBe("/more");
+    // A page with no section of its own returns to Other tools, or to the Overview while Other tools is switched off.
+    expect(to("/events")).toBe(FEATURES.otherTools ? "/more" : "/");
+    expect(to("/deliveries")).toBeNull();
     expect(to("/finance", "/money")).toBeNull();
     expect(to("/count")).toBeNull();
   });

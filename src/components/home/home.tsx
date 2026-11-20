@@ -18,7 +18,6 @@ import { compare, computeTotals, exceptionInSel } from "@/lib/domain/metrics";
 import { topAlerts } from "@/lib/domain/top-alerts";
 import { inBillsLedger, isEstimateFlag } from "@/lib/domain/detect";
 import { can, type ModuleId } from "@/lib/domain/access";
-import { useAutoOrder } from "@/lib/plan-hooks";
 import { useCtx, useInvestigations, useView } from "@/lib/hooks";
 import { DEMO_NOW_MIN, DEMO_TODAY, addDays, diffDays, fmtDate, fmtPct, fmtTime, fxRate, pctChange, presetRange, sum } from "@/lib/util";
 
@@ -133,7 +132,6 @@ export function Home() {
   const investigations = useInvestigations();
   const checks = useDeliveryChecks(plan?.propertyId ?? propertyId ?? "lis");
   // What automatic ordering placed this morning, for the Predictions card. Only for roles that order.
-  const autoOrder = useAutoOrder(can(user, "purchase.create") && plan ? plan.propertyId : null).data?.auto;
   const wasteRows = useMemo(() => wasteInCurrency(ctx, sel.outletIds, sel.currency), [ctx, sel.outletIds, sel.currency]);
   const pourRate = pour ? fxRate(propertyById[pour.propertyId].currency, sel.currency) : 1;
   const pourDaily = useMemo(() => (pour?.wine.daily ?? []).map((d, i) => ({ date: d.date, value: (d.gapValue + (pour?.spirits.daily[i]?.gapValue ?? 0)) * pourRate })), [pour, pourRate]);
@@ -206,13 +204,13 @@ export function Home() {
   const ordersMine = ordersWaiting.filter((r) => r.status === myQueue);
   const ordersOnWay = (orders ?? []).filter(awaitingDelivery);
   const ordersLate = ordersOnWay.filter((r) => orderStage(r) === "late");
+  const STEP_WHO: Record<string, string> = { purchasing: "Purchasing", accounting: "Accounting", fnb: "the F&B director", manager: "the general manager" };
+  const waitingWho = Object.entries(STEP_WHO).map(([st, who]) => [who, ordersWaiting.filter((r) => r.status === st).length] as const).filter(([, n]) => n > 0).map(([who, n]) => `${who} ${n}`).join(", ");
   const items = plan?.items ?? [];
-  const toOrder = items.filter((i) => i.orderQty > 0);
   const critical = items.filter((i) => i.health === "critical");
   const low = items.filter((i) => i.health === "low");
   const net = week.now.net;
   const profit = week.now.operatingProfit;
-  const nextDate = toOrder.map((i) => i.orderBy ?? "").filter(Boolean).sort()[0];
   const place = sel.outletIds.length === 1 ? outletById[sel.outletIds[0]].name : propertyId ? propertyById[propertyId].name : "All hotels";
   const top = topAlerts(open);
   const greeting = DEMO_NOW_MIN < 720 ? "Good morning" : DEMO_NOW_MIN < 1020 ? "Good afternoon" : "Good evening";
@@ -293,10 +291,8 @@ export function Home() {
         />
         <Card
           module="forecast" title="Orders" picture={<Split parts={[{ n: ordersMine.length, className: "bg-money" }, { n: ordersWaiting.length - ordersMine.length, className: "bg-money/50" }, { n: ordersOnWay.length, className: "bg-money/20" }]} />}
-          number={approves ? `${ordersMine.length} waiting for your approval` : `${ordersWaiting.length} waiting for approval`} tone={approves && ordersMine.length ? "warn" : undefined} loading={!orders}
-          line={autoOrder?.run && autoOrder.orders.length
-            ? `${approves ? `${ordersWaiting.length} waiting in all. ` : ""}${autoOrder.orders.length} placed automatically this morning, ${ordersOnWay.length} on the way${ordersLate.length ? `, ${ordersLate.length} late` : ""}.`
-            : `${approves ? `${ordersWaiting.length} waiting in all. ` : ""}${ordersOnWay.length} on the way${ordersLate.length ? `, ${ordersLate.length} late` : ""}.${nextDate ? ` Next order ${nextDate === DEMO_TODAY ? "today" : fmtDate(nextDate, true)}.` : ""}`}
+          number={ordersMine.length ? `${ordersMine.length} to approve` : `${ordersWaiting.length} waiting`} tone={ordersMine.length ? "warn" : undefined} loading={!orders}
+          line={`${ordersMine.length ? `Waiting for your approval, ${ordersWaiting.length} in all.` : ordersWaiting.length ? `None at your step: ${waitingWho}.` : "Nothing waiting for approval."} ${ordersOnWay.length} on the way${ordersLate.length ? `, ${ordersLate.length} late` : ""}.`}
           cta={approves && ordersMine.length ? "Review orders" : "See orders"} href={`/forecast?tab=approvals${approves && myQueue ? `&queue=${myQueue}` : ""}`}
         />
         {featureOn("overviewRevenue") ? (
